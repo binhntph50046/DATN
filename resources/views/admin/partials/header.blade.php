@@ -14,8 +14,8 @@
                     </a>
                 </li>
                 <li class="dropdown pc-h-item d-inline-flex d-md-none">
-                    <a class="pc-head-link dropdown-toggle arrow-none m-0" data-bs-toggle="dropdown"
-                        href="#" role="button" aria-haspopup="false" aria-expanded="false">
+                    <a class="pc-head-link dropdown-toggle arrow-none m-0" data-bs-toggle="dropdown" href="#"
+                        role="button" aria-haspopup="false" aria-expanded="false">
                         <i class="ti ti-search"></i>
                     </a>
                     <div class="dropdown-menu pc-h-dropdown drp-search">
@@ -40,10 +40,13 @@
         <div class="ms-auto">
             <ul class="list-unstyled">
                 <li class="dropdown pc-h-item">
-                    <a class="pc-head-link dropdown-toggle arrow-none me-0" data-bs-toggle="dropdown"
-                        href="#" role="button" aria-haspopup="false" aria-expanded="false">
-                        <i class="ti ti-mail"></i>
+                    <a class="pc-head-link dropdown-toggle arrow-none me-0" data-bs-toggle="dropdown" href="#"
+                        role="button" aria-haspopup="false" aria-expanded="false">
+                        <i class="ti ti-bell"></i>
                     </a>
+                    </content>
+                    </create_file>
+
                     <div class="dropdown-menu dropdown-notification dropdown-menu-end pc-h-dropdown">
                         <div class="dropdown-header d-flex align-items-center justify-content-between">
                             <h5 class="m-0">Message</h5>
@@ -117,9 +120,8 @@
                     </div>
                 </li>
                 <li class="dropdown pc-h-item header-user-profile">
-                    <a class="pc-head-link dropdown-toggle arrow-none me-0" data-bs-toggle="dropdown"
-                        href="#" role="button" aria-haspopup="false" data-bs-auto-close="outside"
-                        aria-expanded="false">
+                    <a class="pc-head-link dropdown-toggle arrow-none me-0" data-bs-toggle="dropdown" href="#"
+                        role="button" aria-haspopup="false" data-bs-auto-close="outside" aria-expanded="false">
                         <img src="assets/images/user/avatar-2.jpg" alt="user-image" class="user-avtar">
                         <span>Stebin Ben</span>
                     </a>
@@ -148,8 +150,8 @@
                             <li class="nav-item" role="presentation">
                                 <button class="nav-link" id="drp-t2" data-bs-toggle="tab"
                                     data-bs-target="#drp-tab-2" type="button" role="tab"
-                                    aria-controls="drp-tab-2" aria-selected="false"><i
-                                        class="ti ti-settings"></i> Setting</button>
+                                    aria-controls="drp-tab-2" aria-selected="false"><i class="ti ti-settings"></i>
+                                    Setting</button>
                             </li>
                         </ul>
                         <div class="tab-content" id="mysrpTabContent">

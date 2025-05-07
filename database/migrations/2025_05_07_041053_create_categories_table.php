@@ -13,9 +13,6 @@ return new class extends Migration
             $table->string('name', 255);
             $table->string('slug', 255)->unique();
             $table->foreignId('parent_id')->nullable()->constrained('categories')->nullOnDelete();
-            $table->string('icon', 255)->nullable(); // Icon cho danh mục
-            $table->string('image', 255)->nullable(); // Hình ảnh đại diện
-            $table->text('description')->nullable();
             $table->integer('order')->default(0); // Thứ tự hiển thị
             $table->enum('status', ['active', 'inactive'])->default('active');
             $table->tinyInteger('type')->default(1)->nullable(); // 1: Product Category, 2: Blog Category, etc.

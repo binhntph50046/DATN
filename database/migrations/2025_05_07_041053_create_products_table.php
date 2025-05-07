@@ -23,7 +23,7 @@ return new class extends Migration
             $table->integer('stock')->default(0);
             $table->integer('warranty_months')->default(12);
             $table->boolean('is_featured')->default(false);
-            $table->enum('status', ['active', 'inactive', 'draft', 'out_of_stock', 'discontinued'])->default('active');
+            $table->enum('status', ['active', 'inactive'])->default('active');
             $table->string('image', 255)->nullable();
             $table->json('specifications')->nullable();
             $table->json('features')->nullable();

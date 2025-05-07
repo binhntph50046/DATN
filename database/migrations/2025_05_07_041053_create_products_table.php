@@ -12,9 +12,9 @@ return new class extends Migration
             $table->id();
             $table->string('name', 255);
             $table->string('slug', 255)->unique();
-            $table->text('short_description')->nullable();
-            $table->longText('long_description')->nullable();
-            $table->decimal('price', 15, 2);
+            $table->text('description')->nullable();
+            $table->longText('content')->nullable();
+            $table->decimal('price', 15, 2)->nullable();
             $table->decimal('discount_price', 15, 2)->nullable();
             $table->foreignId('category_id')->nullable()->constrained()->nullOnDelete();
             $table->string('brand', 100)->default('Apple');
@@ -23,7 +23,6 @@ return new class extends Migration
             $table->integer('stock')->default(0);
             $table->integer('warranty_months')->default(12);
             $table->boolean('is_featured')->default(false);
-            $table->boolean('is_active')->default(true);
             $table->enum('status', ['active', 'inactive', 'draft', 'out_of_stock', 'discontinued'])->default('active');
             $table->string('image', 255)->nullable();
             $table->json('specifications')->nullable();

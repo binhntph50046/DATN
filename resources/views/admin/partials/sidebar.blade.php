@@ -16,7 +16,7 @@
                 </li>
 
                 <li class="pc-item pc-caption">
-                    <label>UI Components</label>
+                    <label>Interface management</label>
                     <i class="ti ti-dashboard"></i>
                 </li>
                 <li class="pc-item">
@@ -39,19 +39,37 @@
                 </li>
 
                 <li class="pc-item pc-caption">
-                    <label>Pages</label>
+                    <label>System management</label>
                     <i class="ti ti-news"></i>
                 </li>
                 <li class="pc-item">
-                    <a href="pages/login.html" class="pc-link">
-                        <span class="pc-micon"><i class="ti ti-lock"></i></span>
-                        <span class="pc-mtext">Login</span>
+                    <a href="#" class="pc-link">
+                        <span class="pc-micon"><i class="ti ti-layout-grid"></i></span>
+                        <span class="pc-mtext">Category</span>
                     </a>
                 </li>
                 <li class="pc-item">
-                    <a href="pages/register.html" class="pc-link">
-                        <span class="pc-micon"><i class="ti ti-user-plus"></i></span>
-                        <span class="pc-mtext">Register</span>
+                    <a href="#" class="pc-link">
+                        <span class="pc-micon"><i class="ti ti-package"></i></span>
+                        <span class="pc-mtext">Product</span>
+                    </a>
+                </li>
+                <li class="pc-item">
+                    <a href="#" class="pc-link">
+                        <span class="pc-micon"><i class="ti ti-user"></i></span>
+                        <span class="pc-mtext">Users</span>
+                    </a>
+                </li>
+                <li class="pc-item">
+                    <a href="#" class="pc-link">
+                        <span class="pc-micon"><i class="fas fa-image"></i></span>
+                        <span class="pc-mtext">Banners</span>
+                    </a>
+                </li>
+                <li class="pc-item">
+                    <a href="#" class="pc-link">
+                        <span class="pc-micon"><i class="ti ti-news"></i></span>
+                        <span class="pc-mtext">Posts</span>
                     </a>
                 </li>
 

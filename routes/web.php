@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\admin\DashboardController;
 use App\Http\Controllers\admin\CategoryController;
+use App\Http\Controllers\admin\ProductController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -23,4 +24,7 @@ Route::prefix('admin')->name('admin.')->group(function () { // chưa có middlew
         'update' => 'categories.update',
         'destroy' => 'categories.destroy',
     ]);
+    
+    // Product routes
+    Route::resource('products', ProductController::class);
 });

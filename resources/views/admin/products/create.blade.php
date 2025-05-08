@@ -164,9 +164,7 @@
 
                                         <div class="form-group mb-3">
                                             <div class="form-check form-switch">
-                                                <input type="checkbox" class="form-check-input" id="is_featured"
-                                                    name="is_featured" value="1"
-                                                    {{ old('is_featured') ? 'checked' : '' }}>
+                                                <input type="checkbox" class="form-check-input" id="is_featured" name="is_featured" value="1" {{ old('is_featured', 1) == 1 ? 'checked' : '' }}>
                                                 <label class="form-check-label" for="is_featured">Featured Product</label>
                                             </div>
                                         </div>

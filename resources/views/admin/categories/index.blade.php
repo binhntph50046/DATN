@@ -44,9 +44,7 @@
                                 <thead>
                                     <tr>
                                         <th>ID</th>
-                                        <th>Image</th>
                                         <th>Name</th>
-                                        <th>Description</th>
                                         <th>Type</th>
                                         <th>Status</th>
                                         <th class="text-center">Actions</th>
@@ -57,18 +55,16 @@
                                         <tr>
                                             <td>{{ $category->id }}</td>
                                             <td>
-                                                @if($category->image)
-                                                    <img src="{{ asset($category->image) }}" alt="{{ $category->name }}" class="img-thumbnail" style="max-height: 50px;">
+                                                @if($category->parent_id)
+                                                    <span class="ms-4">└─ {{ $category->name }}</span>
                                                 @else
-                                                    <span class="text-muted">No image</span>
+                                                    {{ $category->name }}
                                                 @endif
                                             </td>
-                                            <td>{{ $category->name }}</td>
-                                            <td>{{ Str::limit($category->description, 60, '...') }}</td>
                                             <td>{{ $category->type == 1 ? 'Product Category' : 'Post Category' }}</td>
                                             <td>
-                                                <span class="badge {{ $category->status == 1 ? 'bg-success' : 'bg-danger' }}">
-                                                    {{ $category->status == 1 ? 'Active' : 'Inactive' }}
+                                                <span class="badge {{ $category->status == 'active' ? 'bg-success' : 'bg-danger' }}">
+                                                    {{ ucfirst($category->status) }}
                                                 </span>
                                             </td>
                                             <td class="text-center">
@@ -96,5 +92,4 @@
         <!-- [ Main Content ] end -->
     </div>
 </div>
-<h1>Categories</h1>
 @endsection

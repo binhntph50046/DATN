@@ -86,27 +86,14 @@
                                     <div class="mb-3">
                                         <label for="status" class="form-label">Status</label>
                                         <select class="form-select @error('status') is-invalid @enderror" id="status" name="status" required>
-                                            <option value="1" {{ old('status', $category->status) == 1 ? 'selected' : '' }}>Active</option>
-                                            <option value="0" {{ old('status', $category->status) == 0 ? 'selected' : '' }}>Inactive</option>
-                                        </select>
+                                            <option value="active" {{ old('status', $category->status) == 'active' ? 'selected' : '' }}>Active</option>
+                                            <option value="inactive" {{ old('status', $category->status) == 'inactive' ? 'selected' : '' }}>Inactive</option>
+                                        </select>   
                                         @error('status')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
                                     </div>
                                 </div>
-                            </div>
-
-                            <div class="mb-3">
-                                <label for="image" class="form-label">Category Image</label>
-                                @if($category->image)
-                                    <div class="mb-2">
-                                        <img src="{{ asset($category->image) }}" alt="Current Image" class="img-thumbnail" style="max-height: 200px;">
-                                    </div>
-                                @endif
-                                <input type="file" class="form-control @error('image') is-invalid @enderror" id="image" name="image">
-                                @error('image')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
                             </div>
 
                             <div class="mb-3">

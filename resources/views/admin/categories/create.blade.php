@@ -46,7 +46,7 @@
                                     <div class="mb-3">
                                         <label for="parent_id" class="form-label">Parent Category</label>
                                         <select class="form-select @error('parent_id') is-invalid @enderror" id="parent_id" name="parent_id">
-                                            <option value="0">None</option>
+                                            <option value="">None</option>
                                             @foreach($categories as $category)
                                                 <option value="{{ $category->id }}" {{ old('parent_id') == $category->id ? 'selected' : '' }}>
                                                     {{ $category->name }}
@@ -59,15 +59,6 @@
                                     </div>
                                 </div>
                             </div>
-
-                            <div class="mb-3">
-                                <label for="description" class="form-label">Description</label>
-                                <textarea class="form-control @error('description') is-invalid @enderror" id="description" name="description" rows="3">{{ old('description') }}</textarea>
-                                @error('description')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="mb-3">
@@ -85,22 +76,14 @@
                                     <div class="mb-3">
                                         <label for="status" class="form-label">Status</label>
                                         <select class="form-select @error('status') is-invalid @enderror" id="status" name="status" required>
-                                            <option value="1" {{ old('status') == 1 ? 'selected' : '' }}>Active</option>
-                                            <option value="0" {{ old('status') == 0 ? 'selected' : '' }}>Inactive</option>
+                                            <option value="active" {{ old('status') == 'active' ? 'selected' : '' }}>Active</option>
+                                            <option value="inactive" {{ old('status') == 'inactive' ? 'selected' : '' }}>Inactive</option>
                                         </select>
                                         @error('status')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
                                     </div>
                                 </div>
-                            </div>
-
-                            <div class="mb-3">
-                                <label for="image" class="form-label">Category Image</label>
-                                <input type="file" class="form-control @error('image') is-invalid @enderror" id="image" name="image">
-                                @error('image')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
                             </div>
 
                             <div class="mb-3">

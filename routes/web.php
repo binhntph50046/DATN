@@ -14,6 +14,9 @@ Route::prefix('admin')->name('admin.')->group(function () { // chưa có middlew
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
     
     // Category Routes
+    Route::get('/categories/trash', [CategoryController::class, 'trash'])->name('categories.trash');
+    Route::post('/categories/{category}/restore', [CategoryController::class, 'restore'])->name('categories.restore');
+    Route::delete('/categories/{category}/forceDelete', [CategoryController::class, 'forceDelete'])->name('categories.forceDelete');
     Route::resource('categories', CategoryController::class)->names([
         'index' => 'categories.index',
         'create' => 'categories.create',

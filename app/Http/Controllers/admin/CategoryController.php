@@ -9,15 +9,26 @@ use Illuminate\Support\Facades\Storage;
 
 class CategoryController
 {
-    public function index()
-    {
-        $categories = Category::whereNull('parent_id')
-            ->with('children') 
-            ->orderBy('order', 'desc')
-            ->paginate(10);
+    public function index(Request $request)
+{
+    $query = Category::with('children')->whereNull('parent_id');
 
-        return view('admin.categories.index', compact('categories'));
+    if ($request->filled('name')) {
+        $query->where('name', 'like', '%' . $request->name . '%');
     }
+
+    if ($request->filled('type')) {
+        $query->where('type', $request->type);
+    }
+
+    if ($request->filled('status')) {
+        $query->where('status', $request->status);
+    }
+
+    $categories = $query->orderBy('order', 'desc')->paginate(10);
+
+    return view('admin.categories.index', compact('categories'));
+}
 
     public function create()
     {
@@ -88,4 +99,25 @@ class CategoryController
         return redirect()->route('admin.categories.index')
             ->with('success', 'Category deleted successfully.');
     }
+
+    public function trash()
+    {
+        $categories = Category::onlyTrashed()-> with('parent')->paginate(10);
+        return view('admin.categories.trash', compact('categories'));
+    }
+
+    public function restore(string $id)
+    {
+        $category = Category::onlyTrashed()->findOrFail($id);
+        $category->restore();
+        return redirect()->route('admin.categories.trash')->with('success', 'Category restored successfully.');
+    }
+
+    public function forceDelete(string $id)
+    {
+        $category = Category::onlyTrashed()->findOrFail($id);
+        $category->forceDelete();
+        return redirect()->route('admin.categories.trash')->with('success', 'Category deleted permanently.');
+    }
+    
 }

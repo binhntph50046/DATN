@@ -36,6 +36,7 @@
 <!-- [Head] end -->
 
 <!-- [Body] Start -->
+
 <body data-pc-preset="preset-1" data-pc-direction="ltr" data-pc-theme="light">
     <!-- [ Pre-loader ] start -->
     <div class="loader-bg">
@@ -47,8 +48,8 @@
 
     <!-- [ Sidebar Menu ] start -->
     @include('admin.partials.sidebar')
-    <!-- [ Sidebar Menu ] end --> 
-    
+    <!-- [ Sidebar Menu ] end -->
+
     <!-- [ Header Topbar ] start -->
     @include('admin.partials.header')
     <!-- [ Header ] end -->
@@ -66,6 +67,7 @@
     <script src="{{ asset('assets/js/pages/dashboard-default.js') }}"></script>
     <!-- [Page Specific JS] end -->
     <!-- Required Js -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="{{ asset('assets/js/plugins/popper.min.js') }}"></script>
     <script src="{{ asset('assets/js/plugins/simplebar.min.js') }}"></script>
     <script src="{{ asset('assets/js/plugins/bootstrap.min.js') }}"></script>
@@ -73,37 +75,36 @@
     <script src="{{ asset('assets/js/pcoded.js') }}"></script>
     <script src="{{ asset('assets/js/plugins/feather.min.js') }}"></script>
 
-
-
+    @stack('scripts')
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ckeditor/4.9.2/ckeditor.js"
+        integrity="sha512-OF6VwfoBrM/wE3gt0I/lTh1ElROdq3etwAquhEm2YI45Um4ird+0ZFX1IwuBDBRufdXBuYoBb0mqXrmUA2VnOA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script>
+        $(document).ready(function() {
+            CKEDITOR.replaceAll('snettech-editor');
+        });
+    </script>
+    </script>
 
     <script>
         layout_change('light');
     </script>
 
-
-
-
     <script>
         change_box_container('false');
     </script>
-
-
 
     <script>
         layout_rtl_change('false');
     </script>
 
-
     <script>
         preset_change("preset-1");
     </script>
 
-
     <script>
         font_change("Public-Sans");
     </script>
-
-
 
 </body>
 <!-- [Body] end -->

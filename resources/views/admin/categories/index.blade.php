@@ -1,5 +1,5 @@
 @extends('admin.layouts.app')
-
+@section('title', 'Category Management')
 @section('content')
 <div class="pc-container">
     <div class="pc-content">
@@ -45,6 +45,7 @@
                                     <tr>
                                         <th>ID</th>
                                         <th>Name</th>
+                                        <th>Slug</th>
                                         <th>Type</th>
                                         <th>Status</th>
                                         <th class="text-center">Actions</th>
@@ -52,16 +53,16 @@
                                 </thead>
                                 <tbody>
                                     @php
-                                        function renderCategoryTree($categories, $prefix = '') {
+                                        function renderCategoryTree($categories, &$index = 1, $prefix = '') {
                                             foreach ($categories as $category) {
                                                 echo '<tr>';
-                                                echo '<td>' . $category->id . '</td>';
-                                                // Kiểm tra nếu là danh mục con, mới thêm dấu └─
+                                                echo '<td>' . $index++ . '</td>';
                                                 if ($category->parent_id) {
                                                     echo '<td>' . $prefix . '└─ ' . $category->name . '</td>';
                                                 } else {
                                                     echo '<td>' . $category->name . '</td>';
                                                 }
+                                                echo '<td>' . $category->slug . '</td>';
                                                 echo '<td>' . ($category->type == 1 ? 'Product Category' : 'Post Category') . '</td>';
                                                 echo '<td><span class="badge ' . ($category->status == 'active' ? 'bg-success' : 'bg-danger') . '">' . ucfirst($category->status) . '</span></td>';
                                                 echo '<td class="text-center">';
@@ -74,15 +75,15 @@
                                                 echo '</td>';
                                                 echo '</tr>';
                                 
-                                                // Nếu có con thì đệ quy tiếp
                                                 if ($category->children && count($category->children)) {
-                                                    renderCategoryTree($category->children, $prefix . '&nbsp;&nbsp;&nbsp;&nbsp;  ');
-                                                }   
+                                                    renderCategoryTree($category->children, $index, $prefix . '&nbsp;&nbsp;&nbsp;&nbsp;  ');
+                                                }
                                             }
                                         }
-                                    @endphp
                                 
-                                    @php renderCategoryTree($categories); @endphp
+                                        $index = 1;
+                                        renderCategoryTree($categories, $index);
+                                    @endphp
                                 </tbody>
                             </table>
                             {{ $categories->links() }}

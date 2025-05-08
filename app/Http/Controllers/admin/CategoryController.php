@@ -9,15 +9,26 @@ use Illuminate\Support\Facades\Storage;
 
 class CategoryController
 {
-    public function index()
-    {
-        $categories = Category::whereNull('parent_id')
-            ->with('children') 
-            ->orderBy('order', 'desc')
-            ->paginate(10);
+    public function index(Request $request)
+{
+    $query = Category::with('children')->whereNull('parent_id');
 
-        return view('admin.categories.index', compact('categories'));
+    if ($request->filled('name')) {
+        $query->where('name', 'like', '%' . $request->name . '%');
     }
+
+    if ($request->filled('type')) {
+        $query->where('type', $request->type);
+    }
+
+    if ($request->filled('status')) {
+        $query->where('status', $request->status);
+    }
+
+    $categories = $query->orderBy('order', 'desc')->paginate(10);
+
+    return view('admin.categories.index', compact('categories'));
+}
 
     public function create()
     {

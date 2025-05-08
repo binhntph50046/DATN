@@ -39,6 +39,33 @@
                                 {{ session('success') }}
                             </div>
                         @endif
+                        <!-- Bộ lọc tìm kiếm -->
+                        <form method="GET" action="{{ route('admin.categories.index') }}" class="row g-3 mb-3">
+                            <div class="col-md-3">
+                                <input type="text" name="name" class="form-control" placeholder="Search by name..." value="{{ request('name') }}">
+                            </div>
+                        
+                            <div class="col-md-3">
+                                <select name="type" class="form-select">
+                                    <option value="">-- Filter by Category Type --</option>
+                                    <option value="1" {{ request('type') == '1' ? 'selected' : '' }}>Product Category</option>
+                                    <option value="0" {{ request('type') == '0' ? 'selected' : '' }}>Post Category</option>
+                                </select>
+                            </div>
+                        
+                            <div class="col-md-3">
+                                <select name="status" class="form-select">
+                                    <option value="">-- Filter by Status --</option>
+                                    <option value="active" {{ request('status') == 'active' ? 'selected' : '' }}>Active</option>
+                                    <option value="inactive" {{ request('status') == 'inactive' ? 'selected' : '' }}>Inactive</option>
+                                </select>
+                            </div>
+                        
+                            <div class="col-md-3 d-flex align-items-center">
+                                <button type="submit" class="btn btn-primary me-2">Filter</button>
+                                <a href="{{ route('admin.categories.index') }}" class="btn btn-secondary">Reset</a>
+                            </div>
+                        </form>
                         <div class="table-responsive">
                             <table class="table table-hover table-borderless">
                                 <thead>

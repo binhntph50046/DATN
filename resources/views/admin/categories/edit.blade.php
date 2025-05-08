@@ -47,7 +47,7 @@
                                     <div class="mb-3">
                                         <label for="parent_id" class="form-label">Parent Category</label>
                                         <select class="form-select @error('parent_id') is-invalid @enderror" id="parent_id" name="parent_id">
-                                            <option value="0">None</option>
+                                            <option value="">-- No Parent --</option>
                                             @foreach($categories as $cat)
                                                 <option value="{{ $cat->id }}" {{ old('parent_id', $category->parent_id) == $cat->id ? 'selected' : '' }}>
                                                     {{ $cat->name }}

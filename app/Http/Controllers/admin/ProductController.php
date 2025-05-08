@@ -87,7 +87,7 @@ class ProductController
             'series' => 'nullable|string|max:100',
             'stock' => 'required|integer|min:0',
             'warranty_months' => 'required|integer|min:0',
-            'is_featured' => 'boolean',
+            'is_featured' => 'nullable|boolean',
             'status' => 'required|in:active,inactive',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'specifications' => 'nullable|array',
@@ -127,6 +127,9 @@ class ProductController
 
         $data = $request->all();
         $data['slug'] = Str::slug($request->name);
+        
+        // Handle is_featured checkbox
+        $data['is_featured'] = $request->has('is_featured') ? 1 : 0;
 
         // Process specifications
         if (isset($data['specifications'])) {
@@ -184,7 +187,7 @@ class ProductController
             'series' => 'nullable|string|max:100',
             'stock' => 'required|integer|min:0',
             'warranty_months' => 'required|integer|min:0',
-            'is_featured' => 'boolean',
+            'is_featured' => 'nullable|boolean',
             'status' => 'required|in:active,inactive',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'specifications' => 'nullable|array',
@@ -224,6 +227,9 @@ class ProductController
 
         $data = $request->all();
         $data['slug'] = Str::slug($request->name);
+        
+        // Handle is_featured checkbox
+        $data['is_featured'] = $request->has('is_featured') ? 1 : 0;
 
         // Process specifications
         if (isset($data['specifications'])) {

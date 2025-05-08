@@ -1,4 +1,14 @@
 @extends('admin.layouts.app')
+@section('title', 'Add New Product')
+
+<style>
+    .custom-shadow {
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+        border-radius: 12px;
+        background-color: #fff;
+        padding: 16px;
+    }
+</style>
 
 @section('content')
     <div class="pc-container">
@@ -56,7 +66,7 @@
 
                                         <div class="form-group mb-3">
                                             <label for="content" class="form-label">Content</label>
-                                            <textarea class="form-control @error('content') is-invalid @enderror" id="content" name="content" rows="5">{{ old('content') }}</textarea>
+                                            <textarea class="snettech-editor form-control @error('content') is-invalid @enderror" id="content" name="content">{{ old('content') }}</textarea>
                                             @error('content')
                                                 <div class="invalid-feedback">{{ $message }}</div>
                                             @enderror
@@ -190,7 +200,7 @@
 
                                 <div class="form-group mb-3">
                                     <label class="form-label">Specifications</label>
-                                    <div id="specifications-container">
+                                    <div id="specifications-container" class="custom-shadow p-3">
                                         <div class="specification-item mb-2">
                                             <div class="row">
                                                 <div class="col-md-5">
@@ -217,7 +227,7 @@
 
                                 <div class="form-group mb-3">
                                     <label class="form-label">Features</label>
-                                    <div id="features-container">
+                                    <div id="features-container" class="custom-shadow p-3">
                                         <div class="feature-item mb-2">
                                             <div class="row">
                                                 <div class="col-md-10">
@@ -238,10 +248,10 @@
                                 </div>
 
                                 <div class="form-group">
-                                    <button type="submit" class="btn btn-primary">
+                                    <button type="submit" class="btn btn-primary rounded-3">
                                         <i class="ti ti-device-floppy"></i> Save Product
                                     </button>
-                                    <a href="{{ route('admin.products.index') }}" class="btn btn-secondary">
+                                    <a href="{{ route('admin.products.index') }}" class="btn btn-secondary rounded-3">
                                         <i class="ti ti-arrow-left"></i> Back to List
                                     </a>
                                 </div>
@@ -256,8 +266,11 @@
 @endsection
 
 @push('scripts')
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ckeditor/4.9.2/ckeditor.js" integrity="sha512-OF6VwfoBrM/wE3gt0I/lTh1ElROdq3etwAquhEm2YI45Um4ird+0ZFX1IwuBDBRufdXBuYoBb0mqXrmUA2VnOA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script>
         $(document).ready(function() {
+            CKEDITOR.replaceAll('snettech-editor');
+            
             // Add specification
             $('#add-specification').click(function() {
                 var html = `

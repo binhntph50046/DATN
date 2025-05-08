@@ -10,15 +10,67 @@ use Illuminate\Support\Str;
 
 class ProductController
 {
-    public function index()
+    public function index(Request $request)
     {
-        $products = Product::with('category')->latest()->paginate(10);
-        return view('admin.products.index', compact('products'));
+        $query = Product::with('category');
+
+        // Filter by status
+        if ($request->has('status') && $request->status !== '') {
+            $query->where('status', $request->status);
+        }
+
+        // Filter by category
+        if ($request->has('category_id') && $request->category_id !== '') {
+            $query->where('category_id', $request->category_id);
+        }
+
+        // Filter by price range
+        if ($request->has('min_price') && $request->min_price !== '') {
+            $query->where('price', '>=', $request->min_price);
+        }
+        if ($request->has('max_price') && $request->max_price !== '') {
+            $query->where('price', '<=', $request->max_price);
+        }
+
+        // Filter by model
+        if ($request->has('model') && $request->model !== '') {
+            $query->where('model', 'like', '%' . $request->model . '%');
+        }
+
+        // Filter by series
+        if ($request->has('series') && $request->series !== '') {
+            $query->where('series', 'like', '%' . $request->series . '%');
+        }
+
+        // Filter by search term
+        if ($request->has('name') && $request->name !== '') {
+            $search = $request->name;
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                    ->orWhere('model', 'like', "%{$search}%")
+                    ->orWhere('series', 'like', "%{$search}%");
+            });
+        }
+
+        // Show trashed items if requested
+        if ($request->has('trashed') && $request->trashed) {
+            $query->onlyTrashed();
+        }
+
+        $products = $query->latest()->paginate(10)->withQueryString();
+        $categories = Category::where('status', 'active')->where('type', 1)->get();
+
+        return view('admin.products.index', compact('products', 'categories'));
+    }
+
+    public function show(Product $product)
+    {
+        return view('admin.products.show', compact('product'));
     }
 
     public function create()
     {
-        $categories = Category::all();
+        $categories = Category::where('status', 'active')->where('type', 1)->get();
         return view('admin.products.create', compact('categories'));
     }
 
@@ -94,7 +146,7 @@ class ProductController
 
         // Process features
         if (isset($data['features'])) {
-            $data['features'] = array_filter($data['features'], function($feature) {
+            $data['features'] = array_filter($data['features'], function ($feature) {
                 return !empty($feature);
             });
         }
@@ -110,12 +162,12 @@ class ProductController
         Product::create($data);
 
         return redirect()->route('admin.products.index')
-            ->with('success', 'Sản phẩm đã được tạo thành công.');
+            ->with('success', 'Product created successfully.');
     }
 
     public function edit(Product $product)
     {
-        $categories = Category::all();
+        $categories = Category::where('status', 'active')->get();
         return view('admin.products.edit', compact('product', 'categories'));
     }
 
@@ -191,7 +243,7 @@ class ProductController
 
         // Process features
         if (isset($data['features'])) {
-            $data['features'] = array_filter($data['features'], function($feature) {
+            $data['features'] = array_filter($data['features'], function ($feature) {
                 return !empty($feature);
             });
         }
@@ -215,21 +267,82 @@ class ProductController
         $product->update($data);
 
         return redirect()->route('admin.products.index')
-            ->with('success', 'Sản phẩm đã được cập nhật thành công.');
+            ->with('success', 'Product updated successfully.');
     }
 
-    public function destroy(Product $product)
+    public function destroy(Request $request, Product $product)
     {
-        if ($product->image) {
-            $imagePath = public_path($product->image);
-            if (file_exists($imagePath)) {
-                unlink($imagePath);
+        if ($request->has('force_delete')) {
+            // Permanently delete the product
+            if ($product->image) {
+                $imagePath = public_path($product->image);
+                if (file_exists($imagePath)) {
+                    unlink($imagePath);
+                }
             }
+            $product->forceDelete();
+            $message = 'Product permanently deleted successfully.';
+        } else {
+            // Soft delete the product
+            $product->delete();
+            $message = 'Product moved to trash successfully.';
         }
 
-        $product->delete();
-
         return redirect()->route('admin.products.index')
-            ->with('success', 'Sản phẩm đã được xóa thành công.');
+            ->with('success', $message);
+    }
+
+    public function trash(Request $request)
+    {
+        $query = Product::onlyTrashed()->with('category');
+
+        // Filter by status
+        if ($request->has('status') && $request->status !== '') {
+            $query->where('status', $request->status);
+        }
+
+        // Filter by category
+        if ($request->has('category_id') && $request->category_id !== '') {
+            $query->where('category_id', $request->category_id);
+        }
+
+        // Filter by search term
+        if ($request->has('name') && $request->name !== '') {
+            $search = $request->name;
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                    ->orWhere('model', 'like', "%{$search}%")
+                    ->orWhere('series', 'like', "%{$search}%");
+            });
+        }
+
+        $products = $query->latest()->paginate(10)->withQueryString();
+        $categories = Category::all();
+
+        return view('admin.products.trash', compact('products', 'categories'));
+    }
+
+    public function restore($id)
+    {
+        $product = Product::withTrashed()->findOrFail($id);
+        $product->restore();
+
+        return redirect()->route('admin.products.trash')
+            ->with('success', 'Product restored successfully.');
+    }
+
+    public function forceDelete($id)
+    {
+        $product = Product::withTrashed()->findOrFail($id);
+
+        // Delete the image file if it exists
+        if ($product->image && file_exists(public_path($product->image))) {
+            unlink(public_path($product->image));
+        }
+
+        $product->forceDelete();
+
+        return redirect()->route('admin.products.trash')
+            ->with('success', 'Product permanently deleted.');
     }
 }

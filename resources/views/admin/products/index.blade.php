@@ -1,4 +1,14 @@
 @extends('admin.layouts.app')
+@section('title', 'Product Management')
+
+<style>
+    .custom-shadow {
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+        border-radius: 12px;
+        background-color: #fff;
+        padding: 16px;
+    }
+</style>
 
 @section('content')
     <div class="pc-container">
@@ -28,8 +38,11 @@
                         <div class="card-header">
                             <h5>Products List</h5>
                             <div class="card-header-right">
-                                <a href="{{ route('admin.products.create') }}" class="btn btn-primary btn-sm">
+                                <a href="{{ route('admin.products.create') }}" class="btn btn-primary btn-sm rounded-3 me-2">
                                     <i class="ti ti-plus"></i> Add New Product
+                                </a>
+                                <a href="{{ route('admin.products.trash') }}" class="btn btn-danger btn-sm rounded-3">
+                                    <i class="ti ti-trash"></i> Trash
                                 </a>
                             </div>
                         </div>
@@ -39,7 +52,55 @@
                                     {{ session('success') }}
                                 </div>
                             @endif
-                            <div class="table-responsive">
+
+                            <!-- Filter Section -->
+                            <div class="card shadow-sm mb-4">
+                                <div class="card-body">
+                                    <form method="GET" action="{{ route('admin.products.index') }}" class="row g-3">
+                                        <div class="col-md-3">
+                                            <label class="form-label">Category</label>
+                                            <select name="category_id" class="form-select">
+                                                <option value="">All Categories</option>
+                                                @foreach($categories as $category)
+                                                    <option value="{{ $category->id }}" {{ request('category_id') == $category->id ? 'selected' : '' }}>
+                                                        {{ $category->name }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label class="form-label">Status</label>
+                                            <select name="status" class="form-select">
+                                                <option value="">All Status</option>
+                                                <option value="active" {{ request('status') == 'active' ? 'selected' : '' }}>Active</option>
+                                                <option value="inactive" {{ request('status') == 'inactive' ? 'selected' : '' }}>Inactive</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label class="form-label">Model</label>
+                                            <input type="text" name="model" class="form-control" placeholder="Filter by model" value="{{ request('model') }}">
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label class="form-label">Series</label>
+                                            <input type="text" name="series" class="form-control" placeholder="Filter by series" value="{{ request('series') }}">
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label class="form-label">Min Price (VNĐ)</label>
+                                            <input type="number" name="min_price" class="form-control" placeholder="Min price" value="{{ request('min_price') }}">
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label class="form-label">Max Price (VNĐ)</label>
+                                            <input type="number" name="max_price" class="form-control" placeholder="Max price" value="{{ request('max_price') }}">
+                                        </div>
+                                        <div class="col-12 mt-3">
+                                            <button type="submit" class="btn btn-primary btn-sm">Filter</button>
+                                            <a href="{{ route('admin.products.index') }}" class="btn btn-secondary btn-sm">Reset</a>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+
+                            <div class="table custom-shadow">
                                 <table class="table table-hover table-borderless">
                                     <thead>
                                         <tr>
@@ -60,42 +121,39 @@
                                                 <td>
                                                     @if ($product->image)
                                                         <img src="{{ asset($product->image) }}" alt="{{ $product->name }}"
-                                                            class="img-thumbnail" style="max-width: 50px;">
+                                                            class="img-thumbnail" style="max-width: 100px; height: auto;">
                                                     @else
                                                         <span class="text-muted">No image</span>
                                                     @endif
                                                 </td>
                                                 <td>{{ $product->name }}</td>
-                                                <td>{{ $product->category->name }}</td>
+                                                <td>{{ $product->category->name ?? 'N/A' }}</td>
                                                 <td>
-                                                    @if ($product->discount_price)
-                                                        <span
-                                                            class="text-decoration-line-through text-muted">{{ number_format($product->price) }}đ</span>
+                                                    @if($product->discount_price)
+                                                        <span class="text-decoration-line-through text-muted">{{ number_format($product->price) }} VNĐ</span>
                                                         <br>
-                                                        <span
-                                                            class="text-danger">{{ number_format($product->discount_price) }}đ</span>
+                                                        <span class="text-danger fw-bold">{{ number_format($product->discount_price) }} VNĐ</span>
                                                     @else
-                                                        {{ number_format($product->price) }}đ
+                                                        {{ number_format($product->price) }} VNĐ
                                                     @endif
                                                 </td>
                                                 <td>{{ $product->stock }}</td>
                                                 <td>
-                                                    <span
-                                                        class="badge {{ $product->status === 'active' ? 'bg-success' : 'bg-danger' }}">
+                                                    <span class="badge {{ $product->status === 'active' ? 'bg-success' : 'bg-danger' }}">
                                                         {{ ucfirst($product->status) }}
                                                     </span>
                                                 </td>
                                                 <td class="text-center">
-                                                    <a href="{{ route('admin.products.edit', $product) }}"
-                                                        class="btn btn-info btn-sm">
+                                                    <a href="{{ route('admin.products.show', $product->id) }}" class="btn btn-primary btn-sm rounded-3 me-2">
+                                                        <i class="ti ti-eye"></i> View
+                                                    </a>
+                                                    <a href="{{ route('admin.products.edit', $product->id) }}" class="btn btn-info btn-sm rounded-3 me-2">
                                                         <i class="ti ti-edit"></i> Edit
                                                     </a>
-                                                    <form action="{{ route('admin.products.destroy', $product) }}"
-                                                        method="POST" class="d-inline">
+                                                    <form action="{{ route('admin.products.destroy', $product->id) }}" method="POST" class="d-inline">
                                                         @csrf
                                                         @method('DELETE')
-                                                        <button type="submit" class="btn btn-danger btn-sm"
-                                                            onclick="return confirm('Are you sure you want to delete this product?')">
+                                                        <button type="submit" class="btn btn-danger btn-sm rounded-3" onclick="return confirm('Are you sure you want to delete this product?')">
                                                             <i class="ti ti-trash"></i> Delete
                                                         </button>
                                                     </form>

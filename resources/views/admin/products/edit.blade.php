@@ -1,4 +1,14 @@
 @extends('admin.layouts.app')
+@section('title', 'Edit Product')
+
+<style>
+    .custom-shadow {
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+        border-radius: 12px;
+        background-color: #fff;
+        padding: 16px;
+    }
+</style>
 
 @section('content')
     <div class="pc-container">
@@ -58,8 +68,8 @@
                                         </div>
 
                                         <div class="form-group mb-3">
-                                            <label for="content" class="form-label">Detailed Content</label>
-                                            <textarea class="form-control @error('content') is-invalid @enderror" id="content" name="content" rows="5">{{ old('content', $product->content) }}</textarea>
+                                            <label for="content" class="form-label">Content</label>
+                                            <textarea class="snettech-editor form-control @error('content') is-invalid @enderror" id="content" name="content">{{ old('content', $product->content) }}</textarea>
                                             @error('content')
                                                 <div class="invalid-feedback">{{ $message }}</div>
                                             @enderror
@@ -136,9 +146,8 @@
                                             <label for="image" class="form-label">Product Image</label>
                                             @if ($product->image)
                                                 <div class="mb-2">
-                                                    <img src="{{ asset($product->image) }}"
-                                                        alt="{{ $product->name }}" class="img-thumbnail"
-                                                        style="max-width: 200px;">
+                                                    <img src="{{ asset($product->image) }}" alt="{{ $product->name }}"
+                                                        class="img-thumbnail" style="max-width: 200px;">
                                                 </div>
                                             @endif
                                             <input type="file"
@@ -204,9 +213,11 @@
 
                                 <div class="form-group mb-3">
                                     <label class="form-label">Specifications</label>
-                                    <div id="specifications-container">
+                                    <div id="specifications-container" class="custom-shadow p-3">
                                         @php
-                                            $specs = is_array($product->specifications) ? $product->specifications : json_decode($product->specifications, true);
+                                            $specs = is_array($product->specifications)
+                                                ? $product->specifications
+                                                : json_decode($product->specifications, true);
                                         @endphp
                                         @if (is_array($specs))
                                             @foreach ($specs as $spec)
@@ -240,7 +251,7 @@
 
                                 <div class="form-group mb-3">
                                     <label class="form-label">Features</label>
-                                    <div id="features-container">
+                                    <div id="features-container" class="custom-shadow p-3">
                                         @if (is_array($product->features))
                                             @foreach ($product->features as $feature)
                                                 <div class="feature-item mb-2">
@@ -267,10 +278,10 @@
                                 </div>
 
                                 <div class="form-group">
-                                    <button type="submit" class="btn btn-primary">
+                                    <button type="submit" class="btn btn-primary rounded-3">
                                         <i class="ti ti-device-floppy"></i> Update Product
                                     </button>
-                                    <a href="{{ route('admin.products.index') }}" class="btn btn-secondary">
+                                    <a href="{{ route('admin.products.index') }}" class="btn btn-secondary rounded-3">
                                         <i class="ti ti-arrow-left"></i> Back to List
                                     </a>
                                 </div>
@@ -285,8 +296,13 @@
 @endsection
 
 @push('scripts')
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ckeditor/4.9.2/ckeditor.js"
+        integrity="sha512-OF6VwfoBrM/wE3gt0I/lTh1ElROdq3etwAquhEm2YI45Um4ird+0ZFX1IwuBDBRufdXBuYoBb0mqXrmUA2VnOA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script>
         $(document).ready(function() {
+            CKEDITOR.replaceAll('snettech-editor');
+
             // Add specification
             $('#add-specification').click(function() {
                 var html = `

@@ -15,8 +15,6 @@ class CategoriesTableSeeder extends Seeder
                 'name' => 'iPhone',
                 'slug' => 'iphone',
                 'parent_id' => null,
-                'icon' => 'iphone',
-                'description' => 'iPhone - Điện thoại thông minh của Apple',
                 'order' => 1,
                 'status' => 'active',
                 'type' => 1,

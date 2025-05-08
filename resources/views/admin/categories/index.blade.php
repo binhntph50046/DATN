@@ -51,36 +51,38 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach($categories as $category)
-                                        <tr>
-                                            <td>{{ $category->id }}</td>
-                                            <td>
-                                                @if($category->parent_id)
-                                                    <span class="ms-4">└─ {{ $category->name }}</span>
-                                                @else
-                                                    {{ $category->name }}
-                                                @endif
-                                            </td>
-                                            <td>{{ $category->type == 1 ? 'Product Category' : 'Post Category' }}</td>
-                                            <td>
-                                                <span class="badge {{ $category->status == 'active' ? 'bg-success' : 'bg-danger' }}">
-                                                    {{ ucfirst($category->status) }}
-                                                </span>
-                                            </td>
-                                            <td class="text-center">
-                                                <a href="{{ route('admin.categories.edit', $category->id) }}" class="btn btn-info btn-sm">
-                                                    <i class="ti ti-edit"></i> Edit
-                                                </a>
-                                                <form action="{{ route('admin.categories.destroy', $category->id) }}" method="POST" class="d-inline">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this category?')">
-                                                        <i class="ti ti-trash"></i> Delete
-                                                    </button>
-                                                </form>
-                                            </td>
-                                        </tr>
-                                    @endforeach
+                                    @php
+                                        function renderCategoryTree($categories, $prefix = '') {
+                                            foreach ($categories as $category) {
+                                                echo '<tr>';
+                                                echo '<td>' . $category->id . '</td>';
+                                                // Kiểm tra nếu là danh mục con, mới thêm dấu └─
+                                                if ($category->parent_id) {
+                                                    echo '<td>' . $prefix . '└─ ' . $category->name . '</td>';
+                                                } else {
+                                                    echo '<td>' . $category->name . '</td>';
+                                                }
+                                                echo '<td>' . ($category->type == 1 ? 'Product Category' : 'Post Category') . '</td>';
+                                                echo '<td><span class="badge ' . ($category->status == 'active' ? 'bg-success' : 'bg-danger') . '">' . ucfirst($category->status) . '</span></td>';
+                                                echo '<td class="text-center">';
+                                                echo '<a href="' . route('admin.categories.edit', $category->id) . '" class="btn btn-info btn-sm"><i class="ti ti-edit"></i> Edit</a> ';
+                                                echo '<form action="' . route('admin.categories.destroy', $category->id) . '" method="POST" class="d-inline">';
+                                                echo csrf_field();
+                                                echo method_field('DELETE');
+                                                echo '<button type="submit" class="btn btn-danger btn-sm" onclick="return confirm(\'Are you sure you want to delete this category?\')"><i class="ti ti-trash"></i> Delete</button>';
+                                                echo '</form>';
+                                                echo '</td>';
+                                                echo '</tr>';
+                                
+                                                // Nếu có con thì đệ quy tiếp
+                                                if ($category->children && count($category->children)) {
+                                                    renderCategoryTree($category->children, $prefix . '&nbsp;&nbsp;&nbsp;&nbsp;  ');
+                                                }   
+                                            }
+                                        }
+                                    @endphp
+                                
+                                    @php renderCategoryTree($categories); @endphp
                                 </tbody>
                             </table>
                             {{ $categories->links() }}

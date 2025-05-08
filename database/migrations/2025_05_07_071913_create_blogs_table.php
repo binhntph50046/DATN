@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('image', 255)->nullable();
             $table->foreignId('category_id')->nullable()->constrained()->nullOnDelete();
             $table->foreignId('author_id')->nullable()->constrained('users')->nullOnDelete();
-            $table->enum('status', ['published', 'draft', 'scheduled', 'archived', 'deleted'])->default('published');
+            $table->enum('status', ['active', 'inactive'])->default('active');
             $table->timestamps();
             $table->softDeletes();
         });

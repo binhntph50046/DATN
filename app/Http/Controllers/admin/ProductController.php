@@ -6,6 +6,8 @@ use App\Models\Product;
 use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\DB;
 // Illuminate\Support\Facades\Storage; // Bị loại bỏ vì không còn dùng cho ảnh sản phẩm
 
 class ProductController
@@ -76,96 +78,144 @@ class ProductController
 
     public function store(Request $request)
     {
-        $request->validate([
+        $rules = [
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
             'content' => 'nullable|string',
-            'price' => 'required|numeric|min:0',
-            'discount_price' => 'nullable|numeric|min:0',
             'category_id' => 'required|exists:categories,id',
             'model' => 'nullable|string|max:100',
             'series' => 'nullable|string|max:100',
-            'stock' => 'required|integer|min:0',
             'warranty_months' => 'required|integer|min:0',
             'is_featured' => 'nullable|boolean',
             'status' => 'required|in:active,inactive',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'specifications' => 'nullable|array',
-            'specifications.keys.*' => 'nullable|string',
-            'specifications.values.*' => 'nullable|string',
-            'features' => 'nullable|array',
-            'features.*' => 'nullable|string',
-        ], [
-            'name.required' => 'Product name is required.',
-            'name.max' => 'Product name cannot exceed 255 characters.',
-            'price.required' => 'Price is required.',
-            'price.numeric' => 'Price must be a number.',
-            'price.min' => 'Price cannot be negative.',
-            'discount_price.numeric' => 'Discount price must be a number.',
-            'discount_price.min' => 'Discount price cannot be negative.',
-            'category_id.required' => 'Please select a category.',
-            'category_id.exists' => 'Selected category is invalid.',
-            'model.max' => 'Model name cannot exceed 100 characters.',
-            'series.max' => 'Series name cannot exceed 100 characters.',
-            'stock.required' => 'Stock quantity is required.',
-            'stock.integer' => 'Stock must be a whole number.',
-            'stock.min' => 'Stock cannot be negative.',
-            'warranty_months.required' => 'Warranty period is required.',
-            'warranty_months.integer' => 'Warranty period must be a whole number.',
-            'warranty_months.min' => 'Warranty period cannot be negative.',
-            'status.required' => 'Product status is required.',
-            'status.in' => 'Invalid product status.',
-            'image.image' => 'The file must be an image.',
-            'image.mimes' => 'The image must be a file of type: jpeg, png, jpg, gif.',
-            'image.max' => 'The image size cannot exceed 2MB.',
-            'specifications.array' => 'Specifications must be in the correct format.',
-            'specifications.keys.*.string' => 'Specification names must be text.',
-            'specifications.values.*.string' => 'Specification values must be text.',
-            'features.array' => 'Features must be in the correct format.',
-            'features.*.string' => 'Features must be text.',
-        ]);
+            'has_variants' => 'required|boolean',
+        ];
 
-        $data = $request->all();
-        $data['slug'] = Str::slug($request->name);
-        
-        // Handle is_featured checkbox
-        $data['is_featured'] = $request->has('is_featured') ? 1 : 0;
+        // Add validation rules based on product type
+        if ($request->has_variants) {
+            $rules = array_merge($rules, [
+                'attributes' => 'required|array|min:1',
+                'attributes.*.name' => 'required|string',
+                'attributes.*.values' => 'required|array|min:1',
+                'attributes.*.values.*' => 'required|string',
+                'variants' => 'required|array|min:1',
+                'variants.*.sku' => 'required|string|unique:product_variants,sku',
+                'variants.*.purchase_price' => 'required|numeric|min:0',
+                'variants.*.selling_price' => 'required|numeric|min:0',
+                'variants.*.sale_price' => 'nullable|numeric|min:0',
+                'variants.*.stock' => 'required|integer|min:0',
+                'variants.*.is_default' => 'nullable|boolean',
+                'variants.*.image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+                'variants.*.attributes' => 'required|array',
+                'variants.*.attributes.*.name' => 'required|string',
+                'variants.*.attributes.*.value' => 'required|string',
+                'variants.*.attributes.*.display_name' => 'nullable|string',
+            ]);
+        } else {
+            $rules = array_merge($rules, [
+                'purchase_price' => 'required|numeric|min:0',
+                'selling_price' => 'required|numeric|min:0',
+                'features' => 'nullable|array',
+                'features.*' => 'required|string',
+                'specifications' => 'nullable|array',
+                'specifications.*.key' => 'required|string',
+                'specifications.*.value' => 'required|string',
+            ]);
+        }
 
-        // Process specifications
-        if (isset($data['specifications'])) {
-            $specifications = [];
-            if (isset($data['specifications']['keys']) && isset($data['specifications']['values'])) {
-                foreach ($data['specifications']['keys'] as $index => $key) {
-                    if (!empty($key) && isset($data['specifications']['values'][$index])) {
-                        $specifications[] = [
-                            'key' => $key,
-                            'value' => $data['specifications']['values'][$index]
-                        ];
+        $validator = \Validator::make($request->all(), $rules);
+
+        if ($validator->fails()) {
+            return redirect()
+                ->back()
+                ->withErrors($validator)
+                ->withInput()
+                ->with('error', 'Please check the form for errors.')
+                ->with('scroll_to_error', true);
+        }
+
+        try {
+            \DB::beginTransaction();
+
+            $data = $request->except(['variants', 'attributes', 'features', 'specifications']);
+            $data['slug'] = Str::slug($request->name);
+            $data['is_featured'] = $request->has('is_featured') ? 1 : 0;
+
+            // Handle image upload
+            if ($request->hasFile('image')) {
+                $image = $request->file('image');
+                $imageName = time() . '.' . $image->getClientOriginalExtension();
+                $destinationPath = public_path('uploads/products');
+                $image->move($destinationPath, $imageName);
+                $data['image'] = 'uploads/products/' . $imageName;
+            }
+
+            // Create product
+            $product = Product::create($data);
+
+            if ($request->has_variants) {
+                // Handle product with variants
+                if (isset($request->variants)) {
+                    foreach ($request->variants as $variantData) {
+                        $variant = $product->variants()->create([
+                            'sku' => $variantData['sku'],
+                            'purchase_price' => $variantData['purchase_price'],
+                            'selling_price' => $variantData['selling_price'],
+                            'sale_price' => $variantData['sale_price'] ?? null,
+                            'stock' => $variantData['stock'],
+                            'is_default' => isset($variantData['is_default']) ? 1 : 0,
+                            'status' => isset($variantData['status']) ? 'active' : 'inactive'
+                        ]);
+
+                        // Handle variant image
+                        if (isset($variantData['image'])) {
+                            $image = $variantData['image'];
+                            $imageName = time() . '_' . $variant->id . '.' . $image->getClientOriginalExtension();
+                            $destinationPath = public_path('uploads/products/variants');
+                            $image->move($destinationPath, $imageName);
+                            $variant->image = 'uploads/products/variants/' . $imageName;
+                            $variant->save();
+                        }
+
+                        // Create variant attributes
+                        $this->createVariantAttributes($variant, $variantData['attributes']);
+                    }
+                }
+            } else {
+                // Handle simple product features
+                if (isset($request->features)) {
+                    foreach ($request->features as $feature) {
+                        $product->attributes()->create([
+                            'attribute_name' => 'feature',
+                            'attribute_value' => $feature
+                        ]);
+                    }
+                }
+
+                // Handle simple product specifications
+                if (isset($request->specifications)) {
+                    foreach ($request->specifications as $spec) {
+                        $product->attributes()->create([
+                            'attribute_name' => $spec['key'],
+                            'attribute_value' => $spec['value']
+                        ]);
                     }
                 }
             }
-            $data['specifications'] = $specifications;
+
+            \DB::commit();
+
+            return redirect()->route('admin.products.index')
+                ->with('success', 'Product created successfully.');
+
+        } catch (\Exception $e) {
+            \DB::rollBack();
+            return redirect()
+                ->back()
+                ->withInput()
+                ->with('error', 'An error occurred while creating the product: ' . $e->getMessage());
         }
-
-        // Process features
-        if (isset($data['features'])) {
-            $data['features'] = array_filter($data['features'], function ($feature) {
-                return !empty($feature);
-            });
-        }
-
-        if ($request->hasFile('image')) {
-            $image = $request->file('image');
-            $imageName = time() . '.' . $image->getClientOriginalExtension();
-            $destinationPath = public_path('uploads/products');
-            $image->move($destinationPath, $imageName);
-            $data['image'] = 'uploads/products/' . $imageName;
-        }
-
-        Product::create($data);
-
-        return redirect()->route('admin.products.index')
-            ->with('success', 'Product created successfully.');
     }
 
     public function edit(Product $product)
@@ -180,82 +230,41 @@ class ProductController
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
             'content' => 'nullable|string',
-            'price' => 'required|numeric|min:0',
-            'discount_price' => 'nullable|numeric|min:0',
             'category_id' => 'required|exists:categories,id',
             'model' => 'nullable|string|max:100',
             'series' => 'nullable|string|max:100',
-            'stock' => 'required|integer|min:0',
             'warranty_months' => 'required|integer|min:0',
             'is_featured' => 'nullable|boolean',
             'status' => 'required|in:active,inactive',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'specifications' => 'nullable|array',
-            'specifications.keys.*' => 'nullable|string',
-            'specifications.values.*' => 'nullable|string',
-            'features' => 'nullable|array',
-            'features.*' => 'nullable|string',
-        ], [
-            'name.required' => 'Product name is required.',
-            'name.max' => 'Product name cannot exceed 255 characters.',
-            'price.required' => 'Price is required.',
-            'price.numeric' => 'Price must be a number.',
-            'price.min' => 'Price cannot be negative.',
-            'discount_price.numeric' => 'Discount price must be a number.',
-            'discount_price.min' => 'Discount price cannot be negative.',
-            'category_id.required' => 'Please select a category.',
-            'category_id.exists' => 'Selected category is invalid.',
-            'model.max' => 'Model name cannot exceed 100 characters.',
-            'series.max' => 'Series name cannot exceed 100 characters.',
-            'stock.required' => 'Stock quantity is required.',
-            'stock.integer' => 'Stock must be a whole number.',
-            'stock.min' => 'Stock cannot be negative.',
-            'warranty_months.required' => 'Warranty period is required.',
-            'warranty_months.integer' => 'Warranty period must be a whole number.',
-            'warranty_months.min' => 'Warranty period cannot be negative.',
-            'status.required' => 'Product status is required.',
-            'status.in' => 'Invalid product status.',
-            'image.image' => 'The file must be an image.',
-            'image.mimes' => 'The image must be a file of type: jpeg, png, jpg, gif.',
-            'image.max' => 'The image size cannot exceed 2MB.',
-            'specifications.array' => 'Specifications must be in the correct format.',
-            'specifications.keys.*.string' => 'Specification names must be text.',
-            'specifications.values.*.string' => 'Specification values must be text.',
-            'features.array' => 'Features must be in the correct format.',
-            'features.*.string' => 'Features must be text.',
+            'has_variants' => 'required|boolean',
+            'purchase_price' => 'required_if:has_variants,0|numeric|min:0',
+            'selling_price' => 'required_if:has_variants,0|numeric|min:0',
+            'attributes' => 'required_if:has_variants,1|array',
+            'attributes.*.name' => 'required_if:has_variants,1|string',
+            'attributes.*.values' => 'required_if:has_variants,1|array',
+            'attributes.*.values.*' => 'required_if:has_variants,1|string',
+            'variants' => 'required_if:has_variants,1|array',
+            'variants.*.sku' => 'required_if:has_variants,1|string',
+            'variants.*.purchase_price' => 'required_if:has_variants,1|numeric|min:0',
+            'variants.*.selling_price' => 'required_if:has_variants,1|numeric|min:0',
+            'variants.*.sale_price' => 'nullable|numeric|min:0',
+            'variants.*.stock' => 'required_if:has_variants,1|integer|min:0',
+            'variants.*.is_default' => 'nullable|boolean',
+            'variants.*.image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'variants.*.attributes' => 'required_if:has_variants,1|array',
+            'variants.*.attributes.*.name' => 'required_if:has_variants,1|string',
+            'variants.*.attributes.*.value' => 'required_if:has_variants,1|string',
+            'variants.*.attributes.*.display_name' => 'nullable|string',
         ]);
 
-        $data = $request->all();
+        $data = $request->except(['variants', 'attributes']);
         $data['slug'] = Str::slug($request->name);
-        
-        // Handle is_featured checkbox
         $data['is_featured'] = $request->has('is_featured') ? 1 : 0;
 
-        // Process specifications
-        if (isset($data['specifications'])) {
-            $specifications = [];
-            if (isset($data['specifications']['keys']) && isset($data['specifications']['values'])) {
-                foreach ($data['specifications']['keys'] as $index => $key) {
-                    if (!empty($key) && isset($data['specifications']['values'][$index])) {
-                        $specifications[] = [
-                            'key' => $key,
-                            'value' => $data['specifications']['values'][$index]
-                        ];
-                    }
-                }
-            }
-            $data['specifications'] = $specifications;
-        }
-
-        // Process features
-        if (isset($data['features'])) {
-            $data['features'] = array_filter($data['features'], function ($feature) {
-                return !empty($feature);
-            });
-        }
-
+        // Handle image upload
         if ($request->hasFile('image')) {
-            // Delete old image if it exists
+            // Delete old image if exists
             if ($product->image) {
                 $oldImagePath = public_path($product->image);
                 if (file_exists($oldImagePath)) {
@@ -270,7 +279,62 @@ class ProductController
             $data['image'] = 'uploads/products/' . $imageName;
         }
 
+        // Update product
         $product->update($data);
+
+        if ($request->has_variants) {
+            // Delete existing variants and their attributes
+            foreach ($product->variants as $variant) {
+                if ($variant->image) {
+                    $oldImagePath = public_path($variant->image);
+                    if (file_exists($oldImagePath)) {
+                        unlink($oldImagePath);
+                    }
+                }
+            }
+            $product->variants()->delete();
+            
+            // Create new variants
+            if (isset($request->variants)) {
+                foreach ($request->variants as $variantData) {
+                    $variant = $product->variants()->create([
+                        'sku' => $variantData['sku'],
+                        'purchase_price' => $variantData['purchase_price'],
+                        'selling_price' => $variantData['selling_price'],
+                        'sale_price' => $variantData['sale_price'] ?? null,
+                        'stock' => $variantData['stock'],
+                        'is_default' => isset($variantData['is_default']) ? 1 : 0,
+                        'status' => isset($variantData['status']) ? 'active' : 'inactive'
+                    ]);
+
+                    // Handle variant image
+                    if (isset($variantData['image'])) {
+                        $image = $variantData['image'];
+                        $imageName = time() . '_' . $variant->id . '.' . $image->getClientOriginalExtension();
+                        $destinationPath = public_path('uploads/products/variants');
+                        $image->move($destinationPath, $imageName);
+                        $variant->image = 'uploads/products/variants/' . $imageName;
+                        $variant->save();
+                    }
+
+                    // Create variant attributes
+                    $this->updateVariantAttributes($variant, $variantData['attributes']);
+                }
+            }
+        } else {
+            // Delete existing attributes
+            $product->attributes()->delete();
+            
+            // Create new attributes for simple product
+            if (isset($request->attributes)) {
+                foreach ($request->attributes as $attr) {
+                    $product->attributes()->create([
+                        'attribute_name' => $attr['name'],
+                        'attribute_value' => $attr['values'][0]
+                    ]);
+                }
+            }
+        }
 
         return redirect()->route('admin.products.index')
             ->with('success', 'Product updated successfully.');
@@ -351,5 +415,36 @@ class ProductController
         return redirect()->route('admin.products.trash')
             ->with('success', 'Product permanently deleted.');
     }
-    
+
+    private function createVariantAttributes($variant, $attributes)
+    {
+        // Sort attributes by name to ensure consistent order
+        $sortedAttributes = collect($attributes)->sortBy('name')->values();
+        
+        foreach ($sortedAttributes as $attr) {
+            $variant->attributes()->create([
+                'name' => $attr['name'],
+                'value' => $attr['value'],
+                'display_name' => $attr['display_name'] ?? $attr['value']
+            ]);
+        }
+    }
+
+    private function updateVariantAttributes($variant, $attributes)
+    {
+        // Delete existing attributes
+        $variant->attributes()->delete();
+        
+        // Sort attributes by name to ensure consistent order
+        $sortedAttributes = collect($attributes)->sortBy('name')->values();
+        
+        // Create new attributes
+        foreach ($sortedAttributes as $attr) {
+            $variant->attributes()->create([
+                'name' => $attr['name'],
+                'value' => $attr['value'],
+                'display_name' => $attr['display_name'] ?? $attr['value']
+            ]);
+        }
+    }
 }

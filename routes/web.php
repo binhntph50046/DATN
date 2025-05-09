@@ -4,6 +4,8 @@ use App\Http\Controllers\admin\BannerController;
 use App\Http\Controllers\admin\DashboardController;
 use App\Http\Controllers\admin\CategoryController;
 use App\Http\Controllers\admin\ProductController;
+use App\Http\Controllers\admin\ColorController;
+use App\Http\Controllers\admin\CapacityController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -46,4 +48,16 @@ Route::prefix('admin')->name('admin.')->group(function () { // chưa có middlew
         'update' => 'products.update',
         'destroy' => 'products.destroy',
     ]);
+    
+    // Color management routes
+    Route::get('/colors/trash', [ColorController::class, 'trash'])->name('colors.trash');
+    Route::post('/colors/{color}/restore', [ColorController::class, 'restore'])->name('colors.restore');
+    Route::delete('/colors/{color}/forceDelete', [ColorController::class, 'forceDelete'])->name('colors.forceDelete');
+    Route::resource('colors', ColorController::class);
+    
+    // Capacity management routes
+    Route::get('/capacities/trash', [CapacityController::class, 'trash'])->name('capacities.trash');
+    Route::post('/capacities/{capacity}/restore', [CapacityController::class, 'restore'])->name('capacities.restore');
+    Route::delete('/capacities/{capacity}/forceDelete', [CapacityController::class, 'forceDelete'])->name('capacities.forceDelete');
+    Route::resource('capacities', CapacityController::class);
 });

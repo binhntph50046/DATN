@@ -1,12 +1,11 @@
 <?php
 
-use App\Http\Controllers\admin\BannerController;
-use App\Http\Controllers\admin\DashboardController;
-use App\Http\Controllers\admin\CategoryController;
-use App\Http\Controllers\admin\ProductController;
-use App\Http\Controllers\admin\ColorController;
-use App\Http\Controllers\admin\CapacityController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\admin\OrderController;
+use App\Http\Controllers\admin\BannerController;
+use App\Http\Controllers\admin\ProductController;
+use App\Http\Controllers\admin\CategoryController;
+use App\Http\Controllers\admin\DashboardController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -59,3 +58,16 @@ Route::prefix('admin')->name('admin.')->group(function () { // chưa có middlew
     Route::post('/restore/{id}', [OrderController::class, 'restore'])->name('orders.restore');
     Route::delete('/force-delete/{id}', [OrderController::class, 'forceDelete'])->name('orders.forceDelete');
 });
+
+Route::get('/users/trash', [UserController::class, 'trash'])->name('users.trash');
+Route::post('/users/{user}/restore', [UserController::class, 'restore'])->name('users.restore');
+Route::delete('/users/{user}/forceDelete', [UserController::class, 'forceDelete'])->name('users.forceDelete');
+Route::resource('users', UserController::class)->names([
+    'index' => 'users.index',
+    'create' => 'users.create',
+    'store' => 'users.store',
+    'show' => 'users.show',
+    'edit' => 'users.edit',
+    'update' => 'users.update',
+    'destroy' => 'users.destroy',
+]);

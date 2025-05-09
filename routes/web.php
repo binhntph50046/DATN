@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\admin\UserController;
 use App\Http\Controllers\admin\OrderController;
 use App\Http\Controllers\admin\BannerController;
 use App\Http\Controllers\admin\ProductController;
@@ -57,17 +58,31 @@ Route::prefix('admin')->name('admin.')->group(function () { // chưa có middlew
     Route::get('/trash', [OrderController::class, 'trash'])->name('orders.trash');
     Route::post('/restore/{id}', [OrderController::class, 'restore'])->name('orders.restore');
     Route::delete('/force-delete/{id}', [OrderController::class, 'forceDelete'])->name('orders.forceDelete');
-});
 
-Route::get('/users/trash', [UserController::class, 'trash'])->name('users.trash');
-Route::post('/users/{user}/restore', [UserController::class, 'restore'])->name('users.restore');
-Route::delete('/users/{user}/forceDelete', [UserController::class, 'forceDelete'])->name('users.forceDelete');
-Route::resource('users', UserController::class)->names([
-    'index' => 'users.index',
-    'create' => 'users.create',
-    'store' => 'users.store',
-    'show' => 'users.show',
-    'edit' => 'users.edit',
-    'update' => 'users.update',
-    'destroy' => 'users.destroy',
-]);
+    // User Routes
+    Route::get('/users/trash', [UserController::class, 'trash'])->name('users.trash');
+    Route::post('/users/{user}/restore', [UserController::class, 'restore'])->name('users.restore');
+    Route::delete('/users/{user}/forceDelete', [UserController::class, 'forceDelete'])->name('users.forceDelete');
+    Route::resource('users', UserController::class)->names([
+        'index' => 'users.index',
+        'create' => 'users.create',
+        'store' => 'users.store',
+        'show' => 'users.show',
+        'edit' => 'users.edit',
+        'update' => 'users.update',
+        'destroy' => 'users.destroy',
+    ]);
+
+    Route::resource('blogs', BlogController::class);
+    // Trang Trash
+    Route::get('blogs-trash', [BlogController::class, 'trash'])
+        ->name('blogs.trash');
+
+    // Khôi phục
+    Route::put('blogs/{id}/restore', [BlogController::class, 'restore'])
+        ->name('blogs.restore');
+
+    // Xóa vĩnh viễn
+    Route::delete('blogs/{id}/force-delete', [BlogController::class, 'forceDelete'])
+        ->name('blogs.forceDelete');
+});

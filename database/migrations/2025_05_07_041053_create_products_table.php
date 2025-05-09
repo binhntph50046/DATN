@@ -17,7 +17,6 @@ return new class extends Migration
             $table->decimal('price', 15, 2)->nullable();
             $table->decimal('discount_price', 15, 2)->nullable();
             $table->foreignId('category_id')->nullable()->constrained()->nullOnDelete();
-            $table->string('brand', 100)->default('Apple');
             $table->string('model', 100)->nullable();
             $table->string('series', 100)->nullable();
             $table->integer('stock')->default(0);

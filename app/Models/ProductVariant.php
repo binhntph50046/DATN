@@ -17,15 +17,26 @@ class ProductVariant extends Model
         'price',
         'stock',
         'attributes',
-        'is_active',
+        'status',
     ];
 
     protected $casts = [
         'price' => 'decimal:2',
         'stock' => 'integer',
         'attributes' => 'array',
-        'is_active' => 'boolean',
+        'status' => 'string',
     ];
+
+    public function capacity()
+    {
+        return $this->belongsTo(Capacity::class);
+    }
+
+    public function color()
+    {
+        return $this->belongsTo(Color::class);
+    }
+
 
     public function product()
     {
@@ -41,4 +52,4 @@ class ProductVariant extends Model
     {
         return $this->hasMany(OrderItem::class);
     }
-} 
+}

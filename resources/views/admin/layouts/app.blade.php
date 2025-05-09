@@ -36,7 +36,6 @@
 <!-- [Head] end -->
 
 <!-- [Body] Start -->
-
 <body data-pc-preset="preset-1" data-pc-direction="ltr" data-pc-theme="light">
     <!-- [ Pre-loader ] start -->
     <div class="loader-bg">

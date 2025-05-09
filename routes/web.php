@@ -3,6 +3,7 @@
 use App\Http\Controllers\admin\DashboardController;
 use App\Http\Controllers\admin\CategoryController;
 use App\Http\Controllers\admin\ProductController;
+use App\Http\Controllers\admin\UserController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -40,5 +41,19 @@ Route::prefix('admin')->name('admin.')->group(function () { // chưa có middlew
         'edit' => 'products.edit',
         'update' => 'products.update',
         'destroy' => 'products.destroy',
+    ]);
+
+    // User routes
+    Route::get('/users/trash', [UserController::class, 'trash'])->name('users.trash');
+    Route::post('/users/{user}/restore', [UserController::class, 'restore'])->name('users.restore');
+    Route::delete('/users/{user}/forceDelete', [UserController::class, 'forceDelete'])->name('users.forceDelete');
+    Route::resource('users', UserController::class)->names([
+        'index' => 'users.index',
+        'create' => 'users.create',
+        'store' => 'users.store',
+        'show' => 'users.show',
+        'edit' => 'users.edit',
+        'update' => 'users.update',
+        'destroy' => 'users.destroy',
     ]);
 });

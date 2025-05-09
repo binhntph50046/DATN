@@ -49,7 +49,7 @@
                                             <label for="name" class="form-label">Product Name <span
                                                     class="text-danger">*</span></label>
                                             <input type="text" class="form-control @error('name') is-invalid @enderror"
-                                                id="name" name="name" value="{{ old('name') }}" required>
+                                                id="name" name="name" value="{{ old('name') }}" >
                                             @error('name')
                                                 <div class="invalid-feedback">{{ $message }}</div>
                                             @enderror
@@ -78,7 +78,7 @@
                                             <label for="category_id" class="form-label">Category <span
                                                     class="text-danger">*</span></label>
                                             <select class="form-select @error('category_id') is-invalid @enderror"
-                                                id="category_id" name="category_id" required>
+                                                id="category_id" name="category_id" >
                                                 <option value="">Select Category</option>
                                                 @foreach ($categories as $category)
                                                     <option value="{{ $category->id }}"
@@ -96,7 +96,7 @@
                                             <label for="price" class="form-label">Price <span
                                                     class="text-danger">*</span></label>
                                             <input type="number" class="form-control @error('price') is-invalid @enderror"
-                                                id="price" name="price" value="{{ old('price') }}" required
+                                                id="price" name="price" value="{{ old('price') }}" 
                                                 min="0">
                                             @error('price')
                                                 <div class="invalid-feedback">{{ $message }}</div>
@@ -118,7 +118,7 @@
                                             <label for="stock" class="form-label">Stock <span
                                                     class="text-danger">*</span></label>
                                             <input type="number" class="form-control @error('stock') is-invalid @enderror"
-                                                id="stock" name="stock" value="{{ old('stock', 0) }}" required
+                                                id="stock" name="stock" value="{{ old('stock', 0) }}" 
                                                 min="0">
                                             @error('stock')
                                                 <div class="invalid-feedback">{{ $message }}</div>
@@ -131,7 +131,7 @@
                                             <input type="number"
                                                 class="form-control @error('warranty_months') is-invalid @enderror"
                                                 id="warranty_months" name="warranty_months"
-                                                value="{{ old('warranty_months', 12) }}" required min="0">
+                                                value="{{ old('warranty_months', 12) }}"  min="0">
                                             @error('warranty_months')
                                                 <div class="invalid-feedback">{{ $message }}</div>
                                             @enderror
@@ -151,7 +151,7 @@
                                             <label for="status" class="form-label">Status <span
                                                     class="text-danger">*</span></label>
                                             <select class="form-select @error('status') is-invalid @enderror"
-                                                id="status" name="status" required>
+                                                id="status" name="status" >
                                                 <option value="active" {{ old('status') == 'active' ? 'selected' : '' }}>
                                                     Active</option>
                                                 <option value="inactive"

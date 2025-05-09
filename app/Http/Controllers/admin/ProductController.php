@@ -351,4 +351,5 @@ class ProductController
         return redirect()->route('admin.products.trash')
             ->with('success', 'Product permanently deleted.');
     }
+    
 }

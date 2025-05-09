@@ -21,6 +21,7 @@ class DatabaseSeeder extends Seeder
             ShippingMethodsTableSeeder::class,
             OrdersTableSeeder::class,
             OrderItemsTableSeeder::class,
+            BlogSeeder::class,
             BannerSeeder::class,
         ]);
     }

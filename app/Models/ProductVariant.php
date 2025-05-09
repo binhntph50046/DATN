@@ -14,33 +14,32 @@ class ProductVariant extends Model
         'product_id',
         'sku',
         'name',
-        'price',
+        'discount_price', // Giữ lại để áp dụng giá khuyến mãi cho biến thể
         'stock',
-        'attributes',
         'status',
+        'image',
+        'purchase_price',
+        'selling_price',
+        'is_default', // Thêm trường đánh dấu biến thể mặc định
     ];
 
     protected $casts = [
-        'price' => 'decimal:2',
+        'discount_price' => 'decimal:2',
         'stock' => 'integer',
-        'attributes' => 'array',
         'status' => 'string',
+        'purchase_price' => 'decimal:2',
+        'selling_price' => 'decimal:2',
+        'is_default' => 'boolean',
     ];
-
-    public function capacity()
-    {
-        return $this->belongsTo(Capacity::class);
-    }
-
-    public function color()
-    {
-        return $this->belongsTo(Color::class);
-    }
-
 
     public function product()
     {
         return $this->belongsTo(Product::class);
+    }
+
+    public function attributes()
+    {
+        return $this->hasMany(VariantAttribute::class, 'variant_id');
     }
 
     public function cartItems()

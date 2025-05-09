@@ -15,28 +15,25 @@ class Product extends Model
         'slug',
         'description',
         'content',
-        'price',
-        'discount_price',
         'category_id',
         'model',
         'series',
-        'stock',
         'warranty_months',
         'is_featured',
         'status',
         'image',
-        'specifications',
-        'features',
+        'has_variants',
+        'purchase_price',
+        'selling_price',
+        'default_variant_id',
     ];
 
     protected $casts = [
-        'price' => 'decimal:2',
-        'discount_price' => 'decimal:2',
-        'stock' => 'integer',
         'warranty_months' => 'integer',
         'is_featured' => 'boolean',
-        'specifications' => 'array',
-        'features' => 'array',
+        'has_variants' => 'boolean',
+        'purchase_price' => 'decimal:2',
+        'selling_price' => 'decimal:2',
     ];
 
     public function category()
@@ -73,4 +70,14 @@ class Product extends Model
     {
         return $this->hasMany(Wishlist::class);
     }
-} 
+
+    public function defaultVariant()
+    {
+        return $this->belongsTo(ProductVariant::class, 'default_variant_id');
+    }
+
+    public function attributes()
+    {
+        return $this->hasMany(ProductAttribute::class, 'product_id');
+    }
+}

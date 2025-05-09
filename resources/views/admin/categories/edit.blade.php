@@ -37,7 +37,7 @@
                                 <div class="col-md-6">
                                     <div class="mb-3">
                                         <label for="name" class="form-label">Name</label>
-                                        <input type="text" class="form-control @error('name') is-invalid @enderror" id="name" name="name" value="{{ old('name', $category->name) }}" required>
+                                        <input type="text" class="form-control @error('name') is-invalid @enderror" id="name" name="name" value="{{ old('name', $category->name) }}">
                                         @error('name')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
@@ -47,7 +47,7 @@
                                     <div class="mb-3">
                                         <label for="parent_id" class="form-label">Parent Category</label>
                                         <select class="form-select @error('parent_id') is-invalid @enderror" id="parent_id" name="parent_id">
-                                            <option value="0">None</option>
+                                            <option value="">-- No Parent --</option>
                                             @foreach($categories as $cat)
                                                 <option value="{{ $cat->id }}" {{ old('parent_id', $category->parent_id) == $cat->id ? 'selected' : '' }}>
                                                     {{ $cat->name }}
@@ -61,19 +61,11 @@
                                 </div>
                             </div>
 
-                            <div class="mb-3">
-                                <label for="description" class="form-label">Description</label>
-                                <textarea class="form-control @error('description') is-invalid @enderror" id="description" name="description" rows="3">{{ old('description', $category->description) }}</textarea>
-                                @error('description')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="mb-3">
                                         <label for="type" class="form-label">Type</label>
-                                        <select class="form-select @error('type') is-invalid @enderror" id="type" name="type" required>
+                                        <select class="form-select @error('type') is-invalid @enderror" id="type" name="type">
                                             <option value="1" {{ old('type', $category->type) == 1 ? 'selected' : '' }}>Product Category</option>
                                             <option value="2" {{ old('type', $category->type) == 2 ? 'selected' : '' }}>Post Category</option>
                                         </select>
@@ -85,7 +77,7 @@
                                 <div class="col-md-6">
                                     <div class="mb-3">
                                         <label for="status" class="form-label">Status</label>
-                                        <select class="form-select @error('status') is-invalid @enderror" id="status" name="status" required>
+                                        <select class="form-select @error('status') is-invalid @enderror" id="status" name="status">
                                             <option value="active" {{ old('status', $category->status) == 'active' ? 'selected' : '' }}>Active</option>
                                             <option value="inactive" {{ old('status', $category->status) == 'inactive' ? 'selected' : '' }}>Inactive</option>
                                         </select>   
@@ -96,9 +88,18 @@
                                 </div>
                             </div>
 
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="type" class="form-label">Slug</label>
+                                        <input type="text" class="form-control @error('slug') is-invalid @enderror" id="slug" name="slug" value="{{ old('slug', $category->slug) }}" disabled>
+                                    </div>
+                                </div>
+                            </div>
+
                             <div class="mb-3">
                                 <button type="submit" class="btn btn-primary">Update Category</button>
-                                <a href="{{ route('admin.categories.index') }}" class="btn btn-secondary">Cancel</a>
+                                <a href="{{ route('admin.categories.index') }}" class="btn btn-secondary">Back</a>
                             </div>
                         </form>
                     </div>

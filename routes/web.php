@@ -4,6 +4,7 @@ use App\Http\Controllers\admin\DashboardController;
 use App\Http\Controllers\admin\CategoryController;
 use App\Http\Controllers\admin\ProductController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\admin\BlogController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -13,7 +14,7 @@ Route::get('/', function () {
 Route::prefix('admin')->name('admin.')->group(function () { // chưa có middleware thì dùng cái này nhé
     // Dashboard
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
-    
+
     // Category Routes
     Route::get('/categories/trash', [CategoryController::class, 'trash'])->name('categories.trash');
     Route::post('/categories/{category}/restore', [CategoryController::class, 'restore'])->name('categories.restore');
@@ -27,7 +28,7 @@ Route::prefix('admin')->name('admin.')->group(function () { // chưa có middlew
         'update' => 'categories.update',
         'destroy' => 'categories.destroy',
     ]);
-    
+
     // Product routes
     Route::get('/products/trash', [ProductController::class, 'trash'])->name('products.trash');
     Route::post('/products/{product}/restore', [ProductController::class, 'restore'])->name('products.restore');
@@ -41,4 +42,17 @@ Route::prefix('admin')->name('admin.')->group(function () { // chưa có middlew
         'update' => 'products.update',
         'destroy' => 'products.destroy',
     ]);
+
+    Route::resource('blogs', BlogController::class);
+    // Trang Trash
+    Route::get('blogs-trash', [BlogController::class, 'trash'])
+        ->name('blogs.trash');
+
+    // Khôi phục
+    Route::put('blogs/{id}/restore', [BlogController::class, 'restore'])
+        ->name('blogs.restore');
+
+    // Xóa vĩnh viễn
+    Route::delete('blogs/{id}/force-delete', [BlogController::class, 'forceDelete'])
+        ->name('blogs.forceDelete');
 });

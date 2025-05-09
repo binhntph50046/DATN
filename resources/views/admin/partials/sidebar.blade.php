@@ -67,9 +67,9 @@
                     </a>
                 </li>
                 <li class="pc-item">
-                    <a href="#" class="pc-link">
+                    <a href="{{ route('admin.blogs.index') }}" class="pc-link">
                         <span class="pc-micon"><i class="ti ti-news"></i></span>
-                        <span class="pc-mtext">Posts</span>
+                        <span class="pc-mtext">Blogs</span>
                     </a>
                 </li>
 

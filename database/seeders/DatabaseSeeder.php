@@ -20,7 +20,8 @@ class DatabaseSeeder extends Seeder
             ProductVariantsTableSeeder::class,
             ShippingMethodsTableSeeder::class,
             OrdersTableSeeder::class,
-            OrderItemsTableSeeder::class
+            OrderItemsTableSeeder::class,
+            BannerSeeder::class,
         ]);
     }
 }

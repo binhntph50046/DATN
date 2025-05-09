@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\admin\BannerController;
 use App\Http\Controllers\admin\DashboardController;
 use App\Http\Controllers\admin\CategoryController;
 use App\Http\Controllers\admin\ProductController;
@@ -15,7 +16,7 @@ Route::get('/', function () {
 Route::prefix('admin')->name('admin.')->group(function () { // chưa có middleware thì dùng cái này nhé
     // Dashboard
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
-    
+
     // Category Routes
     Route::get('/categories/trash', [CategoryController::class, 'trash'])->name('categories.trash');
     Route::post('/categories/{category}/restore', [CategoryController::class, 'restore'])->name('categories.restore');
@@ -29,7 +30,11 @@ Route::prefix('admin')->name('admin.')->group(function () { // chưa có middlew
         'update' => 'categories.update',
         'destroy' => 'categories.destroy',
     ]);
-    
+    // Banner Routes
+    Route::resource('banners', BannerController::class);
+    Route::post('banners/{banner}/move-up', [BannerController::class, 'moveUp'])->name('banners.moveUp');
+    Route::post('banners/{banner}/move-down', [BannerController::class, 'moveDown'])->name('banners.moveDown');
+
     // Product routes
     Route::get('/products/trash', [ProductController::class, 'trash'])->name('products.trash');
     Route::post('/products/{product}/restore', [ProductController::class, 'restore'])->name('products.restore');
@@ -43,16 +48,14 @@ Route::prefix('admin')->name('admin.')->group(function () { // chưa có middlew
         'update' => 'products.update',
         'destroy' => 'products.destroy',
     ]);
-    
-    // Color management routes
-    Route::get('/colors/trash', [ColorController::class, 'trash'])->name('colors.trash');
-    Route::post('/colors/{color}/restore', [ColorController::class, 'restore'])->name('colors.restore');
-    Route::delete('/colors/{color}/forceDelete', [ColorController::class, 'forceDelete'])->name('colors.forceDelete');
-    Route::resource('colors', ColorController::class);
-    
-    // Capacity management routes
-    Route::get('/capacities/trash', [CapacityController::class, 'trash'])->name('capacities.trash');
-    Route::post('/capacities/{capacity}/restore', [CapacityController::class, 'restore'])->name('capacities.restore');
-    Route::delete('/capacities/{capacity}/forceDelete', [CapacityController::class, 'forceDelete'])->name('capacities.forceDelete');
-    Route::resource('capacities', CapacityController::class);
+
+    Route::resource('orders', OrderController::class)->names([
+        'index' => 'orders.index',
+        'show' => 'orders.show',
+        'destroy' => 'orders.destroy',
+
+    ]);
+    Route::get('/trash', [OrderController::class, 'trash'])->name('orders.trash');
+    Route::post('/restore/{id}', [OrderController::class, 'restore'])->name('orders.restore');
+    Route::delete('/force-delete/{id}', [OrderController::class, 'forceDelete'])->name('orders.forceDelete');
 });

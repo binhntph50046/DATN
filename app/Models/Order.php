@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Models\OrderItem;
 
 class Order extends Model
 {
@@ -47,10 +48,10 @@ class Order extends Model
     //     return $this->belongsTo(ShippingMethod::class);
     // }
 
-    // public function items()
-    // {
-    //     return $this->hasMany(OrderItem::class);
-    // }
+    public function items()
+    {
+        return $this->hasMany(OrderItem::class);
+    }
 
     // Scopes
     public function scopePending($query)

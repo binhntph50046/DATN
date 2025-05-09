@@ -31,6 +31,11 @@ Route::prefix('admin')->name('admin.')->group(function () { // chưa có middlew
         'index' => 'orders.index',
         'show' => 'orders.show',
         'destroy' => 'orders.destroy',
-    ]);         
+     
+    ]);
+    Route::get('/trash', [OrderController::class, 'trash'])->name('orders.trash');
+    Route::post('/restore/{id}', [OrderController::class, 'restore'])->name('orders.restore');
+    Route::delete('/force-delete/{id}', [OrderController::class, 'forceDelete'])->name('orders.forceDelete');
+   
 });
 

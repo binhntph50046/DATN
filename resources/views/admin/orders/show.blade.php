@@ -40,7 +40,7 @@
                     <div class="card-body">
                         <div class="row">
                             <div class="col-md-6">
-                                <h6>Customer Information</h6>
+                                <h4>Customer Information</h4>
                                 <table class="table table-borderless">
                                     <tr>
                                         <th>Name:</th>
@@ -61,7 +61,7 @@
                                 </table>
                             </div>
                             <div class="col-md-6">
-                                <h6>Order Status</h6>
+                                <h4>Order Status</h4>
                                 <table class="table table-borderless">
                                     <tr>
                                         <th>Order Status:</th>
@@ -103,31 +103,60 @@
 
                         <div class="row mt-4">
                             <div class="col-md-6">
-                                <h6>Order Summary</h6>
+                                <h4>Order Summary</h4>
                                 <table class="table table-borderless">
                                     <tr>
                                         <th>Subtotal:</th>
-                                        <td class="text-end">{{ number_format($order->subtotal) }} VNĐ</td>
+                                        <td >{{ number_format($order->subtotal) }} VNĐ</td>
                                     </tr>
                                     <tr>
                                         <th>Shipping Fee:</th>
-                                        <td class="text-end">{{ number_format($order->shipping_fee) }} VNĐ</td>
+                                        <td >{{ number_format($order->shipping_fee) }} VNĐ</td>
                                     </tr>
                                     <tr>
                                         <th>Discount:</th>
-                                        <td class="text-end">{{ number_format($order->discount) }} VNĐ</td>
+                                        <td >{{ number_format($order->discount) }} VNĐ</td>
                                     </tr>
                                     <tr>
                                         <th>Total:</th>
-                                        <td class="text-end"><strong>{{ number_format($order->total_price) }} VNĐ</strong></td>
+                                        <td ><strong>{{ number_format($order->total_price) }} VNĐ</strong></td>
                                     </tr>
+                                </table>
+                            </div>
+                           
+                            <div class="col-md-6">
+                                <h4>Order Items</h4>
+                                <table class="table table-borderless">
+                                    @foreach($order->items as $item)
+                                        <tr>
+                                            <th>Product:</th>
+                                            <td>{{ $item->product->name ?? 'N/A' }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Variant:</th>
+                                            <td>{{ $item->productVariant->name ?? 'N/A' }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Quantity:</th>
+                                            <td>{{ $item->quantity }}</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Price:</th>
+                                            <td>{{ number_format($item->price) }} VNĐ</td>
+                                        </tr>
+                                        <tr>
+                                            <th>Total:</th>
+                                            <td>{{ number_format($item->total) }} VNĐ</td>
+                                        </tr>
+                                        <tr><td colspan="2"><hr></td></tr>
+                                    @endforeach
                                 </table>
                             </div>
                         </div>
 
                         @if($order->notes)
                         <div class="mt-4">
-                            <h6>Notes</h6>
+                            <h4>Notes</h4>
                             <p>{{ $order->notes }}</p>
                         </div>
                         @endif

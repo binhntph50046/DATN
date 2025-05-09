@@ -26,7 +26,28 @@
             <div class="col-12">
                 <div class="card">
                     <div class="card-header">
-                        <h5>Orders List</h5>
+                        <h5 class="mb-0">Orders List</h5>
+
+                        <a href="{{ route('admin.orders.trash') }}" class="btn btn-warning float-end">Thùng rác</a>
+                        <form method="GET" action="{{ route('admin.orders.index') }}" class="row g-2 align-items-center mb-2" style="max-width: 600px;">
+                            <div class="col-md-5">
+                                <input type="text" name="search" class="form-control" placeholder="Tìm kiếm theo tên, email, ID..." value="{{ request('search') }}">
+                            </div>
+                            <div class="col-md-4">
+                                <select name="status" class="form-select">
+                                    <option value="">Tất cả trạng thái</option>
+                                    <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Chờ xử lý</option>
+                                    <option value="confirmed" {{ request('status') == 'confirmed' ? 'selected' : '' }}>Đã xác nhận</option>
+                                    <option value="preparing" {{ request('status') == 'preparing' ? 'selected' : '' }}>Đang chuẩn bị</option>
+                                    <option value="shipping" {{ request('status') == 'shipping' ? 'selected' : '' }}>Đang giao hàng</option>
+                                    <option value="completed" {{ request('status') == 'completed' ? 'selected' : '' }}>Hoàn thành</option>
+                                    <option value="cancelled" {{ request('status') == 'cancelled' ? 'selected' : '' }}>Đã hủy</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <button type="submit" class="btn btn-primary w-100">Tìm kiếm</button>
+                            </div>
+                        </form>
                     </div>
                     <div class="card-body">
                         @if(session('success'))
@@ -76,6 +97,11 @@
                                                     <i class="ti ti-trash"></i> Delete
                                                 </button>
                                             </form>
+                                            {{-- <form action="{{ route('admin.orders.restore', $order->id) }}" method="POST" class="d-inline">
+                                                @csrf
+                                                @method('POST')
+                                                <button type="submit" class="btn btn-success btn-sm">Khôi phục</button>
+                                            </form> --}}
                                         </td>
                                     </tr>
                                     @endforeach

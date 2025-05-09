@@ -22,16 +22,6 @@ class OrderItemsTableSeeder extends Seeder
                 'total' => 32990000,
                 'created_at' => now(),
                 'updated_at' => now()
-            ],
-            [
-                'order_id' => $orderId,
-                'product_id' => 2,
-                'product_variant_id' => 4,
-                'quantity' => 1,
-                'price' => 48990000,
-                'total' => 48990000,
-                'created_at' => now(),
-                'updated_at' => now()
             ]
         ]);
     }

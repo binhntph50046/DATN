@@ -12,7 +12,6 @@ return new class extends Migration
             $table->id();
             $table->foreignId('product_id')->constrained()->cascadeOnDelete();
             $table->string('image_url', 255)->nullable();
-            $table->boolean('is_main')->default(false);
         });
     }
 

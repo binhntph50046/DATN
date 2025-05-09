@@ -49,13 +49,13 @@
                     </a>
                 </li>
                 <li class="pc-item">
-                    <a href="#" class="pc-link">
+                    <a href="{{ route('admin.products.index') }}" class="pc-link">
                         <span class="pc-micon"><i class="ti ti-package"></i></span>
                         <span class="pc-mtext">Products</span>
                     </a>
                 </li>
                 <li class="pc-item">
-                    <a href="#" class="pc-link">
+                    <a href="{{ route('admin.users.index') }}" class="pc-link">
                         <span class="pc-micon"><i class="ti ti-user"></i></span>
                         <span class="pc-mtext">Users</span>
                     </a>

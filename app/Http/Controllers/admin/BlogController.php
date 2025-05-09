@@ -1,0 +1,204 @@
+<?php
+
+namespace App\Http\Controllers\admin;
+
+use Illuminate\Support\Facades\Auth;
+use App\Models\Blog;
+use Illuminate\Http\Request;
+use App\Models\Category;
+use Illuminate\Support\Str;
+use App\Models\User;
+
+
+
+class BlogController
+{
+    //
+    public function index(Request $request)
+    {
+        // Lấy tất cả blog có trạng thái active, kèm quan hệ category và author
+        $blogs = Blog::with(['category', 'author'])
+            ->latest()
+            ->get();
+
+        $query = Blog::with(['category', 'author']);
+
+        // Lọc theo danh mục
+        if ($request->filled('category_id')) {
+            $query->where('category_id', $request->category_id);
+        }
+
+        // Lọc theo tác giả
+        if ($request->filled('author_id')) {
+            $query->where('author_id', $request->author_id);
+        }
+
+        $blogs = $query->latest()->get(); // hoặc paginate(n) nếu có phân trang
+
+        // Lấy dữ liệu dropdown
+        $categories = Category::where('type', 2)->get();
+        $authors = User::all(); // Hoặc lọc theo role nếu cần (VD: ->where('role', 'author'))
+
+        return view('admin.blogs.index', compact('blogs', 'categories', 'authors'));
+    }
+
+    public function create()
+    {
+        $categories = Category::where('type', 2)->get();
+        return view('admin.blogs.create', compact('categories'));
+    }
+
+    public function store(Request $request)
+    {
+        $data = $request->validate([
+            'title' => 'required|string|max:255',
+            'category_id' => 'required|integer',
+            'content' => 'required|string',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'status' => 'required|in:active,inactive',
+        ]);
+
+        // // Xử lý ảnh nếu có
+        // $imagePath = null;
+        // if ($request->hasFile('image')) {
+        //     $file     = $request->file('image');
+        //     $filename = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+
+        //     // Tạo thư mục nếu chưa tồn tại
+        //     $destinationPath = public_path('uploads/blogs');
+        //     if (!file_exists($destinationPath)) {
+        //         mkdir($destinationPath, 0755, true);
+        //     }
+
+        //     // Di chuyển file vào public/upload/blogs
+        //     $file->move($destinationPath, $filename);
+
+        //     // Lưu đường dẫn tương đối (dùng để hiển thị ảnh)
+        //     $imagePath = 'upload/blogs/' . $filename;
+        // }
+
+
+        // Handle image upload to public/uploads/blogs
+        $imagePath = null;
+        if ($request->hasFile('image')) {
+            $file       = $request->file('image');
+            $filename   = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+            $destPath   = public_path('uploads/blogs');
+            if (!file_exists($destPath)) {
+                mkdir($destPath, 0755, true);
+            }
+            $file->move($destPath, $filename);
+            $imagePath = 'uploads/blogs/' . $filename;
+        }
+
+
+        // Tạo slug từ title
+        $slug = Str::slug($request->title);
+
+        // Lưu bài viết
+        Blog::create([
+            'title' => $request->title,
+            'slug' => $slug,
+            'category_id' => $request->category_id,
+            'content' => $request->content,
+            'image' => $imagePath, // Lưu đường dẫn ảnh
+            'status' => $request->status, // Lưu trạng thái
+        ]);
+
+        return redirect()->route('admin.blogs.index')
+            ->with('success', 'Bài viết đã được tạo thành công!');
+    }
+    public function show(Blog $blog)
+    {
+        // dd($blog);
+        return view('admin.blogs.show', compact('blog'));
+    }
+    public function edit(Blog $blog)
+    {
+        $categories = Category::all();
+        return view('admin.blogs.edit', compact('blog', 'categories'));
+    }
+
+    public function update(Request $request, Blog $blog)
+    {
+        $data = $request->validate([
+            'title'       => 'required|string|max:255',
+            'category_id' => 'required|integer|exists:categories,id',
+            'content'     => 'required|string',
+            'image'       => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'status'      => 'required|in:active,inactive',
+        ]);
+
+        // Handle new image upload if provided
+        if ($request->hasFile('image')) {
+            // Optionally delete old image here
+            $file     = $request->file('image');
+            $filename = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+            $destPath = public_path('uploads/blogs');
+            if (!file_exists($destPath)) {
+                mkdir($destPath, 0755, true);
+            }
+            $file->move($destPath, $filename);
+            $data['image'] = 'uploads/blogs/' . $filename;
+        }
+
+        // Update slug if title changed
+        if ($data['title'] !== $blog->title) {
+            $data['slug'] = Str::slug($data['title']);
+        }
+
+        $blog->update($data);
+
+        return redirect()->route('admin.blogs.index')
+            ->with('success', 'Bài viết đã được cập nhật thành công!');
+    }
+
+    public function destroy(Blog $blog)
+    {
+        // Nếu có ảnh, xoá file ảnh cũ
+        if ($blog->image && file_exists(public_path($blog->image))) {
+            @unlink(public_path($blog->image));
+        }
+
+        // Xoá bản ghi
+        $blog->delete();
+
+        return redirect()
+            ->route('admin.blogs.index')
+            ->with('success', 'Bài viết đã được xoá thành công!');
+    }
+
+    public function trash()
+    {
+        $blogs = Blog::onlyTrashed()->with('category', 'author')->paginate(12);
+        return view('admin.blogs.trash', compact('blogs'));
+    }
+
+    /**
+     * Khôi phục một blog đã xóa mềm.
+     */
+    public function restore($id)
+    {
+        $blog = Blog::onlyTrashed()->findOrFail($id);
+        $blog->restore();
+
+        return redirect()->route('admin.blogs.index')
+            ->with('success', 'Đã khôi phục bài viết thành công!');
+    }
+
+    /**
+     * Xóa vĩnh viễn một blog.
+     */
+    public function forceDelete($id)
+    {
+        $blog = Blog::onlyTrashed()->findOrFail($id);
+        // Xóa file ảnh nếu cần
+        if ($blog->image && file_exists(public_path($blog->image))) {
+            @unlink(public_path($blog->image));
+        }
+        $blog->forceDelete();
+
+        return redirect()->route('admin.blogs.index')
+            ->with('success', 'Đã xóa vĩnh viễn bài viết!');
+    }
+}

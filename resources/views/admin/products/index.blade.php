@@ -111,6 +111,8 @@
                                             <th>Price</th>
                                             <th>Stock</th>
                                             <th>Status</th>
+                                            <th>Variants</th>
+                                            <th>Default Variant</th>
                                             <th class="text-center">Actions</th>
                                         </tr>
                                     </thead>
@@ -142,6 +144,35 @@
                                                     <span class="badge {{ $product->status === 'active' ? 'bg-success' : 'bg-danger' }}">
                                                         {{ ucfirst($product->status) }}
                                                     </span>
+                                                </td>
+                                                <td>
+                                                    @if($product->has_variants)
+                                                        <span class="badge bg-info">{{ $product->variants->count() }} variants</span>
+                                                    @else
+                                                        <span class="badge bg-secondary">Simple</span>
+                                                    @endif
+                                                </td>
+                                                <td>
+                                                    @if($product->has_variants)
+                                                        @php
+                                                            $defaultVariant = $product->variants->where('is_default', true)->first();
+                                                        @endphp
+                                                        @if($defaultVariant)
+                                                            <div class="d-flex align-items-center">
+                                                                @if($defaultVariant->image)
+                                                                    <img src="{{ $defaultVariant->image }}" alt="Default Variant" class="rounded me-2" style="width: 40px; height: 40px; object-fit: cover;">
+                                                                @endif
+                                                                <div>
+                                                                    <span class="badge bg-success">Default</span>
+                                                                    <small class="d-block text-muted">{{ $defaultVariant->sku }}</small>
+                                                                </div>
+                                                            </div>
+                                                        @else
+                                                            <span class="badge bg-warning">No default</span>
+                                                        @endif
+                                                    @else
+                                                        <span class="badge bg-secondary">N/A</span>
+                                                    @endif
                                                 </td>
                                                 <td class="text-center">
                                                     <a href="{{ route('admin.products.show', $product->id) }}" class="btn btn-primary btn-sm rounded-3 me-2">

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\admin\BannerController;
 use App\Http\Controllers\admin\DashboardController;
 use App\Http\Controllers\admin\CategoryController;
 use App\Http\Controllers\admin\ProductController;
@@ -27,6 +28,10 @@ Route::prefix('admin')->name('admin.')->group(function () { // chưa có middlew
         'update' => 'categories.update',
         'destroy' => 'categories.destroy',
     ]);
+    // Banner Routes
+    Route::resource('banners', BannerController::class);
+    Route::post('banners/{banner}/move-up', [BannerController::class, 'moveUp'])->name('banners.moveUp');
+    Route::post('banners/{banner}/move-down', [BannerController::class, 'moveDown'])->name('banners.moveDown');
     
     // Product routes
     Route::get('/products/trash', [ProductController::class, 'trash'])->name('products.trash');

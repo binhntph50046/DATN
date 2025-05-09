@@ -45,7 +45,13 @@
                 <li class="pc-item">
                     <a href="{{ route('admin.categories.index') }}" class="pc-link">
                         <span class="pc-micon"><i class="ti ti-layout-grid"></i></span>
-                        <span class="pc-mtext">Categories</span>
+                         <span class="pc-mtext">Categories</span>
+                    </a>
+                </li>
+                <li class="pc-item">
+                    <a href="{{ route('admin.orders.index') }}" class="pc-link">
+                        <span class="pc-micon"><i class="ti ti-shopping-cart"></i></span>
+                        <span class="pc-mtext">Orders</span>
                     </a>
                 </li>
                 <li class="pc-item">
@@ -55,7 +61,7 @@
                     </a>
                 </li>
                 <li class="pc-item">
-                    <a href="#" class="pc-link">
+                    <a href="{{ route('admin.users.index') }}" class="pc-link">
                         <span class="pc-micon"><i class="ti ti-user"></i></span>
                         <span class="pc-mtext">Users</span>
                     </a>

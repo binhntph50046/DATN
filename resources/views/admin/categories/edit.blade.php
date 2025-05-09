@@ -88,6 +88,15 @@
                                 </div>
                             </div>
 
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="type" class="form-label">Slug</label>
+                                        <input type="text" class="form-control @error('slug') is-invalid @enderror" id="slug" name="slug" value="{{ old('slug', $category->slug) }}" disabled>
+                                    </div>
+                                </div>
+                            </div>
+
                             <div class="mb-3">
                                 <button type="submit" class="btn btn-primary">Update Category</button>
                                 <a href="{{ route('admin.categories.index') }}" class="btn btn-secondary">Back</a>

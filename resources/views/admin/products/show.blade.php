@@ -208,6 +208,84 @@
                                     </div>
                                 </div>
                             @endif
+
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5>Product Variants</h5>
+                                </div>
+                                <div class="card-body">
+                                    @if($product->has_variants)
+                                        <div class="table-responsive">
+                                            <table class="table table-hover">
+                                                <thead>
+                                                    <tr>
+                                                        <th>SKU</th>
+                                                        <th>Image</th>
+                                                        <th>Attributes</th>
+                                                        <th>Price</th>
+                                                        <th>Stock</th>
+                                                        <th>Status</th>
+                                                        <th>Default</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @foreach($product->variants as $variant)
+                                                        <tr class="{{ $variant->is_default ? 'table-success' : '' }}">
+                                                            <td>{{ $variant->sku }}</td>
+                                                            <td>
+                                                                @if($variant->image)
+                                                                    <img src="{{ $variant->image }}" alt="Variant Image" class="rounded" style="width: 50px; height: 50px; object-fit: cover;">
+                                                                @else
+                                                                    <span class="badge bg-secondary">No image</span>
+                                                                @endif
+                                                            </td>
+                                                            <td>
+                                                                @foreach($variant->attributes as $attr)
+                                                                    <div class="mb-1">
+                                                                        <small class="text-muted">{{ $attr->attribute_name }}:</small>
+                                                                        <span class="badge bg-info">{{ $attr->attribute_value }}</span>
+                                                                    </div>
+                                                                @endforeach
+                                                            </td>
+                                                            <td>
+                                                                <div class="d-flex flex-column">
+                                                                    <span class="text-success fw-bold">${{ number_format($variant->selling_price, 2) }}</span>
+                                                                    @if($variant->discount_price)
+                                                                        <small class="text-danger text-decoration-line-through">${{ number_format($variant->discount_price, 2) }}</small>
+                                                                    @endif
+                                                                </div>
+                                                            </td>
+                                                            <td>
+                                                                <span class="badge {{ $variant->stock > 0 ? 'bg-success' : 'bg-danger' }}">
+                                                                    {{ $variant->stock }}
+                                                                </span>
+                                                            </td>
+                                                            <td>
+                                                                <span class="badge bg-{{ $variant->status === 'active' ? 'success' : 'danger' }}">
+                                                                    {{ ucfirst($variant->status) }}
+                                                                </span>
+                                                            </td>
+                                                            <td>
+                                                                @if($variant->is_default)
+                                                                    <span class="badge bg-success">
+                                                                        <i class="ti ti-check"></i> Default
+                                                                    </span>
+                                                                @else
+                                                                    <span class="badge bg-secondary">-</span>
+                                                                @endif
+                                                            </td>
+                                                        </tr>
+                                                    @endforeach
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    @else
+                                        <div class="alert alert-info">
+                                            This is a simple product without variants.
+                                        </div>
+                                    @endif
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

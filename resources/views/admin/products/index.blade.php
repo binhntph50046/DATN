@@ -1,15 +1,6 @@
 @extends('admin.layouts.app')
 @section('title', 'Product Management')
 
-<style>
-    .custom-shadow {
-        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
-        border-radius: 12px;
-        background-color: #fff;
-        padding: 16px;
-    }
-</style>
-
 @section('content')
     <div class="pc-container">
         <div class="pc-content">
@@ -36,69 +27,50 @@
                 <div class="col-12">
                     <div class="card">
                         <div class="card-header">
-                            <h5>Products List</h5>
+                            <h5>Products</h5>
                             <div class="card-header-right">
-                                <a href="{{ route('admin.products.create') }}" class="btn btn-primary btn-sm rounded-3 me-2">
+                                <a href="{{ route('admin.products.create') }}" class="btn btn-primary btn-sm rounded-3">
                                     <i class="ti ti-plus"></i> Add New Product
-                                </a>
-                                <a href="{{ route('admin.products.trash') }}" class="btn btn-danger btn-sm rounded-3">
-                                    <i class="ti ti-trash"></i> Trash
                                 </a>
                             </div>
                         </div>
                         <div class="card-body">
-                            @if (session('success'))
+                            @if(session('success'))
                                 <div class="alert alert-success">
                                     {{ session('success') }}
                                 </div>
                             @endif
 
-                            <!-- Filter Section -->
-                            <div class="card shadow-sm mb-4">
-                                <div class="card-body">
-                                    <form method="GET" action="{{ route('admin.products.index') }}" class="row g-3">
-                                        <div class="col-md-3">
-                                            <label class="form-label">Category</label>
-                                            <select name="category_id" class="form-select">
-                                                <option value="">All Categories</option>
-                                                @foreach($categories as $category)
-                                                    <option value="{{ $category->id }}" {{ request('category_id') == $category->id ? 'selected' : '' }}>
-                                                        {{ $category->name }}
-                                                    </option>
-                                                @endforeach
-                                            </select>
-                                        </div>
-                                        <div class="col-md-3">
-                                            <label class="form-label">Status</label>
-                                            <select name="status" class="form-select">
-                                                <option value="">All Status</option>
-                                                <option value="active" {{ request('status') == 'active' ? 'selected' : '' }}>Active</option>
-                                                <option value="inactive" {{ request('status') == 'inactive' ? 'selected' : '' }}>Inactive</option>
-                                            </select>
-                                        </div>
-                                        <div class="col-md-3">
-                                            <label class="form-label">Model</label>
-                                            <input type="text" name="model" class="form-control" placeholder="Filter by model" value="{{ request('model') }}">
-                                        </div>
-                                        <div class="col-md-3">
-                                            <label class="form-label">Series</label>
-                                            <input type="text" name="series" class="form-control" placeholder="Filter by series" value="{{ request('series') }}">
-                                        </div>
-                                        <div class="col-md-3">
-                                            <label class="form-label">Min Price (VNĐ)</label>
-                                            <input type="number" name="min_price" class="form-control" placeholder="Min price" value="{{ request('min_price') }}">
-                                        </div>
-                                        <div class="col-md-3">
-                                            <label class="form-label">Max Price (VNĐ)</label>
-                                            <input type="number" name="max_price" class="form-control" placeholder="Max price" value="{{ request('max_price') }}">
-                                        </div>
-                                        <div class="col-12 mt-3">
-                                            <button type="submit" class="btn btn-primary btn-sm">Filter</button>
-                                            <a href="{{ route('admin.products.index') }}" class="btn btn-secondary btn-sm">Reset</a>
-                                        </div>
-                                    </form>
+                            <!-- Filters -->
+                            <form method="GET" action="{{ route('admin.products.index') }}" class="row g-3 mb-3">
+                                <div class="col-md-3">
+                                    <input type="text" name="name" class="form-control" placeholder="Search by name..." value="{{ request('name') }}">
                                 </div>
-                            </div>
+                            
+                                <div class="col-md-3">
+                                    <select name="category_id" class="form-select">
+                                        <option value="">-- Filter by Category --</option>
+                                        @foreach($categories as $category)
+                                            <option value="{{ $category->id }}" {{ request('category_id') == $category->id ? 'selected' : '' }}>
+                                                {{ $category->name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            
+                                <div class="col-md-3">
+                                    <select name="status" class="form-select">
+                                        <option value="">-- Filter by Status --</option>
+                                        <option value="active" {{ request('status') == 'active' ? 'selected' : '' }}>Active</option>
+                                        <option value="inactive" {{ request('status') == 'inactive' ? 'selected' : '' }}>Inactive</option>
+                                    </select>
+                                </div>
+                            
+                                <div class="col-md-3 d-flex align-items-center">
+                                    <button type="submit" class="btn btn-primary me-2">Filter</button>
+                                    <a href="{{ route('admin.products.index') }}" class="btn btn-secondary">Reset</a>
+                                </div>
+                            </form>
 
                             <div class="table custom-shadow">
                                 <table class="table table-hover table-borderless">
@@ -111,83 +83,60 @@
                                             <th>Price</th>
                                             <th>Stock</th>
                                             <th>Status</th>
-                                            <th>Variants</th>
-                                            <th>Default Variant</th>
                                             <th class="text-center">Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @foreach ($products as $product)
+                                        @foreach($products as $product)
                                             <tr>
                                                 <td>{{ $product->id }}</td>
                                                 <td>
-                                                    @if ($product->image)
-                                                        <img src="{{ asset($product->image) }}" alt="{{ $product->name }}"
-                                                            class="img-thumbnail" style="max-width: 100px; height: auto;">
+                                                    @if($product->image)
+                                                        <img src="{{ asset($product->image) }}" alt="{{ $product->name }}" class="img-thumbnail" style="max-width: 50px;">
                                                     @else
                                                         <span class="text-muted">No image</span>
                                                     @endif
                                                 </td>
-                                                <td>{{ $product->name }}</td>
+                                                <td>
+                                                    <div class="font-weight-bold">{{ $product->name }}</div>
+                                                    <div class="small">
+                                                        @if($product->has_variants)
+                                                            <span class="badge bg-info">Variable Product</span>
+                                                        @else
+                                                            <span class="badge bg-success">Simple Product</span>
+                                                        @endif
+                                                    </div>
+                                                </td>
                                                 <td>{{ $product->category->name ?? 'N/A' }}</td>
                                                 <td>
-                                                    @if($product->discount_price)
-                                                        <span class="text-decoration-line-through text-muted">{{ number_format($product->price) }} VNĐ</span>
-                                                        <br>
-                                                        <span class="text-danger fw-bold">{{ number_format($product->discount_price) }} VNĐ</span>
+                                                    @if($product->has_variants)
+                                                        <span class="text-muted">Multiple</span>
                                                     @else
-                                                        {{ number_format($product->price) }} VNĐ
+                                                        {{ number_format($product->selling_price) }} VNĐ
                                                     @endif
                                                 </td>
                                                 <td>{{ $product->stock }}</td>
                                                 <td>
-                                                    <span class="badge {{ $product->status === 'active' ? 'bg-success' : 'bg-danger' }}">
+                                                    <span class="badge {{ $product->status == 'active' ? 'bg-success' : 'bg-danger' }}">
                                                         {{ ucfirst($product->status) }}
                                                     </span>
                                                 </td>
-                                                <td>
-                                                    @if($product->has_variants)
-                                                        <span class="badge bg-info">{{ $product->variants->count() }} variants</span>
-                                                    @else
-                                                        <span class="badge bg-secondary">Simple</span>
-                                                    @endif
-                                                </td>
-                                                <td>
-                                                    @if($product->has_variants)
-                                                        @php
-                                                            $defaultVariant = $product->variants->where('is_default', true)->first();
-                                                        @endphp
-                                                        @if($defaultVariant)
-                                                            <div class="d-flex align-items-center">
-                                                                @if($defaultVariant->image)
-                                                                    <img src="{{ $defaultVariant->image }}" alt="Default Variant" class="rounded me-2" style="width: 40px; height: 40px; object-fit: cover;">
-                                                                @endif
-                                                                <div>
-                                                                    <span class="badge bg-success">Default</span>
-                                                                    <small class="d-block text-muted">{{ $defaultVariant->sku }}</small>
-                                                                </div>
-                                                            </div>
-                                                        @else
-                                                            <span class="badge bg-warning">No default</span>
-                                                        @endif
-                                                    @else
-                                                        <span class="badge bg-secondary">N/A</span>
-                                                    @endif
-                                                </td>
                                                 <td class="text-center">
-                                                    <a href="{{ route('admin.products.show', $product->id) }}" class="btn btn-primary btn-sm rounded-3 me-2">
-                                                        <i class="ti ti-eye"></i> View
-                                                    </a>
-                                                    <a href="{{ route('admin.products.edit', $product->id) }}" class="btn btn-info btn-sm rounded-3 me-2">
-                                                        <i class="ti ti-edit"></i> Edit
-                                                    </a>
-                                                    <form action="{{ route('admin.products.destroy', $product->id) }}" method="POST" class="d-inline">
-                                                        @csrf
-                                                        @method('DELETE')
-                                                        <button type="submit" class="btn btn-danger btn-sm rounded-3" onclick="return confirm('Are you sure you want to delete this product?')">
-                                                            <i class="ti ti-trash"></i> Delete
-                                                        </button>
-                                                    </form>
+                                                    <div class="btn-group">
+                                                        <a href="{{ route('admin.products.show', $product) }}" class="btn btn-info btn-sm rounded-3 me-2" title="View">
+                                                            <i class="ti ti-eye"></i>
+                                                        </a>
+                                                        <a href="{{ route('admin.products.edit', $product) }}" class="btn btn-primary btn-sm rounded-3 me-2" title="Edit">
+                                                            <i class="ti ti-edit"></i>
+                                                        </a>
+                                                        <form action="{{ route('admin.products.destroy', $product) }}" method="POST" class="d-inline">
+                                                            @csrf
+                                                            @method('DELETE')
+                                                            <button type="submit" class="btn btn-danger btn-sm rounded-3" title="Delete" onclick="return confirm('Are you sure you want to delete this product?')">
+                                                                <i class="ti ti-trash"></i>
+                                                            </button>
+                                                        </form>
+                                                    </div>
                                                 </td>
                                             </tr>
                                         @endforeach
@@ -203,3 +152,30 @@
         </div>
     </div>
 @endsection
+
+@push('styles')
+<style>
+    .custom-shadow {
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+        border-radius: 12px;
+        background-color: #fff;
+        padding: 16px;
+    }
+    .badge {
+        font-size: 0.85em;
+        padding: 0.35em 0.65em;
+    }
+    .btn-group .btn {
+        padding: 0.25rem 0.5rem;
+    }
+    .table td {
+        vertical-align: middle;
+    }
+    .table-borderless td, .table-borderless th {
+        border: 0;
+    }
+    .table-hover tbody tr:hover {
+        background-color: rgba(0,0,0,.075);
+    }
+</style>
+@endpush

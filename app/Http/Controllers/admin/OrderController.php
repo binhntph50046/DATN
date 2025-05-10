@@ -77,18 +77,24 @@ class OrderController extends Controller
         return view('admin.orders.trash', compact('orders'));
     }
 
-    public function restore($id)
+    public function bulkRestore(Request $request)
     {
-        $order = Order::withTrashed()->findOrFail($id);
-        $order->restore();
-        return redirect()->route('admin.orders.trash')->with('success', 'Khôi phục đơn hàng thành công!');
+        $ids = $request->input('ids', []);
+        if (!empty($ids)) {
+            Order::withTrashed()->whereIn('id', $ids)->restore();
+            return redirect()->route('admin.orders.trash')->with('success', 'Đã khôi phục các đơn hàng đã chọn!');
+        }
+        return redirect()->route('admin.orders.trash')->with('error', 'Vui lòng chọn ít nhất một đơn hàng!');
     }
 
-    public function forceDelete($id)
+    public function bulkForceDelete(Request $request)
     {
-        $order = Order::withTrashed()->findOrFail($id);
-        $order->forceDelete();
-        return redirect()->route('admin.orders.trash')->with('success', 'Đã xóa vĩnh viễn đơn hàng!');
+        $ids = $request->input('ids', []);
+        if (!empty($ids)) {
+            Order::withTrashed()->whereIn('id', $ids)->forceDelete();
+            return redirect()->route('admin.orders.trash')->with('success', 'Đã xóa vĩnh viễn các đơn hàng đã chọn!');
+        }
+        return redirect()->route('admin.orders.trash')->with('error', 'Vui lòng chọn ít nhất một đơn hàng!');
     }
 }
 

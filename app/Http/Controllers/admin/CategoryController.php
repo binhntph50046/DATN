@@ -24,7 +24,7 @@ class CategoryController
         if ($request->filled('category_id')) {
             $query->where('id', $request->category_id);
         }
-        
+
         if ($request->filled('status')) {
             $query->where('status', $request->status);
         }
@@ -51,6 +51,16 @@ class CategoryController
 
         $data = $request->all();
         $data['slug'] = Str::slug($request->name);
+
+        // Nếu không có danh mục cha (parent_id = null), thì lấy order lớn nhất của danh mục cha
+        if (is_null($data['parent_id'])) {
+            $maxOrder = Category::whereNull('parent_id')->max('order');  // Lấy giá trị order lớn nhất của các danh mục cha
+            $data['order'] = $maxOrder + 1;  // Đặt order của danh mục mới là maxOrder + 1
+        } else {
+            // Nếu có danh mục cha, thì lấy order của danh mục cha và đặt order của danh mục con
+            $parentCategory = Category::find($data['parent_id']);
+            $data['order'] = $parentCategory->order;  // Gán order của danh mục con bằng order của danh mục cha
+        }
 
         Category::create($data);
 
@@ -106,7 +116,7 @@ class CategoryController
 
     public function trash()
     {
-        $categories = Category::onlyTrashed()-> with('parent')->paginate(10);
+        $categories = Category::onlyTrashed()->with('parent')->paginate(10);
         return view('admin.categories.trash', compact('categories'));
     }
 
@@ -123,5 +133,41 @@ class CategoryController
         $category->forceDelete();
         return redirect()->route('admin.categories.trash')->with('success', 'Category deleted permanently.');
     }
-    
+
+    public function changeOrder(Request $request)
+    {
+        $category = Category::find($request->category_id);
+        
+        if ($request->direction == 'up') {
+            $categoryAbove = Category::where('order', '>', $category->order)
+                ->orderBy('order', 'asc')
+                ->first();
+            
+            if ($categoryAbove) {
+                $tempOrder = $category->order;  
+                $category->order = $categoryAbove->order;  
+                $categoryAbove->order = $tempOrder; 
+                $category->save();
+                $categoryAbove->save(); 
+            }
+        }
+
+        if ($request->direction == 'down') {
+            $categoryBelow = Category::where('order', '<', $category->order)
+                ->orderBy('order', 'desc')
+                ->first();
+            
+            if ($categoryBelow) {
+                $tempOrder = $category->order;  
+                $category->order = $categoryBelow->order;  
+                $categoryBelow->order = $tempOrder;  
+                $category->save();
+                $categoryBelow->save();
+            }
+        }
+
+        return back()->with('success', 'Category order updated successfully!');
+    }
+
+
 }

@@ -52,7 +52,6 @@
                                 {{ session('success') }}
                             </div>
                         @endif
-                        <!-- Bộ lọc tìm kiếm -->
                         <div class="card shadow-sm mb-4">
                             <div class="card-body">
                                 <form method="GET" action="{{ route('admin.categories.index') }}" class="row g-3 mb-3">
@@ -103,11 +102,22 @@
                                         <th>Slug</th>
                                         <th>Type</th>
                                         <th>Status</th>
+                                        <th>Order</th>
                                         <th class="text-center">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     @php
+                                        $productCategories = $categories->filter(function($cat) {
+                                            return $cat->type == 1;
+                                        });
+
+                                        $postCategories = $categories->filter(function($cat) {
+                                            return $cat->type == 2;
+                                        });
+
+                                        $index = 1;
+
                                         function renderCategoryTree($categories, &$index = 1, $prefix = '') {
                                             foreach ($categories as $category) {
                                                 echo '<tr>';
@@ -116,8 +126,27 @@
                                                 echo '<td>' . $category->slug . '</td>';
                                                 echo '<td>' . ($category->type == 1 ? 'Product Category' : 'Post Category') . '</td>';
                                                 echo '<td><span class="badge ' . ($category->status == 'active' ? 'bg-success' : 'bg-danger') . '">' . ucfirst($category->status) . '</span></td>';
+
+                                                echo '<td>';
+                                                if (!$category->parent_id) {
+                                                    echo '<form action="' . route('admin.categories.changeOrder') . '" method="POST" style="display:inline">';
+                                                    echo csrf_field();
+                                                    echo '<input type="hidden" name="category_id" value="' . $category->id . '">';
+                                                    echo '<input type="hidden" name="direction" value="up">';
+                                                    echo '<button type="submit" class="btn btn-warning btn-sm" title="Move Up"><i class="ti ti-arrow-up"></i></button>';
+                                                    echo '</form>';
+
+                                                    echo '<form action="' . route('admin.categories.changeOrder') . '" method="POST" style="display:inline">';
+                                                    echo csrf_field();
+                                                    echo '<input type="hidden" name="category_id" value="' . $category->id . '">';
+                                                    echo '<input type="hidden" name="direction" value="down">';
+                                                    echo '<button type="submit" class="btn btn-warning btn-sm ms-1" title="Move Down"><i class="ti ti-arrow-down"></i></button>';
+                                                    echo '</form>';
+                                                }
+                                                echo '</td>';
+
                                                 echo '<td class="text-center">';
-                                                echo '<a href="' . route('admin.categories.edit', $category->id) . '" class="btn btn-info btn-sm rounded-3 me-2"><i class="ti ti-edit"></i> Edit</a> ';
+                                                echo '<a href="' . route('admin.categories.edit', $category->id) . '" class="btn btn-info btn-sm rounded-3 me-2"><i class="ti ti-edit"></i> Edit</a>';
                                                 echo '<form action="' . route('admin.categories.destroy', $category->id) . '" method="POST" class="d-inline">';
                                                 echo csrf_field();
                                                 echo method_field('DELETE');
@@ -125,17 +154,18 @@
                                                 echo '</form>';
                                                 echo '</td>';
                                                 echo '</tr>';
-                        
+
                                                 if ($category->children && count($category->children)) {
                                                     renderCategoryTree($category->children, $index, $prefix . '&nbsp;&nbsp;&nbsp;&nbsp;  ');
                                                 }
                                             }
                                         }
-                        
-                                        $index = 1;
-                                        renderCategoryTree($categories, $index);
+
+                                        renderCategoryTree($productCategories, $index);
+                                        renderCategoryTree($postCategories, $index);
                                     @endphp
                                 </tbody>
+
                             </table>
                             {{ $categories->links() }}
                         </div>

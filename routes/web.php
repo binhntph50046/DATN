@@ -22,6 +22,7 @@ Route::prefix('admin')->name('admin.')->group(function () { // chưa có middlew
     Route::get('/categories/trash', [CategoryController::class, 'trash'])->name('categories.trash');
     Route::post('/categories/{category}/restore', [CategoryController::class, 'restore'])->name('categories.restore');
     Route::delete('/categories/{category}/forceDelete', [CategoryController::class, 'forceDelete'])->name('categories.forceDelete');
+    Route::post('/categories/change-order', [CategoryController::class, 'changeOrder'])->name('categories.changeOrder');
     Route::resource('categories', CategoryController::class)->names([
         'index' => 'categories.index',
         'create' => 'categories.create',
@@ -50,15 +51,16 @@ Route::prefix('admin')->name('admin.')->group(function () { // chưa có middlew
         'destroy' => 'products.destroy',
     ]);
 
+    // Order Routes
+    Route::get('orders/trash', [OrderController::class, 'trash'])->name('orders.trash');
+    Route::post('orders/trash/restore/bulk', [OrderController::class, 'bulkRestore'])->name('orders.restore.bulk');
+    Route::post('orders/trash/force-delete/bulk', [OrderController::class, 'bulkForceDelete'])->name('orders.forceDelete.bulk');
     Route::resource('orders', OrderController::class)->names([
         'index' => 'orders.index',
         'show' => 'orders.show',
-        'destroy' => 'orders.destroy',
-
+        'update' => 'orders.update',
+        'destroy' => 'orders.destroy'
     ]);
-    Route::get('/trash', [OrderController::class, 'trash'])->name('orders.trash');
-    Route::post('/restore/{id}', [OrderController::class, 'restore'])->name('orders.restore');
-    Route::delete('/force-delete/{id}', [OrderController::class, 'forceDelete'])->name('orders.forceDelete');
 
     // User Routes
     Route::get('/users/trash', [UserController::class, 'trash'])->name('users.trash');

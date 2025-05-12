@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Máy chủ: localhost
--- Thời gian đã tạo: Th5 10, 2025 lúc 10:32 AM
+-- Thời gian đã tạo: Th5 11, 2025 lúc 12:05 PM
 -- Phiên bản máy phục vụ: 5.7.43-log
 -- Phiên bản PHP: 8.3.15
 
@@ -404,8 +404,8 @@ CREATE TABLE `product_attributes` (
 --
 
 INSERT INTO `product_attributes` (`id`, `product_id`, `attribute_name`, `attribute_value`, `created_at`, `updated_at`) VALUES
-(17, 4, 'feature', 'Camera 48MP', '2025-05-10 02:30:41', '2025-05-10 02:30:41'),
-(18, 4, 'Chip', '20', '2025-05-10 02:30:41', '2025-05-10 02:30:41');
+(19, 4, 'feature', 'Camera 48MP', '2025-05-10 04:07:04', '2025-05-10 04:07:04'),
+(20, 4, 'Chip', '20', '2025-05-10 04:07:04', '2025-05-10 04:07:04');
 
 -- --------------------------------------------------------
 
@@ -489,10 +489,7 @@ CREATE TABLE `sessions` (
 --
 
 INSERT INTO `sessions` (`id`, `user_id`, `ip_address`, `user_agent`, `payload`, `last_activity`) VALUES
-('8q5a3uIQ0IT06T2r8yfnGZ05mjWPoDO7t7JX1ZJW', NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoiT0JIQlFQZU5tSHVJQnoyWGlPZEdlVllpRXlmVjdrUWloRHZydWNCaCI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6MzY6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9hZG1pbi9wcm9kdWN0cyI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fX0=', 1746844242),
-('e8mvF4mPTOpZ7Ofel5hJq6EbymGwrUipcHX7YAM0', NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoidnJNdllNaXA0NXhlYjJjNmlHZXdmMkRRR2pJQlZOWWNMekNmQWQ0bCI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6MzU6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9hZG1pbi9iYW5uZXJzIjt9czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319fQ==', 1746840029),
-('I9LOORT5OpRioJlJIjDz9gXaI9yABFIxUn8xWkTX', NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoidWs1WElnMEJ4TlpaenV2WFJ1ZWtUUVhQZEtMRnV4Rm1lRjdVUjdVMiI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6Mzg6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9hZG1pbi9jYXRlZ29yaWVzIjt9czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319fQ==', 1746840580),
-('UM6RorNIkX4iDYaQDSbNYCf2WcmBcasmh2805sK2', NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoiUHFzT3p0cTRGbXVJbU9lMnl3S0pRTDBmWFNxVE84bzFQeWEwbTNjViI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6MzQ6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9hZG1pbi9vcmRlcnMiO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX19', 1746826194);
+('8q5a3uIQ0IT06T2r8yfnGZ05mjWPoDO7t7JX1ZJW', NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoiT0JIQlFQZU5tSHVJQnoyWGlPZEdlVllpRXlmVjdrUWloRHZydWNCaCI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6NDM6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9hZG1pbi9wcm9kdWN0cy9jcmVhdGUiO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX19', 1746852673);
 
 -- --------------------------------------------------------
 
@@ -887,7 +884,7 @@ ALTER TABLE `products`
 -- AUTO_INCREMENT cho bảng `product_attributes`
 --
 ALTER TABLE `product_attributes`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 
 --
 -- AUTO_INCREMENT cho bảng `product_reviews`

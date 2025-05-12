@@ -106,7 +106,7 @@ class BlogController
         ]);
 
         return redirect()->route('admin.blogs.index')
-            ->with('success', 'Bài viết đã được tạo thành công!');
+            ->with('success', 'The article has been created successfully.!');
     }
     public function show(Blog $blog)
     {
@@ -150,7 +150,7 @@ class BlogController
         $blog->update($data);
 
         return redirect()->route('admin.blogs.index')
-            ->with('success', 'Bài viết đã được cập nhật thành công!');
+            ->with('success', 'The article has been updated successfully.!');
     }
 
     public function destroy(Blog $blog)
@@ -165,7 +165,7 @@ class BlogController
 
         return redirect()
             ->route('admin.blogs.index')
-            ->with('success', 'Bài viết đã được xoá thành công!');
+            ->with('success', 'The post has been successfully soft deleted!');
     }
 
     public function trash()
@@ -183,7 +183,7 @@ class BlogController
         $blog->restore();
 
         return redirect()->route('admin.blogs.index')
-            ->with('success', 'Đã khôi phục bài viết thành công!');
+            ->with('success', 'Post restored successfully!');
     }
 
     /**
@@ -199,6 +199,6 @@ class BlogController
         $blog->forceDelete();
 
         return redirect()->route('admin.blogs.index')
-            ->with('success', 'Đã xóa vĩnh viễn bài viết!');
+            ->with('success', 'Post permanently deleted!');
     }
 }

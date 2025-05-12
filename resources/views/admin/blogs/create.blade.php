@@ -1,6 +1,6 @@
 @extends('admin.layouts.app')
 
-@section('title', 'Thêm bài viết')
+@section('title', 'Create Blog')
 
 <style>
     .custom-shadow {

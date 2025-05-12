@@ -125,7 +125,7 @@
                                             <td>{{ $blog->category->name ?? 'Chưa có' }}</td>
                                             <td>{{ $blog->author->name ?? 'Admin' }}</td>
                                             <td>
-                                                <span class="badge {{ $blog->status == 'publish' ? 'bg-success' : 'bg-warning' }}">
+                                                <span class="badge {{ $blog->status == 'inactive' ? 'bg-danger' : 'bg-success' }}">
                                                     {{ $blog->status ?? 'Lỗi trạng thái' }}
                                                 </span>
                                             </td>

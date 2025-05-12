@@ -1,145 +1,165 @@
 @extends('admin.layouts.app')
 
-@section('title', 'Danh sách blog')
+@section('title', 'List Blogs')
+
+<style>
+    .custom-shadow {
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+        border-radius: 12px;
+        background-color: #fff;
+        padding: 16px;
+    }
+</style>
 
 @section('content')
-    <div class="pc-container">
-        <div class="pc-content">
-
-            <!-- Form lọc -->
-            <form action="{{ route('admin.blogs.index') }}" method="GET" class="row g-3 mb-4">
-                <div class="col-md-4">
-                    <label for="category_id" class="form-label">Danh mục</label>
-                    <select name="category_id" id="category_id" class="form-select">
-                        <option value="">-- Tất cả --</option>
-                        @foreach ($categories as $category)
-                            <option value="{{ $category->id }}" {{ request('category_id') == $category->id ? 'selected' : '' }}>
-                                {{ $category->name }}
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
-                <div class="col-md-4">
-                    <label for="author_id" class="form-label">Tác giả</label>
-                    <select name="author_id" id="author_id" class="form-select">
-                        <option value="">-- Tất cả --</option>
-                        @foreach ($authors as $author)
-                            <option value="{{ $author->id }}" {{ request('author_id') == $author->id ? 'selected' : '' }}>
-                                {{ $author->name }}
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
-                <div class="col-md-4 d-flex align-items-end">
-                    <button type="submit" class="btn btn-primary me-2">
-                        <i class="ti ti-filter"></i> Lọc
-                    </button>
-                    <a href="{{ route('admin.blogs.index') }}" class="btn btn-outline-secondary">
-                        <i class="ti ti-refresh"></i> Đặt lại
-                    </a>
-                </div>
-            </form>
-
-            <!-- Tiêu đề và nút thao tác -->
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <h4 class="mb-0">Danh sách bài viết</h4>
-                <div class="d-flex gap-2">
-                    <a href="{{ route('admin.blogs.trash') }}" class="btn btn-outline-secondary d-flex align-items-center gap-2">
-                        <i class="ti ti-trash"></i>
-                        <span>Thùng rác</span>
-                    </a>
-                    <a href="{{ route('admin.blogs.create') }}" class="btn btn-primary d-flex align-items-center gap-2">
-                        <i class="ti ti-plus"></i>
-                        <span>Thêm bài viết</span>
-                    </a>
-                </div>
-            </div>
-
-            <!-- Thông báo thành công -->
-            @if (session('success'))
-                <div class="alert alert-success">
-                    {{ session('success') }}
-                </div>
-            @endif
-
-            <!-- Bảng danh sách bài viết -->
-            <div class="card">
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-hover table-bordered align-middle">
-                            <thead class="table-light">
-                                <tr>
-                                    <th style="width: 5%">#</th>
-                                    <th style="width: 20%">Tiêu đề</th>
-                                    <th style="width: 15%">Hình ảnh</th>
-                                    <th style="width: 15%">Danh mục</th>
-                                    <th style="width: 15%">Tác giả</th>
-                                    <th style="width: 10%">Trạng thái</th>
-                                    <th style="width: 20%">Thao tác</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @forelse ($blogs as $index => $blog)
-                                    <tr>
-                                        <td>{{ $index + 1 }}</td>
-                                        <td>
-                                            <a href="{{ route('admin.blogs.show', $blog->id) }}" class="text-primary fw-bold">
-                                                {{ Str::limit($blog->title, 50) }}
-                                            </a>
-                                        </td>
-                                        <td>
-                                            @if ($blog->image)
-                                                @php
-                                                    $filename = basename($blog->image);
-                                                    $url = asset('uploads/blogs/' . $filename);
-                                                @endphp
-                                                <img src="{{ $url }}" alt="{{ $blog->title }}"
-                                                    style="width: 80px; height: 50px; object-fit: cover;">
-                                            @else
-                                                <span>Không có</span>
-                                            @endif
-                                        </td>
-                                        <td>{{ $blog->category->name ?? 'Chưa có' }}</td>
-                                        <td>{{ $blog->author->name ?? 'Admin' }}</td>
-                                        <td>
-                                            <span class="badge {{ $blog->status == 'publish' ? 'bg-success' : 'bg-warning' }}">
-                                                {{ $blog->status ?? 'Lỗi trạng thái' }}
-                                            </span>
-                                        </td>
-                                        <td>
-                                            <div class="d-flex gap-2">
-                                                <a href="{{ route('admin.blogs.show', $blog->id) }}"
-                                                    class="btn btn-sm btn-info d-flex align-items-center gap-1">
-                                                    <i class="ti ti-search"></i> Xem
-                                                </a>
-                                                <a href="{{ route('admin.blogs.edit', $blog->id) }}"
-                                                    class="btn btn-sm btn-warning d-flex align-items-center gap-1">
-                                                    <i class="ti ti-edit"></i> Sửa
-                                                </a>
-                                                <form action="{{ route('admin.blogs.destroy', $blog->id) }}" method="POST"
-                                                    onsubmit="return confirm('Bạn có chắc muốn xoá bài viết này không?')">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit" class="btn btn-sm btn-danger d-flex align-items-center gap-1">
-                                                        <i class="ti ti-trash"></i> Xoá
-                                                    </button>
-                                                </form>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="7" class="text-center text-muted">Không có bài viết nào phù hợp.</td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
+<div class="pc-container">
+    <div class="pc-content">
+        <!-- [ breadcrumb ] start -->
+        <div class="page-header">
+            <div class="page-block">
+                <div class="row align-items-center">
+                    <div class="col-md-12">
+                        <div class="page-header-title">
+                            <h5 class="m-b-10">Blogs</h5>
+                        </div>
+                        <ul class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Home</a></li>
+                            <li class="breadcrumb-item" aria-current="page">Blogs</li>
+                        </ul>
                     </div>
-
-                    {{-- Nếu có phân trang --}}
-                    {{-- {{ $blogs->appends(request()->query())->links() }} --}}
                 </div>
             </div>
         </div>
+        <!-- [ breadcrumb ] end -->
+
+        <!-- [ Main Content ] start -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5>Blogs List</h5>
+                        <div>
+                           <a href="{{ route('admin.blogs.trash') }}" class="btn btn-danger btn-sm rounded-3">
+                                <i class="ti ti-trash"></i> Trash
+                            </a>
+                            <a href="{{ route('admin.blogs.create') }}" class="btn btn-primary btn-sm rounded-3">
+                                <i class="ti ti-plus"></i> Add New Blog
+                            </a>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        @if(session('success'))
+                            <div class="alert alert-success">
+                                {{ session('success') }}
+                            </div>
+                        @endif
+
+                        <!-- Bộ lọc tìm kiếm -->
+                        <div class="card custom-shadow mb-4">
+                            <div class="card-body">
+                                <form action="{{ route('admin.blogs.index') }}" method="GET" class="row g-3">
+                                    <div class="col-md-4">
+                                        <label for="category_id" class="form-label">Category</label>
+                                        <select name="category_id" id="category_id" class="form-select">
+                                            <option value="">-- all --</option>
+                                            @foreach ($categories as $category)
+                                                <option value="{{ $category->id }}" {{ request('category_id') == $category->id ? 'selected' : '' }}>
+                                                    {{ $category->name }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label for="author_id" class="form-label">Author</label>
+                                        <select name="author_id" id="author_id" class="form-select">
+                                            <option value="">-- all --</option>
+                                            @foreach ($authors as $author)
+                                                <option value="{{ $author->id }}" {{ request('author_id') == $author->id ? 'selected' : '' }}>
+                                                    {{ $author->name }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4 d-flex align-items-end">
+                                        <button type="submit" class="btn btn-primary btn-sm me-2">Filter</button>
+                                        <a href="{{ route('admin.blogs.index') }}" class="btn btn-secondary btn-sm">Reset</a>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+
+                        <!-- Table danh sách -->
+                        <div class="table-responsive custom-shadow">
+                            <table class="table table-hover table-borderless align-middle">
+                                <thead>
+                                    <tr>
+                                        <th>STT</th>
+                                        <th>Title</th>
+                                        <th>Image</th>
+                                        <th>Category</th>
+                                        <th>Author</th>
+                                        <th>Status</th>
+                                        <th class="text-center">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @forelse ($blogs as $index => $blog)
+                                        <tr>
+                                            <td>{{ $index + 1 }}</td>
+                                            <td>
+                                                <a href="{{ route('admin.blogs.show', $blog->id) }}" class="text-primary fw-bold">
+                                                    {{ Str::limit($blog->title, 50) }}
+                                                </a>
+                                            </td>
+                                            <td>
+                                                @if ($blog->image)
+                                                    @php
+                                                        $filename = basename($blog->image);
+                                                        $url = asset('uploads/blogs/' . $filename);
+                                                    @endphp
+                                                    <img src="{{ $url }}" alt="{{ $blog->title }}" style="width:80px;height:50px;object-fit:cover;">
+                                                @else
+                                                    <span>Không có</span>
+                                                @endif
+                                            </td>
+                                            <td>{{ $blog->category->name ?? 'Chưa có' }}</td>
+                                            <td>{{ $blog->author->name ?? 'Admin' }}</td>
+                                            <td>
+                                                <span class="badge {{ $blog->status == 'publish' ? 'bg-success' : 'bg-warning' }}">
+                                                    {{ $blog->status ?? 'Lỗi trạng thái' }}
+                                                </span>
+                                            </td>
+                                            <td class="text-center">
+                                                 <a href="{{ route('admin.blogs.show', $blog->id) }}" class="btn btn-primary btn-sm rounded-3 me-2">
+                                                        <i class="ti ti-eye"></i> 
+                                                    </a>
+                                                <a href="{{ route('admin.blogs.edit', $blog->id) }}" class="btn btn-warning btn-sm rounded-3 me-1">
+                                                    <i class="ti ti-edit"></i>
+                                                </a>
+                                                <form action="{{ route('admin.blogs.destroy', $blog->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Bạn có chắc muốn xoá bài viết này không?')">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="btn btn-danger btn-sm rounded-3">
+                                                        <i class="ti ti-trash"></i>
+                                                    </button>
+                                                </form>
+                                            </td>
+                                        </tr>
+                                    @empty
+                                        <tr>
+                                            <td colspan="7" class="text-center text-muted">Không có bài viết nào phù hợp.</td>
+                                        </tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
+                            {{-- {{ $blogs->appends(request()->query())->links() }} --}}
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- [ Main Content ] end -->
     </div>
+</div>
 @endsection

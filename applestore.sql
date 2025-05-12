@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Máy chủ: localhost
--- Thời gian đã tạo: Th5 10, 2025 lúc 10:32 AM
+-- Thời gian đã tạo: Th5 12, 2025 lúc 05:59 PM
 -- Phiên bản máy phục vụ: 5.7.43-log
 -- Phiên bản PHP: 8.3.15
 
@@ -43,8 +43,8 @@ CREATE TABLE `banners` (
 --
 
 INSERT INTO `banners` (`id`, `title`, `image`, `link`, `status`, `order`, `created_at`, `updated_at`) VALUES
-(1, 'Banner 1', 'banners/lVtFKahRZ7dTW16U5nwBAT89MAdSHxuLgYU61X0T.jpg', NULL, 'active', 2, '2025-05-08 15:17:47', '2025-05-09 15:34:43'),
-(2, 'Banner 2', 'banner2.jpg', NULL, 'inactive', 1, '2025-05-08 15:17:48', '2025-05-09 15:34:43'),
+(1, 'Banner 1', 'banners/lVtFKahRZ7dTW16U5nwBAT89MAdSHxuLgYU61X0T.jpg', NULL, 'active', 1, '2025-05-08 15:17:47', '2025-05-11 05:58:32'),
+(2, 'Banner 2', 'banner2.jpg', NULL, 'inactive', 2, '2025-05-08 15:17:48', '2025-05-11 05:58:32'),
 (3, 'Banner 3', 'banner3.jpg', NULL, 'active', 3, '2025-05-08 15:17:48', '2025-05-08 16:11:55'),
 (4, 'Banner 4', 'banner4.jpg', NULL, 'inactive', 7, '2025-05-08 15:17:49', '2025-05-08 16:12:00'),
 (5, 'Banner 5', 'banner5.jpg', NULL, 'active', 4, '2025-05-08 15:17:50', '2025-05-08 16:12:00'),
@@ -158,18 +158,24 @@ CREATE TABLE `categories` (
 --
 
 INSERT INTO `categories` (`id`, `name`, `slug`, `parent_id`, `order`, `status`, `type`, `created_at`, `updated_at`, `deleted_at`) VALUES
-(1, 'iPhone', 'iphone', NULL, 1, 'active', 1, NULL, NULL, NULL),
-(2, 'Mac', 'mac', NULL, 2, 'inactive', 1, NULL, '2025-05-09 02:26:48', NULL),
-(3, 'iPad', 'ipad', NULL, 3, 'active', 1, NULL, '2025-05-08 07:52:10', NULL),
-(4, 'Apple Watch', 'apple-watch', NULL, 4, 'active', 1, NULL, '2025-05-08 07:50:10', NULL),
-(5, 'AirPods', 'airpods', NULL, 5, 'active', 1, NULL, NULL, NULL),
-(6, 'Tai nghe AirPod Pro 2', 'tai-nghe-airpod-pro-2', 5, 0, 'active', 1, '2025-05-08 07:12:32', '2025-05-09 04:59:30', NULL),
+(1, 'iPhone', 'iphone', NULL, 0, 'active', 1, NULL, '2025-05-11 09:42:50', NULL),
+(2, 'Mac', 'mac', NULL, 3, 'inactive', 1, NULL, '2025-05-11 09:25:33', NULL),
+(3, 'iPad', 'ipad', NULL, 1, 'active', 1, NULL, '2025-05-11 09:44:59', NULL),
+(4, 'Apple Watch', 'apple-watch', NULL, 4, 'active', 1, NULL, '2025-05-11 09:04:28', NULL),
+(5, 'AirPods', 'airpods', NULL, 5, 'active', 1, NULL, '2025-05-11 10:17:35', NULL),
+(6, 'AirPod Pro 3', 'airpod-pro-3', 5, 0, 'active', 1, '2025-05-08 07:12:32', '2025-05-11 10:27:53', NULL),
 (7, 'Ipad M4', 'ipad-m4', 3, 0, 'active', 1, '2025-05-08 07:12:48', '2025-05-08 07:12:48', NULL),
 (8, 'Iphone 12 Series', 'iphone-12-series', 1, 0, 'active', 1, '2025-05-08 07:13:16', '2025-05-08 07:13:16', NULL),
 (9, 'Iphone 13 Series', 'iphone-13-series', 1, 0, 'active', 1, '2025-05-08 07:13:35', '2025-05-09 04:57:51', NULL),
 (10, 'Iphone 14 Series', 'iphone-14-series', 1, 0, 'active', 1, '2025-05-08 07:13:58', '2025-05-08 07:51:50', NULL),
-(11, 'Blog Macbook', 'blog-macbook', NULL, 0, 'active', 2, '2025-05-08 10:22:36', '2025-05-08 10:22:36', NULL),
-(12, 'Blog Iphone', 'blog-iphone', 1, 0, 'active', 2, '2025-05-09 07:31:49', '2025-05-09 07:31:49', NULL);
+(11, 'Blog Macbook', 'blog-macbook', NULL, 1, 'active', 2, '2025-05-08 10:22:36', '2025-05-11 10:03:04', NULL),
+(12, 'Blog Iphone', 'blog-iphone', NULL, 2, 'active', 2, '2025-05-09 07:31:49', '2025-05-11 10:03:04', NULL),
+(13, 'Aipod Demo', 'aipod-demo', NULL, 9, 'active', 1, '2025-05-11 09:14:24', '2025-05-11 10:25:21', '2025-05-11 10:25:21'),
+(14, 'airpods demo 2', 'airpods-demo-2', NULL, 8, 'active', 1, '2025-05-11 09:15:21', '2025-05-11 10:25:50', '2025-05-11 10:25:50'),
+(15, 'Airpod demo 3', 'airpod-demo-3', NULL, 7, 'active', 1, '2025-05-11 09:20:26', '2025-05-11 10:26:09', '2025-05-11 10:26:09'),
+(16, 'airpods demo 4', 'airpods-demo-4', NULL, 6, 'active', 1, '2025-05-11 10:13:58', '2025-05-11 10:26:28', '2025-05-11 10:26:28'),
+(17, 'AirPod Pro 2', 'airpod-pro-2', 5, 5, 'active', 1, '2025-05-11 10:27:13', '2025-05-11 10:27:13', NULL),
+(18, 'AirPod Pro 2.1', 'airpod-pro-21', 17, 5, 'active', 1, '2025-05-11 10:29:23', '2025-05-11 10:29:23', NULL);
 
 -- --------------------------------------------------------
 
@@ -278,7 +284,8 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (37, '2025_05_09_092032_rename_image_url_to_image_in_product_variants_table', 13),
 (38, '2025_05_09_101144_remove_stock_from_products_table', 14),
 (39, '2025_05_10_015532_remove_default_variant_id_from_products_table', 15),
-(40, '2025_05_10_022326_add_stock_to_products_table', 16);
+(41, '2025_05_10_022326_add_stock_to_products_table', 16),
+(42, '2025_05_12_084953_update_product_tables_structure', 17);
 
 -- --------------------------------------------------------
 
@@ -360,15 +367,13 @@ CREATE TABLE `products` (
   `content` longtext COLLATE utf8mb4_unicode_ci,
   `discount_price` decimal(15,2) DEFAULT NULL,
   `stock` int(10) UNSIGNED NOT NULL DEFAULT '0' COMMENT 'Số lượng tồn kho cho sản phẩm không có biến thể',
-  `category_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `category_id` bigint(20) UNSIGNED NOT NULL,
   `model` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `series` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `warranty_months` int(11) NOT NULL DEFAULT '12',
-  `is_featured` tinyint(1) NOT NULL DEFAULT '1',
+  `is_featured` tinyint(1) NOT NULL DEFAULT '0',
   `status` enum('active','inactive') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'active',
   `image` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `specifications` json DEFAULT NULL,
-  `features` json DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   `deleted_at` timestamp NULL DEFAULT NULL,
@@ -381,8 +386,8 @@ CREATE TABLE `products` (
 -- Đang đổ dữ liệu cho bảng `products`
 --
 
-INSERT INTO `products` (`id`, `name`, `slug`, `description`, `content`, `discount_price`, `stock`, `category_id`, `model`, `series`, `warranty_months`, `is_featured`, `status`, `image`, `specifications`, `features`, `created_at`, `updated_at`, `deleted_at`, `has_variants`, `purchase_price`, `selling_price`) VALUES
-(4, 'iPhone 15 Pro Max 256GB', 'iphone-15-pro-max-256gb', 'Bộ sản phẩm gồm: Hộp, Sách hướng dẫn, Cây lấy sim, Cáp Type C\r\n Hư gì đổi nấy 12 tháng tại 3043 siêu thị trên toàn quốc Xem chi tiết chính sách bảo hành, đổi trả\r\n Bảo hành chính hãng 1 năm\r\n Giao hàng nhanh toàn quốc Xem chi tiết\r\n Tổng đài: 1900.9696.42 (8:00 - 21:30)', '<p>Khuyến m&atilde;i trị gi&aacute; 500.000₫<small>Gi&aacute; v&agrave; khuyến m&atilde;i dự kiến &aacute;p dụng đến 23:59 | 31/05</small></p>\r\n\r\n<p>&nbsp;<strong>Phiếu mua h&agrave;ng AirPods, Apple Watch, Macbook trị gi&aacute; 500,000đ</strong></p>\r\n\r\n<p>&nbsp;<strong>Phiếu mua h&agrave;ng &aacute;p dụng mua Sạc dự ph&ograve;ng (trừ h&atilde;ng AVA+, Hydrus), đồng hồ th&ocirc;ng minh (trừ Apple), Tai nghe v&agrave; Loa bluetooth (h&atilde;ng JBL, Marshall,Harmar Kardon ,Sony) trị gi&aacute; 100.000đ</strong></p>\r\n\r\n<p>&nbsp;<strong>Thu cũ đổi mới: Giảm đến 2,000,000đ (Kh&ocirc;ng k&egrave;m ưu đ&atilde;i thanh to&aacute;n qua cổng, mua k&egrave;m)&nbsp;<a href=\"https://www.thegioididong.com/thu-cu-doi-moi\">Xem chi tiết</a></strong></p>\r\n\r\n<p>&nbsp;<strong>Nhập m&atilde; VNPAYTGDD2 giảm từ 80,000đ đến 150,000đ (&aacute;p dụng t&ugrave;y gi&aacute; trị đơn h&agrave;ng) khi thanh to&aacute;n qua VNPAY-QR&nbsp;<a href=\"https://www.topzone.vn/tekzone/nhap-ma-vnpaytgdd1-giam-toi-da-150k-khi-thanh-toan-qua-vnpay-qr-1573704\" target=\"_blank\">(Xem chi tiết tại đ&acirc;y)</a></strong></p>', NULL, 0, 3, 'iPhone 15 Pro', 'Pro Max', 12, 1, 'active', 'uploads/products/1746843520.png', NULL, NULL, '2025-05-10 01:38:42', '2025-05-10 02:18:40', NULL, 0, 20000000.00, 25000000.00);
+INSERT INTO `products` (`id`, `name`, `slug`, `description`, `content`, `discount_price`, `stock`, `category_id`, `model`, `series`, `warranty_months`, `is_featured`, `status`, `image`, `created_at`, `updated_at`, `deleted_at`, `has_variants`, `purchase_price`, `selling_price`) VALUES
+(4, 'iPhone 15 Pro Max 256GB', 'iphone-15-pro-max-256gb', 'Bộ sản phẩm gồm: Hộp, Sách hướng dẫn, Cây lấy sim, Cáp Type C\r\n Hư gì đổi nấy 12 tháng tại 3043 siêu thị trên toàn quốc Xem chi tiết chính sách bảo hành, đổi trả\r\n Bảo hành chính hãng 1 năm\r\n Giao hàng nhanh toàn quốc Xem chi tiết\r\n Tổng đài: 1900.9696.42 (8:00 - 21:30)', '<p>Khuyến m&atilde;i trị gi&aacute; 500.000₫<small>Gi&aacute; v&agrave; khuyến m&atilde;i dự kiến &aacute;p dụng đến 23:59 | 31/05</small></p>\r\n\r\n<p>&nbsp;<strong>Phiếu mua h&agrave;ng AirPods, Apple Watch, Macbook trị gi&aacute; 500,000đ</strong></p>\r\n\r\n<p>&nbsp;<strong>Phiếu mua h&agrave;ng &aacute;p dụng mua Sạc dự ph&ograve;ng (trừ h&atilde;ng AVA+, Hydrus), đồng hồ th&ocirc;ng minh (trừ Apple), Tai nghe v&agrave; Loa bluetooth (h&atilde;ng JBL, Marshall,Harmar Kardon ,Sony) trị gi&aacute; 100.000đ</strong></p>\r\n\r\n<p>&nbsp;<strong>Thu cũ đổi mới: Giảm đến 2,000,000đ (Kh&ocirc;ng k&egrave;m ưu đ&atilde;i thanh to&aacute;n qua cổng, mua k&egrave;m)&nbsp;<a href=\"https://www.thegioididong.com/thu-cu-doi-moi\">Xem chi tiết</a></strong></p>\r\n\r\n<p>&nbsp;<strong>Nhập m&atilde; VNPAYTGDD2 giảm từ 80,000đ đến 150,000đ (&aacute;p dụng t&ugrave;y gi&aacute; trị đơn h&agrave;ng) khi thanh to&aacute;n qua VNPAY-QR&nbsp;<a href=\"https://www.topzone.vn/tekzone/nhap-ma-vnpaytgdd1-giam-toi-da-150k-khi-thanh-toan-qua-vnpay-qr-1573704\" target=\"_blank\">(Xem chi tiết tại đ&acirc;y)</a></strong></p>', NULL, 0, 3, 'iPhone 15 Pro', 'Pro Max', 12, 1, 'active', 'uploads/products/1746843520.png', '2025-05-10 01:38:42', '2025-05-10 02:18:40', NULL, 0, 20000000.00, 25000000.00);
 
 -- --------------------------------------------------------
 
@@ -404,8 +409,8 @@ CREATE TABLE `product_attributes` (
 --
 
 INSERT INTO `product_attributes` (`id`, `product_id`, `attribute_name`, `attribute_value`, `created_at`, `updated_at`) VALUES
-(17, 4, 'feature', 'Camera 48MP', '2025-05-10 02:30:41', '2025-05-10 02:30:41'),
-(18, 4, 'Chip', '20', '2025-05-10 02:30:41', '2025-05-10 02:30:41');
+(19, 4, 'feature', 'Camera 48MP', '2025-05-10 04:07:04', '2025-05-10 04:07:04'),
+(20, 4, 'Chip', '20', '2025-05-10 04:07:04', '2025-05-10 04:07:04');
 
 -- --------------------------------------------------------
 
@@ -431,7 +436,7 @@ CREATE TABLE `product_reviews` (
 CREATE TABLE `product_variants` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `product_id` bigint(20) UNSIGNED NOT NULL,
-  `sku` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `sku` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL,
   `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `slug` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `discount_price` decimal(15,2) DEFAULT NULL,
@@ -489,10 +494,11 @@ CREATE TABLE `sessions` (
 --
 
 INSERT INTO `sessions` (`id`, `user_id`, `ip_address`, `user_agent`, `payload`, `last_activity`) VALUES
-('8q5a3uIQ0IT06T2r8yfnGZ05mjWPoDO7t7JX1ZJW', NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoiT0JIQlFQZU5tSHVJQnoyWGlPZEdlVllpRXlmVjdrUWloRHZydWNCaCI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6MzY6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9hZG1pbi9wcm9kdWN0cyI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fX0=', 1746844242),
-('e8mvF4mPTOpZ7Ofel5hJq6EbymGwrUipcHX7YAM0', NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoidnJNdllNaXA0NXhlYjJjNmlHZXdmMkRRR2pJQlZOWWNMekNmQWQ0bCI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6MzU6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9hZG1pbi9iYW5uZXJzIjt9czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319fQ==', 1746840029),
-('I9LOORT5OpRioJlJIjDz9gXaI9yABFIxUn8xWkTX', NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoidWs1WElnMEJ4TlpaenV2WFJ1ZWtUUVhQZEtMRnV4Rm1lRjdVUjdVMiI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6Mzg6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9hZG1pbi9jYXRlZ29yaWVzIjt9czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319fQ==', 1746840580),
-('UM6RorNIkX4iDYaQDSbNYCf2WcmBcasmh2805sK2', NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoiUHFzT3p0cTRGbXVJbU9lMnl3S0pRTDBmWFNxVE84bzFQeWEwbTNjViI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6MzQ6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9hZG1pbi9vcmRlcnMiO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX19', 1746826194);
+('CORjZXOoio4UImUtKujGMcNIxrLuMWP5ZiAtTud7', NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoiRHpaT3A2V0VLWjVwakQ5ZnZ6bENQSFJyRTlNYk1abXQ5MVRUS2I1NyI7czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6Mzg6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9hZG1pbi9jYXRlZ29yaWVzIjt9fQ==', 1746959376),
+('k4HNZuGswXgbSaAKIrNC1y5SuwEZnpPUh5yNEmkU', NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoicWRkejA2WmF4ZW5tTm82YVB1czdDTnFYNmRwcDRKa1pLN25NaEJ2ViI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6MzM6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9hZG1pbi9ibG9ncyI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fX0=', 1746950285),
+('mGxWWq3Ju80wRWBGDRkOu9UYYtpni2h3RorYKCkf', NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoiVk1VdjVUQ1huZGE5alRpRFZMSjRGeHlPUXdLRkQ2THpSaXNGVlhtYiI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6MjE6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMCI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fX0=', 1746982985),
+('NzPE9M0zOrApoAheu6hbLXAYJFNXC6plXMU2nbkc', NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoiY2xaeENHOFlzRG9BcVJJVkhMb3AybnlwRVFVb2Q4eEZObjR0d2VRVCI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6MjE6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMCI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fX0=', 1746952403),
+('RSn5ujEDhNoR6D5YltIAOCHdk8I8pAYRI3ycYgkB', NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoiUU9Ya3duazBvWkZ2U0RsbnJnZlh4ZWRKTFUwRFpOTk5lNWlXY3ZUVSI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6NDM6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9hZG1pbi9wcm9kdWN0cy9jcmVhdGUiO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX19', 1747014132);
 
 -- --------------------------------------------------------
 
@@ -595,6 +601,51 @@ CREATE TABLE `variant_attributes` (
   `variant_id` bigint(20) UNSIGNED NOT NULL,
   `attribute_name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `attribute_value` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Cấu trúc bảng cho bảng `variant_attribute_types`
+--
+
+CREATE TABLE `variant_attribute_types` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `name` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `status` enum('active','inactive') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'active',
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `deleted_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Cấu trúc bảng cho bảng `variant_attribute_values`
+--
+
+CREATE TABLE `variant_attribute_values` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `attribute_type_id` bigint(20) UNSIGNED NOT NULL,
+  `value` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `status` enum('active','inactive') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'active',
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `deleted_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Cấu trúc bảng cho bảng `variant_combinations`
+--
+
+CREATE TABLE `variant_combinations` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `variant_id` bigint(20) UNSIGNED NOT NULL,
+  `attribute_value_id` bigint(20) UNSIGNED NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -799,6 +850,28 @@ ALTER TABLE `variant_attributes`
   ADD KEY `variant_attributes_variant_id_foreign` (`variant_id`);
 
 --
+-- Chỉ mục cho bảng `variant_attribute_types`
+--
+ALTER TABLE `variant_attribute_types`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `variant_attribute_types_name_unique` (`name`);
+
+--
+-- Chỉ mục cho bảng `variant_attribute_values`
+--
+ALTER TABLE `variant_attribute_values`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `variant_attribute_values_attribute_type_id_value_unique` (`attribute_type_id`,`value`);
+
+--
+-- Chỉ mục cho bảng `variant_combinations`
+--
+ALTER TABLE `variant_combinations`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `variant_combinations_variant_id_attribute_value_id_unique` (`variant_id`,`attribute_value_id`),
+  ADD KEY `variant_combinations_attribute_value_id_foreign` (`attribute_value_id`);
+
+--
 -- Chỉ mục cho bảng `wishlists`
 --
 ALTER TABLE `wishlists`
@@ -839,7 +912,7 @@ ALTER TABLE `cart_items`
 -- AUTO_INCREMENT cho bảng `categories`
 --
 ALTER TABLE `categories`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
 
 --
 -- AUTO_INCREMENT cho bảng `failed_jobs`
@@ -857,7 +930,7 @@ ALTER TABLE `jobs`
 -- AUTO_INCREMENT cho bảng `migrations`
 --
 ALTER TABLE `migrations`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=41;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=43;
 
 --
 -- AUTO_INCREMENT cho bảng `orders`
@@ -887,7 +960,7 @@ ALTER TABLE `products`
 -- AUTO_INCREMENT cho bảng `product_attributes`
 --
 ALTER TABLE `product_attributes`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 
 --
 -- AUTO_INCREMENT cho bảng `product_reviews`
@@ -935,6 +1008,24 @@ ALTER TABLE `user_addresses`
 -- AUTO_INCREMENT cho bảng `variant_attributes`
 --
 ALTER TABLE `variant_attributes`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT cho bảng `variant_attribute_types`
+--
+ALTER TABLE `variant_attribute_types`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT cho bảng `variant_attribute_values`
+--
+ALTER TABLE `variant_attribute_values`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT cho bảng `variant_combinations`
+--
+ALTER TABLE `variant_combinations`
   MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
@@ -993,7 +1084,7 @@ ALTER TABLE `order_items`
 -- Các ràng buộc cho bảng `products`
 --
 ALTER TABLE `products`
-  ADD CONSTRAINT `products_category_id_foreign` FOREIGN KEY (`category_id`) REFERENCES `categories` (`id`) ON DELETE SET NULL;
+  ADD CONSTRAINT `products_category_id_foreign` FOREIGN KEY (`category_id`) REFERENCES `categories` (`id`);
 
 --
 -- Các ràng buộc cho bảng `product_attributes`
@@ -1032,6 +1123,19 @@ ALTER TABLE `user_addresses`
 --
 ALTER TABLE `variant_attributes`
   ADD CONSTRAINT `variant_attributes_variant_id_foreign` FOREIGN KEY (`variant_id`) REFERENCES `product_variants` (`id`) ON DELETE CASCADE;
+
+--
+-- Các ràng buộc cho bảng `variant_attribute_values`
+--
+ALTER TABLE `variant_attribute_values`
+  ADD CONSTRAINT `variant_attribute_values_attribute_type_id_foreign` FOREIGN KEY (`attribute_type_id`) REFERENCES `variant_attribute_types` (`id`) ON DELETE CASCADE;
+
+--
+-- Các ràng buộc cho bảng `variant_combinations`
+--
+ALTER TABLE `variant_combinations`
+  ADD CONSTRAINT `variant_combinations_attribute_value_id_foreign` FOREIGN KEY (`attribute_value_id`) REFERENCES `variant_attribute_values` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `variant_combinations_variant_id_foreign` FOREIGN KEY (`variant_id`) REFERENCES `product_variants` (`id`) ON DELETE CASCADE;
 
 --
 -- Các ràng buộc cho bảng `wishlists`

@@ -1,20 +1,20 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\admin\BlogController;
-use App\Http\Controllers\admin\UserController;
-use App\Http\Controllers\admin\OrderController;
 use App\Http\Controllers\admin\BannerController;
-use App\Http\Controllers\admin\ProductController;
+use App\Http\Controllers\admin\BlogController;
 use App\Http\Controllers\admin\CategoryController;
 use App\Http\Controllers\admin\DashboardController;
+use App\Http\Controllers\admin\OrderController;
+use App\Http\Controllers\admin\ProductController;
+use App\Http\Controllers\admin\UserController;
+use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('welcome');
 });
 
-// Route::prefix('admin')->middleware('auth')->name('admin.')->group(function () {  // nếu có middleware thì mở cái này ra 
-Route::prefix('admin')->name('admin.')->group(function () { // chưa có middleware thì dùng cái này nhé
+// Route::prefix('admin')->middleware('auth')->name('admin.')->group(function () {
+Route::prefix('admin')->name('admin.')->group(function () {
     // Dashboard
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 
@@ -22,6 +22,7 @@ Route::prefix('admin')->name('admin.')->group(function () { // chưa có middlew
     Route::get('/categories/trash', [CategoryController::class, 'trash'])->name('categories.trash');
     Route::post('/categories/{category}/restore', [CategoryController::class, 'restore'])->name('categories.restore');
     Route::delete('/categories/{category}/forceDelete', [CategoryController::class, 'forceDelete'])->name('categories.forceDelete');
+    Route::post('/categories/change-order', [CategoryController::class, 'changeOrder'])->name('categories.changeOrder');
     Route::resource('categories', CategoryController::class)->names([
         'index' => 'categories.index',
         'create' => 'categories.create',
@@ -31,30 +32,49 @@ Route::prefix('admin')->name('admin.')->group(function () { // chưa có middlew
         'update' => 'categories.update',
         'destroy' => 'categories.destroy',
     ]);
+
     // Banner Routes
     Route::resource('banners', BannerController::class);
     Route::post('banners/{banner}/move-up', [BannerController::class, 'moveUp'])->name('banners.moveUp');
     Route::post('banners/{banner}/move-down', [BannerController::class, 'moveDown'])->name('banners.moveDown');
 
-    // Product routes
-    Route::get('/products/trash', [ProductController::class, 'trash'])->name('products.trash');
-    Route::post('/products/{product}/restore', [ProductController::class, 'restore'])->name('products.restore');
-    Route::delete('/products/{product}/forceDelete', [ProductController::class, 'forceDelete'])->name('products.forceDelete');
-    Route::resource('products', ProductController::class)->names([
-        'index' => 'products.index',
-        'create' => 'products.create',
-        'store' => 'products.store',
-        'show' => 'products.show',
-        'edit' => 'products.edit',
-        'update' => 'products.update',
-        'destroy' => 'products.destroy',
-    ]);
+    // Routes for VariantAttributeTypeController (CRUD for attribute types)
+    Route::prefix('attributes')->name('attributes.')->group(function () {
+        Route::prefix('types')->name('types.')->group(function () {
+            Route::get('/', [VariantAttributeTypeController::class, 'index'])->name('index');
+            Route::get('/create', [VariantAttributeTypeController::class, 'create'])->name('create');
+            Route::post('/', [VariantAttributeTypeController::class, 'store'])->name('store');
+            Route::get('/{attributeType}/edit', [VariantAttributeTypeController::class, 'edit'])->name('edit');
+            Route::put('/{attributeType}', [VariantAttributeTypeController::class, 'update'])->name('update');
+            Route::delete('/{attributeType}', [VariantAttributeTypeController::class, 'destroy'])->name('destroy');
+        });
+    });
+
+    // Routes for ProductController (CRUD for products, both simple and variant)
+    Route::prefix('products')->name('products.')->group(function () {
+        // General routes
+        Route::get('/', [ProductController::class, 'index'])->name('index');
+        Route::get('/trash', [ProductController::class, 'trash'])->name('trash');
+        Route::get('/{product}', [ProductController::class, 'show'])->name('show');
+        Route::delete('/{product}', [ProductController::class, 'destroy'])->name('destroy');
+
+        // Routes for simple products
+        Route::get('/create-simple', [ProductController::class, 'createSimple'])->name('create-simple');
+        Route::get('/{product}/edit-simple', [ProductController::class, 'editSimple'])->name('edit-simple');
+
+        // Routes for variant products
+        Route::get('/create-variant', [ProductController::class, 'createVariant'])->name('create-variant');
+        Route::get('/{product}/edit-variant', [ProductController::class, 'editVariant'])->name('edit-variant');
+
+        // Shared routes for storing and updating (handles both simple and variant)
+        Route::post('/', [ProductController::class, 'store'])->name('store');
+        Route::put('/{product}', [ProductController::class, 'update'])->name('update');
+    });
 
     Route::resource('orders', OrderController::class)->names([
         'index' => 'orders.index',
         'show' => 'orders.show',
         'destroy' => 'orders.destroy',
-
     ]);
     Route::get('/trash', [OrderController::class, 'trash'])->name('orders.trash');
     Route::post('/restore/{id}', [OrderController::class, 'restore'])->name('orders.restore');

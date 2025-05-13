@@ -7,6 +7,7 @@ use App\Http\Controllers\admin\DashboardController;
 use App\Http\Controllers\admin\OrderController;
 use App\Http\Controllers\admin\ProductController;
 use App\Http\Controllers\admin\UserController;
+use App\Http\Controllers\Admin\VariantAttributeTypeController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -96,6 +97,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         'destroy' => 'users.destroy',
     ]);
 
+    // Blog
     Route::resource('blogs', BlogController::class);
     // Trang Trash
     Route::get('blogs-trash', [BlogController::class, 'trash'])

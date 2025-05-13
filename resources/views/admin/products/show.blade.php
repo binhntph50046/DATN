@@ -1,5 +1,6 @@
+<!-- resources/views/admin/products/show.blade.php -->
 @extends('admin.layouts.app')
-@section('title', 'Product Details')
+@section('title', 'View Product')
 
 <style>
     .custom-shadow {
@@ -71,7 +72,7 @@
                     <div class="row align-items-center">
                         <div class="col-md-12">
                             <div class="page-header-title">
-                                <h5 class="m-b-10">Product Details</h5>
+                                <h5 class="m-b-10">View Product</h5>
                             </div>
                             <ul class="breadcrumb">
                                 <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Home</a></li>
@@ -91,9 +92,15 @@
                         <div class="card-header">
                             <h5>Product Information</h5>
                             <div class="card-header-right">
-                                <a href="{{ route('admin.products.edit', $product->id) }}" class="btn btn-info btn-sm rounded-3 me-2">
-                                    <i class="ti ti-edit"></i> Edit Product
-                                </a>
+                                @if ($product->has_variants)
+                                    <a href="{{ route('admin.products.edit-variant', $product) }}" class="btn btn-info btn-sm rounded-3 me-2">
+                                        <i class="ti ti-edit"></i> Edit Product
+                                    </a>
+                                @else
+                                    <a href="{{ route('admin.products.edit-simple', $product) }}" class="btn btn-info btn-sm rounded-3 me-2">
+                                        <i class="ti ti-edit"></i> Edit Product
+                                    </a>
+                                @endif
                                 <a href="{{ route('admin.products.index') }}" class="btn btn-secondary btn-sm rounded-3">
                                     <i class="ti ti-arrow-left"></i> Back to List
                                 </a>
@@ -105,7 +112,7 @@
                                 <div class="col-md-4 mb-4">
                                     <div class="custom-shadow">
                                         @if ($product->image)
-                                            <img src="{{ asset($product->image) }}" alt="{{ $product->name }}" class="product-image">
+                                            <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}" class="product-image">
                                         @else
                                             <div class="text-center p-4 bg-light rounded">
                                                 <i class="ti ti-photo-off" style="font-size: 48px; color: #ccc;"></i>
@@ -123,27 +130,32 @@
                                             <div class="product-basic-info">
                                                 <h3 class="mb-3">{{ $product->name }}</h3>
                                                 <div class="info-section">
-                                                    <p class="mb-2"><strong>Category:</strong> {{ $product->category->name ?? 'N/A' }}</p>
+                                                    <p class="mb-2"><strong>Category:</strong> {{ $product->category ? $product->category->name : 'N/A' }}</p>
                                                     <p class="mb-2"><strong>Model:</strong> {{ $product->model ?? 'N/A' }}</p>
                                                     <p class="mb-2"><strong>Series:</strong> {{ $product->series ?? 'N/A' }}</p>
                                                     <p class="mb-2">
                                                         <strong>Price:</strong>
-                                                        @if($product->discount_price)
-                                                            <span class="text-decoration-line-through text-muted">{{ number_format($product->price) }} VNĐ</span>
+                                                        @php
+                                                            // Lấy giá từ variant đầu tiên nếu có, hoặc từ product nếu không có variant
+                                                            $price = $product->variants->first()->selling_price ?? $product->selling_price ?? 0;
+                                                            $discountPrice = $product->variants->first()->discount_price ?? $product->discount_price ?? 0;
+                                                        @endphp
+                                                        @if ($discountPrice > 0)
+                                                            <span class="text-decoration-line-through text-muted">{{ number_format($price) }} VNĐ</span>
                                                             <br>
-                                                            <span class="text-danger fw-bold">{{ number_format($product->discount_price) }} VNĐ</span>
+                                                            <span class="text-danger fw-bold">{{ number_format($discountPrice) }} VNĐ</span>
                                                         @else
-                                                            {{ number_format($product->price) }} VNĐ
+                                                            {{ number_format($price) }} VNĐ
                                                         @endif
                                                     </p>
-                                                    <p class="mb-2"><strong>Stock:</strong> {{ $product->stock }}</p>
-                                                    <p class="mb-2"><strong>Warranty:</strong> {{ $product->warranty_months }} months</p>
+                                                    <p class="mb-2"><strong>Stock:</strong> {{ $product->variants->sum('stock') ?? $product->stock ?? 0 }}</p>
+                                                    <p class="mb-2"><strong>Warranty:</strong> {{ $product->warranty_months ?? 'N/A' }} months</p>
                                                     <div class="mb-3">
                                                         <strong>Status:</strong>
                                                         <span class="badge {{ $product->status === 'active' ? 'bg-success' : 'bg-danger' }}">
                                                             {{ ucfirst($product->status) }}
                                                         </span>
-                                                        @if($product->is_featured)
+                                                        @if ($product->is_featured ?? false)
                                                             <span class="badge bg-info ms-2">Featured</span>
                                                         @endif
                                                     </div>
@@ -153,10 +165,10 @@
                                             <!-- Right Column: Specs and Features -->
                                             <div class="product-specs-features">
                                                 <!-- Specifications -->
-                                                @if($product->specifications)
+                                                @if ($product->specifications)
                                                     <div class="info-section">
                                                         <h5 class="mb-3">Specifications</h5>
-                                                        @foreach($product->specifications as $spec)
+                                                        @foreach ($product->specifications as $spec)
                                                             <div class="spec-item">
                                                                 <strong>{{ $spec['key'] }}:</strong>
                                                                 <span>{{ $spec['value'] }}</span>
@@ -166,10 +178,10 @@
                                                 @endif
 
                                                 <!-- Features -->
-                                                @if($product->features)
+                                                @if ($product->features)
                                                     <div class="info-section">
                                                         <h5 class="mb-3">Features</h5>
-                                                        @foreach($product->features as $feature)
+                                                        @foreach ($product->features as $feature)
                                                             <div class="feature-item">
                                                                 <i class="ti ti-check"></i>
                                                                 {{ $feature }}
@@ -184,7 +196,7 @@
                             </div>
 
                             <!-- Description (Full Width) -->
-                            @if($product->description)
+                            @if ($product->description)
                                 <div class="row mt-4">
                                     <div class="col-12">
                                         <div class="custom-shadow">
@@ -196,7 +208,7 @@
                             @endif
 
                             <!-- Content (Full Width) -->
-                            @if($product->content)
+                            @if ($product->content)
                                 <div class="row mt-4">
                                     <div class="col-12">
                                         <div class="custom-shadow">
@@ -209,12 +221,13 @@
                                 </div>
                             @endif
 
-                            <div class="card">
+                            <!-- Product Variants -->
+                            <div class="card mt-4">
                                 <div class="card-header">
                                     <h5>Product Variants</h5>
                                 </div>
                                 <div class="card-body">
-                                    @if($product->has_variants)
+                                    @if ($product->has_variants)
                                         <div class="table-responsive">
                                             <table class="table table-hover">
                                                 <thead>
@@ -229,44 +242,44 @@
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                    @foreach($product->variants as $variant)
-                                                        <tr class="{{ $variant->is_default ? 'table-success' : '' }}">
+                                                    @foreach ($product->variants as $variant)
+                                                        <tr class="{{ $variant->is_default ?? false ? 'table-success' : '' }}">
                                                             <td>{{ $variant->sku }}</td>
                                                             <td>
-                                                                @if($variant->image)
-                                                                    <img src="{{ $variant->image }}" alt="Variant Image" class="rounded" style="width: 50px; height: 50px; object-fit: cover;">
+                                                                @if ($variant->image)
+                                                                    <img src="{{ asset('storage/' . $variant->image) }}" alt="Variant Image" class="rounded" style="width: 50px; height: 50px; object-fit: cover;">
                                                                 @else
                                                                     <span class="badge bg-secondary">No image</span>
                                                                 @endif
                                                             </td>
                                                             <td>
-                                                                @foreach($variant->attributes as $attr)
+                                                                @foreach ($variant->attributes as $attr)
                                                                     <div class="mb-1">
-                                                                        <small class="text-muted">{{ $attr->attribute_name }}:</small>
-                                                                        <span class="badge bg-info">{{ $attr->attribute_value }}</span>
+                                                                        <small class="text-muted">{{ $attr->attributeType ? $attr->attributeType->name : 'N/A' }}:</small>
+                                                                        <span class="badge bg-info">{{ $attr->value }}</span>
                                                                     </div>
                                                                 @endforeach
                                                             </td>
                                                             <td>
                                                                 <div class="d-flex flex-column">
-                                                                    <span class="text-success fw-bold">${{ number_format($variant->selling_price, 2) }}</span>
-                                                                    @if($variant->discount_price)
-                                                                        <small class="text-danger text-decoration-line-through">${{ number_format($variant->discount_price, 2) }}</small>
+                                                                    <span class="text-success fw-bold">{{ number_format($variant->selling_price ?? 0) }} VNĐ</span>
+                                                                    @if ($variant->discount_price)
+                                                                        <small class="text-danger text-decoration-line-through">{{ number_format($variant->discount_price) }} VNĐ</small>
                                                                     @endif
                                                                 </div>
                                                             </td>
                                                             <td>
                                                                 <span class="badge {{ $variant->stock > 0 ? 'bg-success' : 'bg-danger' }}">
-                                                                    {{ $variant->stock }}
+                                                                    {{ $variant->stock ?? 0 }}
                                                                 </span>
                                                             </td>
                                                             <td>
                                                                 <span class="badge bg-{{ $variant->status === 'active' ? 'success' : 'danger' }}">
-                                                                    {{ ucfirst($variant->status) }}
+                                                                    {{ ucfirst($variant->status ?? 'N/A') }}
                                                                 </span>
                                                             </td>
                                                             <td>
-                                                                @if($variant->is_default)
+                                                                @if ($variant->is_default ?? false)
                                                                     <span class="badge bg-success">
                                                                         <i class="ti ti-check"></i> Default
                                                                     </span>
@@ -293,4 +306,4 @@
             <!-- [ Main Content ] end -->
         </div>
     </div>
-@endsection 
+@endsection

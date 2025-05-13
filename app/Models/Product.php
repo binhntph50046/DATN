@@ -16,26 +16,18 @@ class Product extends Model
         'slug',
         'description',
         'content',
-        'discount_price',
-        'stock',
         'category_id',
         'model',
         'series',
         'warranty_months',
         'is_featured',
         'status',
-        'image',
         'has_variants',
-        'purchase_price',
-        'selling_price',
     ];
 
     protected $casts = [
         'is_featured' => 'boolean',
         'has_variants' => 'boolean',
-        'discount_price' => 'decimal:2',
-        'purchase_price' => 'decimal:2',
-        'selling_price' => 'decimal:2',
     ];
 
     public function category()

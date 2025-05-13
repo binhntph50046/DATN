@@ -7,6 +7,7 @@ use App\Http\Controllers\admin\DashboardController;
 use App\Http\Controllers\admin\OrderController;
 use App\Http\Controllers\admin\ProductController;
 use App\Http\Controllers\admin\UserController;
+use App\Http\Controllers\Admin\VariantAttributeTypeController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {

@@ -12,6 +12,7 @@ class VariantAttribute extends Model
         'variant_id',
         'attribute_name',
         'attribute_value',
+        'hex',
     ];
 
     public function variant()

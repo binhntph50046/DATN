@@ -83,6 +83,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('/', [ProductController::class, 'store'])->name('store');
         Route::put('/{product}', [ProductController::class, 'update'])->name('update');
         Route::delete('/{product}', [ProductController::class, 'destroy'])->name('destroy');
+        Route::patch('/{id}/restore', [ProductController::class, 'restore'])->name('restore');
+        Route::delete('/{id}/forceDelete', [ProductController::class, 'forceDelete'])->name('forceDelete');
     });
 
     // Order Routes

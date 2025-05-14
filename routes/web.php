@@ -17,9 +17,11 @@ use App\Http\Controllers\client\BlogController as ClientBlogController;
 use App\Http\Controllers\client\CartController;
 use App\Http\Controllers\client\CheckoutController;
 use App\Http\Controllers\client\ContactController;
+use App\Http\Controllers\client\ProductController as ClientProductController;
 
 // Client 
 Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::get('/productDetail', [ClientProductController::class, 'productDetail'])->name('productDetail');
 Route::get('/shop', [ShopController::class, 'index'])->name('shop');
 Route::get('/about', [AboutController::class, 'index'])->name('about');
 Route::get('/blog', [ClientBlogController::class, 'index'])->name('blog');

@@ -2091,3 +2091,66 @@ textarea {
     margin-bottom: 30px;
   }
 }
+
+/* Hero Carousel Styles */
+#heroCarousel {
+    position: relative;
+    height: 600px;
+    overflow: hidden;
+}
+
+#heroCarousel .carousel-item {
+    height: 600px;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    position: relative;
+}
+
+#heroCarousel .carousel-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+}
+
+#heroCarousel .carousel-item .container {
+    position: relative;
+    z-index: 1;
+    height: 100%;
+    display: flex;
+    align-items: center;
+}
+
+#heroCarousel .intro-excerpt {
+    color: #fff;
+}
+
+#heroCarousel .carousel-control-prev,
+#heroCarousel .carousel-control-next {
+    width: 5%;
+}
+
+#heroCarousel .carousel-indicators {
+    margin-bottom: 2rem;
+}
+
+#heroCarousel .carousel-indicators button {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    margin: 0 5px;
+}
+
+#heroCarousel .btn-white-outline {
+    border: 2px solid #fff;
+    color: #fff;
+}
+
+#heroCarousel .btn-white-outline:hover {
+    background: #fff;
+    color: #000;
+}

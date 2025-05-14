@@ -6,6 +6,6 @@ use Illuminate\Database\Eloquent\Model;
 
 class Banner extends Model
 {
-    //
-    protected $fillable = ['title', 'image', 'status', 'order','description'];
+    protected $table = 'banners';
+    protected $fillable = ['title', 'image', 'description', 'link', 'status', 'order'];
 }

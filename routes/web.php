@@ -1,6 +1,5 @@
 <?php
 use Illuminate\Support\Facades\Route;
-
 // Admin
 use App\Http\Controllers\admin\BlogController;
 use App\Http\Controllers\admin\UserController;
@@ -10,18 +9,25 @@ use App\Http\Controllers\admin\ProductController;
 use App\Http\Controllers\admin\CategoryController;
 use App\Http\Controllers\admin\DashboardController;
 use App\Http\Controllers\Admin\VariantAttributeTypeController;
-
 // Client 
 use App\Http\Controllers\client\HomeController;
 use App\Http\Controllers\client\ShopController;
+use App\Http\Controllers\client\AboutController;
 
 
 
 
 
+// Client 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/shop', [ShopController::class, 'index'])->name('shop');
+Route::get('/about', [AboutController::class, 'index'])->name('about');
 
+
+
+
+
+// Admin
 // Route::prefix('admin')->middleware('auth')->name('admin.')->group(function () {
 Route::prefix('admin')->name('admin.')->group(function () {
     // Dashboard

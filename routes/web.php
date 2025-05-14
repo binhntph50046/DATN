@@ -1,6 +1,6 @@
 <?php
-
 use Illuminate\Support\Facades\Route;
+// Admin
 use App\Http\Controllers\admin\BlogController;
 use App\Http\Controllers\admin\UserController;
 use App\Http\Controllers\admin\OrderController;
@@ -9,11 +9,28 @@ use App\Http\Controllers\admin\ProductController;
 use App\Http\Controllers\admin\CategoryController;
 use App\Http\Controllers\admin\DashboardController;
 use App\Http\Controllers\Admin\VariantAttributeTypeController;
+// Client 
+use App\Http\Controllers\client\HomeController;
+use App\Http\Controllers\client\ShopController;
+use App\Http\Controllers\client\AboutController;
+use App\Http\Controllers\client\BlogController as ClientBlogController;
+use App\Http\Controllers\client\CartController;
+use App\Http\Controllers\client\CheckoutController;
+use App\Http\Controllers\client\ContactController;
 
-Route::get('/', function () {
-    return view('welcome');
-});
+// Client 
+Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::get('/shop', [ShopController::class, 'index'])->name('shop');
+Route::get('/about', [AboutController::class, 'index'])->name('about');
+Route::get('/blog', [ClientBlogController::class, 'index'])->name('blog');
+Route::get('/contact', [ContactController::class, 'index'])->name('contact');
+Route::get('/cart', [CartController::class, 'index'])->name('cart');
+Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout');
 
+
+
+
+// Admin
 // Route::prefix('admin')->middleware('auth')->name('admin.')->group(function () {
 Route::prefix('admin')->name('admin.')->group(function () {
     // Dashboard

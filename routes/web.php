@@ -13,10 +13,14 @@ use App\Http\Controllers\Admin\VariantAttributeTypeController;
 
 // Client 
 use App\Http\Controllers\client\HomeController;
+use App\Http\Controllers\client\ShopController;
+
+
 
 
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::get('/shop', [ShopController::class, 'index'])->name('shop');
 
 // Route::prefix('admin')->middleware('auth')->name('admin.')->group(function () {
 Route::prefix('admin')->name('admin.')->group(function () {

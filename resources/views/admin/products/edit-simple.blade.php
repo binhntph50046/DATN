@@ -1,4 +1,3 @@
-<!-- resources/views/admin/products/edit-simple.blade.php -->
 @extends('admin.layouts.app')
 @section('title', 'Edit Simple Product')
 
@@ -67,23 +66,19 @@
                             </div>
                             <input type="hidden" name="slug" id="slug" value="{{ old('slug', $product->slug) }}">
                             <div class="row">
-                                <div class="col-md-6">
-                                    <div class="mb-3">
-                                        <label for="description" class="form-label">Description (optional)</label>
-                                        <textarea class="form-control @error('description') is-invalid @enderror" id="description" name="description">{{ old('description', $product->description) }}</textarea>
-                                        @error('description')
-                                            <div class="invalid-feedback">{{ $message }}</div>
-                                        @enderror
-                                    </div>
+                                <div class="mb-3">
+                                    <label for="description" class="form-label">Description (optional)</label>
+                                    <textarea class="form-control @error('description') is-invalid @enderror" id="description" name="description">{{ old('description', $product->description) }}</textarea>
+                                    @error('description')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
                                 </div>
-                                <div class="col-md-6">
-                                    <div class="mb-3">
-                                        <label for="content" class="form-label">Content (optional)</label>
-                                        <textarea class="form-control @error('content') is-invalid @enderror" id="content" name="content">{{ old('content', $product->content) }}</textarea>
-                                        @error('content')
-                                            <div class="invalid-feedback">{{ $message }}</div>
-                                        @enderror
-                                    </div>
+                                <div class="mb-3">
+                                    <label for="content" class="form-label">Content (optional)</label>
+                                    <textarea class="snettech-editor form-control @error('content') is-invalid @enderror" id="content" name="content" rows="10">{{ old('content', $product->content) }}</textarea>
+                                    @error('content')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
                                 </div>
                             </div>
                             <div class="row">
@@ -204,7 +199,7 @@
                                         <input type="file" class="form-control @error('image') is-invalid @enderror" id="image" name="image" accept="image/*">
                                         <div id="image-preview" class="mt-2">
                                             @if ($product->variants->first() && $product->variants->first()->image)
-                                                <img src="{{ asset('storage/' . $product->variants->first()->image) }}" alt="{{ $product->name }}" class="img-thumbnail" style="max-width: 150px;">
+                                                <img src="{{ asset('Uploads/' . $product->variants->first()->image) }}" alt="{{ $product->name }}" class="img-thumbnail" style="max-width: 150px;">
                                             @endif
                                         </div>
                                         @error('image')
@@ -218,26 +213,71 @@
                             <div class="mb-3">
                                 <label class="form-label">Product Attributes</label>
                                 <div id="product-attributes">
-                                    @foreach ($product->attributes as $index => $attribute)
+                                    @if ($product->attributes->isEmpty())
                                         <div class="row mb-2">
-                                            <div class="col-md-5">
-                                                <select class="form-select" name="product_attributes[{{ $index }}][attribute_type_id]">
+                                            <div class="col-md-4">
+                                                <select class="form-select @error('product_attributes.0.attribute_type_id') is-invalid @enderror" name="product_attributes[0][attribute_type_id]">
                                                     <option value="">-- Select Attribute --</option>
                                                     @foreach ($attributeTypes as $attributeType)
-                                                        <option value="{{ $attributeType->id }}" {{ $attribute->attribute_name == $attributeType->name ? 'selected' : '' }}>
+                                                        <option value="{{ $attributeType->id }}" {{ old('product_attributes.0.attribute_type_id') == $attributeType->id ? 'selected' : '' }}>
                                                             {{ $attributeType->name }}
                                                         </option>
                                                     @endforeach
                                                 </select>
+                                                @error('product_attributes.0.attribute_type_id')
+                                                    <div class="invalid-feedback">{{ $message }}</div>
+                                                @enderror
                                             </div>
-                                            <div class="col-md-5">
-                                                <input type="text" class="form-control" name="product_attributes[{{ $index }}][value]" value="{{ $attribute->attribute_value }}" placeholder="Value">
+                                            <div class="col-md-3">
+                                                <input type="text" class="form-control @error('product_attributes.0.value') is-invalid @enderror" name="product_attributes[0][value]" value="{{ old('product_attributes.0.value') }}" placeholder="Value">
+                                                @error('product_attributes.0.value')
+                                                    <div class="invalid-feedback">{{ $message }}</div>
+                                                @enderror
+                                            </div>
+                                            <div class="col-md-3">
+                                                <input type="text" class="form-control @error('product_attributes.0.hex') is-invalid @enderror" name="product_attributes[0][hex]" value="{{ old('product_attributes.0.hex') }}" placeholder="Hex Code (e.g., #FFFFFF)">
+                                                @error('product_attributes.0.hex')
+                                                    <div class="invalid-feedback">{{ $message }}</div>
+                                                @enderror
                                             </div>
                                             <div class="col-md-2">
                                                 <button type="button" class="btn btn-danger remove-attribute">Remove</button>
                                             </div>
                                         </div>
-                                    @endforeach
+                                    @else
+                                        @foreach ($product->attributes as $index => $attribute)
+                                            <div class="row mb-2">
+                                                <div class="col-md-4">
+                                                    <select class="form-select @error('product_attributes.' . $index . '.attribute_type_id') is-invalid @enderror" name="product_attributes[{{ $index }}][attribute_type_id]">
+                                                        <option value="">-- Select Attribute --</option>
+                                                        @foreach ($attributeTypes as $attributeType)
+                                                            <option value="{{ $attributeType->id }}" {{ old('product_attributes.' . $index . '.attribute_type_id', $attribute->attribute_type_id ?? ($attributeType->name == $attribute->attribute_name ? $attributeType->id : '')) == $attributeType->id ? 'selected' : '' }}>
+                                                                {{ $attributeType->name }}
+                                                            </option>
+                                                        @endforeach
+                                                    </select>
+                                                    @error('product_attributes.' . $index . '.attribute_type_id')
+                                                        <div class="invalid-feedback">{{ $message }}</div>
+                                                    @enderror
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <input type="text" class="form-control @error('product_attributes.' . $index . '.value') is-invalid @enderror" name="product_attributes[{{ $index }}][value]" value="{{ old('product_attributes.' . $index . '.value', $attribute->attribute_value) }}" placeholder="Value">
+                                                    @error('product_attributes.' . $index . '.value')
+                                                        <div class="invalid-feedback">{{ $message }}</div>
+                                                    @enderror
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <input type="text" class="form-control @error('product_attributes.' . $index . '.hex') is-invalid @enderror" name="product_attributes[{{ $index }}][hex]" value="{{ old('product_attributes.' . $index . '.hex', $attribute->hex) }}" placeholder="Hex Code (e.g., #FFFFFF)">
+                                                    @error('product_attributes.' . $index . '.hex')
+                                                        <div class="invalid-feedback">{{ $message }}</div>
+                                                    @enderror
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <button type="button" class="btn btn-danger remove-attribute">Remove</button>
+                                                </div>
+                                            </div>
+                                        @endforeach
+                                    @endif
                                 </div>
                                 <button type="button" class="btn btn-outline-primary mt-2" id="add-attribute">Add Attribute</button>
                             </div>
@@ -261,7 +301,7 @@
         const index = container.children.length;
         const newRow = `
             <div class="row mb-2">
-                <div class="col-md-5">
+                <div class="col-md-4">
                     <select class="form-select" name="product_attributes[${index}][attribute_type_id]">
                         <option value="">-- Select Attribute --</option>
                         @foreach ($attributeTypes as $attributeType)
@@ -269,8 +309,11 @@
                         @endforeach
                     </select>
                 </div>
-                <div class="col-md-5">
+                <div class="col-md-3">
                     <input type="text" class="form-control" name="product_attributes[${index}][value]" placeholder="Value">
+                </div>
+                <div class="col-md-3">
+                    <input type="text" class="form-control" name="product_attributes[${index}][hex]" placeholder="Hex Code (e.g., #FFFFFF)">
                 </div>
                 <div class="col-md-2">
                     <button type="button" class="btn btn-danger remove-attribute">Remove</button>
@@ -309,7 +352,7 @@
         } else {
             // If no file is selected, show the original image if it exists
             @if ($product->variants->first() && $product->variants->first()->image)
-                preview.innerHTML = `<img src="{{ asset('storage/' . $product->variants->first()->image) }}" alt="{{ $product->name }}" class="img-thumbnail" style="max-width: 150px;">`;
+                preview.innerHTML = `<img src="{{ asset('Uploads/' . $product->variants->first()->image) }}" alt="{{ $product->name }}" class="img-thumbnail" style="max-width: 150px;">`;
             @else
                 preview.innerHTML = '';
             @endif

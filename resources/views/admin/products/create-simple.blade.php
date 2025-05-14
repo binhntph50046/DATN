@@ -1,4 +1,3 @@
-<!-- resources/views/admin/products/create-simple.blade.php -->
 @extends('admin.layouts.app')
 @section('title', 'Create Simple Product')
 
@@ -66,23 +65,19 @@
                             </div>
                             <input type="hidden" name="slug" id="slug" value="{{ old('slug') }}">
                             <div class="row">
-                                <div class="col-md-6">
-                                    <div class="mb-3">
-                                        <label for="description" class="form-label">Description (optional)</label>
-                                        <textarea class="form-control @error('description') is-invalid @enderror" id="description" name="description">{{ old('description') }}</textarea>
-                                        @error('description')
-                                            <div class="invalid-feedback">{{ $message }}</div>
-                                        @enderror
-                                    </div>
+                                <div class="mb-3">
+                                    <label for="description" class="form-label">Description (optional)</label>
+                                    <textarea class="form-control @error('description') is-invalid @enderror" id="description" name="description">{{ old('description') }}</textarea>
+                                    @error('description')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
                                 </div>
-                                <div class="col-md-6">
-                                    <div class="mb-3">
-                                        <label for="content" class="form-label">Content (optional)</label>
-                                        <textarea class="form-control @error('content') is-invalid @enderror" id="content" name="content">{{ old('content') }}</textarea>
-                                        @error('content')
-                                            <div class="invalid-feedback">{{ $message }}</div>
-                                        @enderror
-                                    </div>
+                                <div class="mb-3">
+                                    <label for="content" class="form-label">Content (optional)</label>
+                                    <textarea class="snettech-editor form-control @error('content') is-invalid @enderror" id="content" name="content" rows="10">{{ old('content') }}</textarea>
+                                    @error('content')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
                                 </div>
                             </div>
                             <div class="row">
@@ -215,17 +210,32 @@
                             <div class="mb-3">
                                 <label class="form-label">Product Attributes</label>
                                 <div id="product-attributes">
+                                    <!-- Default Attribute -->
                                     <div class="row mb-2">
-                                        <div class="col-md-5">
-                                            <select class="form-select" name="product_attributes[0][attribute_type_id]">
+                                        <div class="col-md-4">
+                                            <select class="form-select @error('product_attributes.0.attribute_type_id') is-invalid @enderror" name="product_attributes[0][attribute_type_id]">
                                                 <option value="">-- Select Attribute --</option>
                                                 @foreach ($attributeTypes as $attributeType)
-                                                    <option value="{{ $attributeType->id }}">{{ $attributeType->name }}</option>
+                                                    <option value="{{ $attributeType->id }}" {{ old('product_attributes.0.attribute_type_id') == $attributeType->id ? 'selected' : '' }}>
+                                                        {{ $attributeType->name }}
+                                                    </option>
                                                 @endforeach
                                             </select>
+                                            @error('product_attributes.0.attribute_type_id')
+                                                <div class="invalid-feedback">{{ $message }}</div>
+                                            @enderror
                                         </div>
-                                        <div class="col-md-5">
-                                            <input type="text" class="form-control" name="product_attributes[0][value]" placeholder="Value">
+                                        <div class="col-md-3">
+                                            <input type="text" class="form-control @error('product_attributes.0.value') is-invalid @enderror" name="product_attributes[0][value]" value="{{ old('product_attributes.0.value') }}" placeholder="Value">
+                                            @error('product_attributes.0.value')
+                                                <div class="invalid-feedback">{{ $message }}</div>
+                                            @enderror
+                                        </div>
+                                        <div class="col-md-3">
+                                            <input type="text" class="form-control @error('product_attributes.0.hex') is-invalid @enderror" name="product_attributes[0][hex]" value="{{ old('product_attributes.0.hex') }}" placeholder="Hex Code (e.g., #FFFFFF)">
+                                            @error('product_attributes.0.hex')
+                                                <div class="invalid-feedback">{{ $message }}</div>
+                                            @enderror
                                         </div>
                                         <div class="col-md-2">
                                             <button type="button" class="btn btn-danger remove-attribute">Remove</button>
@@ -254,7 +264,7 @@
         const index = container.children.length;
         const newRow = `
             <div class="row mb-2">
-                <div class="col-md-5">
+                <div class="col-md-4">
                     <select class="form-select" name="product_attributes[${index}][attribute_type_id]">
                         <option value="">-- Select Attribute --</option>
                         @foreach ($attributeTypes as $attributeType)
@@ -262,8 +272,11 @@
                         @endforeach
                     </select>
                 </div>
-                <div class="col-md-5">
+                <div class="col-md-3">
                     <input type="text" class="form-control" name="product_attributes[${index}][value]" placeholder="Value">
+                </div>
+                <div class="col-md-3">
+                    <input type="text" class="form-control" name="product_attributes[${index}][hex]" placeholder="Hex Code (e.g., #FFFFFF)">
                 </div>
                 <div class="col-md-2">
                     <button type="button" class="btn btn-danger remove-attribute">Remove</button>

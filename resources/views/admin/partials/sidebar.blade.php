@@ -61,6 +61,12 @@
                     </a>
                 </li>
                 <li class="pc-item">
+                    <a href="{{ route('admin.attributes.index') }}" class="pc-link">
+                        <span class="pc-micon"><i class="ti ti-tag"></i></span>
+                        <span class="pc-mtext">Attributes</span>
+                    </a>
+                </li>
+                <li class="pc-item">
                     <a href="{{ route('admin.users.index') }}" class="pc-link">
                         <span class="pc-micon"><i class="ti ti-user"></i></span>
                         <span class="pc-mtext">Users</span>

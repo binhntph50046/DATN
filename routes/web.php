@@ -1,14 +1,14 @@
 <?php
 
-use App\Http\Controllers\admin\BannerController;
+use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\admin\BlogController;
+use App\Http\Controllers\admin\UserController;
+use App\Http\Controllers\admin\OrderController;
+use App\Http\Controllers\admin\BannerController;
+use App\Http\Controllers\admin\ProductController;
 use App\Http\Controllers\admin\CategoryController;
 use App\Http\Controllers\admin\DashboardController;
-use App\Http\Controllers\admin\OrderController;
-use App\Http\Controllers\admin\ProductController;
-use App\Http\Controllers\admin\UserController;
 use App\Http\Controllers\Admin\VariantAttributeTypeController;
-use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('welcome');
@@ -41,35 +41,29 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
     // Routes for VariantAttributeTypeController (CRUD for attribute types)
     Route::prefix('attributes')->name('attributes.')->group(function () {
-        Route::prefix('types')->name('types.')->group(function () {
-            Route::get('/', [VariantAttributeTypeController::class, 'index'])->name('index');
-            Route::get('/create', [VariantAttributeTypeController::class, 'create'])->name('create');
-            Route::post('/', [VariantAttributeTypeController::class, 'store'])->name('store');
-            Route::get('/{attributeType}/edit', [VariantAttributeTypeController::class, 'edit'])->name('edit');
-            Route::put('/{attributeType}', [VariantAttributeTypeController::class, 'update'])->name('update');
-            Route::delete('/{attributeType}', [VariantAttributeTypeController::class, 'destroy'])->name('destroy');
-        });
+        Route::get('/', [VariantAttributeTypeController::class, 'index'])->name('index');
+        Route::get('/create', [VariantAttributeTypeController::class, 'create'])->name('create');
+        Route::post('/', [VariantAttributeTypeController::class, 'store'])->name('store');
+        Route::get('/{attributeType}/edit', [VariantAttributeTypeController::class, 'edit'])->name('edit');
+        Route::put('/{attributeType}', [VariantAttributeTypeController::class, 'update'])->name('update');
+        Route::delete('/{attributeType}', [VariantAttributeTypeController::class, 'destroy'])->name('destroy');
+        Route::get('/trash', [VariantAttributeTypeController::class, 'trash'])->name('trash');
+        Route::post('/{attributeType}/restore', [VariantAttributeTypeController::class, 'restore'])->name('restore');
+        Route::delete('/{attributeType}/forceDelete', [VariantAttributeTypeController::class, 'forceDelete'])->name('forceDelete');
     });
 
     // Routes for ProductController (CRUD for products, both simple and variant)
     Route::prefix('products')->name('products.')->group(function () {
-        // General routes
         Route::get('/', [ProductController::class, 'index'])->name('index');
         Route::get('/trash', [ProductController::class, 'trash'])->name('trash');
-        Route::get('/{product}', [ProductController::class, 'show'])->name('show');
-        Route::delete('/{product}', [ProductController::class, 'destroy'])->name('destroy');
-
-        // Routes for simple products
         Route::get('/create-simple', [ProductController::class, 'createSimple'])->name('create-simple');
-        Route::get('/{product}/edit-simple', [ProductController::class, 'editSimple'])->name('edit-simple');
-
-        // Routes for variant products
         Route::get('/create-variant', [ProductController::class, 'createVariant'])->name('create-variant');
+        Route::get('/{product}', [ProductController::class, 'show'])->name('show');
+        Route::get('/{product}/edit-simple', [ProductController::class, 'editSimple'])->name('edit-simple');
         Route::get('/{product}/edit-variant', [ProductController::class, 'editVariant'])->name('edit-variant');
-
-        // Shared routes for storing and updating (handles both simple and variant)
         Route::post('/', [ProductController::class, 'store'])->name('store');
         Route::put('/{product}', [ProductController::class, 'update'])->name('update');
+        Route::delete('/{product}', [ProductController::class, 'destroy'])->name('destroy');
     });
 
     // Order Routes

@@ -1,39 +1,38 @@
 <?php
 
-namespace App\Http\Controllers\Admin;
+namespace App\Http\Controllers\admin;
 
-use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\StoreProductRequest;
 use App\Http\Requests\Admin\UpdateProductRequest;
-use App\Models\AttributeType;
 use App\Models\Category;
 use App\Models\Product;
 use App\Models\ProductAttribute;
 use App\Models\ProductVariant;
 use App\Models\VariantAttribute;
-use Illuminate\Http\Request;
+use App\Models\VariantAttributeType;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
-class ProductController extends Controller
+class ProductController
 {
     public function index()
     {
         $products = Product::with('category')->paginate(10);
-        return view('admin.products.index', compact('products'));
+        $categories = Category::where('status', 'active')->where('type', 1)->get();
+        return view('admin.products.index', compact('products', 'categories'));
     }
 
     public function createSimple()
     {
-        $categories = Category::where('status', 'active')->get();
-        $attributeTypes = AttributeType::where('status', 'active')->get();
+        $categories = Category::where('status', 'active')->where('type', 1)->get();
+        $attributeTypes = VariantAttributeType::where('status', 'active')->get();
         return view('admin.products.create-simple', compact('categories', 'attributeTypes'));
     }
 
     public function createVariant()
     {
-        $categories = Category::where('status', 'active')->get();
-        $attributeTypes = AttributeType::where('status', 'active')->get();
+        $categories = Category::where('status', 'active')->where('type', 1)->get();
+        $attributeTypes = VariantAttributeType::where('status', 'active')->get();
         return view('admin.products.create-variant', compact('categories', 'attributeTypes'));
     }
 
@@ -41,56 +40,78 @@ class ProductController extends Controller
     {
         $data = $request->validated();
 
-        // Handle image upload
-        if ($request->hasFile('image')) {
-            $data['image'] = $request->file('image')->store('products', 'public');
-        }
-
         // Generate slug if not provided
         $data['slug'] = $data['slug'] ?? Str::slug($data['name']);
-        $data['has_variants'] = $request->input('has_variants', 0);  // 1 nếu có biến thể, 0 nếu không
+        $data['has_variants'] = $request->input('has_variants', 0);
 
-        // Create product
-        $product = Product::create(array_diff_key($data, ['attribute_values' => '', 'product_attributes' => '']));
+        // Prepare product data
+        $productData = [
+            'name' => $data['name'],
+            'slug' => $data['slug'],
+            'description' => $data['description'] ?? null,
+            'content' => $data['content'] ?? null,
+            'category_id' => $data['category_id'],
+            'model' => $request->input('model'),
+            'series' => $request->input('series'),
+            'warranty_months' => $data['warranty_months'],
+            'is_featured' => $data['is_featured'] ?? false,
+            'status' => $data['status'],
+            'has_variants' => $data['has_variants'],
+        ];
 
-        // Handle product attributes (not used for cross-combination)
+        // Create product in products table
+        $product = Product::create($productData);
+
+        // Handle product attributes
         if (!empty($data['product_attributes'])) {
             foreach ($data['product_attributes'] as $attr) {
                 if (!empty($attr['attribute_type_id']) && !empty($attr['value'])) {
-                    ProductAttribute::create([
-                        'product_id' => $product->id,
-                        'attribute_type_id' => $attr['attribute_type_id'],
-                        'value' => $attr['value'],
-                    ]);
+                    // Get attribute type to get the name
+                    $attributeType = VariantAttributeType::find($attr['attribute_type_id']);
+                    if ($attributeType) {
+                        ProductAttribute::create([
+                            'product_id' => $product->id,
+                            'attribute_name' => $attributeType->name,
+                            'attribute_value' => $attr['value'],
+                        ]);
+                    }
                 }
             }
         }
 
-        // Handle variants if has_variants = 1
+        // Prepare variant data
+        $variantData = [
+            'stock' => $data['stock'] ?? 0,
+            'purchase_price' => $data['purchase_price'] ?? 0,
+            'selling_price' => $data['selling_price'] ?? 0,
+            'discount_price' => $data['discount_price'] ?? null,
+            'image' => $request->hasFile('image') ? $request->file('image')->store('products', 'public') : null,
+            'status' => 'active',
+        ];
+
+        // Handle variants
         if ($product->has_variants) {
             $attributeValues = $data['attribute_values'] ?? [];
             $variantsData = [];
 
             if (!empty($attributeValues)) {
                 $totalCombinations = array_reduce($attributeValues, fn($carry, $values) => $carry * count($values), 1);
-                if ($totalCombinations > 100) {  // Giới hạn số lượng biến thể
+                if ($totalCombinations > 100) {
                     return redirect()->back()->withErrors(['attribute_values' => 'Too many combinations (' . $totalCombinations . '). Please reduce the number of values.']);
                 }
                 $combinations = $this->generateCombinations($attributeValues);
                 foreach ($combinations as $index => $combination) {
                     $variantName = $product->name . '-' . implode('-', $combination);
-                    $variantsData[] = [
+                    $variantsData[] = array_merge([
                         'product_id' => $product->id,
                         'sku' => Str::slug($variantName) . '-' . $index,
                         'name' => $variantName,
-                        'stock' => 0,  // Default, user can edit later
-                        'purchase_price' => 0,
-                        'selling_price' => 0,
-                        'status' => 'active',
+                        'slug' => Str::slug($variantName),
+                    ], $variantData, [
                         'attributes' => array_map(function ($value, $typeId) {
                             return ['attribute_type_id' => $typeId, 'value' => $value];
                         }, $combination, array_keys($attributeValues)),
-                    ];
+                    ]);
                 }
             }
 
@@ -108,16 +129,13 @@ class ProductController extends Controller
                 }
             }
         } else {
-            // For simple product, create a default variant with basic info
-            ProductVariant::create([
+            // For simple product, create a default variant
+            ProductVariant::create(array_merge([
                 'product_id' => $product->id,
                 'sku' => Str::slug($product->name) . '-simple',
                 'name' => $product->name,
-                'stock' => $data['stock'] ?? 0,
-                'purchase_price' => $data['purchase_price'] ?? 0,
-                'selling_price' => $data['selling_price'] ?? 0,
-                'status' => 'active',
-            ]);
+                'slug' => Str::slug($product->name),
+            ], $variantData));
         }
 
         return redirect()->route('admin.products.index')->with('success', 'Product created successfully.');
@@ -135,8 +153,8 @@ class ProductController extends Controller
             return redirect()->route('admin.products.edit-variant', $product)->with('error', 'This product has variants. Use the variant edit form.');
         }
 
-        $categories = Category::where('status', 'active')->get();
-        $attributeTypes = AttributeType::where('status', 'active')->get();
+        $categories = Category::where('status', 'active')->where('type', 1)->get();
+        $attributeTypes = VariantAttributeType::where('status', 'active')->get();
         $product->load('variants', 'attributes');
         return view('admin.products.edit-simple', compact('product', 'categories', 'attributeTypes'));
     }
@@ -147,111 +165,146 @@ class ProductController extends Controller
             return redirect()->route('admin.products.edit-simple', $product)->with('error', 'This product does not have variants. Use the simple edit form.');
         }
 
-        $categories = Category::where('status', 'active')->get();
-        $attributeTypes = AttributeType::where('status', 'active')->get();
+        $categories = Category::where('status', 'active')->where('type', 1)->get();
+        $attributeTypes = VariantAttributeType::where('status', 'active')->get();
         $product->load('variants.attributes', 'attributes');
         return view('admin.products.edit-variant', compact('product', 'categories', 'attributeTypes'));
     }
 
     public function update(UpdateProductRequest $request, Product $product)
     {
-        $data = $request->validated();
+        try {
+            $data = $request->validated();
 
-        // Handle image upload
-        if ($request->hasFile('image')) {
-            if ($product->image) {
-                Storage::disk('public')->delete($product->image);
-            }
-            $data['image'] = $request->file('image')->store('products', 'public');
-        }
+            // Generate slug if name changes
+            $data['slug'] = $data['slug'] ?? Str::slug($data['name']);
+            $data['has_variants'] = $request->input('has_variants', 0);
 
-        // Update slug if name changes
-        $data['slug'] = $data['slug'] ?? Str::slug($data['name']);
-        $data['has_variants'] = $request->input('has_variants', 0);
+            // Prepare product data
+            $productData = [
+                'name' => $data['name'],
+                'slug' => $data['slug'],
+                'description' => $data['description'] ?? null,
+                'content' => $data['content'] ?? null,
+                'category_id' => $data['category_id'],
+                'model' => $request->input('model'),
+                'series' => $request->input('series'),
+                'warranty_months' => $data['warranty_months'],
+                'is_featured' => $data['is_featured'] ?? false,
+                'status' => $data['status'],
+                'has_variants' => $data['has_variants'],
+            ];
 
-        // Update product
-        $product->update(array_diff_key($data, ['attribute_values' => '', 'product_attributes' => '', 'stock' => '', 'purchase_price' => '', 'selling_price' => '']));
+            // Update product
+            $product->update($productData);
 
-        // Handle product attributes
-        $product->attributes()->delete();
-        if (!empty($data['product_attributes'])) {
-            foreach ($data['product_attributes'] as $attr) {
-                if (!empty($attr['attribute_type_id']) && !empty($attr['value'])) {
-                    ProductAttribute::create([
-                        'product_id' => $product->id,
-                        'attribute_type_id' => $attr['attribute_type_id'],
-                        'value' => $attr['value'],
-                    ]);
-                }
-            }
-        }
-
-        // Handle variants
-        $product->variants()->delete();
-
-        if ($product->has_variants) {
-            $attributeValues = $data['attribute_values'] ?? [];
-            $variantsData = [];
-
-            if (!empty($attributeValues)) {
-                $totalCombinations = array_reduce($attributeValues, fn($carry, $values) => $carry * count($values), 1);
-                if ($totalCombinations > 100) {
-                    return redirect()->back()->withErrors(['attribute_values' => 'Too many combinations (' . $totalCombinations . '). Please reduce the number of values.']);
-                }
-
-                $combinations = $this->generateCombinations($attributeValues);
-                foreach ($combinations as $index => $combination) {
-                    $variantName = $product->name . '-' . implode('-', $combination);
-                    $variantsData[] = [
-                        'product_id' => $product->id,
-                        'sku' => Str::slug($variantName) . '-' . $index,
-                        'name' => $variantName,
-                        'stock' => 0,
-                        'purchase_price' => 0,
-                        'selling_price' => 0,
-                        'status' => 'active',
-                        'attributes' => array_map(function ($value, $typeId) {
-                            return ['attribute_type_id' => $typeId, 'value' => $value];
-                        }, $combination, array_keys($attributeValues)),
-                    ];
-                }
-            }
-
-            // Save updated variants
-            foreach ($variantsData as $variant) {
-                $productVariant = ProductVariant::create(array_diff_key($variant, ['attributes' => '']));
-                foreach ($variant['attributes'] as $attr) {
+            // Handle product attributes
+            $product->attributes()->delete();
+            if (!empty($data['product_attributes'])) {
+                foreach ($data['product_attributes'] as $attr) {
                     if (!empty($attr['attribute_type_id']) && !empty($attr['value'])) {
-                        VariantAttribute::create([
-                            'variant_id' => $productVariant->id,
-                            'attribute_type_id' => $attr['attribute_type_id'],
-                            'value' => $attr['value'],
-                        ]);
+                        // Get attribute type to get the name
+                        $attributeType = VariantAttributeType::find($attr['attribute_type_id']);
+                        if ($attributeType) {
+                            ProductAttribute::create([
+                                'product_id' => $product->id,
+                                'attribute_name' => $attributeType->name,
+                                'attribute_value' => $attr['value'],
+                            ]);
+                        }
                     }
                 }
             }
-        } else {
-            // For simple product, update the default variant
-            ProductVariant::create([
-                'product_id' => $product->id,
-                'sku' => Str::slug($product->name) . '-simple',
-                'name' => $product->name,
+
+            // Prepare variant data
+            $variantData = [
                 'stock' => $data['stock'] ?? 0,
                 'purchase_price' => $data['purchase_price'] ?? 0,
                 'selling_price' => $data['selling_price'] ?? 0,
+                'discount_price' => $data['discount_price'] ?? null,
                 'status' => 'active',
-            ]);
-        }
+            ];
 
-        return redirect()->route('admin.products.index')->with('success', 'Product updated successfully.');
+            // Delete all existing variants and their attributes
+            foreach ($product->variants as $variant) {
+                // Delete variant attributes
+                $variant->attributes()->delete();
+                // Delete variant combinations if any
+                if (method_exists($variant, 'combinations')) {
+                    $variant->combinations()->delete();
+                }
+                // Delete variant image if exists
+                if ($variant->image) {
+                    Storage::disk('public')->delete($variant->image);
+                }
+                // Delete variant
+                $variant->delete();
+            }
+
+            if ($product->has_variants) {
+                $attributeValues = $data['attribute_values'] ?? [];
+                $variantsData = [];
+
+                if (!empty($attributeValues)) {
+                    $totalCombinations = array_reduce($attributeValues, fn($carry, $values) => $carry * count($values), 1);
+                    if ($totalCombinations > 100) {
+                        return redirect()->back()->withErrors(['attribute_values' => 'Too many combinations (' . $totalCombinations . '). Please reduce the number of values.']);
+                    }
+
+                    $combinations = $this->generateCombinations($attributeValues);
+                    foreach ($combinations as $index => $combination) {
+                        $variantName = $product->name . '-' . implode('-', $combination);
+                        $variantSlug = Str::slug($variantName) . '-' . $index . '-' . $product->id;
+                        $variantsData[] = array_merge([
+                            'product_id' => $product->id,
+                            'sku' => $variantSlug,
+                            'name' => $variantName,
+                            'slug' => $variantSlug,
+                        ], $variantData, [
+                            'image' => $request->hasFile('image') ? $request->file('image')->store('products', 'public') : null,
+                            'attributes' => array_map(function ($value, $typeId) {
+                                return ['attribute_type_id' => $typeId, 'value' => $value];
+                            }, $combination, array_keys($attributeValues)),
+                        ]);
+                    }
+                }
+
+                // Save updated variants
+                foreach ($variantsData as $variant) {
+                    $productVariant = ProductVariant::create(array_diff_key($variant, ['attributes' => '']));
+                    foreach ($variant['attributes'] as $attr) {
+                        if (!empty($attr['attribute_type_id']) && !empty($attr['value'])) {
+                            VariantAttribute::create([
+                                'variant_id' => $productVariant->id,
+                                'attribute_type_id' => $attr['attribute_type_id'],
+                                'value' => $attr['value'],
+                            ]);
+                        }
+                    }
+                }
+            } else {
+                // For simple product, create a new variant
+                $variantSlug = Str::slug($product->name) . '-simple-' . $product->id . '-' . time();
+                $variantData['image'] = $request->hasFile('image') ? $this->moveImageToUploadsProducts($request->file('image')) : null;
+
+                ProductVariant::create(array_merge([
+                    'product_id' => $product->id,
+                    'sku' => $variantSlug,
+                    'name' => $product->name,
+                    'slug' => $variantSlug,
+                ], $variantData));
+            }
+
+            return redirect()->route('admin.products.index')->with('success', 'Product updated successfully.');
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->withInput()
+                ->withErrors(['error' => 'Failed to update product: ' . $e->getMessage()]);
+        }
     }
 
     public function destroy(Product $product)
     {
-        if ($product->image) {
-            Storage::disk('public')->delete($product->image);
-        }
-
         foreach ($product->variants as $variant) {
             if ($variant->image) {
                 Storage::disk('public')->delete($variant->image);
@@ -282,4 +335,19 @@ class ProductController extends Controller
         }
         return $result;
     }
+
+    /**
+     * Move uploaded image to public/uploads/products and return relative path 'products/filename.ext'
+     */
+    private function moveImageToUploadsProducts($image)
+    {
+        $imageName = time() . '_' . uniqid() . '.' . $image->getClientOriginalExtension();
+        $destination = public_path('uploads/products');
+        if (!file_exists($destination)) {
+            mkdir($destination, 0755, true);
+        }
+        $image->move($destination, $imageName);
+        return 'products/' . $imageName;
+    }
+
 }

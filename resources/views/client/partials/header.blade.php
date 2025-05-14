@@ -24,7 +24,7 @@
 				<ul class="custom-navbar-cta navbar-nav mb-2 mb-md-0 ms-5">
 					<li><a class="nav-link" href="#"><i class="fas fa-heart"></i></a></li>
 					<li><a class="nav-link" href="#"><i class="fas fa-user mx-2"></i></a></li>
-					<li><a class="nav-link" href="cart.html"><i class="fas fa-cart-shopping"></i></a></li>
+					<li><a class="nav-link" href="{{ route('cart') }}"><i class="fas fa-cart-shopping"></i></a></li>
 				</ul>
 			</div>
 		</div>

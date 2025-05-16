@@ -15,8 +15,8 @@ class OrderItemsTableSeeder extends Seeder
         DB::table('order_items')->insert([
             [
                 'order_id' => $orderId,
-                'product_id' => 1,
-                'product_variant_id' => 1,
+                'product_id' => 4,
+                'product_variant_id' => 2,
                 'quantity' => 1,
                 'price' => 32990000,
                 'total' => 32990000,

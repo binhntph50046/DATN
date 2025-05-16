@@ -10,4 +10,5 @@ class HomeController
     {
         return view('client.index');
     }
+
 }

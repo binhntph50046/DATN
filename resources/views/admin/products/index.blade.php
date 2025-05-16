@@ -158,8 +158,16 @@
                                         <tr>
                                             <td class="text-nowrap">{{ $products->firstItem() + $index }}</td>
                                             <td>
-                                                @if ($product->variants->first() && $product->variants->first()->image)
-                                                    <img src="{{ asset('uploads/' . $product->variants->first()->image) }}"
+                                                @php
+                                                    $defaultVariant = $product->variants->first();
+                                                    $firstImage = null;
+                                                    if ($defaultVariant && $defaultVariant->images) {
+                                                        $images = is_array($defaultVariant->images) ? $defaultVariant->images : json_decode($defaultVariant->images, true);
+                                                        $firstImage = is_array($images) && count($images) > 0 ? $images[0] : null;
+                                                    }
+                                                @endphp
+                                                @if ($firstImage)
+                                                    <img src="{{ asset($firstImage) }}"
                                                         alt="{{ $product->name }}"
                                                         class="product-img-thumb"
                                                         style="width: 100px; height: 100px; object-fit: cover; border-radius: 8px;">

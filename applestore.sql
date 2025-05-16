@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Máy chủ: localhost
--- Thời gian đã tạo: Th5 14, 2025 lúc 10:55 PM
+-- Thời gian đã tạo: Th5 15, 2025 lúc 12:38 PM
 -- Phiên bản máy phục vụ: 5.7.43-log
 -- Phiên bản PHP: 8.3.15
 
@@ -104,7 +104,7 @@ CREATE TABLE `cache` (
 --
 
 INSERT INTO `cache` (`key`, `value`, `expiration`) VALUES
-('laravel_cache_spatie.permission.cache', 'a:3:{s:5:\"alias\";a:5:{s:1:\"a\";s:2:\"id\";s:1:\"b\";s:4:\"name\";s:1:\"c\";s:10:\"guard_name\";s:1:\"d\";s:11:\"description\";s:1:\"r\";s:5:\"roles\";}s:11:\"permissions\";a:61:{i:0;a:5:{s:1:\"a\";i:1;s:1:\"b\";s:20:\"admin.products.index\";s:1:\"c\";s:3:\"web\";s:1:\"d\";s:27:\"Xem danh sách sản phẩm\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:1;a:5:{s:1:\"a\";i:2;s:1:\"b\";s:28:\"admin.products.create-simple\";s:1:\"c\";s:3:\"web\";s:1:\"d\";s:31:\"Tạo sản phẩm đơn giản\";s:1:\"r\";a:1:{i:0;i:1;}}i:2;a:5:{s:1:\"a\";i:3;s:1:\"b\";s:26:\"admin.products.edit-simple\";s:1:\"c\";s:3:\"web\";s:1:\"d\";s:39:\"Chỉnh sửa sản phẩm đơn giản\";s:1:\"r\";a:1:{i:0;i:1;}}i:3;a:5:{s:1:\"a\";i:4;s:1:\"b\";s:29:\"admin.products.create-variant\";s:1:\"c\";s:3:\"web\";s:1:\"d\";s:31:\"Tạo sản phẩm biến thể\";s:1:\"r\";a:1:{i:0;i:1;}}i:4;a:5:{s:1:\"a\";i:5;s:1:\"b\";s:27:\"admin.products.edit-variant\";s:1:\"c\";s:3:\"web\";s:1:\"d\";s:39:\"Chỉnh sửa sản phẩm biến thể\";s:1:\"r\";a:1:{i:0;i:1;}}i:5;a:5:{s:1:\"a\";i:6;s:1:\"b\";s:19:\"admin.products.show\";s:1:\"c\";s:3:\"web\";s:1:\"d\";s:27:\"Xem chi tiết sản phẩm\";s:1:\"r\";a:1:{i:0;i:1;}}i:6;a:5:{s:1:\"a\";i:7;s:1:\"b\";s:20:\"admin.products.store\";s:1:\"c\";s:3:\"web\";s:1:\"d\";s:17:\"Lưu sản phẩm\";s:1:\"r\";a:1:{i:0;i:1;}}i:7;a:5:{s:1:\"a\";i:8;s:1:\"b\";s:21:\"admin.products.update\";s:1:\"c\";s:3:\"web\";s:1:\"d\";s:25:\"Cập nhật sản phẩm\";s:1:\"r\";a:1:{i:0;i:1;}}i:8;a:5:{s:1:\"a\";i:9;s:1:\"b\";s:22:\"admin.products.destroy\";s:1:\"c\";s:3:\"web\";s:1:\"d\";s:17:\"Xóa sản phẩm\";s:1:\"r\";a:1:{i:0;i:1;}}i:9;a:5:{s:1:\"a\";i:10;s:1:\"b\";s:20:\"admin.products.trash\";s:1:\"c\";s:3:\"web\";s:1:\"d\";s:26:\"Xem sản phẩm đã xóa\";s:1:\"r\";a:1:{i:0;i:1;}}i:10;a:5:{s:1:\"a\";i:11;s:1:\"b\";s:22:\"admin.categories.index\";s:1:\"c\";s:3:\"web\";s:1:\"d\";s:25:\"Xem danh sách danh mục\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:11;a:5:{s:1:\"a\";i:12;s:1:\"b\";s:23:\"admin.categories.create\";s:1:\"c\";s:3:\"web\";s:1:\"d\";s:16:\"Tạo danh mục\";s:1:\"r\";a:1:{i:0;i:1;}}i:12;a:5:{s:1:\"a\";i:13;s:1:\"b\";s:22:\"admin.categories.store\";s:1:\"c\";s:3:\"web\";s:1:\"d\";s:15:\"Lưu danh mục\";s:1:\"r\";a:1:{i:0;i:1;}}i:13;a:5:{s:1:\"a\";i:14;s:1:\"b\";s:21:\"admin.categories.edit\";s:1:\"c\";s:3:\"web\";s:1:\"d\";s:24:\"Chỉnh sửa danh mục\";s:1:\"r\";a:1:{i:0;i:1;}}i:14;a:5:{s:1:\"a\";i:15;s:1:\"b\";s:23:\"admin.categories.update\";s:1:\"c\";s:3:\"web\";s:1:\"d\";s:23:\"Cập nhật danh mục\";s:1:\"r\";a:1:{i:0;i:1;}}i:15;a:5:{s:1:\"a\";i:16;s:1:\"b\";s:24:\"admin.categories.destroy\";s:1:\"c\";s:3:\"web\";s:1:\"d\";s:15:\"Xóa danh mục\";s:1:\"r\";a:1:{i:0;i:1;}}i:16;a:5:{s:1:\"a\";i:17;s:1:\"b\";s:22:\"admin.categories.trash\";s:1:\"c\";s:3:\"web\";s:1:\"d\";s:24:\"Xem danh mục đã xóa\";s:1:\"r\";a:1:{i:0;i:1;}}i:17;a:5:{s:1:\"a\";i:18;s:1:\"b\";s:24:\"admin.categories.restore\";s:1:\"c\";s:3:\"web\";s:1:\"d\";s:23:\"Khôi phục danh mục\";s:1:\"r\";a:1:{i:0;i:1;}}i:18;a:5:{s:1:\"a\";i:19;s:1:\"b\";s:28:\"admin.categories.forceDelete\";s:1:\"c\";s:3:\"web\";s:1:\"d\";s:28:\"Xóa vĩnh viễn danh mục\";s:1:\"r\";a:1:{i:0;i:1;}}i:19;a:5:{s:1:\"a\";i:20;s:1:\"b\";s:28:\"admin.categories.changeOrder\";s:1:\"c\";s:3:\"web\";s:1:\"d\";s:33:\"Thay đổi thứ tự danh mục\";s:1:\"r\";a:1:{i:0;i:1;}}i:20;a:5:{s:1:\"a\";i:21;s:1:\"b\";s:19:\"admin.banners.index\";s:1:\"c\";s:3:\"web\";s:1:\"d\";s:21:\"Xem danh sách banner\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:21;a:5:{s:1:\"a\";i:22;s:1:\"b\";s:20:\"admin.banners.create\";s:1:\"c\";s:3:\"web\";s:1:\"d\";s:12:\"Tạo banner\";s:1:\"r\";a:1:{i:0;i:1;}}i:22;a:5:{s:1:\"a\";i:23;s:1:\"b\";s:19:\"admin.banners.store\";s:1:\"c\";s:3:\"web\";s:1:\"d\";s:11:\"Lưu banner\";s:1:\"r\";a:1:{i:0;i:1;}}i:23;a:5:{s:1:\"a\";i:24;s:1:\"b\";s:18:\"admin.banners.edit\";s:1:\"c\";s:3:\"web\";s:1:\"d\";s:20:\"Chỉnh sửa banner\";s:1:\"r\";a:1:{i:0;i:1;}}i:24;a:5:{s:1:\"a\";i:25;s:1:\"b\";s:20:\"admin.banners.update\";s:1:\"c\";s:3:\"web\";s:1:\"d\";s:19:\"Cập nhật banner\";s:1:\"r\";a:1:{i:0;i:1;}}i:25;a:5:{s:1:\"a\";i:26;s:1:\"b\";s:21:\"admin.banners.destroy\";s:1:\"c\";s:3:\"web\";s:1:\"d\";s:11:\"Xóa banner\";s:1:\"r\";a:1:{i:0;i:1;}}i:26;a:5:{s:1:\"a\";i:27;s:1:\"b\";s:20:\"admin.banners.moveUp\";s:1:\"c\";s:3:\"web\";s:1:\"d\";s:23:\"Di chuyển banner lên\";s:1:\"r\";a:1:{i:0;i:1;}}i:27;a:5:{s:1:\"a\";i:28;s:1:\"b\";s:22:\"admin.banners.moveDown\";s:1:\"c\";s:3:\"web\";s:1:\"d\";s:26:\"Di chuyển banner xuống\";s:1:\"r\";a:1:{i:0;i:1;}}i:28;a:5:{s:1:\"a\";i:29;s:1:\"b\";s:18:\"admin.orders.index\";s:1:\"c\";s:3:\"web\";s:1:\"d\";s:26:\"Xem danh sách đơn hàng\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:29;a:5:{s:1:\"a\";i:30;s:1:\"b\";s:19:\"admin.orders.update\";s:1:\"c\";s:3:\"web\";s:1:\"d\";s:24:\"Cập nhật đơn hàng\";s:1:\"r\";a:1:{i:0;i:1;}}i:30;a:5:{s:1:\"a\";i:31;s:1:\"b\";s:20:\"admin.orders.destroy\";s:1:\"c\";s:3:\"web\";s:1:\"d\";s:16:\"Xóa đơn hàng\";s:1:\"r\";a:1:{i:0;i:1;}}i:31;a:5:{s:1:\"a\";i:32;s:1:\"b\";s:18:\"admin.orders.trash\";s:1:\"c\";s:3:\"web\";s:1:\"d\";s:25:\"Xem đơn hàng đã xóa\";s:1:\"r\";a:1:{i:0;i:1;}}i:32;a:5:{s:1:\"a\";i:33;s:1:\"b\";s:25:\"admin.orders.restore.bulk\";s:1:\"c\";s:3:\"web\";s:1:\"d\";s:37:\"Khôi phục đơn hàng hàng loạt\";s:1:\"r\";a:1:{i:0;i:1;}}i:33;a:5:{s:1:\"a\";i:34;s:1:\"b\";s:29:\"admin.orders.forceDelete.bulk\";s:1:\"c\";s:3:\"web\";s:1:\"d\";s:42:\"Xóa vĩnh viễn đơn hàng hàng loạt\";s:1:\"r\";a:1:{i:0;i:1;}}i:34;a:5:{s:1:\"a\";i:35;s:1:\"b\";s:17:\"admin.users.index\";s:1:\"c\";s:3:\"web\";s:1:\"d\";s:29:\"Xem danh sách người dùng\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:35;a:5:{s:1:\"a\";i:36;s:1:\"b\";s:17:\"admin.users.trash\";s:1:\"c\";s:3:\"web\";s:1:\"d\";s:28:\"Xem người dùng đã xóa\";s:1:\"r\";a:1:{i:0;i:1;}}i:36;a:5:{s:1:\"a\";i:37;s:1:\"b\";s:19:\"admin.users.restore\";s:1:\"c\";s:3:\"web\";s:1:\"d\";s:27:\"Khôi phục người dùng\";s:1:\"r\";a:1:{i:0;i:1;}}i:37;a:5:{s:1:\"a\";i:38;s:1:\"b\";s:23:\"admin.users.forceDelete\";s:1:\"c\";s:3:\"web\";s:1:\"d\";s:32:\"Xóa vĩnh viễn người dùng\";s:1:\"r\";a:1:{i:0;i:1;}}i:38;a:5:{s:1:\"a\";i:39;s:1:\"b\";s:18:\"admin.users.create\";s:1:\"c\";s:3:\"web\";s:1:\"d\";s:20:\"Tạo người dùng\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:39;a:5:{s:1:\"a\";i:40;s:1:\"b\";s:17:\"admin.users.store\";s:1:\"c\";s:3:\"web\";s:1:\"d\";s:19:\"Lưu người dùng\";s:1:\"r\";a:1:{i:0;i:1;}}i:40;a:5:{s:1:\"a\";i:41;s:1:\"b\";s:16:\"admin.users.edit\";s:1:\"c\";s:3:\"web\";s:1:\"d\";s:28:\"Chỉnh sửa người dùng\";s:1:\"r\";a:1:{i:0;i:1;}}i:41;a:5:{s:1:\"a\";i:42;s:1:\"b\";s:18:\"admin.users.update\";s:1:\"c\";s:3:\"web\";s:1:\"d\";s:27:\"Cập nhật người dùng\";s:1:\"r\";a:1:{i:0;i:1;}}i:42;a:5:{s:1:\"a\";i:43;s:1:\"b\";s:19:\"admin.users.destroy\";s:1:\"c\";s:3:\"web\";s:1:\"d\";s:19:\"Xóa người dùng\";s:1:\"r\";a:1:{i:0;i:1;}}i:43;a:5:{s:1:\"a\";i:44;s:1:\"b\";s:28:\"admin.users.edit_permissions\";s:1:\"c\";s:3:\"web\";s:1:\"d\";s:32:\"Xem phân quyền người dùng\";s:1:\"r\";a:1:{i:0;i:1;}}i:44;a:5:{s:1:\"a\";i:45;s:1:\"b\";s:30:\"admin.users.update_permissions\";s:1:\"c\";s:3:\"web\";s:1:\"d\";s:41:\"Cập nhật phân quyền người dùng\";s:1:\"r\";a:1:{i:0;i:1;}}i:45;a:5:{s:1:\"a\";i:46;s:1:\"b\";s:17:\"admin.blogs.index\";s:1:\"c\";s:3:\"web\";s:1:\"d\";s:19:\"Xem danh sách blog\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:46;a:5:{s:1:\"a\";i:47;s:1:\"b\";s:18:\"admin.blogs.create\";s:1:\"c\";s:3:\"web\";s:1:\"d\";s:10:\"Tạo blog\";s:1:\"r\";a:1:{i:0;i:1;}}i:47;a:5:{s:1:\"a\";i:48;s:1:\"b\";s:17:\"admin.blogs.store\";s:1:\"c\";s:3:\"web\";s:1:\"d\";s:9:\"Lưu blog\";s:1:\"r\";a:1:{i:0;i:1;}}i:48;a:5:{s:1:\"a\";i:49;s:1:\"b\";s:16:\"admin.blogs.edit\";s:1:\"c\";s:3:\"web\";s:1:\"d\";s:18:\"Chỉnh sửa blog\";s:1:\"r\";a:1:{i:0;i:1;}}i:49;a:5:{s:1:\"a\";i:50;s:1:\"b\";s:18:\"admin.blogs.update\";s:1:\"c\";s:3:\"web\";s:1:\"d\";s:17:\"Cập nhật blog\";s:1:\"r\";a:1:{i:0;i:1;}}i:50;a:5:{s:1:\"a\";i:51;s:1:\"b\";s:19:\"admin.blogs.destroy\";s:1:\"c\";s:3:\"web\";s:1:\"d\";s:9:\"Xóa blog\";s:1:\"r\";a:1:{i:0;i:1;}}i:51;a:5:{s:1:\"a\";i:52;s:1:\"b\";s:17:\"admin.blogs.trash\";s:1:\"c\";s:3:\"web\";s:1:\"d\";s:18:\"Xem blog đã xóa\";s:1:\"r\";a:1:{i:0;i:1;}}i:52;a:5:{s:1:\"a\";i:53;s:1:\"b\";s:19:\"admin.blogs.restore\";s:1:\"c\";s:3:\"web\";s:1:\"d\";s:17:\"Khôi phục blog\";s:1:\"r\";a:1:{i:0;i:1;}}i:53;a:5:{s:1:\"a\";i:54;s:1:\"b\";s:23:\"admin.blogs.forceDelete\";s:1:\"c\";s:3:\"web\";s:1:\"d\";s:22:\"Xóa vĩnh viễn blog\";s:1:\"r\";a:1:{i:0;i:1;}}i:54;a:5:{s:1:\"a\";i:55;s:1:\"b\";s:28:\"admin.attributes.types.index\";s:1:\"c\";s:3:\"web\";s:1:\"d\";s:37:\"Xem loại thuộc tính biến thể\";s:1:\"r\";a:1:{i:0;i:1;}}i:55;a:5:{s:1:\"a\";i:56;s:1:\"b\";s:29:\"admin.attributes.types.create\";s:1:\"c\";s:3:\"web\";s:1:\"d\";s:26:\"Tạo loại thuộc tính\";s:1:\"r\";a:1:{i:0;i:1;}}i:56;a:5:{s:1:\"a\";i:57;s:1:\"b\";s:28:\"admin.attributes.types.store\";s:1:\"c\";s:3:\"web\";s:1:\"d\";s:25:\"Lưu loại thuộc tính\";s:1:\"r\";a:1:{i:0;i:1;}}i:57;a:5:{s:1:\"a\";i:58;s:1:\"b\";s:27:\"admin.attributes.types.edit\";s:1:\"c\";s:3:\"web\";s:1:\"d\";s:34:\"Chỉnh sửa loại thuộc tính\";s:1:\"r\";a:1:{i:0;i:1;}}i:58;a:5:{s:1:\"a\";i:59;s:1:\"b\";s:29:\"admin.attributes.types.update\";s:1:\"c\";s:3:\"web\";s:1:\"d\";s:33:\"Cập nhật loại thuộc tính\";s:1:\"r\";a:1:{i:0;i:1;}}i:59;a:5:{s:1:\"a\";i:60;s:1:\"b\";s:30:\"admin.attributes.types.destroy\";s:1:\"c\";s:3:\"web\";s:1:\"d\";s:25:\"Xóa loại thuộc tính\";s:1:\"r\";a:1:{i:0;i:1;}}i:60;a:5:{s:1:\"a\";i:61;s:1:\"b\";s:14:\"user.dashboard\";s:1:\"c\";s:3:\"web\";s:1:\"d\";s:31:\"Truy cập trang người dùng\";s:1:\"r\";a:1:{i:0;i:1;}}}s:5:\"roles\";a:2:{i:0;a:4:{s:1:\"a\";i:1;s:1:\"b\";s:5:\"admin\";s:1:\"c\";s:3:\"web\";s:1:\"d\";N;}i:1;a:4:{s:1:\"a\";i:2;s:1:\"b\";s:5:\"staff\";s:1:\"c\";s:3:\"web\";s:1:\"d\";N;}}}', 1747320530);
+('laravel_cache_spatie.permission.cache', 'a:3:{s:5:\"alias\";a:5:{s:1:\"a\";s:2:\"id\";s:1:\"b\";s:4:\"name\";s:1:\"c\";s:10:\"guard_name\";s:1:\"d\";s:11:\"description\";s:1:\"r\";s:5:\"roles\";}s:11:\"permissions\";a:61:{i:0;a:5:{s:1:\"a\";i:1;s:1:\"b\";s:20:\"admin.products.index\";s:1:\"c\";s:3:\"web\";s:1:\"d\";s:27:\"Xem danh sách sản phẩm\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:1;a:5:{s:1:\"a\";i:2;s:1:\"b\";s:28:\"admin.products.create-simple\";s:1:\"c\";s:3:\"web\";s:1:\"d\";s:31:\"Tạo sản phẩm đơn giản\";s:1:\"r\";a:1:{i:0;i:1;}}i:2;a:5:{s:1:\"a\";i:3;s:1:\"b\";s:26:\"admin.products.edit-simple\";s:1:\"c\";s:3:\"web\";s:1:\"d\";s:39:\"Chỉnh sửa sản phẩm đơn giản\";s:1:\"r\";a:1:{i:0;i:1;}}i:3;a:5:{s:1:\"a\";i:4;s:1:\"b\";s:29:\"admin.products.create-variant\";s:1:\"c\";s:3:\"web\";s:1:\"d\";s:31:\"Tạo sản phẩm biến thể\";s:1:\"r\";a:1:{i:0;i:1;}}i:4;a:5:{s:1:\"a\";i:5;s:1:\"b\";s:27:\"admin.products.edit-variant\";s:1:\"c\";s:3:\"web\";s:1:\"d\";s:39:\"Chỉnh sửa sản phẩm biến thể\";s:1:\"r\";a:1:{i:0;i:1;}}i:5;a:5:{s:1:\"a\";i:6;s:1:\"b\";s:19:\"admin.products.show\";s:1:\"c\";s:3:\"web\";s:1:\"d\";s:27:\"Xem chi tiết sản phẩm\";s:1:\"r\";a:1:{i:0;i:1;}}i:6;a:5:{s:1:\"a\";i:7;s:1:\"b\";s:20:\"admin.products.store\";s:1:\"c\";s:3:\"web\";s:1:\"d\";s:17:\"Lưu sản phẩm\";s:1:\"r\";a:1:{i:0;i:1;}}i:7;a:5:{s:1:\"a\";i:8;s:1:\"b\";s:21:\"admin.products.update\";s:1:\"c\";s:3:\"web\";s:1:\"d\";s:25:\"Cập nhật sản phẩm\";s:1:\"r\";a:1:{i:0;i:1;}}i:8;a:5:{s:1:\"a\";i:9;s:1:\"b\";s:22:\"admin.products.destroy\";s:1:\"c\";s:3:\"web\";s:1:\"d\";s:17:\"Xóa sản phẩm\";s:1:\"r\";a:1:{i:0;i:1;}}i:9;a:5:{s:1:\"a\";i:10;s:1:\"b\";s:20:\"admin.products.trash\";s:1:\"c\";s:3:\"web\";s:1:\"d\";s:26:\"Xem sản phẩm đã xóa\";s:1:\"r\";a:1:{i:0;i:1;}}i:10;a:5:{s:1:\"a\";i:11;s:1:\"b\";s:22:\"admin.categories.index\";s:1:\"c\";s:3:\"web\";s:1:\"d\";s:25:\"Xem danh sách danh mục\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:11;a:5:{s:1:\"a\";i:12;s:1:\"b\";s:23:\"admin.categories.create\";s:1:\"c\";s:3:\"web\";s:1:\"d\";s:16:\"Tạo danh mục\";s:1:\"r\";a:1:{i:0;i:1;}}i:12;a:5:{s:1:\"a\";i:13;s:1:\"b\";s:22:\"admin.categories.store\";s:1:\"c\";s:3:\"web\";s:1:\"d\";s:15:\"Lưu danh mục\";s:1:\"r\";a:1:{i:0;i:1;}}i:13;a:5:{s:1:\"a\";i:14;s:1:\"b\";s:21:\"admin.categories.edit\";s:1:\"c\";s:3:\"web\";s:1:\"d\";s:24:\"Chỉnh sửa danh mục\";s:1:\"r\";a:1:{i:0;i:1;}}i:14;a:5:{s:1:\"a\";i:15;s:1:\"b\";s:23:\"admin.categories.update\";s:1:\"c\";s:3:\"web\";s:1:\"d\";s:23:\"Cập nhật danh mục\";s:1:\"r\";a:1:{i:0;i:1;}}i:15;a:5:{s:1:\"a\";i:16;s:1:\"b\";s:24:\"admin.categories.destroy\";s:1:\"c\";s:3:\"web\";s:1:\"d\";s:15:\"Xóa danh mục\";s:1:\"r\";a:1:{i:0;i:1;}}i:16;a:5:{s:1:\"a\";i:17;s:1:\"b\";s:22:\"admin.categories.trash\";s:1:\"c\";s:3:\"web\";s:1:\"d\";s:24:\"Xem danh mục đã xóa\";s:1:\"r\";a:1:{i:0;i:1;}}i:17;a:5:{s:1:\"a\";i:18;s:1:\"b\";s:24:\"admin.categories.restore\";s:1:\"c\";s:3:\"web\";s:1:\"d\";s:23:\"Khôi phục danh mục\";s:1:\"r\";a:1:{i:0;i:1;}}i:18;a:5:{s:1:\"a\";i:19;s:1:\"b\";s:28:\"admin.categories.forceDelete\";s:1:\"c\";s:3:\"web\";s:1:\"d\";s:28:\"Xóa vĩnh viễn danh mục\";s:1:\"r\";a:1:{i:0;i:1;}}i:19;a:5:{s:1:\"a\";i:20;s:1:\"b\";s:28:\"admin.categories.changeOrder\";s:1:\"c\";s:3:\"web\";s:1:\"d\";s:33:\"Thay đổi thứ tự danh mục\";s:1:\"r\";a:1:{i:0;i:1;}}i:20;a:5:{s:1:\"a\";i:21;s:1:\"b\";s:19:\"admin.banners.index\";s:1:\"c\";s:3:\"web\";s:1:\"d\";s:21:\"Xem danh sách banner\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:21;a:5:{s:1:\"a\";i:22;s:1:\"b\";s:20:\"admin.banners.create\";s:1:\"c\";s:3:\"web\";s:1:\"d\";s:12:\"Tạo banner\";s:1:\"r\";a:1:{i:0;i:1;}}i:22;a:5:{s:1:\"a\";i:23;s:1:\"b\";s:19:\"admin.banners.store\";s:1:\"c\";s:3:\"web\";s:1:\"d\";s:11:\"Lưu banner\";s:1:\"r\";a:1:{i:0;i:1;}}i:23;a:5:{s:1:\"a\";i:24;s:1:\"b\";s:18:\"admin.banners.edit\";s:1:\"c\";s:3:\"web\";s:1:\"d\";s:20:\"Chỉnh sửa banner\";s:1:\"r\";a:1:{i:0;i:1;}}i:24;a:5:{s:1:\"a\";i:25;s:1:\"b\";s:20:\"admin.banners.update\";s:1:\"c\";s:3:\"web\";s:1:\"d\";s:19:\"Cập nhật banner\";s:1:\"r\";a:1:{i:0;i:1;}}i:25;a:5:{s:1:\"a\";i:26;s:1:\"b\";s:21:\"admin.banners.destroy\";s:1:\"c\";s:3:\"web\";s:1:\"d\";s:11:\"Xóa banner\";s:1:\"r\";a:1:{i:0;i:1;}}i:26;a:5:{s:1:\"a\";i:27;s:1:\"b\";s:20:\"admin.banners.moveUp\";s:1:\"c\";s:3:\"web\";s:1:\"d\";s:23:\"Di chuyển banner lên\";s:1:\"r\";a:1:{i:0;i:1;}}i:27;a:5:{s:1:\"a\";i:28;s:1:\"b\";s:22:\"admin.banners.moveDown\";s:1:\"c\";s:3:\"web\";s:1:\"d\";s:26:\"Di chuyển banner xuống\";s:1:\"r\";a:1:{i:0;i:1;}}i:28;a:5:{s:1:\"a\";i:29;s:1:\"b\";s:18:\"admin.orders.index\";s:1:\"c\";s:3:\"web\";s:1:\"d\";s:26:\"Xem danh sách đơn hàng\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:29;a:5:{s:1:\"a\";i:30;s:1:\"b\";s:19:\"admin.orders.update\";s:1:\"c\";s:3:\"web\";s:1:\"d\";s:24:\"Cập nhật đơn hàng\";s:1:\"r\";a:1:{i:0;i:1;}}i:30;a:5:{s:1:\"a\";i:31;s:1:\"b\";s:20:\"admin.orders.destroy\";s:1:\"c\";s:3:\"web\";s:1:\"d\";s:16:\"Xóa đơn hàng\";s:1:\"r\";a:1:{i:0;i:1;}}i:31;a:5:{s:1:\"a\";i:32;s:1:\"b\";s:18:\"admin.orders.trash\";s:1:\"c\";s:3:\"web\";s:1:\"d\";s:25:\"Xem đơn hàng đã xóa\";s:1:\"r\";a:1:{i:0;i:1;}}i:32;a:5:{s:1:\"a\";i:33;s:1:\"b\";s:25:\"admin.orders.restore.bulk\";s:1:\"c\";s:3:\"web\";s:1:\"d\";s:37:\"Khôi phục đơn hàng hàng loạt\";s:1:\"r\";a:1:{i:0;i:1;}}i:33;a:5:{s:1:\"a\";i:34;s:1:\"b\";s:29:\"admin.orders.forceDelete.bulk\";s:1:\"c\";s:3:\"web\";s:1:\"d\";s:42:\"Xóa vĩnh viễn đơn hàng hàng loạt\";s:1:\"r\";a:1:{i:0;i:1;}}i:34;a:5:{s:1:\"a\";i:35;s:1:\"b\";s:17:\"admin.users.index\";s:1:\"c\";s:3:\"web\";s:1:\"d\";s:29:\"Xem danh sách người dùng\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:35;a:5:{s:1:\"a\";i:36;s:1:\"b\";s:17:\"admin.users.trash\";s:1:\"c\";s:3:\"web\";s:1:\"d\";s:28:\"Xem người dùng đã xóa\";s:1:\"r\";a:1:{i:0;i:1;}}i:36;a:5:{s:1:\"a\";i:37;s:1:\"b\";s:19:\"admin.users.restore\";s:1:\"c\";s:3:\"web\";s:1:\"d\";s:27:\"Khôi phục người dùng\";s:1:\"r\";a:1:{i:0;i:1;}}i:37;a:5:{s:1:\"a\";i:38;s:1:\"b\";s:23:\"admin.users.forceDelete\";s:1:\"c\";s:3:\"web\";s:1:\"d\";s:32:\"Xóa vĩnh viễn người dùng\";s:1:\"r\";a:1:{i:0;i:1;}}i:38;a:5:{s:1:\"a\";i:39;s:1:\"b\";s:18:\"admin.users.create\";s:1:\"c\";s:3:\"web\";s:1:\"d\";s:20:\"Tạo người dùng\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:39;a:5:{s:1:\"a\";i:40;s:1:\"b\";s:17:\"admin.users.store\";s:1:\"c\";s:3:\"web\";s:1:\"d\";s:19:\"Lưu người dùng\";s:1:\"r\";a:1:{i:0;i:1;}}i:40;a:5:{s:1:\"a\";i:41;s:1:\"b\";s:16:\"admin.users.edit\";s:1:\"c\";s:3:\"web\";s:1:\"d\";s:28:\"Chỉnh sửa người dùng\";s:1:\"r\";a:1:{i:0;i:1;}}i:41;a:5:{s:1:\"a\";i:42;s:1:\"b\";s:18:\"admin.users.update\";s:1:\"c\";s:3:\"web\";s:1:\"d\";s:27:\"Cập nhật người dùng\";s:1:\"r\";a:1:{i:0;i:1;}}i:42;a:5:{s:1:\"a\";i:43;s:1:\"b\";s:19:\"admin.users.destroy\";s:1:\"c\";s:3:\"web\";s:1:\"d\";s:19:\"Xóa người dùng\";s:1:\"r\";a:1:{i:0;i:1;}}i:43;a:5:{s:1:\"a\";i:44;s:1:\"b\";s:28:\"admin.users.edit_permissions\";s:1:\"c\";s:3:\"web\";s:1:\"d\";s:32:\"Xem phân quyền người dùng\";s:1:\"r\";a:1:{i:0;i:1;}}i:44;a:5:{s:1:\"a\";i:45;s:1:\"b\";s:30:\"admin.users.update_permissions\";s:1:\"c\";s:3:\"web\";s:1:\"d\";s:41:\"Cập nhật phân quyền người dùng\";s:1:\"r\";a:1:{i:0;i:1;}}i:45;a:5:{s:1:\"a\";i:46;s:1:\"b\";s:17:\"admin.blogs.index\";s:1:\"c\";s:3:\"web\";s:1:\"d\";s:19:\"Xem danh sách blog\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:46;a:5:{s:1:\"a\";i:47;s:1:\"b\";s:18:\"admin.blogs.create\";s:1:\"c\";s:3:\"web\";s:1:\"d\";s:10:\"Tạo blog\";s:1:\"r\";a:1:{i:0;i:1;}}i:47;a:5:{s:1:\"a\";i:48;s:1:\"b\";s:17:\"admin.blogs.store\";s:1:\"c\";s:3:\"web\";s:1:\"d\";s:9:\"Lưu blog\";s:1:\"r\";a:1:{i:0;i:1;}}i:48;a:5:{s:1:\"a\";i:49;s:1:\"b\";s:16:\"admin.blogs.edit\";s:1:\"c\";s:3:\"web\";s:1:\"d\";s:18:\"Chỉnh sửa blog\";s:1:\"r\";a:1:{i:0;i:1;}}i:49;a:5:{s:1:\"a\";i:50;s:1:\"b\";s:18:\"admin.blogs.update\";s:1:\"c\";s:3:\"web\";s:1:\"d\";s:17:\"Cập nhật blog\";s:1:\"r\";a:1:{i:0;i:1;}}i:50;a:5:{s:1:\"a\";i:51;s:1:\"b\";s:19:\"admin.blogs.destroy\";s:1:\"c\";s:3:\"web\";s:1:\"d\";s:9:\"Xóa blog\";s:1:\"r\";a:1:{i:0;i:1;}}i:51;a:5:{s:1:\"a\";i:52;s:1:\"b\";s:17:\"admin.blogs.trash\";s:1:\"c\";s:3:\"web\";s:1:\"d\";s:18:\"Xem blog đã xóa\";s:1:\"r\";a:1:{i:0;i:1;}}i:52;a:5:{s:1:\"a\";i:53;s:1:\"b\";s:19:\"admin.blogs.restore\";s:1:\"c\";s:3:\"web\";s:1:\"d\";s:17:\"Khôi phục blog\";s:1:\"r\";a:1:{i:0;i:1;}}i:53;a:5:{s:1:\"a\";i:54;s:1:\"b\";s:23:\"admin.blogs.forceDelete\";s:1:\"c\";s:3:\"web\";s:1:\"d\";s:22:\"Xóa vĩnh viễn blog\";s:1:\"r\";a:1:{i:0;i:1;}}i:54;a:5:{s:1:\"a\";i:55;s:1:\"b\";s:28:\"admin.attributes.types.index\";s:1:\"c\";s:3:\"web\";s:1:\"d\";s:37:\"Xem loại thuộc tính biến thể\";s:1:\"r\";a:1:{i:0;i:1;}}i:55;a:5:{s:1:\"a\";i:56;s:1:\"b\";s:29:\"admin.attributes.types.create\";s:1:\"c\";s:3:\"web\";s:1:\"d\";s:26:\"Tạo loại thuộc tính\";s:1:\"r\";a:1:{i:0;i:1;}}i:56;a:5:{s:1:\"a\";i:57;s:1:\"b\";s:28:\"admin.attributes.types.store\";s:1:\"c\";s:3:\"web\";s:1:\"d\";s:25:\"Lưu loại thuộc tính\";s:1:\"r\";a:1:{i:0;i:1;}}i:57;a:5:{s:1:\"a\";i:58;s:1:\"b\";s:27:\"admin.attributes.types.edit\";s:1:\"c\";s:3:\"web\";s:1:\"d\";s:34:\"Chỉnh sửa loại thuộc tính\";s:1:\"r\";a:1:{i:0;i:1;}}i:58;a:5:{s:1:\"a\";i:59;s:1:\"b\";s:29:\"admin.attributes.types.update\";s:1:\"c\";s:3:\"web\";s:1:\"d\";s:33:\"Cập nhật loại thuộc tính\";s:1:\"r\";a:1:{i:0;i:1;}}i:59;a:5:{s:1:\"a\";i:60;s:1:\"b\";s:30:\"admin.attributes.types.destroy\";s:1:\"c\";s:3:\"web\";s:1:\"d\";s:25:\"Xóa loại thuộc tính\";s:1:\"r\";a:1:{i:0;i:1;}}i:60;a:5:{s:1:\"a\";i:61;s:1:\"b\";s:14:\"user.dashboard\";s:1:\"c\";s:3:\"web\";s:1:\"d\";s:31:\"Truy cập trang người dùng\";s:1:\"r\";a:1:{i:0;i:1;}}}s:5:\"roles\";a:2:{i:0;a:4:{s:1:\"a\";i:1;s:1:\"b\";s:5:\"admin\";s:1:\"c\";s:3:\"web\";s:1:\"d\";N;}i:1;a:4:{s:1:\"a\";i:2;s:1:\"b\";s:5:\"staff\";s:1:\"c\";s:3:\"web\";s:1:\"d\";N;}}}', 1747333737);
 
 -- --------------------------------------------------------
 
@@ -314,7 +314,10 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (59, '2025_05_14_141637_drop_spatie_permission_tables', 33),
 (60, '2025_05_14_135939_create_spatie_permission_core_tables', 34),
 (61, '2025_05_14_141755_add_description_to_banners_table', 35),
-(62, '2025_05_14_145009_create_model_has_permissions_table', 36);
+(62, '2025_05_14_145009_create_model_has_permissions_table', 36),
+(63, '2025_05_14_145531_create_model_has_roles_table', 37),
+(64, '2025_05_15_090400_add_sku_to_product_attributes_table', 38),
+(65, '2025_05_15_023932_optimize_variant_tables', 39);
 
 -- --------------------------------------------------------
 
@@ -330,6 +333,92 @@ CREATE TABLE `model_has_permissions` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Đang đổ dữ liệu cho bảng `model_has_permissions`
+--
+
+INSERT INTO `model_has_permissions` (`id`, `model_type`, `model_id`, `permission_id`, `created_at`, `updated_at`) VALUES
+(1, 'App\\Models\\User', 1, 1, NULL, NULL),
+(2, 'App\\Models\\User', 1, 2, NULL, NULL),
+(3, 'App\\Models\\User', 1, 3, NULL, NULL),
+(4, 'App\\Models\\User', 1, 4, NULL, NULL),
+(5, 'App\\Models\\User', 1, 5, NULL, NULL),
+(6, 'App\\Models\\User', 1, 6, NULL, NULL),
+(7, 'App\\Models\\User', 1, 7, NULL, NULL),
+(8, 'App\\Models\\User', 1, 8, NULL, NULL),
+(9, 'App\\Models\\User', 1, 9, NULL, NULL),
+(10, 'App\\Models\\User', 1, 10, NULL, NULL),
+(11, 'App\\Models\\User', 1, 11, NULL, NULL),
+(12, 'App\\Models\\User', 1, 12, NULL, NULL),
+(13, 'App\\Models\\User', 1, 13, NULL, NULL),
+(14, 'App\\Models\\User', 1, 14, NULL, NULL),
+(15, 'App\\Models\\User', 1, 15, NULL, NULL),
+(16, 'App\\Models\\User', 1, 16, NULL, NULL),
+(17, 'App\\Models\\User', 1, 17, NULL, NULL),
+(18, 'App\\Models\\User', 1, 18, NULL, NULL),
+(19, 'App\\Models\\User', 1, 19, NULL, NULL),
+(20, 'App\\Models\\User', 1, 20, NULL, NULL),
+(21, 'App\\Models\\User', 1, 21, NULL, NULL),
+(22, 'App\\Models\\User', 1, 22, NULL, NULL),
+(23, 'App\\Models\\User', 1, 23, NULL, NULL),
+(24, 'App\\Models\\User', 1, 24, NULL, NULL),
+(25, 'App\\Models\\User', 1, 25, NULL, NULL),
+(26, 'App\\Models\\User', 1, 26, NULL, NULL),
+(27, 'App\\Models\\User', 1, 27, NULL, NULL),
+(28, 'App\\Models\\User', 1, 28, NULL, NULL),
+(29, 'App\\Models\\User', 1, 29, NULL, NULL),
+(30, 'App\\Models\\User', 1, 30, NULL, NULL),
+(31, 'App\\Models\\User', 1, 31, NULL, NULL),
+(32, 'App\\Models\\User', 1, 32, NULL, NULL),
+(33, 'App\\Models\\User', 1, 33, NULL, NULL),
+(34, 'App\\Models\\User', 1, 34, NULL, NULL),
+(35, 'App\\Models\\User', 1, 35, NULL, NULL),
+(36, 'App\\Models\\User', 1, 36, NULL, NULL),
+(37, 'App\\Models\\User', 1, 37, NULL, NULL),
+(38, 'App\\Models\\User', 1, 38, NULL, NULL),
+(39, 'App\\Models\\User', 1, 39, NULL, NULL),
+(40, 'App\\Models\\User', 1, 40, NULL, NULL),
+(41, 'App\\Models\\User', 1, 41, NULL, NULL),
+(42, 'App\\Models\\User', 1, 42, NULL, NULL),
+(43, 'App\\Models\\User', 1, 43, NULL, NULL),
+(44, 'App\\Models\\User', 1, 44, NULL, NULL),
+(45, 'App\\Models\\User', 1, 45, NULL, NULL),
+(46, 'App\\Models\\User', 1, 46, NULL, NULL),
+(47, 'App\\Models\\User', 1, 47, NULL, NULL),
+(48, 'App\\Models\\User', 1, 48, NULL, NULL),
+(49, 'App\\Models\\User', 1, 49, NULL, NULL),
+(50, 'App\\Models\\User', 1, 50, NULL, NULL),
+(51, 'App\\Models\\User', 1, 51, NULL, NULL),
+(52, 'App\\Models\\User', 1, 52, NULL, NULL),
+(53, 'App\\Models\\User', 1, 53, NULL, NULL),
+(54, 'App\\Models\\User', 1, 54, NULL, NULL),
+(55, 'App\\Models\\User', 1, 55, NULL, NULL),
+(56, 'App\\Models\\User', 1, 56, NULL, NULL),
+(57, 'App\\Models\\User', 1, 57, NULL, NULL),
+(58, 'App\\Models\\User', 1, 58, NULL, NULL),
+(59, 'App\\Models\\User', 1, 59, NULL, NULL),
+(60, 'App\\Models\\User', 1, 60, NULL, NULL),
+(61, 'App\\Models\\User', 1, 61, NULL, NULL);
+
+-- --------------------------------------------------------
+
+--
+-- Cấu trúc bảng cho bảng `model_has_roles`
+--
+
+CREATE TABLE `model_has_roles` (
+  `role_id` bigint(20) UNSIGNED NOT NULL,
+  `model_type` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `model_id` bigint(20) UNSIGNED NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Đang đổ dữ liệu cho bảng `model_has_roles`
+--
+
+INSERT INTO `model_has_roles` (`role_id`, `model_type`, `model_id`) VALUES
+(1, 'App\\Models\\User', 1);
 
 -- --------------------------------------------------------
 
@@ -405,67 +494,67 @@ CREATE TABLE `permissions` (
 --
 
 INSERT INTO `permissions` (`id`, `name`, `guard_name`, `description`, `created_at`, `updated_at`) VALUES
-(1, 'admin.products.index', 'web', 'Xem danh sách sản phẩm', '2025-05-14 14:31:01', '2025-05-14 14:37:39'),
-(2, 'admin.products.create-simple', 'web', 'Tạo sản phẩm đơn giản', '2025-05-14 14:31:01', '2025-05-14 14:37:39'),
-(3, 'admin.products.edit-simple', 'web', 'Chỉnh sửa sản phẩm đơn giản', '2025-05-14 14:31:02', '2025-05-14 14:37:39'),
-(4, 'admin.products.create-variant', 'web', 'Tạo sản phẩm biến thể', '2025-05-14 14:31:02', '2025-05-14 14:37:40'),
-(5, 'admin.products.edit-variant', 'web', 'Chỉnh sửa sản phẩm biến thể', '2025-05-14 14:31:02', '2025-05-14 14:37:40'),
-(6, 'admin.products.show', 'web', 'Xem chi tiết sản phẩm', '2025-05-14 14:31:02', '2025-05-14 14:37:40'),
-(7, 'admin.products.store', 'web', 'Lưu sản phẩm', '2025-05-14 14:31:02', '2025-05-14 14:37:40'),
-(8, 'admin.products.update', 'web', 'Cập nhật sản phẩm', '2025-05-14 14:31:02', '2025-05-14 14:37:40'),
-(9, 'admin.products.destroy', 'web', 'Xóa sản phẩm', '2025-05-14 14:31:02', '2025-05-14 14:37:40'),
-(10, 'admin.products.trash', 'web', 'Xem sản phẩm đã xóa', '2025-05-14 14:31:02', '2025-05-14 14:37:40'),
-(11, 'admin.categories.index', 'web', 'Xem danh sách danh mục', '2025-05-14 14:31:02', '2025-05-14 14:37:40'),
-(12, 'admin.categories.create', 'web', 'Tạo danh mục', '2025-05-14 14:31:02', '2025-05-14 14:37:40'),
-(13, 'admin.categories.store', 'web', 'Lưu danh mục', '2025-05-14 14:31:02', '2025-05-14 14:37:40'),
-(14, 'admin.categories.edit', 'web', 'Chỉnh sửa danh mục', '2025-05-14 14:31:02', '2025-05-14 14:37:41'),
-(15, 'admin.categories.update', 'web', 'Cập nhật danh mục', '2025-05-14 14:31:02', '2025-05-14 14:37:41'),
-(16, 'admin.categories.destroy', 'web', 'Xóa danh mục', '2025-05-14 14:31:02', '2025-05-14 14:37:41'),
-(17, 'admin.categories.trash', 'web', 'Xem danh mục đã xóa', '2025-05-14 14:31:02', '2025-05-14 14:37:41'),
-(18, 'admin.categories.restore', 'web', 'Khôi phục danh mục', '2025-05-14 14:31:02', '2025-05-14 14:37:41'),
-(19, 'admin.categories.forceDelete', 'web', 'Xóa vĩnh viễn danh mục', '2025-05-14 14:31:02', '2025-05-14 14:37:41'),
-(20, 'admin.categories.changeOrder', 'web', 'Thay đổi thứ tự danh mục', '2025-05-14 14:31:03', '2025-05-14 14:37:41'),
-(21, 'admin.banners.index', 'web', 'Xem danh sách banner', '2025-05-14 14:31:03', '2025-05-14 14:37:41'),
-(22, 'admin.banners.create', 'web', 'Tạo banner', '2025-05-14 14:31:03', '2025-05-14 14:37:41'),
-(23, 'admin.banners.store', 'web', 'Lưu banner', '2025-05-14 14:31:03', '2025-05-14 14:37:41'),
-(24, 'admin.banners.edit', 'web', 'Chỉnh sửa banner', '2025-05-14 14:31:03', '2025-05-14 14:37:41'),
-(25, 'admin.banners.update', 'web', 'Cập nhật banner', '2025-05-14 14:31:03', '2025-05-14 14:37:41'),
-(26, 'admin.banners.destroy', 'web', 'Xóa banner', '2025-05-14 14:31:03', '2025-05-14 14:37:41'),
-(27, 'admin.banners.moveUp', 'web', 'Di chuyển banner lên', '2025-05-14 14:31:03', '2025-05-14 14:37:42'),
-(28, 'admin.banners.moveDown', 'web', 'Di chuyển banner xuống', '2025-05-14 14:31:03', '2025-05-14 14:37:42'),
-(29, 'admin.orders.index', 'web', 'Xem danh sách đơn hàng', '2025-05-14 14:31:03', '2025-05-14 14:37:42'),
-(30, 'admin.orders.update', 'web', 'Cập nhật đơn hàng', '2025-05-14 14:31:03', '2025-05-14 14:37:42'),
-(31, 'admin.orders.destroy', 'web', 'Xóa đơn hàng', '2025-05-14 14:31:03', '2025-05-14 14:37:42'),
-(32, 'admin.orders.trash', 'web', 'Xem đơn hàng đã xóa', '2025-05-14 14:31:03', '2025-05-14 14:37:42'),
-(33, 'admin.orders.restore.bulk', 'web', 'Khôi phục đơn hàng hàng loạt', '2025-05-14 14:31:03', '2025-05-14 14:37:42'),
-(34, 'admin.orders.forceDelete.bulk', 'web', 'Xóa vĩnh viễn đơn hàng hàng loạt', '2025-05-14 14:31:04', '2025-05-14 14:37:42'),
-(35, 'admin.users.index', 'web', 'Xem danh sách người dùng', '2025-05-14 14:31:04', '2025-05-14 14:37:42'),
-(36, 'admin.users.trash', 'web', 'Xem người dùng đã xóa', '2025-05-14 14:31:04', '2025-05-14 14:37:42'),
-(37, 'admin.users.restore', 'web', 'Khôi phục người dùng', '2025-05-14 14:31:04', '2025-05-14 14:37:42'),
-(38, 'admin.users.forceDelete', 'web', 'Xóa vĩnh viễn người dùng', '2025-05-14 14:31:04', '2025-05-14 14:37:42'),
-(39, 'admin.users.create', 'web', 'Tạo người dùng', '2025-05-14 14:31:04', '2025-05-14 14:37:42'),
-(40, 'admin.users.store', 'web', 'Lưu người dùng', '2025-05-14 14:31:04', '2025-05-14 14:37:43'),
-(41, 'admin.users.edit', 'web', 'Chỉnh sửa người dùng', '2025-05-14 14:31:04', '2025-05-14 14:37:43'),
-(42, 'admin.users.update', 'web', 'Cập nhật người dùng', '2025-05-14 14:31:04', '2025-05-14 14:37:43'),
-(43, 'admin.users.destroy', 'web', 'Xóa người dùng', '2025-05-14 14:31:04', '2025-05-14 14:37:43'),
-(44, 'admin.users.edit_permissions', 'web', 'Xem phân quyền người dùng', '2025-05-14 14:31:04', '2025-05-14 14:37:43'),
-(45, 'admin.users.update_permissions', 'web', 'Cập nhật phân quyền người dùng', '2025-05-14 14:31:04', '2025-05-14 14:37:43'),
-(46, 'admin.blogs.index', 'web', 'Xem danh sách blog', '2025-05-14 14:31:04', '2025-05-14 14:37:43'),
-(47, 'admin.blogs.create', 'web', 'Tạo blog', '2025-05-14 14:31:04', '2025-05-14 14:37:43'),
-(48, 'admin.blogs.store', 'web', 'Lưu blog', '2025-05-14 14:31:04', '2025-05-14 14:37:43'),
-(49, 'admin.blogs.edit', 'web', 'Chỉnh sửa blog', '2025-05-14 14:31:04', '2025-05-14 14:37:43'),
-(50, 'admin.blogs.update', 'web', 'Cập nhật blog', '2025-05-14 14:31:04', '2025-05-14 14:37:43'),
-(51, 'admin.blogs.destroy', 'web', 'Xóa blog', '2025-05-14 14:31:05', '2025-05-14 14:37:43'),
-(52, 'admin.blogs.trash', 'web', 'Xem blog đã xóa', '2025-05-14 14:31:05', '2025-05-14 14:37:43'),
-(53, 'admin.blogs.restore', 'web', 'Khôi phục blog', '2025-05-14 14:31:05', '2025-05-14 14:37:43'),
-(54, 'admin.blogs.forceDelete', 'web', 'Xóa vĩnh viễn blog', '2025-05-14 14:31:05', '2025-05-14 14:37:44'),
-(55, 'admin.attributes.types.index', 'web', 'Xem loại thuộc tính biến thể', '2025-05-14 14:31:05', '2025-05-14 14:37:44'),
-(56, 'admin.attributes.types.create', 'web', 'Tạo loại thuộc tính', '2025-05-14 14:31:05', '2025-05-14 14:37:44'),
-(57, 'admin.attributes.types.store', 'web', 'Lưu loại thuộc tính', '2025-05-14 14:31:05', '2025-05-14 14:37:44'),
-(58, 'admin.attributes.types.edit', 'web', 'Chỉnh sửa loại thuộc tính', '2025-05-14 14:31:05', '2025-05-14 14:37:44'),
-(59, 'admin.attributes.types.update', 'web', 'Cập nhật loại thuộc tính', '2025-05-14 14:31:05', '2025-05-14 14:37:44'),
-(60, 'admin.attributes.types.destroy', 'web', 'Xóa loại thuộc tính', '2025-05-14 14:31:05', '2025-05-14 14:37:44'),
-(61, 'user.dashboard', 'web', 'Truy cập trang người dùng', '2025-05-14 14:31:06', '2025-05-14 14:37:44');
+(1, 'admin.products.index', 'web', 'Xem danh sách sản phẩm', '2025-05-14 18:19:46', '2025-05-14 18:19:46'),
+(2, 'admin.products.create-simple', 'web', 'Tạo sản phẩm đơn giản', '2025-05-14 18:19:46', '2025-05-14 18:19:46'),
+(3, 'admin.products.edit-simple', 'web', 'Chỉnh sửa sản phẩm đơn giản', '2025-05-14 18:19:47', '2025-05-14 18:19:47'),
+(4, 'admin.products.create-variant', 'web', 'Tạo sản phẩm biến thể', '2025-05-14 18:19:47', '2025-05-14 18:19:47'),
+(5, 'admin.products.edit-variant', 'web', 'Chỉnh sửa sản phẩm biến thể', '2025-05-14 18:19:47', '2025-05-14 18:19:47'),
+(6, 'admin.products.show', 'web', 'Xem chi tiết sản phẩm', '2025-05-14 18:19:48', '2025-05-14 18:19:48'),
+(7, 'admin.products.store', 'web', 'Lưu sản phẩm', '2025-05-14 18:19:48', '2025-05-14 18:19:48'),
+(8, 'admin.products.update', 'web', 'Cập nhật sản phẩm', '2025-05-14 18:19:48', '2025-05-14 18:19:48'),
+(9, 'admin.products.destroy', 'web', 'Xóa sản phẩm', '2025-05-14 18:19:49', '2025-05-14 18:19:49'),
+(10, 'admin.products.trash', 'web', 'Xem sản phẩm đã xóa', '2025-05-14 18:19:49', '2025-05-14 18:19:49'),
+(11, 'admin.categories.index', 'web', 'Xem danh sách danh mục', '2025-05-14 18:19:49', '2025-05-14 18:19:49'),
+(12, 'admin.categories.create', 'web', 'Tạo danh mục', '2025-05-14 18:19:49', '2025-05-14 18:19:49'),
+(13, 'admin.categories.store', 'web', 'Lưu danh mục', '2025-05-14 18:19:49', '2025-05-14 18:19:49'),
+(14, 'admin.categories.edit', 'web', 'Chỉnh sửa danh mục', '2025-05-14 18:19:50', '2025-05-14 18:19:50'),
+(15, 'admin.categories.update', 'web', 'Cập nhật danh mục', '2025-05-14 18:19:50', '2025-05-14 18:19:50'),
+(16, 'admin.categories.destroy', 'web', 'Xóa danh mục', '2025-05-14 18:19:50', '2025-05-14 18:19:50'),
+(17, 'admin.categories.trash', 'web', 'Xem danh mục đã xóa', '2025-05-14 18:19:50', '2025-05-14 18:19:50'),
+(18, 'admin.categories.restore', 'web', 'Khôi phục danh mục', '2025-05-14 18:19:50', '2025-05-14 18:19:50'),
+(19, 'admin.categories.forceDelete', 'web', 'Xóa vĩnh viễn danh mục', '2025-05-14 18:19:51', '2025-05-14 18:19:51'),
+(20, 'admin.categories.changeOrder', 'web', 'Thay đổi thứ tự danh mục', '2025-05-14 18:19:51', '2025-05-14 18:19:51'),
+(21, 'admin.banners.index', 'web', 'Xem danh sách banner', '2025-05-14 18:19:51', '2025-05-14 18:19:51'),
+(22, 'admin.banners.create', 'web', 'Tạo banner', '2025-05-14 18:19:51', '2025-05-14 18:19:51'),
+(23, 'admin.banners.store', 'web', 'Lưu banner', '2025-05-14 18:19:51', '2025-05-14 18:19:51'),
+(24, 'admin.banners.edit', 'web', 'Chỉnh sửa banner', '2025-05-14 18:19:51', '2025-05-14 18:19:51'),
+(25, 'admin.banners.update', 'web', 'Cập nhật banner', '2025-05-14 18:19:52', '2025-05-14 18:19:52'),
+(26, 'admin.banners.destroy', 'web', 'Xóa banner', '2025-05-14 18:19:52', '2025-05-14 18:19:52'),
+(27, 'admin.banners.moveUp', 'web', 'Di chuyển banner lên', '2025-05-14 18:19:52', '2025-05-14 18:19:52'),
+(28, 'admin.banners.moveDown', 'web', 'Di chuyển banner xuống', '2025-05-14 18:19:52', '2025-05-14 18:19:52'),
+(29, 'admin.orders.index', 'web', 'Xem danh sách đơn hàng', '2025-05-14 18:19:52', '2025-05-14 18:19:52'),
+(30, 'admin.orders.update', 'web', 'Cập nhật đơn hàng', '2025-05-14 18:19:52', '2025-05-14 18:19:52'),
+(31, 'admin.orders.destroy', 'web', 'Xóa đơn hàng', '2025-05-14 18:19:52', '2025-05-14 18:19:52'),
+(32, 'admin.orders.trash', 'web', 'Xem đơn hàng đã xóa', '2025-05-14 18:19:52', '2025-05-14 18:19:52'),
+(33, 'admin.orders.restore.bulk', 'web', 'Khôi phục đơn hàng hàng loạt', '2025-05-14 18:19:52', '2025-05-14 18:19:52'),
+(34, 'admin.orders.forceDelete.bulk', 'web', 'Xóa vĩnh viễn đơn hàng hàng loạt', '2025-05-14 18:19:52', '2025-05-14 18:19:52'),
+(35, 'admin.users.index', 'web', 'Xem danh sách người dùng', '2025-05-14 18:19:53', '2025-05-14 18:19:53'),
+(36, 'admin.users.trash', 'web', 'Xem người dùng đã xóa', '2025-05-14 18:19:53', '2025-05-14 18:19:53'),
+(37, 'admin.users.restore', 'web', 'Khôi phục người dùng', '2025-05-14 18:19:53', '2025-05-14 18:19:53'),
+(38, 'admin.users.forceDelete', 'web', 'Xóa vĩnh viễn người dùng', '2025-05-14 18:19:53', '2025-05-14 18:19:53'),
+(39, 'admin.users.create', 'web', 'Tạo người dùng', '2025-05-14 18:19:53', '2025-05-14 18:19:53'),
+(40, 'admin.users.store', 'web', 'Lưu người dùng', '2025-05-14 18:19:53', '2025-05-14 18:19:53'),
+(41, 'admin.users.edit', 'web', 'Chỉnh sửa người dùng', '2025-05-14 18:19:53', '2025-05-14 18:19:53'),
+(42, 'admin.users.update', 'web', 'Cập nhật người dùng', '2025-05-14 18:19:53', '2025-05-14 18:19:53'),
+(43, 'admin.users.destroy', 'web', 'Xóa người dùng', '2025-05-14 18:19:53', '2025-05-14 18:19:53'),
+(44, 'admin.users.edit_permissions', 'web', 'Xem phân quyền người dùng', '2025-05-14 18:19:53', '2025-05-14 18:19:53'),
+(45, 'admin.users.update_permissions', 'web', 'Cập nhật phân quyền người dùng', '2025-05-14 18:19:53', '2025-05-14 18:19:53'),
+(46, 'admin.blogs.index', 'web', 'Xem danh sách blog', '2025-05-14 18:19:54', '2025-05-14 18:19:54'),
+(47, 'admin.blogs.create', 'web', 'Tạo blog', '2025-05-14 18:19:54', '2025-05-14 18:19:54'),
+(48, 'admin.blogs.store', 'web', 'Lưu blog', '2025-05-14 18:19:54', '2025-05-14 18:19:54'),
+(49, 'admin.blogs.edit', 'web', 'Chỉnh sửa blog', '2025-05-14 18:19:54', '2025-05-14 18:19:54'),
+(50, 'admin.blogs.update', 'web', 'Cập nhật blog', '2025-05-14 18:19:54', '2025-05-14 18:19:54'),
+(51, 'admin.blogs.destroy', 'web', 'Xóa blog', '2025-05-14 18:19:54', '2025-05-14 18:19:54'),
+(52, 'admin.blogs.trash', 'web', 'Xem blog đã xóa', '2025-05-14 18:19:54', '2025-05-14 18:19:54'),
+(53, 'admin.blogs.restore', 'web', 'Khôi phục blog', '2025-05-14 18:19:54', '2025-05-14 18:19:54'),
+(54, 'admin.blogs.forceDelete', 'web', 'Xóa vĩnh viễn blog', '2025-05-14 18:19:54', '2025-05-14 18:19:54'),
+(55, 'admin.attributes.types.index', 'web', 'Xem loại thuộc tính biến thể', '2025-05-14 18:19:54', '2025-05-14 18:19:54'),
+(56, 'admin.attributes.types.create', 'web', 'Tạo loại thuộc tính', '2025-05-14 18:19:55', '2025-05-14 18:19:55'),
+(57, 'admin.attributes.types.store', 'web', 'Lưu loại thuộc tính', '2025-05-14 18:19:55', '2025-05-14 18:19:55'),
+(58, 'admin.attributes.types.edit', 'web', 'Chỉnh sửa loại thuộc tính', '2025-05-14 18:19:55', '2025-05-14 18:19:55'),
+(59, 'admin.attributes.types.update', 'web', 'Cập nhật loại thuộc tính', '2025-05-14 18:19:55', '2025-05-14 18:19:55'),
+(60, 'admin.attributes.types.destroy', 'web', 'Xóa loại thuộc tính', '2025-05-14 18:19:55', '2025-05-14 18:19:55'),
+(61, 'user.dashboard', 'web', 'Truy cập trang người dùng', '2025-05-14 18:19:55', '2025-05-14 18:19:55');
 
 -- --------------------------------------------------------
 
@@ -497,10 +586,12 @@ CREATE TABLE `products` (
 --
 
 INSERT INTO `products` (`id`, `name`, `slug`, `description`, `content`, `stock`, `category_id`, `model`, `series`, `warranty_months`, `is_featured`, `status`, `created_at`, `updated_at`, `deleted_at`, `has_variants`) VALUES
-(4, 'iPhone 15 Pro Max 256GB', 'iphone-15-pro-max-256gb', 'Bộ sản phẩm gồm: Hộp, Sách hướng dẫn, Cây lấy sim, Cáp Type C\r\n Hư gì đổi nấy 12 tháng tại 3043 siêu thị trên toàn quốc Xem chi tiết chính sách bảo hành, đổi trả\r\n Bảo hành chính hãng 1 năm\r\n Giao hàng nhanh toàn quốc Xem chi tiết\r\n Tổng đài: 1900.9696.42 (8:00 - 21:30)', '<p>Khuyến m&atilde;i trị gi&aacute; 500.000₫<small>Gi&aacute; v&agrave; khuyến m&atilde;i dự kiến &aacute;p dụng đến 23:59 | 31/05</small></p>\r\n\r\n<p>&nbsp;<strong>Phiếu mua h&agrave;ng AirPods, Apple Watch, Macbook trị gi&aacute; 500,000đ</strong></p>\r\n\r\n<p>&nbsp;<strong>Phiếu mua h&agrave;ng &aacute;p dụng mua Sạc dự ph&ograve;ng (trừ h&atilde;ng AVA+, Hydrus), đồng hồ th&ocirc;ng minh (trừ Apple), Tai nghe v&agrave; Loa bluetooth (h&atilde;ng JBL, Marshall,Harmar Kardon ,Sony) trị gi&aacute; 100.000đ</strong></p>\r\n\r\n<p>&nbsp;<strong>Thu cũ đổi mới: Giảm đến 2,000,000đ (Kh&ocirc;ng k&egrave;m ưu đ&atilde;i thanh to&aacute;n qua cổng, mua k&egrave;m)&nbsp;<a href=\"https://www.thegioididong.com/thu-cu-doi-moi\">Xem chi tiết</a></strong></p>\r\n\r\n<p>&nbsp;<strong>Nhập m&atilde; VNPAYTGDD2 giảm từ 80,000đ đến 150,000đ (&aacute;p dụng t&ugrave;y gi&aacute; trị đơn h&agrave;ng) khi thanh to&aacute;n qua VNPAY-QR&nbsp;<a href=\"https://www.topzone.vn/tekzone/nhap-ma-vnpaytgdd1-giam-toi-da-150k-khi-thanh-toan-qua-vnpay-qr-1573704\" target=\"_blank\">(Xem chi tiết tại đ&acirc;y)</a></strong></p>', 0, 3, 'iPhone 15 Pro', 'Pro Max', 12, 1, 'active', '2025-05-10 01:38:42', '2025-05-14 14:47:17', '2025-05-14 14:47:17', 0),
+(4, 'iPhone 15 Pro Max 256GB', 'iphone-15-pro-max-256gb', 'Bộ sản phẩm gồm: Hộp, Sách hướng dẫn, Cây lấy sim, Cáp Type C\r\n Hư gì đổi nấy 12 tháng tại 3043 siêu thị trên toàn quốc Xem chi tiết chính sách bảo hành, đổi trả\r\n Bảo hành chính hãng 1 năm\r\n Giao hàng nhanh toàn quốc Xem chi tiết\r\n Tổng đài: 1900.9696.42 (8:00 - 21:30)', '<p>Khuyến m&atilde;i trị gi&aacute; 500.000₫<small>Gi&aacute; v&agrave; khuyến m&atilde;i dự kiến &aacute;p dụng đến 23:59 | 31/05</small></p>\r\n\r\n<p>&nbsp;<strong>Phiếu mua h&agrave;ng AirPods, Apple Watch, Macbook trị gi&aacute; 500,000đ</strong></p>\r\n\r\n<p>&nbsp;<strong>Phiếu mua h&agrave;ng &aacute;p dụng mua Sạc dự ph&ograve;ng (trừ h&atilde;ng AVA+, Hydrus), đồng hồ th&ocirc;ng minh (trừ Apple), Tai nghe v&agrave; Loa bluetooth (h&atilde;ng JBL, Marshall,Harmar Kardon ,Sony) trị gi&aacute; 100.000đ</strong></p>\r\n\r\n<p>&nbsp;<strong>Thu cũ đổi mới: Giảm đến 2,000,000đ (Kh&ocirc;ng k&egrave;m ưu đ&atilde;i thanh to&aacute;n qua cổng, mua k&egrave;m)&nbsp;<a href=\"https://www.thegioididong.com/thu-cu-doi-moi\">Xem chi tiết</a></strong></p>\r\n\r\n<p>&nbsp;<strong>Nhập m&atilde; VNPAYTGDD2 giảm từ 80,000đ đến 150,000đ (&aacute;p dụng t&ugrave;y gi&aacute; trị đơn h&agrave;ng) khi thanh to&aacute;n qua VNPAY-QR&nbsp;<a href=\"https://www.topzone.vn/tekzone/nhap-ma-vnpaytgdd1-giam-toi-da-150k-khi-thanh-toan-qua-vnpay-qr-1573704\" target=\"_blank\">(Xem chi tiết tại đ&acirc;y)</a></strong></p>', 0, 3, 'iPhone 15 Pro', 'Pro Max', 12, 1, 'active', '2025-05-10 01:38:42', '2025-05-14 15:36:07', NULL, 0),
 (6, 'iPhone 15 Pro Max', 'iphone-15-pro-max', 'Bộ sản phẩm gồm: Hộp, Sách hướng dẫn, Cây lấy sim, Cáp Type C\r\n Hư gì đổi nấy 12 tháng tại 3043 siêu thị trên toàn quốc Xem chi tiết chính sách bảo hành, đổi trả\r\n Bảo hành chính hãng 1 năm\r\n Giao hàng nhanh toàn quốc Xem chi tiết\r\n Tổng đài: 1900.9696.42 (8:00 - 21:30)', NULL, 0, 1, 'A2084', 'Apple watch', 6, 0, 'active', '2025-05-14 10:39:49', '2025-05-14 10:39:49', NULL, 1),
 (7, 'AirPods 4', 'airpods-4', 'Bảo hành có cam kết 12 tháng Xem chi tiết chính sách bảo hành, đổi trả\r\n Bảo hành chính hãng 1 năm\r\n Giao hàng nhanh toàn quốc Xem chi tiết\r\n Tổng đài: 1900.9696.42 (8:00 - 21:30)', NULL, 0, 5, 'A2085', 'AirPods', 6, 0, 'active', '2025-05-14 13:18:38', '2025-05-14 13:18:38', NULL, 0),
-(8, 'Apple Pencil Pro', 'apple-pencil-pro', 'Bảo hành có cam kết 12 tháng Xem chi tiết chính sách bảo hành, đổi trả\r\n Bảo hành chính hãng 1 năm\r\n Giao hàng nhanh toàn quốc Xem chi tiết\r\n Tổng đài: 1900.9696.42 (8:00 - 21:30)', '<p>Khuyến m&atilde;i<small>Gi&aacute; v&agrave; khuyến m&atilde;i dự kiến &aacute;p dụng đến 23:59 | 31/05</small></p>\r\n\r\n<p>&nbsp;<strong>Nhập m&atilde; VNPAYTGDD2 giảm từ 80,000đ đến 150,000đ (&aacute;p dụng t&ugrave;y gi&aacute; trị đơn h&agrave;ng) khi thanh to&aacute;n qua VNPAY-QR&nbsp;<a href=\"https://www.topzone.vn/tekzone/nhap-ma-vnpaytgdd1-giam-toi-da-150k-khi-thanh-toan-qua-vnpay-qr-1573704\" target=\"_blank\">(Xem chi tiết tại đ&acirc;y)</a></strong></p>', 0, 3, 'A2086', 'Pencil', 6, 1, 'inactive', '2025-05-14 14:19:16', '2025-05-14 14:50:39', NULL, 1);
+(8, 'Apple Pencil Pro', 'apple-pencil-pro', 'Bảo hành có cam kết 12 tháng Xem chi tiết chính sách bảo hành, đổi trả\r\n Bảo hành chính hãng 1 năm\r\n Giao hàng nhanh toàn quốc Xem chi tiết\r\n Tổng đài: 1900.9696.42 (8:00 - 21:30)', '<p>Khuyến m&atilde;i<small>Gi&aacute; v&agrave; khuyến m&atilde;i dự kiến &aacute;p dụng đến 23:59 | 31/05</small></p>\r\n\r\n<p>&nbsp;<strong>Nhập m&atilde; VNPAYTGDD2 giảm từ 80,000đ đến 150,000đ (&aacute;p dụng t&ugrave;y gi&aacute; trị đơn h&agrave;ng) khi thanh to&aacute;n qua VNPAY-QR&nbsp;<a href=\"https://www.topzone.vn/tekzone/nhap-ma-vnpaytgdd1-giam-toi-da-150k-khi-thanh-toan-qua-vnpay-qr-1573704\" target=\"_blank\">(Xem chi tiết tại đ&acirc;y)</a></strong></p>', 0, 3, 'A2086', 'Pencil', 6, 1, 'inactive', '2025-05-14 14:19:16', '2025-05-14 14:50:39', NULL, 1),
+(12, 'iPhone 15 Pro Max 333', 'iphone-15-pro-max-333', 'aaa', '<p>aaa</p>', 0, 1, 'aa', 'aaa', 0, 0, 'active', '2025-05-15 04:02:58', '2025-05-15 04:02:58', NULL, 1),
+(13, 'iPhone 15 Pro Max 44444', 'iphone-15-pro-max-44444', 'aaa', '<p>aaa</p>', 0, 1, 'aaa', 'aaa', 6, 0, 'active', '2025-05-15 04:08:28', '2025-05-15 04:08:28', NULL, 1);
 
 -- --------------------------------------------------------
 
@@ -513,6 +604,7 @@ CREATE TABLE `product_attributes` (
   `product_id` bigint(20) UNSIGNED NOT NULL,
   `attribute_name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `attribute_value` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `sku` varchar(32) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `hex` varchar(7) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
@@ -522,10 +614,10 @@ CREATE TABLE `product_attributes` (
 -- Đang đổ dữ liệu cho bảng `product_attributes`
 --
 
-INSERT INTO `product_attributes` (`id`, `product_id`, `attribute_name`, `attribute_value`, `hex`, `created_at`, `updated_at`) VALUES
-(19, 4, 'feature', 'Camera 48MP', NULL, '2025-05-10 04:07:04', '2025-05-10 04:07:04'),
-(20, 4, 'Chip', '20', NULL, '2025-05-10 04:07:04', '2025-05-10 04:07:04'),
-(27, 7, 'Color', 'White', '#FFFFFF', '2025-05-14 14:14:20', '2025-05-14 14:14:20');
+INSERT INTO `product_attributes` (`id`, `product_id`, `attribute_name`, `attribute_value`, `sku`, `hex`, `created_at`, `updated_at`) VALUES
+(19, 4, 'feature', 'Camera 48MP', NULL, NULL, '2025-05-10 04:07:04', '2025-05-10 04:07:04'),
+(20, 4, 'Chip', '20', NULL, NULL, '2025-05-10 04:07:04', '2025-05-10 04:07:04'),
+(28, 7, 'Color', 'White', NULL, '#FFFFFF', '2025-05-15 04:11:01', '2025-05-15 04:11:01');
 
 -- --------------------------------------------------------
 
@@ -561,7 +653,7 @@ CREATE TABLE `product_variants` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   `deleted_at` timestamp NULL DEFAULT NULL,
-  `image` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Đường dẫn ảnh của biến thể',
+  `images` json DEFAULT NULL COMMENT 'Mảng JSON chứa các đường dẫn ảnh của biến thể',
   `purchase_price` decimal(15,2) NOT NULL DEFAULT '0.00' COMMENT 'Giá nhập',
   `selling_price` decimal(15,2) NOT NULL DEFAULT '0.00' COMMENT 'Giá bán'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -570,12 +662,14 @@ CREATE TABLE `product_variants` (
 -- Đang đổ dữ liệu cho bảng `product_variants`
 --
 
-INSERT INTO `product_variants` (`id`, `product_id`, `sku`, `name`, `slug`, `discount_price`, `stock`, `status`, `is_default`, `created_at`, `updated_at`, `deleted_at`, `image`, `purchase_price`, `selling_price`) VALUES
-(2, 6, 'iphone-15-pro-max-white-128gb-yDjmkd', 'iPhone 15 Pro Max-White-128GB', 'iphone-15-pro-max-white-128gb', 28000000.00, 22, 'active', 0, '2025-05-14 10:39:49', '2025-05-14 10:39:49', NULL, 'products/1747219189_682472f56231f.png', 24000000.00, 30000000.00),
-(3, 6, 'iphone-15-pro-max-black-128gb-jd2ZCq', 'iPhone 15 Pro Max-Black-128GB', 'iphone-15-pro-max-black-128gb', 28000000.00, 22, 'active', 0, '2025-05-14 10:39:49', '2025-05-14 10:39:49', NULL, 'products/1747219189_682472f591d62.png', 24000000.00, 30000000.00),
-(4, 7, 'airpods-4-simple-yh705H', 'AirPods 4', 'airpods-4', 2800000.00, 22, 'active', 0, '2025-05-14 13:18:38', '2025-05-14 13:18:38', NULL, 'products/1747228718_6824982eea5ae.png', 2000000.00, 3000000.00),
-(8, 8, 'apple-pencil-pro-white-OTsfeF', 'Apple Pencil Pro-White', 'apple-pencil-pro-white', 444.00, 22, 'active', 1, '2025-05-14 14:19:16', '2025-05-14 14:50:39', NULL, 'products/1747233290_6824aa0a097a6.png', 333.00, 555.00),
-(9, 8, 'apple-pencil-pro-black-8Hf5pR', 'Apple Pencil Pro-Black', 'apple-pencil-pro-black', 444.00, 22, 'active', 0, '2025-05-14 14:19:16', '2025-05-14 14:50:39', NULL, 'products/1747232356_6824a66471b48.png', 333.00, 555.00);
+INSERT INTO `product_variants` (`id`, `product_id`, `sku`, `name`, `slug`, `discount_price`, `stock`, `status`, `is_default`, `created_at`, `updated_at`, `deleted_at`, `images`, `purchase_price`, `selling_price`) VALUES
+(2, 6, 'SP-00001', 'iPhone 15 Pro Max-White-128GB', 'iphone-15-pro-max-white-128gb', 28000000.00, 22, 'active', 0, '2025-05-14 10:39:49', '2025-05-14 10:39:49', NULL, '[\"products/1747219189_682472f56231f.png\"]', 24000000.00, 30000000.00),
+(3, 6, 'SP-00002', 'iPhone 15 Pro Max-Black-128GB', 'iphone-15-pro-max-black-128gb', 28000000.00, 22, 'active', 0, '2025-05-14 10:39:49', '2025-05-14 10:39:49', NULL, '[\"products/1747219189_682472f591d62.png\"]', 24000000.00, 30000000.00),
+(4, 7, 'SP-00003', 'AirPods 4', 'airpods-4', NULL, 0, 'active', 0, '2025-05-14 13:18:38', '2025-05-15 04:11:01', NULL, '[\"products/1747228718_6824982eea5ae.png\"]', 0.00, 0.00),
+(8, 8, 'SP-00004', 'Apple Pencil Pro-White', 'apple-pencil-pro-white', 444.00, 22, 'active', 1, '2025-05-14 14:19:16', '2025-05-14 14:50:39', NULL, '[\"products/1747233290_6824aa0a097a6.png\"]', 333.00, 555.00),
+(9, 8, 'SP-00005', 'Apple Pencil Pro-Black', 'apple-pencil-pro-black', 444.00, 22, 'active', 0, '2025-05-14 14:19:16', '2025-05-14 14:50:39', NULL, '[\"products/1747232356_6824a66471b48.png\"]', 333.00, 555.00),
+(14, 12, 'SP-73698', 'iPhone 15 Pro Max 333-128GB', 'iphone-15-pro-max-333-128gb', 22.00, 22, 'active', 1, '2025-05-15 04:02:59', '2025-05-15 04:02:59', NULL, NULL, 22.00, 22.00),
+(15, 13, 'SP-28750', 'iPhone 15 Pro Max 44444-White', 'iphone-15-pro-max-44444-white', 22.00, 22, 'active', 1, '2025-05-15 04:08:28', '2025-05-15 04:08:28', NULL, NULL, 22.00, 22.00);
 
 -- --------------------------------------------------------
 
@@ -706,13 +800,7 @@ CREATE TABLE `sessions` (
 --
 
 INSERT INTO `sessions` (`id`, `user_id`, `ip_address`, `user_agent`, `payload`, `last_activity`) VALUES
-('8peK0Brsvv90VI0TMgUIVWAXK0QzoWXzv4qg4E84', NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoidzJqSkRYSTdrc25IVFM0WFVWRVhnU1FiREhjU3JKVTBpZUV4RThVMyI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6MTY6Imh0dHA6Ly9kYXRuLnRlc3QiO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX19', 1747232317),
-('ABFKuQZ1uGgwQkEyXOgxTLWwofwm2VG5W4HucV8e', NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoiU2k2UXFibVAzS1kwZmphVEoxTkpTSW5vT24zdHI2Tk9YYzF2eWFCZCI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6MzY6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9hZG1pbi9vcmRlcnMvMiI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fX0=', 1747234418),
-('ij4JoK7KMJn15IVqqBKyCjsVyivsrWYrgTHAi4MJ', NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoiUVRBQ1dFNGc5YzU4R2FvbEJDTzdlYkhsYTF6T1dLTWd4QUxmMW9zSCI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6MjE6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMCI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fX0=', 1747233007),
-('OQ1NKRQwiyl36eidtOAu45ordd1xTtKcAUnyFVqw', NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoiUDJDT1UzRHNCWVFDUTVyYjlKN0dRSlB1NzJwdTA3eDY0OUN4QjVPViI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6MzY6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9hZG1pbi9wcm9kdWN0cyI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fX0=', 1747234285),
-('qEajC2rKNzrzoA0kBxgmLB0WkYVBASxEP2pBb6sD', NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoib3dtZ2NJbjlVemNWblc3QlB3Q0dDTGUyTGRxMGdGNWNLcDlsVjllayI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6MjE6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMCI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fX0=', 1747234544),
-('uhtTp9QWSr0DxJTtoPCQVMw8hTnGL24FWJnfkJks', 8, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36', 'YTo0OntzOjY6Il90b2tlbiI7czo0MDoiTGt1QUNBekFBYk9BZFVVWGpTdlZKNEVGMjk1aHRQbTJTbFFNOUxaSyI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6MzM6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9hZG1pbi91c2VycyI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fXM6NTA6ImxvZ2luX3dlYl81OWJhMzZhZGRjMmIyZjk0MDE1ODBmMDE0YzdmNThlYTRlMzA5ODlkIjtpOjg7fQ==', 1747234475),
-('vhJABexyLw23IfsDEzxGC2NdkG54zXgJLe6qwv0W', NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoiOVZSdGN0MjQwQ3pYdzNzVFJpUnRpeEpnVjFZckFTOWp4ZExYTkp1aiI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6NDI6Imh0dHA6Ly9kYXRuLnRlc3Q6ODA4MC9hZG1pbi9iYW5uZXJzP3BhZ2U9MSI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fX0=', 1747233498);
+('f1Wg5IheKryKmgd6BSIGvb0tq4lqi44lbe0LEHeO', NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoiN216WUR2M3F0aG43Q0lRekZGd0tFV0dCbEJHenlSZHpuYjdQRm9MbSI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6NTA6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9hZG1pbi9wcm9kdWN0cy9jcmVhdGUtc2ltcGxlIjt9czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319fQ==', 1747283542);
 
 -- --------------------------------------------------------
 
@@ -809,22 +897,6 @@ CREATE TABLE `user_addresses` (
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `variant_attributes`
---
-
-CREATE TABLE `variant_attributes` (
-  `id` bigint(20) UNSIGNED NOT NULL,
-  `variant_id` bigint(20) UNSIGNED NOT NULL,
-  `attribute_name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `attribute_value` json DEFAULT NULL,
-  `hex` json DEFAULT NULL,
-  `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NULL DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- --------------------------------------------------------
-
---
 -- Cấu trúc bảng cho bảng `variant_attribute_types`
 --
 
@@ -855,6 +927,7 @@ CREATE TABLE `variant_attribute_values` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `attribute_type_id` bigint(20) UNSIGNED NOT NULL,
   `value` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `hex` varchar(7) COLLATE utf8mb4_unicode_ci DEFAULT NULL COMMENT 'Mã màu hex (ví dụ: #FFFFFF)',
   `status` enum('active','inactive') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'active',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
@@ -865,10 +938,10 @@ CREATE TABLE `variant_attribute_values` (
 -- Đang đổ dữ liệu cho bảng `variant_attribute_values`
 --
 
-INSERT INTO `variant_attribute_values` (`id`, `attribute_type_id`, `value`, `status`, `created_at`, `updated_at`, `deleted_at`) VALUES
-(1, 1, 'White', 'active', '2025-05-14 10:39:49', '2025-05-14 10:39:49', NULL),
-(2, 2, '128GB', 'active', '2025-05-14 10:39:49', '2025-05-14 10:39:49', NULL),
-(3, 1, 'Black', 'active', '2025-05-14 10:39:49', '2025-05-14 10:39:49', NULL);
+INSERT INTO `variant_attribute_values` (`id`, `attribute_type_id`, `value`, `hex`, `status`, `created_at`, `updated_at`, `deleted_at`) VALUES
+(1, 1, 'White', '#FFFFFF', 'active', '2025-05-14 10:39:49', '2025-05-14 10:39:49', NULL),
+(2, 2, '128GB', NULL, 'active', '2025-05-14 10:39:49', '2025-05-14 10:39:49', NULL),
+(3, 1, 'Black', '#000000', 'active', '2025-05-14 10:39:49', '2025-05-14 10:39:49', NULL);
 
 -- --------------------------------------------------------
 
@@ -894,7 +967,9 @@ INSERT INTO `variant_combinations` (`id`, `variant_id`, `attribute_value_id`, `c
 (3, 3, 3, '2025-05-14 10:39:49', '2025-05-14 10:39:49'),
 (4, 3, 2, '2025-05-14 10:39:49', '2025-05-14 10:39:49'),
 (13, 8, 1, '2025-05-14 14:50:39', '2025-05-14 14:50:39'),
-(14, 9, 3, '2025-05-14 14:50:39', '2025-05-14 14:50:39');
+(14, 9, 3, '2025-05-14 14:50:39', '2025-05-14 14:50:39'),
+(19, 14, 2, '2025-05-15 04:02:59', '2025-05-15 04:02:59'),
+(20, 15, 1, '2025-05-15 04:08:28', '2025-05-15 04:08:28');
 
 -- --------------------------------------------------------
 
@@ -999,6 +1074,13 @@ ALTER TABLE `model_has_permissions`
   ADD UNIQUE KEY `model_has_permissions_model_id_model_type_permission_id_unique` (`model_id`,`model_type`,`permission_id`);
 
 --
+-- Chỉ mục cho bảng `model_has_roles`
+--
+ALTER TABLE `model_has_roles`
+  ADD PRIMARY KEY (`role_id`,`model_id`,`model_type`),
+  ADD KEY `model_has_roles_model_type_model_id_index` (`model_type`,`model_id`);
+
+--
 -- Chỉ mục cho bảng `orders`
 --
 ALTER TABLE `orders`
@@ -1034,6 +1116,7 @@ ALTER TABLE `products`
 --
 ALTER TABLE `product_attributes`
   ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `product_attributes_sku_unique` (`sku`),
   ADD KEY `product_attributes_product_id_foreign` (`product_id`);
 
 --
@@ -1094,13 +1177,6 @@ ALTER TABLE `users`
 ALTER TABLE `user_addresses`
   ADD PRIMARY KEY (`id`),
   ADD KEY `user_addresses_user_id_foreign` (`user_id`);
-
---
--- Chỉ mục cho bảng `variant_attributes`
---
-ALTER TABLE `variant_attributes`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `variant_attributes_variant_id_foreign` (`variant_id`);
 
 --
 -- Chỉ mục cho bảng `variant_attribute_types`
@@ -1183,13 +1259,13 @@ ALTER TABLE `jobs`
 -- AUTO_INCREMENT cho bảng `migrations`
 --
 ALTER TABLE `migrations`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=63;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=66;
 
 --
 -- AUTO_INCREMENT cho bảng `model_has_permissions`
 --
 ALTER TABLE `model_has_permissions`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=62;
 
 --
 -- AUTO_INCREMENT cho bảng `orders`
@@ -1213,13 +1289,13 @@ ALTER TABLE `permissions`
 -- AUTO_INCREMENT cho bảng `products`
 --
 ALTER TABLE `products`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT cho bảng `product_attributes`
 --
 ALTER TABLE `product_attributes`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=29;
 
 --
 -- AUTO_INCREMENT cho bảng `product_reviews`
@@ -1231,7 +1307,7 @@ ALTER TABLE `product_reviews`
 -- AUTO_INCREMENT cho bảng `product_variants`
 --
 ALTER TABLE `product_variants`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- AUTO_INCREMENT cho bảng `roles`
@@ -1258,12 +1334,6 @@ ALTER TABLE `user_addresses`
   MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT cho bảng `variant_attributes`
---
-ALTER TABLE `variant_attributes`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
-
---
 -- AUTO_INCREMENT cho bảng `variant_attribute_types`
 --
 ALTER TABLE `variant_attribute_types`
@@ -1279,7 +1349,7 @@ ALTER TABLE `variant_attribute_values`
 -- AUTO_INCREMENT cho bảng `variant_combinations`
 --
 ALTER TABLE `variant_combinations`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 
 --
 -- AUTO_INCREMENT cho bảng `wishlists`
@@ -1317,6 +1387,12 @@ ALTER TABLE `cart_items`
 --
 ALTER TABLE `categories`
   ADD CONSTRAINT `categories_parent_id_foreign` FOREIGN KEY (`parent_id`) REFERENCES `categories` (`id`) ON DELETE SET NULL;
+
+--
+-- Các ràng buộc cho bảng `model_has_roles`
+--
+ALTER TABLE `model_has_roles`
+  ADD CONSTRAINT `model_has_roles_role_id_foreign` FOREIGN KEY (`role_id`) REFERENCES `roles` (`id`) ON DELETE CASCADE;
 
 --
 -- Các ràng buộc cho bảng `orders`
@@ -1376,12 +1452,6 @@ ALTER TABLE `users`
 --
 ALTER TABLE `user_addresses`
   ADD CONSTRAINT `user_addresses_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
-
---
--- Các ràng buộc cho bảng `variant_attributes`
---
-ALTER TABLE `variant_attributes`
-  ADD CONSTRAINT `variant_attributes_variant_id_foreign` FOREIGN KEY (`variant_id`) REFERENCES `product_variants` (`id`) ON DELETE CASCADE;
 
 --
 -- Các ràng buộc cho bảng `variant_attribute_values`

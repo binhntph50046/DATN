@@ -19,15 +19,18 @@ class ProductVariant extends Model
         'discount_price',
         'stock',
         'status',
-        'image',
+        'images',
         'purchase_price',
         'selling_price',
+        'is_default',
     ];
 
     protected $casts = [
         'discount_price' => 'decimal:2',
         'purchase_price' => 'decimal:2',
         'selling_price' => 'decimal:2',
+        'images' => 'array',
+        'is_default' => 'boolean',
     ];
 
     public function product()

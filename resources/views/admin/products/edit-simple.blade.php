@@ -49,10 +49,16 @@
                                 </ul>
                             </div>
                         @endif
-                        <form action="{{ route('admin.products.update', $product) }}" method="POST" enctype="multipart/form-data">
+                        <form action="{{ route('admin.products.update', $product->id) }}" method="POST" enctype="multipart/form-data" id="productForm">
                             @csrf
                             @method('PUT')
                             <input type="hidden" name="has_variants" value="0">
+                            @if($product->variants->isNotEmpty())
+                                <input type="hidden" name="variant_id" value="{{ $product->variants->first()->id }}">
+                            @endif
+                            @if(isset($product->defaultVariant) && $product->defaultVariant)
+                                <input type="hidden" name="variant_id" value="{{ $product->defaultVariant->id }}">
+                            @endif
                             <div class="row">
                                 <div class="col-md-12">
                                     <div class="mb-3">
@@ -158,7 +164,7 @@
                                 <div class="col-md-4">
                                     <div class="mb-3">
                                         <label for="stock" class="form-label">Stock</label>
-                                        <input type="number" class="form-control @error('stock') is-invalid @enderror" id="stock" name="stock" value="{{ old('stock', $product->variants->first()->stock ?? 0) }}" min="0">
+                                        <input type="number" class="form-control @error('stock') is-invalid @enderror" id="stock" name="stock" value="{{ old('stock', $product->variants->first()->stock ?? '') }}" min="0" required>
                                         @error('stock')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
@@ -167,19 +173,25 @@
                                 <div class="col-md-4">
                                     <div class="mb-3">
                                         <label for="purchase_price" class="form-label">Purchase Price</label>
-                                        <input type="number" class="form-control @error('purchase_price') is-invalid @enderror" id="purchase_price" name="purchase_price" value="{{ old('purchase_price', $product->variants->first()->purchase_price ?? 0) }}" min="0" step="0.01">
-                                        @error('purchase_price')
-                                            <div class="invalid-feedback">{{ $message }}</div>
-                                        @enderror
+                                        <div class="input-group">
+                                            <span class="input-group-text">$</span>
+                                            <input type="number" class="form-control @error('purchase_price') is-invalid @enderror" id="purchase_price" name="purchase_price" value="{{ old('purchase_price', $product->variants->first()->purchase_price ?? '') }}" min="0" step="0.01" required>
+                                            @error('purchase_price')
+                                                <div class="invalid-feedback">{{ $message }}</div>
+                                            @enderror
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="col-md-4">
                                     <div class="mb-3">
                                         <label for="selling_price" class="form-label">Selling Price</label>
-                                        <input type="number" class="form-control @error('selling_price') is-invalid @enderror" id="selling_price" name="selling_price" value="{{ old('selling_price', $product->variants->first()->selling_price ?? 0) }}" min="0" step="0.01">
-                                        @error('selling_price')
-                                            <div class="invalid-feedback">{{ $message }}</div>
-                                        @enderror
+                                        <div class="input-group">
+                                            <span class="input-group-text">$</span>
+                                            <input type="number" class="form-control @error('selling_price') is-invalid @enderror" id="selling_price" name="selling_price" value="{{ old('selling_price', $product->variants->first()->selling_price ?? '') }}" min="0" step="0.01" required>
+                                            @error('selling_price')
+                                                <div class="invalid-feedback">{{ $message }}</div>
+                                            @enderror
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -187,23 +199,50 @@
                                 <div class="col-md-4">
                                     <div class="mb-3">
                                         <label for="discount_price" class="form-label">Discount Price (optional)</label>
-                                        <input type="number" class="form-control @error('discount_price') is-invalid @enderror" id="discount_price" name="discount_price" value="{{ old('discount_price', $product->variants->first()->discount_price ?? '') }}" min="0" step="0.01">
-                                        @error('discount_price')
-                                            <div class="invalid-feedback">{{ $message }}</div>
-                                        @enderror
+                                        <div class="input-group">
+                                            <span class="input-group-text">$</span>
+                                            <input type="number" class="form-control @error('discount_price') is-invalid @enderror" id="discount_price" name="discount_price" value="{{ old('discount_price', $product->variants->first()->discount_price ?? '') }}" min="0" step="0.01">
+                                            @error('discount_price')
+                                                <div class="invalid-feedback">{{ $message }}</div>
+                                            @enderror
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="col-md-4">
+                                <div class="col-md-8">
                                     <div class="mb-3">
-                                        <label for="image" class="form-label">Image</label>
-                                        <input type="file" class="form-control @error('image') is-invalid @enderror" id="image" name="image" accept="image/*">
-                                        <div id="image-preview" class="mt-2">
-                                            @if ($product->variants->first() && $product->variants->first()->image)
-                                                <img src="{{ asset('Uploads/' . $product->variants->first()->image) }}" alt="{{ $product->name }}" class="img-thumbnail" style="max-width: 150px;">
+                                        <label for="images" class="form-label">Product Images</label>
+                                        <input type="file" class="form-control @error('images') is-invalid @enderror" id="images" name="images[]" multiple>
+                                        <div class="form-text text-muted">
+                                            You can upload multiple images. All file types are allowed.
+                                        </div>
+                                        <div id="image-previews" class="d-flex flex-wrap gap-3 mt-3">
+                                            @php
+                                                $existingImages = [];
+                                                if ($product->variants->first() && $product->variants->first()->images) {
+                                                    $existingImages = json_decode($product->variants->first()->images, true) ?? [];
+                                                }
+                                            @endphp
+                                            @if(!empty($existingImages))
+                                                @foreach($existingImages as $index => $image)
+                                                    <div class="position-relative d-inline-block" data-existing="true">
+                                                        <div class="card" style="width: 120px;">
+                                                            <img src="{{ asset( $image) }}" class="card-img-top" alt="Image {{ $index + 1 }}" style="height: 100px; object-fit: cover;">
+                                                            <div class="card-body p-2 text-center">
+                                                                <button type="button" class="btn btn-danger btn-sm w-100" onclick="removeImage(this, '{{ $image }}')">
+                                                                    <i class="ti ti-trash"></i> Remove
+                                                                </button>
+                                                                <input type="hidden" name="existing_images[]" value="{{ $image }}">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                @endforeach
                                             @endif
                                         </div>
-                                        @error('image')
-                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @error('images')
+                                            <div class="invalid-feedback d-block">{{ $message }}</div>
+                                        @enderror
+                                        @error('images.*')
+                                            <div class="text-danger small d-block mt-1">{{ $message }}</div>
                                         @enderror
                                     </div>
                                 </div>
@@ -295,68 +334,220 @@
     </div>
 </div>
 
+@push('scripts')
 <script>
-    document.getElementById('add-attribute').addEventListener('click', function () {
-        const container = document.getElementById('product-attributes');
-        const index = container.children.length;
-        const newRow = `
-            <div class="row mb-2">
-                <div class="col-md-4">
-                    <select class="form-select" name="product_attributes[${index}][attribute_type_id]">
-                        <option value="">-- Select Attribute --</option>
-                        @foreach ($attributeTypes as $attributeType)
-                            <option value="{{ $attributeType->id }}">{{ $attributeType->name }}</option>
-                        @endforeach
-                    </select>
-                </div>
-                <div class="col-md-3">
-                    <input type="text" class="form-control" name="product_attributes[${index}][value]" placeholder="Value">
-                </div>
-                <div class="col-md-3">
-                    <input type="text" class="form-control" name="product_attributes[${index}][hex]" placeholder="Hex Code (e.g., #FFFFFF)">
-                </div>
-                <div class="col-md-2">
-                    <button type="button" class="btn btn-danger remove-attribute">Remove</button>
-                </div>
-            </div>`;
-        container.insertAdjacentHTML('beforeend', newRow);
-    });
-
-    document.addEventListener('click', function (e) {
-        if (e.target.classList.contains('remove-attribute')) {
-            e.target.closest('.row').remove();
-        }
-    });
-
-    document.getElementById('name').addEventListener('input', function() {
-        let slug = this.value
-            .toLowerCase()
-            .trim()
-            .replace(/[^a-z0-9\s-]/g, '') // Remove special characters
-            .replace(/\s+/g, '-')         // Replace spaces with hyphens
-            .replace(/-+/g, '-');         // Replace multiple hyphens with single hyphen
-        document.getElementById('slug').value = slug;
-    });
-
-    // Add image preview functionality
-    document.getElementById('image').addEventListener('change', function(e) {
-        const preview = document.getElementById('image-preview');
-        const file = e.target.files[0];
-        
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                preview.innerHTML = `<img src="${e.target.result}" alt="Preview" class="img-thumbnail" style="max-width: 150px;">`;
+    // Function to remove an existing image
+    window.removeImage = function(button, imagePath) {
+        if (confirm('Are you sure you want to remove this image?')) {
+            // Create a hidden input to track removed images if it doesn't exist
+            let removedImagesInput = document.querySelector('input[name="removed_images[]"][value="' + imagePath + '"]');
+            if (!removedImagesInput) {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'removed_images[]';
+                input.value = imagePath;
+                document.getElementById('productForm').appendChild(input);
             }
-            reader.readAsDataURL(file);
-        } else {
-            // If no file is selected, show the original image if it exists
-            @if ($product->variants->first() && $product->variants->first()->image)
-                preview.innerHTML = `<img src="{{ asset('Uploads/' . $product->variants->first()->image) }}" alt="{{ $product->name }}" class="img-thumbnail" style="max-width: 150px;">`;
-            @else
-                preview.innerHTML = '';
-            @endif
+            
+            // Remove the image preview
+            button.closest('.position-relative').remove();
+            
+            // Show the file input if all existing images are removed
+            toggleFileInputVisibility();
+        }
+    };
+
+    // Toggle file input visibility based on existing images and max files limit
+    function toggleFileInputVisibility() {
+        const fileInput = document.getElementById('images');
+        if (!fileInput) return;
+        
+        const existingImages = document.querySelectorAll('[data-existing]');
+        const newImages = document.querySelectorAll('.position-relative:not([data-existing])');
+        const totalImages = existingImages.length + newImages.length;
+        const maxFiles = 50;
+        
+        // Always show file input if we haven't reached max files
+        fileInput.style.display = totalImages >= maxFiles ? 'none' : 'block';
+        
+        // Update the file input's multiple attribute based on remaining slots
+        fileInput.multiple = (maxFiles - totalImages) > 1;
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const imagePreviews = document.getElementById('image-previews');
+        const fileInput = document.getElementById('images');
+        if (!fileInput) return;
+        
+        const maxFiles = 50; // Maximum number of files allowed
+        const maxSize = 1024 * 1024 * 100; // 100MB max file size
+
+        // Initialize file input visibility and multiple attribute
+        fileInput.multiple = true;
+        toggleFileInputVisibility();
+        
+        // Make the label clickable
+        const fileInputLabel = fileInput.previousElementSibling;
+        if (fileInputLabel && fileInputLabel.tagName === 'LABEL') {
+            fileInputLabel.style.cursor = 'pointer';
+            fileInputLabel.addEventListener('click', function(e) {
+                if (e.target !== fileInput) {
+                    e.preventDefault();
+                    fileInput.click();
+                }
+            });
+        }
+
+        // Handle file selection
+        fileInput.addEventListener('change', function(e) {
+            const files = Array.from(e.target.files);
+            
+            if (files.length > 0) {
+                // Process new files
+                let validFiles = [];
+                
+                // Validate files
+                files.slice(0, maxFiles).forEach(file => {
+                    if (!file.type.match('image.*')) {
+                        alert(`File ${file.name} is not an image and will be skipped.`);
+                        return;
+                    }
+                    
+                    if (file.size > maxSize) {
+                        alert(`File ${file.name} is too large. Maximum size is 100MB.`);
+                        return;
+                    }
+                    
+                    validFiles.push(file);
+                });
+                
+                // Clear existing file input
+                fileInput.value = '';
+                
+                // Process valid files
+                validFiles.forEach(file => {
+                    const reader = new FileReader();
+                    
+                    reader.onload = function(e) {
+                        const preview = document.createElement('div');
+                        preview.className = 'position-relative d-inline-block me-2 mb-2';
+                        preview.innerHTML = `
+                            <div class="card" style="width: 120px;">
+                                <img src="${e.target.result}" class="card-img-top" style="height: 100px; object-fit: cover;">
+                                <div class="card-body p-2 text-center">
+                                    <button type="button" class="btn btn-danger btn-sm w-100 remove-new-image">
+                                        <i class="ti ti-trash"></i> Remove
+                                    </button>
+                                </div>
+                            </div>
+                        `;
+                        
+                        // Insert after all existing images
+                        imagePreviews.appendChild(preview);
+                    };
+                    
+                    reader.readAsDataURL(file);
+                });
+                
+                // Update file input to include the new files
+                const dataTransfer = new DataTransfer();
+                validFiles.forEach(file => dataTransfer.items.add(file));
+                fileInput.files = dataTransfer.files;
+                
+                // Update file input visibility
+                toggleFileInputVisibility();
+            }
+        });
+        
+        // Handle click on remove buttons for new images
+        document.addEventListener('click', function(e) {
+            if (e.target.closest('.remove-new-image')) {
+                const button = e.target.closest('.remove-new-image');
+                const previewElement = button.closest('.position-relative');
+                
+                if (previewElement) {
+                    previewElement.remove();
+                    
+                    // Update file input to remove the file
+                    const dataTransfer = new DataTransfer();
+                    const fileList = Array.from(fileInput.files);
+                    const index = Array.from(imagePreviews.children).indexOf(previewElement);
+                    
+                    if (index !== -1) {
+                        fileList.splice(index, 1);
+                        fileList.forEach(file => dataTransfer.items.add(file));
+                        fileInput.files = dataTransfer.files;
+                    }
+                    
+                    // Update file input visibility
+                    toggleFileInputVisibility();
+                }
+            }
+        });
+
+        // Add attribute functionality
+        const addAttributeBtn = document.getElementById('add-attribute');
+        if (addAttributeBtn) {
+            addAttributeBtn.addEventListener('click', function() {
+                const container = document.getElementById('product-attributes');
+                const index = container.children.length;
+                const newRow = `
+                    <div class="row mb-2">
+                        <div class="col-md-4">
+                            <select class="form-select" name="product_attributes[${index}][attribute_type_id]">
+                                <option value="">-- Select Attribute --</option>
+                                @foreach ($attributeTypes as $attributeType)
+                                    <option value="{{ $attributeType->id }}">{{ $attributeType->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <input type="text" class="form-control" name="product_attributes[${index}][value]" placeholder="Value">
+                        </div>
+                        <div class="col-md-3">
+                            <input type="text" class="form-control" name="product_attributes[${index}][hex]" placeholder="Hex Color (optional)">
+                        </div>
+                        <div class="col-md-1">
+                            <button type="button" class="btn btn-danger remove-attribute">
+                                <i class="ti ti-trash"></i>
+                            </button>
+                        </div>
+                    </div>`;
+                container.insertAdjacentHTML('beforeend', newRow);
+            });
+        }
+
+        // Handle remove attribute button
+        document.addEventListener('click', function(e) {
+            if (e.target.closest('.remove-attribute')) {
+                e.target.closest('.row').remove();
+            }
+        });
+
+        // Image preview for single image upload (if exists)
+        const imageInput = document.getElementById('image');
+        const preview = document.getElementById('image-preview');
+        
+        if (imageInput && preview) {
+            imageInput.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        preview.innerHTML = `<img src="${e.target.result}" class="img-thumbnail" style="max-width: 150px;">`;
+                    };
+                    reader.readAsDataURL(file);
+                } else {
+                    // If no file is selected, show the original image if it exists
+                    @if ($product->variants->first() && $product->variants->first()->image)
+                        preview.innerHTML = `<img src="{{ asset('Uploads/' . $product->variants->first()->image) }}" alt="{{ $product->name }}" class="img-thumbnail" style="max-width: 150px;">`;
+                    @else
+                        preview.innerHTML = '';
+                    @endif
+                }
+            });
         }
     });
 </script>
+@endpush
 @endsection

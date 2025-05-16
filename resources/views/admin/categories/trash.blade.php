@@ -81,11 +81,11 @@
                                                 echo method_field('POST');
                                                 echo '<button type="submit" class="btn btn-success btn-sm rounded-3 me-2" onclick="return confirm(\'Are you sure you want to restore this category?\')"><i class="ti ti-refresh"></i> Restore</button>';
                                                 echo '</form>';
-                                                echo '<form action="' . route('admin.categories.forceDelete', $category->id) . '" method="POST" class="d-inline">';
-                                                echo csrf_field();
-                                                echo method_field('DELETE');
-                                                echo '<button type="submit" class="btn btn-danger btn-sm rounded-3" onclick="return confirm(\'Are you sure you want to permanently delete this category?\')"><i class="ti ti-trash"></i> Delete</button>';
-                                                echo '</form>';
+                                                // echo '<form action="' . route('admin.categories.forceDelete', $category->id) . '" method="POST" class="d-inline">';
+                                                // echo csrf_field();
+                                                // echo method_field('DELETE');
+                                                // echo '<button type="submit" class="btn btn-danger btn-sm rounded-3" onclick="return confirm(\'Are you sure you want to permanently delete this category?\')"><i class="ti ti-trash"></i> Delete</button>';
+                                                // echo '</form>';
                                                 echo '</td>';
                                                 echo '</tr>';
 

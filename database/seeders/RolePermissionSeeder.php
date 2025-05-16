@@ -5,72 +5,87 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
+use App\Models\User;
 
 class RolePermissionSeeder extends Seeder
 {
     public function run()
     {
-        // Tạo vai trò
-        Role::updateOrCreate(
-            ['name' => 'admin', 'guard_name' => 'web'],
-            ['name' => 'admin', 'guard_name' => 'web']
-        );
-        Role::updateOrCreate(
-            ['name' => 'staff', 'guard_name' => 'web'],
-            ['name' => 'staff', 'guard_name' => 'web']
-        );
-        Role::updateOrCreate(
-            ['name' => 'user', 'guard_name' => 'web'],
-            ['name' => 'user', 'guard_name' => 'web']
-        );
-
-        // Tạo quyền chi tiết với mô tả
+        // Tạo quyền cho các module
         $permissions = [
-            ['name' => 'view_products', 'guard_name' => 'web', 'description' => 'Xem danh sách sản phẩm'],
-            ['name' => 'create_product', 'guard_name' => 'web', 'description' => 'Tạo sản phẩm mới'],
-            ['name' => 'edit_product', 'guard_name' => 'web', 'description' => 'Chỉnh sửa thông tin sản phẩm'],
-            ['name' => 'delete_product', 'guard_name' => 'web', 'description' => 'Xóa sản phẩm'],
-            ['name' => 'view_orders', 'guard_name' => 'web', 'description' => 'Xem danh sách đơn hàng'],
-            ['name' => 'update_orders', 'guard_name' => 'web', 'description' => 'Cập nhật trạng thái hoặc thông tin đơn hàng'],
-            ['name' => 'delete_orders', 'guard_name' => 'web', 'description' => 'Xóa đơn hàng'],
-            ['name' => 'view_deleted_orders', 'guard_name' => 'web', 'description' => 'Xem danh sách đơn hàng đã xóa'],
-            ['name' => 'restore_orders', 'guard_name' => 'web', 'description' => 'Khôi phục đơn hàng đã xóa'],
-            ['name' => 'force_delete_orders', 'guard_name' => 'web', 'description' => 'Xóa vĩnh viễn đơn hàng'],
-            ['name' => 'view_customers', 'guard_name' => 'web', 'description' => 'Xem danh sách khách hàng'],
-            ['name' => 'create_customer', 'guard_name' => 'web', 'description' => 'Tạo tài khoản khách hàng mới'],
-            ['name' => 'update_customer_profile', 'guard_name' => 'web', 'description' => 'Cập nhật thông tin hồ sơ khách hàng'],
-            ['name' => 'delete_customer', 'guard_name' => 'web', 'description' => 'Xóa tài khoản khách hàng'],
-            ['name' => 'toggle_customer_active', 'guard_name' => 'web', 'description' => 'Bật/tắt trạng thái hoạt động của khách hàng'],
-            ['name' => 'view_deleted_customers', 'guard_name' => 'web', 'description' => 'Xem danh sách khách hàng đã xóa'],
-            ['name' => 'restore_customers', 'guard_name' => 'web', 'description' => 'Khôi phục tài khoản khách hàng đã xóa'],
-            ['name' => 'force_delete_customers', 'guard_name' => 'web', 'description' => 'Xóa vĩnh viễn tài khoản khách hàng'],
-            ['name' => 'view_own_orders', 'guard_name' => 'web', 'description' => 'Xem danh sách đơn hàng của chính mình'],
-            ['name' => 'create_order', 'guard_name' => 'web', 'description' => 'Tạo đơn hàng mới'],
-            ['name' => 'update_profile', 'guard_name' => 'web', 'description' => 'Cập nhật thông tin hồ sơ cá nhân'],
-            ['name' => 'view_categories', 'guard_name' => 'web', 'description' => 'Xem danh sách danh mục sản phẩm'],
-            ['name' => 'view_banners', 'guard_name' => 'web', 'description' => 'Xem danh sách banner quảng cáo'],
-            ['name' => 'view_blogs', 'guard_name' => 'web', 'description' => 'Xem danh sách bài viết blog'],
+            // Categories
+            'view categories', 'create categories', 'edit categories', 'delete categories',
+            // Banners
+            'view banners', 'create banners', 'edit banners', 'delete banners',
+            // Products
+            'view products', 'create products', 'edit products', 'delete products',
+            // Orders
+            'view orders', 'create orders', 'edit orders', 'delete orders',
+            // Users
+            'view users', 'create users', 'edit users', 'delete users',
+            // Blogs
+            'view blogs', 'create blogs', 'edit blogs', 'delete blogs',
+            // Attributes
+            'view attributes', 'create attributes', 'edit attributes', 'delete attributes',
+            // Dashboard
+            'view dashboard',
+            // Roles
+            'addrole',
         ];
 
-        foreach ($permissions as $permissionData) {
-            Permission::updateOrCreate(
-                ['name' => $permissionData['name'], 'guard_name' => 'web'],
-                $permissionData
-            );
+        foreach ($permissions as $permission) {
+            Permission::firstOrCreate(['name' => $permission]);
         }
 
-        // Gán quyền cho Staff
-        $staff = Role::findByName('staff', 'web');
-        $staff->syncPermissions([
-            'view_categories',
-            'view_banners',
-            'view_blogs',
-            'view_products',
-            'view_orders',
-            'update_orders',
-            'view_customers',
-            'create_customer',
-            'toggle_customer_active',
+        // Tạo vai trò
+        $adminRole = Role::firstOrCreate(['name' => 'admin']);
+        $staffRole = Role::firstOrCreate(['name' => 'staff']);
+        $userRole = Role::firstOrCreate(['name' => 'user']);
+
+        // Gán quyền cho admin (toàn quyền)
+        $adminRole->givePermissionTo($permissions);
+
+        // Gán quyền cho staff (chỉ xem + tạo users)
+        $staffRole->givePermissionTo([
+            'view categories', 'view banners', 'view products', 'view orders',
+            'view users', 'create users', 'view blogs', 'view attributes', 'view dashboard','create blogs','edit blogs', 'delete blogs'
         ]);
+
+        // Tạo người dùng mẫu và gán vai trò
+        $admin = User::firstOrCreate(
+            ['email' => 'admincc@example.com'],
+            [
+                'name' => 'Admin User',
+                'password' => bcrypt('123123123'),
+                'phone' => '0123456789',
+                'address' => 'Hanoi',
+                'status' => 'active'
+            ]
+        );
+        $admin->assignRole('admin');
+
+        $staff = User::firstOrCreate(
+            ['email' => 'staffp@example.com'],
+            [
+                'name' => 'Staff User',
+                'password' => bcrypt('123123123'),
+                'phone' => '0987654321',
+                'address' => 'Hanoi',
+                'status' => 'active'
+            ]
+        );
+        $staff->assignRole('staff');
+
+        $user = User::firstOrCreate(
+            ['email' => 'userp@example.com'],
+            [
+                'name' => 'Normal User',
+                'password' => bcrypt('123123123'),
+                'phone' => '1234567890',
+                'address' => 'Hanoi',
+                'status' => 'active'
+            ]
+        );
+        $user->assignRole('user');
     }
 }

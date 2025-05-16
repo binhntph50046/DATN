@@ -125,3 +125,4 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::delete('blogs/{id}/force-delete', [BlogController::class, 'forceDelete'])
         ->name('blogs.forceDelete');
 });
+

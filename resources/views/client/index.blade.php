@@ -1,8 +1,10 @@
 @extends('client.layouts.app')
 
 @section('content')
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+
     <!-- Start Why Choose Us Section -->
-    <div class="why-choose-section">
+    <div class="why-choose-section" data-aos="fade-up">
         <div class="container">
             <div class="row justify-content-between">
                 <div class="col-lg-6">
@@ -11,7 +13,7 @@
                         imperdiet dolor tempor tristique.</p>
 
                     <div class="row my-5">
-                        <div class="col-6 col-md-6">
+                        <div class="col-6 col-md-6" data-aos="fade-up" data-aos-delay="100">
                             <div class="feature">
                                 <div class="icon">
                                     <img src="images/truck.svg" alt="Image" class="imf-fluid">
@@ -22,7 +24,7 @@
                             </div>
                         </div>
 
-                        <div class="col-6 col-md-6">
+                        <div class="col-6 col-md-6" data-aos="fade-up" data-aos-delay="200">
                             <div class="feature">
                                 <div class="icon">
                                     <img src="images/bag.svg" alt="Image" class="imf-fluid">
@@ -33,7 +35,7 @@
                             </div>
                         </div>
 
-                        <div class="col-6 col-md-6">
+                        <div class="col-6 col-md-6" data-aos="fade-up" data-aos-delay="300">
                             <div class="feature">
                                 <div class="icon">
                                     <img src="images/support.svg" alt="Image" class="imf-fluid">
@@ -44,7 +46,7 @@
                             </div>
                         </div>
 
-                        <div class="col-6 col-md-6">
+                        <div class="col-6 col-md-6" data-aos="fade-up" data-aos-delay="400">
                             <div class="feature">
                                 <div class="icon">
                                     <img src="images/return.svg" alt="Image" class="imf-fluid">
@@ -59,7 +61,7 @@
                 </div>
 
                 <div class="col-lg-5">
-                    <div class="img-wrap">
+                    <div class="img-wrap" data-aos="zoom-in">
                         <img src="images/why-choose-us-img.jpg" alt="Image" class="img-fluid">
                     </div>
                 </div>
@@ -70,14 +72,14 @@
     <!-- End Why Choose Us Section -->
 
     <!-- Start Most Popular Products Section -->
-    <div class="most-popular-section">
+    <div class="most-popular-section" data-aos="fade-up">
         <div class="container">
             <div class="row justify-content-between">
                 <!-- Start Products Column -->
                 <div class="col-lg-8">
                     <div class="row">
-                        <div class="col-md-4 mb-4">
-                            <a class="product-item" href="{{ route('productDetail') }}">
+                        <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="100">
+                            <a class="product-item" href="#">
                                 <img src="images/product-1.png" class="img-fluid product-thumbnail">
                                 <h3 class="product-title">Nordic Chair</h3>
                                 <strong class="product-price">$50.00</strong>
@@ -97,8 +99,8 @@
                             </a>
                         </div>
 
-                        <div class="col-md-4 mb-4">
-                            <a class="product-item" href="{{ route('productDetail') }}">
+                        <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="200">
+                            <a class="product-item" href="#">
                                 <img src="images/product-2.png" class="img-fluid product-thumbnail">
                                 <h3 class="product-title">Kruzo Aero Chair</h3>
                                 <strong class="product-price">$78.00</strong>
@@ -118,8 +120,8 @@
                             </a>
                         </div>
 
-                        <div class="col-md-4 mb-4">
-                            <a class="product-item" href="{{ route('productDetail') }}">
+                        <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="300">
+                            <a class="product-item" href="#">
                                 <img src="images/product-3.png" class="img-fluid product-thumbnail">
                                 <h3 class="product-title">Ergonomic Chair</h3>
                                 <strong class="product-price">$43.00</strong>
@@ -144,7 +146,7 @@
 
                 <!-- Start Text Column -->
                 <div class="col-lg-4">
-                    <div class="popular-content">
+                    <div class="popular-content" data-aos="fade-left" data-aos-delay="400">
                         <h2 class="section-title">Most Popular Products</h2>
                         <p class="mb-4">Discover our best-selling furniture pieces that have captured the hearts of
                             thousands of customers worldwide. These products are consistently rated highly for their
@@ -179,12 +181,12 @@
     <!-- End Most Popular Products Section -->
 
     <!-- Start Product Section -->
-    <div class="product-section">
+    <div class="product-section" data-aos="fade-up">
         <div class="container">
             <div class="row">
 
                 <!-- Start Column 1 -->
-                <div class="col-md-12 col-lg-3 mb-5 mb-lg-0">
+                <div class="col-md-12 col-lg-3 mb-5 mb-lg-0" data-aos="fade-right" data-aos-delay="100">
                     <h2 class="mb-4 section-title">Crafted with excellent material.</h2>
                     <p class="mb-4">Donec vitae odio quis nisl dapibus malesuada. Nullam ac aliquet velit. Aliquam
                         vulputate velit imperdiet dolor tempor tristique. </p>
@@ -193,8 +195,8 @@
                 <!-- End Column 1 -->
 
                 <!-- Start Column 2 -->
-                <div class="col-12 col-md-4 col-lg-3 mb-5 mb-md-0">
-                    <a class="product-item" href="{{ route('productDetail') }}">
+                <div class="col-12 col-md-4 col-lg-3 mb-5 mb-md-0" data-aos="fade-up" data-aos-delay="200">
+                    <a class="product-item" href="/product-detail.html">
                         <img src="images/product-1.png" class="img-fluid product-thumbnail">
                         <h3 class="product-title">Nordic Chair</h3>
                         <strong class="product-price">$50.00</strong>
@@ -208,8 +210,8 @@
                 <!-- End Column 2 -->
 
                 <!-- Start Column 3 -->
-                <div class="col-12 col-md-4 col-lg-3 mb-5 mb-md-0">
-                    <a class="product-item" href="{{ route('productDetail') }}">
+                <div class="col-12 col-md-4 col-lg-3 mb-5 mb-md-0" data-aos="fade-up" data-aos-delay="300">
+                    <a class="product-item" href="/product-detail.html">
                         <img src="images/product-2.png" class="img-fluid product-thumbnail">
                         <h3 class="product-title">Kruzo Aero Chair</h3>
                         <strong class="product-price">$78.00</strong>
@@ -223,8 +225,8 @@
                 <!-- End Column 3 -->
 
                 <!-- Start Column 4 -->
-                <div class="col-12 col-md-4 col-lg-3 mb-5 mb-md-0">
-                    <a class="product-item" href="{{ route('productDetail') }}">
+                <div class="col-12 col-md-4 col-lg-3 mb-5 mb-md-0" data-aos="fade-up" data-aos-delay="400">
+                    <a class="product-item" href="#">
                         <img src="images/product-3.png" class="img-fluid product-thumbnail">
                         <h3 class="product-title">Ergonomic Chair</h3>
                         <strong class="product-price">$43.00</strong>
@@ -243,17 +245,17 @@
     <!-- End Product Section -->
 
     <!-- Start We Help Section -->
-    <div class="we-help-section">
+    <div class="we-help-section" data-aos="fade-up">
         <div class="container">
             <div class="row justify-content-between">
-                <div class="col-lg-7 mb-5 mb-lg-0">
+                <div class="col-lg-7 mb-5 mb-lg-0" data-aos="fade-right">
                     <div class="imgs-grid">
                         <div class="grid grid-1"><img src="images/img-grid-1.jpg" alt="Untree.co"></div>
                         <div class="grid grid-2"><img src="images/img-grid-2.jpg" alt="Untree.co"></div>
                         <div class="grid grid-3"><img src="images/img-grid-3.jpg" alt="Untree.co"></div>
                     </div>
                 </div>
-                <div class="col-lg-5 ps-lg-5">
+                <div class="col-lg-5 ps-lg-5" data-aos="fade-left" data-aos-delay="100">
                     <h2 class="section-title mb-4">We Help You Make Modern Interior Design</h2>
                     <p>Donec facilisis quam ut purus rutrum lobortis. Donec vitae odio quis nisl dapibus malesuada.
                         Nullam ac aliquet velit. Aliquam vulputate velit imperdiet dolor tempor tristique. Pellentesque
@@ -273,10 +275,10 @@
     <!-- End We Help Section -->
 
     <!-- Start Trust Banner Section -->
-    <div class="trust-banner-section">
+    <div class="trust-banner-section" data-aos="fade-up">
         <div class="container">
             <div class="row">
-                <div class="col-6 col-md-3">
+                <div class="col-6 col-md-3" data-aos="fade-up" data-aos-delay="100">
                     <div class="trust-item text-center">
                         <div class="icon">
                             <img src="images/trust-1.svg" alt="Trust" class="img-fluid">
@@ -286,7 +288,7 @@
                     </div>
                 </div>
 
-                <div class="col-6 col-md-3">
+                <div class="col-6 col-md-3" data-aos="fade-up" data-aos-delay="200">
                     <div class="trust-item text-center">
                         <div class="icon">
                             <img src="images/trust-2.svg" alt="Trust" class="img-fluid">
@@ -296,7 +298,7 @@
                     </div>
                 </div>
 
-                <div class="col-6 col-md-3">
+                <div class="col-6 col-md-3" data-aos="fade-up" data-aos-delay="300">
                     <div class="trust-item text-center">
                         <div class="icon">
                             <img src="images/trust-3.svg" alt="Trust" class="img-fluid">
@@ -306,7 +308,7 @@
                     </div>
                 </div>
 
-                <div class="col-6 col-md-3">
+                <div class="col-6 col-md-3" data-aos="fade-up" data-aos-delay="400">
                     <div class="trust-item text-center">
                         <div class="icon">
                             <img src="images/trust-4.svg" alt="Trust" class="img-fluid">
@@ -321,16 +323,16 @@
     <!-- End Trust Banner Section -->
 
     <!-- Start Testimonial Slider -->
-    <div class="testimonial-section">
+    <div class="testimonial-section" data-aos="fade-up">
         <div class="container">
             <div class="row">
-                <div class="col-lg-7 mx-auto text-center">
+                <div class="col-lg-7 mx-auto text-center" data-aos="fade-up">
                     <h2 class="section-title">Testimonials</h2>
                 </div>
             </div>
 
             <div class="row justify-content-center">
-                <div class="col-lg-12">
+                <div class="col-lg-12" data-aos="fade-up" data-aos-delay="100">
                     <div class="testimonial-slider-wrap text-center">
 
                         <div id="testimonial-nav">
@@ -458,20 +460,20 @@
     <!-- End Testimonial Slider -->
 
     <!-- Start Blog Section -->
-    <div class="blog-section">
+    <div class="blog-section" data-aos="fade-up">
         <div class="container">
             <div class="row mb-5">
-                <div class="col-md-6">
+                <div class="col-md-6" data-aos="fade-right">
                     <h2 class="section-title">Recent Blog</h2>
                 </div>
-                <div class="col-md-6 text-start text-md-end">
+                <div class="col-md-6 text-start text-md-end" data-aos="fade-left">
                     <a href="#" class="more">View All Posts</a>
                 </div>
             </div>
 
             <div class="row">
 
-                <div class="col-12 col-sm-6 col-md-4 mb-4 mb-md-0">
+                <div class="col-12 col-sm-6 col-md-4 mb-4 mb-md-0" data-aos="fade-up" data-aos-delay="100">
                     <div class="post-entry">
                         <a href="#" class="post-thumbnail"><img src="images/post-1.jpg" alt="Image"
                                 class="img-fluid"></a>
@@ -485,7 +487,7 @@
                     </div>
                 </div>
 
-                <div class="col-12 col-sm-6 col-md-4 mb-4 mb-md-0">
+                <div class="col-12 col-sm-6 col-md-4 mb-4 mb-md-0" data-aos="fade-up" data-aos-delay="200">
                     <div class="post-entry">
                         <a href="#" class="post-thumbnail"><img src="images/post-2.jpg" alt="Image"
                                 class="img-fluid"></a>
@@ -499,7 +501,7 @@
                     </div>
                 </div>
 
-                <div class="col-12 col-sm-6 col-md-4 mb-4 mb-md-0">
+                <div class="col-12 col-sm-6 col-md-4 mb-4 mb-md-0" data-aos="fade-up" data-aos-delay="300">
                     <div class="post-entry">
                         <a href="#" class="post-thumbnail"><img src="images/post-3.jpg" alt="Image"
                                 class="img-fluid"></a>
@@ -716,4 +718,12 @@
 			</div>
 		</div>
 	</div>
+
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+      AOS.init({
+        duration:800, // values from 0 to 3000, with step 50ms
+        once: false, // whether animation should happen only once - while scrolling down
+      });
+    </script>
 @endsection

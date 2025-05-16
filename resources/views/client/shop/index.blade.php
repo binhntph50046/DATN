@@ -1,15 +1,16 @@
 @extends('client.layouts.app')
 
 @section('content')
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
 
     <!-- Start Shop Section -->
     <div class="untree_co-section product-section">
         <div class="container">
-            <div class="row">
+            <div class="row" data-aos="fade-up">
                 <h2 class="mb-3 text-black">Most Popular Products</h2>
                 <div class="product-slider">
                     <!-- Product Item 1 -->
-                    <div class="product-item product-carousel" data-category="chairs">
+                    <div class="product-item product-carousel" data-category="chairs" data-aos="fade-up" data-aos-delay="100">
                         <a href="product-detail.html">
                             <img src="images/product-1.png" class="img-fluid product-thumbnail" alt="Nordic Chair">
                             <h3 class="product-title">Nordic Chair</h3>
@@ -22,7 +23,7 @@
                         </a>
                     </div>
                     <!-- Product Item 2 -->
-                    <div class="product-item product-carousel" data-category="tables">
+                    <div class="product-item product-carousel" data-category="tables" data-aos="fade-up" data-aos-delay="200">
                         <a href="product-detail.html">
                             <img src="images/product-1.png" class="img-fluid product-thumbnail" alt="Kruzo Aero Table">
                             <h3 class="product-title">Kruzo Aero Table</h3>
@@ -35,7 +36,7 @@
                         </a>
                     </div>
                     <!-- Product Item 3 -->
-                    <div class="product-item product-carousel" data-category="sofas">
+                    <div class="product-item product-carousel" data-category="sofas" data-aos="fade-up" data-aos-delay="300">
                         <a href="product-detail.html">
                             <img src="images/product-1.png" class="img-fluid product-thumbnail" alt="Ergonomic Sofa">
                             <h3 class="product-title">Ergonomic Sofa</h3>
@@ -48,7 +49,7 @@
                         </a>
                     </div>
                     <!-- Product Item 4 -->
-                    <div class="product-item product-carousel" data-category="lighting">
+                    <div class="product-item product-carousel" data-category="lighting" data-aos="fade-up" data-aos-delay="400">
                         <a href="product-detail.html">
                             <img src="images/product-1.png" class="img-fluid product-thumbnail" alt="Modern Lamp">
                             <h3 class="product-title">Modern Lamp</h3>
@@ -61,7 +62,7 @@
                         </a>
                     </div>
                     <!-- Product Item 5 -->
-                    <div class="product-item product-carousel" data-category="decor">
+                    <div class="product-item product-carousel" data-category="decor" data-aos="fade-up" data-aos-delay="500">
                         <a href="product-detail.html">
                             <img src="images/product-1.png" class="img-fluid product-thumbnail" alt="Wall Decor">
                             <h3 class="product-title">Wall Decor</h3>
@@ -74,7 +75,7 @@
                         </a>
                     </div>
                     <!-- Product Item 6 -->
-                    <div class="product-item product-carousel" data-category="chairs">
+                    <div class="product-item product-carousel" data-category="chairs" data-aos="fade-up" data-aos-delay="600">
                         <a href="product-detail.html">
                             <img src="images/product-1.png" class="img-fluid product-thumbnail" alt="Minimal Chair">
                             <h3 class="product-title">Minimal Chair</h3>
@@ -87,7 +88,7 @@
                         </a>
                     </div>
                     <!-- Product Item 7 -->
-                    <div class="product-item product-carousel" data-category="tables">
+                    <div class="product-item product-carousel" data-category="tables" data-aos="fade-up" data-aos-delay="700">
                         <a href="product-detail.html">
                             <img src="images/product-1.png" class="img-fluid product-thumbnail" alt="Wooden Table">
                             <h3 class="product-title">Wooden Table</h3>
@@ -100,7 +101,7 @@
                         </a>
                     </div>
                     <!-- Product Item 8 -->
-                    <div class="product-item product-carousel" data-category="sofas">
+                    <div class="product-item product-carousel" data-category="sofas" data-aos="fade-up" data-aos-delay="800">
                         <a href="product-detail.html">
                             <img src="images/product-1.png" class="img-fluid product-thumbnail" alt="Luxury Sofa">
                             <h3 class="product-title">Luxury Sofa</h3>
@@ -114,13 +115,13 @@
                     </div>
                 </div>
             </div>
-            <div class="row">
+            <div class="row" data-aos="fade-up" data-aos-delay="200">
                 <h2 class="my-3 text-black">List Products</h2>
                 <!-- Products Grid -->
                 <div class="col-lg-9">
                     <div class="row">
                         <!-- Product Item -->
-                        <div class="col-12 col-md-3 col-lg-3 mb-5" data-category="chairs">
+                        <div class="col-12 col-md-3 col-lg-3 mb-5" data-category="chairs" data-aos="fade-up" data-aos-delay="100">
                             <a class="product-item" href="product-detail.html">
                                 <img src="images/product-1.png" class="img-fluid product-thumbnail">
                                 <h3 class="product-title">Nordic Chair</h3>
@@ -134,7 +135,7 @@
                         </div>
 
                         <!-- Product Item -->
-                        <div class="col-12 col-md-3 col-lg-3 mb-5" data-category="tables">
+                        <div class="col-12 col-md-3 col-lg-3 mb-5" data-category="tables" data-aos="fade-up" data-aos-delay="200">
                             <a class="product-item" href="product-detail.html">
                                 <img src="images/product-2.png" class="img-fluid product-thumbnail">
                                 <h3 class="product-title">Kruzo Aero Table</h3>
@@ -148,7 +149,7 @@
                         </div>
 
                         <!-- Product Item -->
-                        <div class="col-12 col-md-3 col-lg-3 mb-5" data-category="sofas">
+                        <div class="col-12 col-md-3 col-lg-3 mb-5" data-category="sofas" data-aos="fade-up" data-aos-delay="300">
                             <a class="product-item" href="product-detail.html">
                                 <img src="images/product-3.png" class="img-fluid product-thumbnail">
                                 <h3 class="product-title">Ergonomic Sofa</h3>
@@ -162,7 +163,7 @@
                         </div>
 
                         <!-- Product Item -->
-                        <div class="col-12 col-md-3 col-lg-3 mb-5" data-category="sofas">
+                        <div class="col-12 col-md-3 col-lg-3 mb-5" data-category="sofas" data-aos="fade-up" data-aos-delay="400">
                             <a class="product-item" href="product-detail.html">
                                 <img src="images/product-3.png" class="img-fluid product-thumbnail">
                                 <h3 class="product-title">Ergonomic Sofa</h3>
@@ -176,7 +177,7 @@
                         </div>
 
                         <!-- Product Item -->
-                        <div class="col-12 col-md-3 col-lg-3 mb-5" data-category="sofas">
+                        <div class="col-12 col-md-3 col-lg-3 mb-5" data-category="sofas" data-aos="fade-up" data-aos-delay="500">
                             <a class="product-item" href="product-detail.html">
                                 <img src="images/product-3.png" class="img-fluid product-thumbnail">
                                 <h3 class="product-title">Ergonomic Sofa</h3>
@@ -190,7 +191,7 @@
                         </div>
 
                         <!-- Product Item -->
-                        <div class="col-12 col-md-3 col-lg-3 mb-5" data-category="sofas">
+                        <div class="col-12 col-md-3 col-lg-3 mb-5" data-category="sofas" data-aos="fade-up" data-aos-delay="600">
                             <a class="product-item" href="product-detail.html">
                                 <img src="images/product-3.png" class="img-fluid product-thumbnail">
                                 <h3 class="product-title">Ergonomic Sofa</h3>
@@ -204,7 +205,7 @@
                         </div>
 
                         <!-- Product Item -->
-                        <div class="col-12 col-md-3 col-lg-3 mb-5" data-category="sofas">
+                        <div class="col-12 col-md-3 col-lg-3 mb-5" data-category="sofas" data-aos="fade-up" data-aos-delay="700">
                             <a class="product-item" href="product-detail.html">
                                 <img src="images/product-3.png" class="img-fluid product-thumbnail">
                                 <h3 class="product-title">Ergonomic Sofa</h3>
@@ -218,7 +219,7 @@
                         </div>
 
                         <!-- Product Item -->
-                        <div class="col-12 col-md-3 col-lg-3 mb-5" data-category="sofas">
+                        <div class="col-12 col-md-3 col-lg-3 mb-5" data-category="sofas" data-aos="fade-up" data-aos-delay="800">
                             <a class="product-item" href="product-detail.html">
                                 <img src="images/product-3.png" class="img-fluid product-thumbnail">
                                 <h3 class="product-title">Ergonomic Sofa</h3>
@@ -232,7 +233,7 @@
                         </div>
 
                         <!-- Product Item -->
-                        <div class="col-12 col-md-3 col-lg-3 mb-5" data-category="sofas">
+                        <div class="col-12 col-md-3 col-lg-3 mb-5" data-category="sofas" data-aos="fade-up" data-aos-delay="900">
                             <a class="product-item" href="product-detail.html">
                                 <img src="images/product-3.png" class="img-fluid product-thumbnail">
                                 <h3 class="product-title">Ergonomic Sofa</h3>
@@ -246,7 +247,7 @@
                         </div>
 
                         <!-- Product Item -->
-                        <div class="col-12 col-md-3 col-lg-3 mb-5" data-category="sofas">
+                        <div class="col-12 col-md-3 col-lg-3 mb-5" data-category="sofas" data-aos="fade-up" data-aos-delay="1000">
                             <a class="product-item" href="product-detail.html">
                                 <img src="images/product-3.png" class="img-fluid product-thumbnail">
                                 <h3 class="product-title">Ergonomic Sofa</h3>
@@ -264,7 +265,7 @@
                 </div>
 
                 <!-- Categories Sidebar -->
-                <div class="col-lg-3">
+                <div class="col-lg-3" data-aos="fade-left" data-aos-delay="300">
                     <div class="categories-sidebar">
                         <h3 class="mb-4">Danh mục sản phẩm</h3>
                         <ul class="list-unstyled categories-list">
@@ -584,4 +585,11 @@
             });
         }
     </script>
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  <script>
+    AOS.init({
+      duration:1700, // values from 0 to 3000, with step 50ms
+      once: false, // whether animation should happen only once - while scrolling down
+    });
+  </script>
 @endsection

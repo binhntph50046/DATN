@@ -17,7 +17,13 @@
     .preview-image {
         max-width: 150px;
         max-height: 150px;
-        margin-top: 10px;
+        margin: 5px;
+        border-radius: 5px;
+    }
+    .preview-image-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
     }
     .error-message {
         color: red;
@@ -65,7 +71,7 @@
                                 </ul>
                             </div>
                         @endif
-                        <form action="{{ route('admin.products.store') }}" method="POST" enctype="multipart/form-data" id="variant-form">
+                        <form action="{{ route('admin.products.store') }}" method="POST" enctype="multipart/form-data" id="variant-form" onsubmit="return validateForm()">
                             @csrf
                             <input type="hidden" name="has_variants" value="1">
                             <div class="row">
@@ -441,6 +447,27 @@
         });
     }
 
+    // Preview Images Function
+    function previewImages(index) {
+        const input = document.querySelector(`[name="variants[${index}][images][]"]`);
+        const previewContainer = document.getElementById(`preview-${index}`);
+        previewContainer.innerHTML = '';
+
+        if (input.files && input.files.length > 0) {
+            Array.from(input.files).forEach((file, fileIndex) => {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.className = 'preview-image';
+                    img.alt = `Image ${fileIndex + 1}`;
+                    previewContainer.appendChild(img);
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+    }
+
     // Generate Variants with Cross-Join
     document.getElementById('generate-variants').addEventListener('click', function () {
         const nameInput = document.getElementById('name');
@@ -582,8 +609,8 @@
                     <div class="row">
                         <div class="col-md-6">
                             <div class="mb-3">
-                                <label class="form-label">Image</label>
-                                <input type="file" class="form-control variant-image" name="variants[${index}][image]" onchange="previewImage(${index})">
+                                <label class="form-label">Images</label>
+                                <input type="file" class="form-control variant-images" name="variants[${index}][images][]" multiple onchange="previewImages(${index})">
                                 <div id="preview-${index}" class="preview-image-container mt-2"></div>
                             </div>
                         </div>
@@ -606,22 +633,46 @@
         document.getElementById('submit-section').style.display = 'block';
     });
 
-    // Preview Image Function
-    function previewImage(index) {
-        const input = document.querySelector(`[name="variants[${index}][image]"]`);
-        const previewContainer = document.getElementById(`preview-${index}`);
-        previewContainer.innerHTML = '';
-
-        if (input.files && input.files[0]) {
-            const reader = new FileReader();
-            reader.onload = function (e) {
-                const img = document.createElement('img');
-                img.src = e.target.result;
-                img.className = 'preview-image';
-                previewContainer.appendChild(img);
-            };
-            reader.readAsDataURL(input.files[0]);
+    // Form validation and submission
+    function validateForm() {
+        let isValid = true;
+        
+        // Reset all error messages
+        document.querySelectorAll('.error-message').forEach(el => {
+            el.style.display = 'none';
+        });
+        
+        // Validate variant attributes
+        const attributeRows = document.querySelectorAll('.variant-row');
+        if (attributeRows.length === 0) {
+            document.getElementById('error-min-attributes').style.display = 'block';
+            isValid = false;
         }
+        
+        // Check for duplicate attribute types
+        const attributeTypes = new Set();
+        attributeRows.forEach(row => {
+            const select = row.querySelector('.attribute-type');
+            if (select && select.value) {
+                if (attributeTypes.has(select.value)) {
+                    document.getElementById('error-duplicate').style.display = 'block';
+                    isValid = false;
+                } else {
+                    attributeTypes.add(select.value);
+                }
+            }
+        });
+        
+        // If validation fails, scroll to the first error
+        if (!isValid) {
+            const firstError = document.querySelector('.error-message[style*="display: block"], .error-message[style*="display:block"]');
+            if (firstError) {
+                firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+            return false;
+        }
+        
+        return true;
     }
 
     // Auto-generate slug from product name

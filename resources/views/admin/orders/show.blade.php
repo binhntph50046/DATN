@@ -4,9 +4,9 @@
 <div class="pc-container">
     <div class="pc-content">
         <!-- [ breadcrumb ] start -->
-        <div class="page-header">
+        <div class="page-header ">
             <div class="page-block">
-                <div class="row align-items-center">
+                <div class="row align-items-center mb-4">
                     <div class="col-md-12">
                         <div class="page-header-title">
                             <h5 class="m-b-10">Order Details</h5>
@@ -38,7 +38,7 @@
                 <div class="card">
                     <div class="card-body">
                         <div class="row">
-                            <div class="col-md-6">
+                            <div class="col-md-6 shadow-sm mb-4">
                                 <h4>Customer Information</h4>
                                 <table class="table table-borderless">
                                     <tr>
@@ -59,7 +59,7 @@
                                     </tr>
                                 </table>
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-6 shadow-sm mb-4">
                                 <h4>Order Status</h4>
                                 <table class="table table-borderless">
                                     <tr>
@@ -101,7 +101,7 @@
                         </div>
 
                         <div class="row mt-4">
-                            <div class="col-md-6">
+                            <div class="col-md-6 shadow-sm mb-4">
                                 <h4>Order Summary</h4>
                                 <table class="table table-borderless">
                                     <tr>
@@ -123,7 +123,7 @@
                                 </table>
                             </div>
                            
-                            <div class="col-md-6">
+                            <div class="col-md-6 shadow-sm mb-4">
                                 <h4>Order Items</h4>
                                 <table class="table table-borderless">
                                     @foreach($order->items as $item)
@@ -132,8 +132,8 @@
                                             <td>{{ $item->product->name ?? 'N/A' }}</td>
                                         </tr>
                                         <tr>
-                                            <th>Variant:</th>
-                                            <td>{{ $item->productVariant->name ?? 'N/A' }}</td>
+                                            <th>Image:</th>
+                                            <td><img src="{{ $item->productVariant->image }}" alt="{{ $item->productVariant->name }}" style="width: 100px; height: 100px;"></td>
                                         </tr>
                                         <tr>
                                             <th>Quantity:</th>
@@ -147,7 +147,7 @@
                                             <th>Total:</th>
                                             <td>{{ number_format($item->total) }} VNĐ</td>
                                         </tr>
-                                        <tr><td colspan="2"><hr></td></tr>
+                                       
                                     @endforeach
                                 </table>
                             </div>

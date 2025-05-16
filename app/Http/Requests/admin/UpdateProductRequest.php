@@ -1,6 +1,5 @@
 <?php
-
-namespace App\Http\Requests\Admin;
+namespace App\Http\Requests\admin;
 
 use App\Models\VariantAttributeType;
 use Illuminate\Foundation\Http\FormRequest;

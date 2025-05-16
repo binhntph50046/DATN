@@ -8,12 +8,12 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
-
+use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable, HasApiTokens, SoftDeletes;
+    use HasFactory, Notifiable, HasApiTokens, SoftDeletes,HasRoles;
 
     /**
      * The attributes that are mass assignable.
@@ -34,7 +34,7 @@ class User extends Authenticatable
         'role',
         'status',
     ];
-    
+
     /**
      * The attributes that should be hidden for serialization.
      *
@@ -60,7 +60,7 @@ class User extends Authenticatable
 
     public function addresses()
     {
-        return $this->hasMany(UserAddress::class);
+        // return $this->hasMany(UserAddress::class);
     }
 
     public function orders()
@@ -70,20 +70,21 @@ class User extends Authenticatable
 
     public function cart()
     {
-        return $this->hasOne(Cart::class);
+        // return $this->hasOne(Cart::class);
     }
 
     public function wishlist()
     {
-        return $this->hasOne(Wishlist::class);
+        // return $this->hasOne(Wishlist::class);
     }
 
     public function reviews()
     {
-        return $this->hasMany(ProductReview::class);
+        // return $this->hasMany(ProductReview::class);
     }
     public function blogs()
     {
         return $this->hasMany(Blog::class, 'author_id');
     }
+    
 }

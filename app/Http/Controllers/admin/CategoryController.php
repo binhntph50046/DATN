@@ -108,10 +108,21 @@ class CategoryController
     public function destroy(string $id)
     {
         $category = Category::findOrFail($id);
-        $category->delete();
+
+        // Gọi hàm đệ quy xóa toàn bộ danh mục con
+        $this->deleteRecursive($category);
 
         return redirect()->route('admin.categories.index')
-            ->with('success', 'Category deleted successfully.');
+            ->with('success', 'Category and all its subcategories deleted successfully.');
+    }
+
+    private function deleteRecursive($category)
+    {
+        foreach ($category->children as $child) {
+            $this->deleteRecursive($child); // Đệ quy đến cấp con
+        }
+
+        $category->delete(); // Sau khi xóa hết con, mới xóa cha
     }
 
     public function trash()
@@ -123,32 +134,48 @@ class CategoryController
     public function restore(string $id)
     {
         $category = Category::onlyTrashed()->findOrFail($id);
-        $category->restore();
-        return redirect()->route('admin.categories.trash')->with('success', 'Category restored successfully.');
+
+        $this->restoreRecursive($category);
+
+        return redirect()->route('admin.categories.trash')
+            ->with('success', 'Category and all its subcategories restored successfully.');
     }
 
-    public function forceDelete(string $id)
+    private function restoreRecursive($category)
     {
-        $category = Category::onlyTrashed()->findOrFail($id);
-        $category->forceDelete();
-        return redirect()->route('admin.categories.trash')->with('success', 'Category deleted permanently.');
+        // Khôi phục danh mục hiện tại
+        $category->restore();
+
+        // Khôi phục tất cả các danh mục con đã bị xóa mềm
+        $children = Category::onlyTrashed()->where('parent_id', $category->id)->get();
+
+        foreach ($children as $child) {
+            $this->restoreRecursive($child); // Gọi đệ quy để khôi phục các cấp con
+        }
     }
+
+    // public function forceDelete(string $id)
+    // {
+    //     $category = Category::onlyTrashed()->findOrFail($id);
+    //     $category->forceDelete();
+    //     return redirect()->route('admin.categories.trash')->with('success', 'Category deleted permanently.');
+    // }
 
     public function changeOrder(Request $request)
     {
         $category = Category::find($request->category_id);
-        
+
         if ($request->direction == 'up') {
             $categoryAbove = Category::where('order', '>', $category->order)
                 ->orderBy('order', 'asc')
                 ->first();
-            
+
             if ($categoryAbove) {
-                $tempOrder = $category->order;  
-                $category->order = $categoryAbove->order;  
-                $categoryAbove->order = $tempOrder; 
+                $tempOrder = $category->order;
+                $category->order = $categoryAbove->order;
+                $categoryAbove->order = $tempOrder;
                 $category->save();
-                $categoryAbove->save(); 
+                $categoryAbove->save();
             }
         }
 
@@ -156,11 +183,11 @@ class CategoryController
             $categoryBelow = Category::where('order', '<', $category->order)
                 ->orderBy('order', 'desc')
                 ->first();
-            
+
             if ($categoryBelow) {
-                $tempOrder = $category->order;  
-                $category->order = $categoryBelow->order;  
-                $categoryBelow->order = $tempOrder;  
+                $tempOrder = $category->order;
+                $category->order = $categoryBelow->order;
+                $categoryBelow->order = $tempOrder;
                 $category->save();
                 $categoryBelow->save();
             }
@@ -168,6 +195,4 @@ class CategoryController
 
         return back()->with('success', 'Category order updated successfully!');
     }
-
-
 }

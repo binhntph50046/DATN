@@ -1,439 +1,505 @@
 @extends('admin.layouts.app')
 @section('title', 'Edit Variant Product')
 
-@push('styles')
 <style>
-    .attribute-item {
-        background: #f8f9fa;
-        border-radius: 5px;
-        padding: 15px;
+    .custom-shadow {
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+        border-radius: 12px;
+        background-color: #fff;
+        padding: 16px;
+    }
+    .variant-row {
+        border: 1px solid #ddd;
+        padding: 10px;
         margin-bottom: 10px;
-        position: relative;
-        border: 1px solid #dee2e6;
+        border-radius: 5px;
     }
-    .remove-attribute {
-        position: absolute;
-        right: 10px;
-        top: 10px;
-        cursor: pointer;
-        color: #dc3545;
-    }
-    #gallery-preview {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 10px;
+    .preview-image {
+        max-width: 150px;
+        max-height: 150px;
         margin-top: 10px;
     }
-    #gallery-preview img {
-        max-width: 100px;
-        max-height: 100px;
-        object-fit: cover;
-        border-radius: 4px;
-    }
-    .image-preview {
-        max-width: 200px;
-        max-height: 200px;
-        object-fit: cover;
-        border-radius: 4px;
+    .error-message {
+        color: red;
+        font-size: 0.9em;
         display: none;
-        margin-top: 10px;
-    }
-    .variant-attributes-container {
-        background: #f8f9fa;
-        padding: 15px;
-        border-radius: 5px;
-        margin-bottom: 15px;
-    }
-    .variant-item {
-        background: #fff;
-        border: 1px solid #dee2e6;
-        border-radius: 5px;
-        padding: 15px;
-        margin-bottom: 15px;
-    }
-    .variant-image-preview {
-        max-width: 100px;
-        max-height: 100px;
-        object-fit: cover;
-        border-radius: 4px;
-        margin-top: 5px;
     }
 </style>
-@endpush
 
 @section('content')
-    <div class="pc-container">
-        <div class="pc-content">
-            <div class="page-header">
-                <div class="page-block">
-                    <div class="row align-items-center">
-                        <div class="col-md-12">
-                            <ul class="breadcrumb">
-                                <li class="breadcrumb-item">
-                                    <a href="{{ route('admin.dashboard') }}">Dashboard</a>
-                                </li>
-                                <li class="breadcrumb-item">
-                                    <a href="{{ route('admin.products.index') }}">Products</a>
-                                </li>
-                                <li class="breadcrumb-item" aria-current="page">Edit Variant Product</li>
-                            </ul>
+<div class="pc-container">
+    <div class="pc-content">
+        <!-- [ breadcrumb ] start -->
+        <div class="page-header">
+            <div class="page-block">
+                <div class="row align-items-center">
+                    <div class="col-md-12">
+                        <div class="page-header-title">
+                            <h5 class="m-b-10">Edit Variant Product</h5>
                         </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="row">
-                <div class="col-12">
-                    <div class="card">
-                        <div class="card-header">
-                            <h5>Edit Variant Product</h5>
-                        </div>
-                        <div class="card-body">
-                            <form action="{{ route('admin.products.update-variant', $product->id) }}" method="POST" enctype="multipart/form-data" id="variantProductForm">
-                                @csrf
-                                @method('PUT')
-                                <input type="hidden" name="has_variants" value="1">
-
-                                <div class="row">
-                                    <div class="col-md-8">
-                                        <div class="form-group mb-3">
-                                            <label for="name" class="form-label">Product Name <span class="text-danger">*</span></label>
-                                            <input type="text" class="form-control @error('name') is-invalid @enderror" id="name" name="name" value="{{ old('name', $product->name) }}" required>
-                                            @error('name')
-                                                <span class="invalid-feedback">{{ $message }}</span>
-                                            @enderror
-                                        </div>
-
-                                        <div class="form-group mb-3">
-                                            <label for="slug" class="form-label">Slug <span class="text-danger">*</span></label>
-                                            <div class="input-group">
-                                                <input type="text" class="form-control @error('slug') is-invalid @enderror" id="slug" name="slug" value="{{ old('slug', $product->slug) }}" required>
-                                                <button class="btn btn-outline-secondary" type="button" id="generate-slug">Generate</button>
-                                                @error('slug')
-                                                    <span class="invalid-feedback">{{ $message }}</span>
-                                                @enderror
-                                            </div>
-                                        </div>
-
-                                        <div class="form-group mb-3">
-                                            <label for="description" class="form-label">Short Description</label>
-                                            <textarea class="form-control @error('description') is-invalid @enderror" id="description" name="description" rows="3">{{ old('description', $product->description) }}</textarea>
-                                            @error('description')
-                                                <span class="invalid-feedback">{{ $message }}</span>
-                                            @enderror
-                                        </div>
-
-                                        <div class="form-group mb-3">
-                                            <label for="content" class="form-label">Full Description</label>
-                                            <textarea class="form-control snettech-editor @error('content') is-invalid @enderror" id="content" name="content" rows="6">{{ old('content', $product->content) }}</textarea>
-                                            @error('content')
-                                                <span class="invalid-feedback">{{ $message }}</span>
-                                            @enderror
-                                        </div>
-                                    </div>
-
-                                    <div class="col-md-4">
-                                        <div class="form-group mb-3">
-                                            <label for="category_id" class="form-label">Category <span class="text-danger">*</span></label>
-                                            <select class="form-select @error('category_id') is-invalid @enderror" id="category_id" name="category_id" required>
-                                                <option value="">Select Category</option>
-                                                @foreach($categories as $category)
-                                                    <option value="{{ $category->id }}" {{ old('category_id', $product->category_id) == $category->id ? 'selected' : '' }}>
-                                                        {{ $category->name }}
-                                                    </option>
-                                                @endforeach
-                                            </select>
-                                            @error('category_id')
-                                                <span class="invalid-feedback">{{ $message }}</span>
-                                            @enderror
-                                        </div>
-
-                                        <!-- Brand is fixed as Apple -->
-                                        <input type="hidden" name="brand_id" value="1">
-
-                                        <div class="form-group mb-3">
-                                            <label for="model" class="form-label">Model</label>
-                                            <input type="text" class="form-control @error('model') is-invalid @enderror" id="model" name="model" value="{{ old('model', $product->model) }}">
-                                            @error('model')
-                                                <span class="invalid-feedback">{{ $message }}</span>
-                                            @enderror
-                                        </div>
-
-                                        <div class="form-group mb-3">
-                                            <label for="series" class="form-label">Series</label>
-                                            <input type="text" class="form-control @error('series') is-invalid @enderror" id="series" name="series" value="{{ old('series', $product->series) }}" placeholder="e.g., Standard, Pro, Max">
-                                            @error('series')
-                                                <span class="invalid-feedback">{{ $message }}</span>
-                                            @enderror
-                                        </div>
-
-                                        <div class="form-group mb-3">
-                                            <label for="warranty_months" class="form-label">Warranty (Months)</label>
-                                            <input type="number" class="form-control @error('warranty_months') is-invalid @enderror" id="warranty_months" name="warranty_months" value="{{ old('warranty_months', $product->warranty_months) }}" min="0">
-                                            @error('warranty_months')
-                                                <span class="invalid-feedback">{{ $message }}</span>
-                                            @enderror
-                                        </div>
-
-                                        <div class="form-group mb-3">
-                                            <label for="status" class="form-label">Status <span class="text-danger">*</span></label>
-                                            <select class="form-select @error('status') is-invalid @enderror" id="status" name="status" required>
-                                                <option value="active" {{ old('status', $product->status) == 'active' ? 'selected' : '' }}>Active</option>
-                                                <option value="inactive" {{ old('status', $product->status) == 'inactive' ? 'selected' : '' }}>Inactive</option>
-                                            </select>
-                                            @error('status')
-                                                <span class="invalid-feedback">{{ $message }}</span>
-                                            @enderror
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Variant Attributes -->
-                                <div class="card mb-4">
-                                    <div class="card-header">
-                                        <h5>Variant Attributes</h5>
-                                    </div>
-                                    <div class="card-body">
-                                        <div id="variant-attributes-container">
-                                            <div class="alert alert-info mb-3">
-                                                <h6 class="alert-heading"><i class="ti ti-info-circle me-2"></i>Variant Attribute Guide:</h6>
-                                                <ol class="mb-0">
-                                                    <li><strong>Attribute name:</strong> Name of the attribute (e.g., Color, Size)</li>
-                                                    <li><strong>Display name:</strong> How the attribute will be displayed (e.g., Màu sắc, Kích thước)</li>
-                                                    <li><strong>Values:</strong> Comma-separated list of possible values (e.g., Red,Blue,Green)</li>
-                                                </ol>
-                                            </div>
-
-                                            <div id="attribute-fields">
-                                                @php
-                                                    $attributeIndex = 0;
-                                                    $attributes = $product->variantAttributeTypes->unique('name');
-                                                @endphp
-                                                
-                                                @foreach($attributes as $attribute)
-                                                    <div class="attribute-item mb-3">
-                                                        <button type="button" class="btn btn-sm btn-danger remove-attribute">
-                                                            <i class="ti ti-x"></i>
-                                                        </button>
-                                                        <div class="row">
-                                                            <div class="col-md-4">
-                                                                <div class="form-group">
-                                                                    <label class="form-label">Attribute Name <span class="text-danger">*</span></label>
-                                                                    <input type="text" class="form-control" name="attributes[{{ $attributeIndex }}][name]" value="{{ $attribute->name }}" required>
-                                                                </div>
-                                                            </div>
-                                                            <div class="col-md-4">
-                                                                <div class="form-group">
-                                                                    <label class="form-label">Display Name <span class="text-danger">*</span></label>
-                                                                    <input type="text" class="form-control" name="attributes[{{ $attributeIndex }}][display_name]" value="{{ $attribute->display_name }}" required>
-                                                                </div>
-                                                            </div>
-                                                            <div class="col-md-4">
-                                                                <div class="form-group">
-                                                                    <label class="form-label">Values (comma-separated) <span class="text-danger">*</span></label>
-                                                                    @php
-                                                                        $values = $product->variants
-                                                                            ->flatMap(function($variant) use ($attribute) {
-                                                                                return $variant->attributes
-                                                                                    ->where('attribute_type_id', $attribute->id)
-                                                                                    ->pluck('attribute_value.value')
-                                                                                    ->unique()
-                                                                                    ->toArray();
-                                                                            })
-                                                                            ->unique()
-                                                                            ->values()
-                                                                            ->toArray();
-                                                                    @endphp
-                                                                    <input type="text" class="form-control" name="attributes[{{ $attributeIndex }}][values]" value="{{ implode(',', $values) }}" required>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    @php $attributeIndex++; @endphp
-                                                @endforeach
-                                            </div>
-
-                                            <button type="button" class="btn btn-primary btn-sm" id="add-attribute">
-                                                <i class="ti ti-plus"></i> Add Attribute
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Variants -->
-                                <div class="card">
-                                    <div class="card-header">
-                                        <div class="d-flex justify-content-between align-items-center">
-                                            <h5 class="mb-0">Variants</h5>
-                                            <button type="button" class="btn btn-success btn-sm" id="generate-variants">
-                                                <i class="ti ti-refresh"></i> Update Variants
-                                            </button>
-                                        </div>
-                                    </div>
-                                    <div class="card-body">
-                                        <div id="variants-container">
-                                            @foreach($product->variants as $index => $variant)
-                                                <div class="variant-item mb-3">
-                                                    <h6>Variant {{ $index + 1 }}
-                                                        @if($variant->is_default)
-                                                            <span class="badge bg-success ms-2">Default</span>
-                                                        @endif
-                                                    </h6>
-                                                    <div class="row">
-                                                        <div class="col-md-6">
-                                                            <div class="form-group">
-                                                                <label class="form-label">SKU <span class="text-danger">*</span></label>
-                                                                <input type="text" class="form-control" name="variants[{{ $variant->id }}][sku]" value="{{ $variant->sku }}" required>
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-md-6">
-                                                            <div class="form-group">
-                                                                <label class="form-label">Purchase Price <span class="text-danger">*</span></label>
-                                                                <input type="number" class="form-control" name="variants[{{ $variant->id }}][purchase_price]" value="{{ $variant->purchase_price }}" min="0" step="1000" required>
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-md-6">
-                                                            <div class="form-group">
-                                                                <label class="form-label">Selling Price <span class="text-danger">*</span></label>
-                                                                <input type="number" class="form-control" name="variants[{{ $variant->id }}][selling_price]" value="{{ $variant->selling_price }}" min="0" step="1000" required>
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-md-6">
-                                                            <div class="form-group">
-                                                                <label class="form-label">Stock <span class="text-danger">*</span></label>
-                                                                <input type="number" class="form-control" name="variants[{{ $variant->id }}][stock]" value="{{ $variant->stock }}" min="0" required>
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-md-6">
-                                                            <div class="form-group">
-                                                                <label class="form-label">Status</label>
-                                                                <select class="form-select" name="variants[{{ $variant->id }}][status]">
-                                                                    <option value="active" {{ $variant->status == 'active' ? 'selected' : '' }}>Active</option>
-                                                                    <option value="inactive" {{ $variant->status == 'inactive' ? 'selected' : '' }}>Inactive</option>
-                                                                </select>
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-md-6">
-                                                            <div class="form-group">
-                                                                <div class="form-check form-switch mt-4">
-                                                                    <input class="form-check-input" type="checkbox" role="switch" id="default_variant_{{ $variant->id }}" name="default_variant" value="{{ $variant->id }}" {{ $variant->is_default ? 'checked' : '' }}>
-                                                                    <label class="form-check-label" for="default_variant_{{ $variant->id }}">Set as default variant</label>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-12">
-                                                            <div class="form-group">
-                                                                <label class="form-label">Variant Image</label>
-                                                                @if($variant->image)
-                                                                    <div class="mb-2">
-                                                                        <img src="{{ asset('storage/' . $variant->image) }}" class="variant-image-preview">
-                                                                    </div>
-                                                                @endif
-                                                                <input type="file" class="form-control" name="variants[{{ $variant->id }}][image]">
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <!-- Hidden fields for variant attributes -->
-                                                    @foreach($variant->attributes as $attribute)
-                                                        <input type="hidden" name="variants[{{ $variant->id }}][attributes][{{ $attribute->attributeType->name }}][name]" value="{{ $attribute->attributeType->name }}">
-                                                        <input type="hidden" name="variants[{{ $variant->id }}][attributes][{{ $attribute->attributeType->name }}][display_name]" value="{{ $attribute->attributeType->display_name }}">
-                                                        <input type="hidden" name="variants[{{ $variant->id }}][attributes][{{ $attribute->attributeType->name }}][value]" value="{{ $attribute->attributeValue->value }}">
-                                                    @endforeach
-                                                </div>
-                                            @endforeach
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="form-group mt-4">
-                                    <button type="submit" class="btn btn-primary">
-                                        <i class="ti ti-device-floppy me-1"></i> Update Product
-                                    </button>
-                                    <a href="{{ route('admin.products.index') }}" class="btn btn-secondary">
-                                        <i class="ti ti-arrow-back me-1"></i> Cancel
-                                    </a>
-                                </div>
-                            </form>
-                        </div>
+                        <ul class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Home</a></li>
+                            <li class="breadcrumb-item"><a href="{{ route('admin.products.index') }}">Products</a></li>
+                            <li class="breadcrumb-item" aria-current="page">Edit Variant</li>
+                        </ul>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-@endsection
+        <!-- [ breadcrumb ] end -->
 
-@push('scripts')
-<script src="https://cdnjs.cloudflare.com/ajax/libs/ckeditor/4.9.2/ckeditor.js"></script>
-<script>
-    $(document).ready(function() {
-        // Initialize CKEditor
-        CKEDITOR.replace('content');
-
-        // Generate slug from name
-        $('#generate-slug').click(function() {
-            const name = $('#name').val();
-            if (name) {
-                const slug = name.toLowerCase()
-                    .replace(/[^\w\s-]/g, '') // remove non-word chars
-                    .replace(/\s+/g, '-') // replace spaces with -
-                    .replace(/--+/g, '-') // replace multiple - with single -
-                    .trim();
-                $('#slug').val(slug);
-            }
-        });
-
-        // Generate slug when name changes
-        $('#name').on('keyup', function() {
-            if ($('#slug').val() === '') {
-                $('#generate-slug').click();
-            }
-        });
-
-        // Add attribute field
-        let attributeCount = {{ $attributes->count() }};
-        $('#add-attribute').click(function() {
-            const attributeHtml = `
-                <div class="attribute-item mb-3">
-                    <button type="button" class="btn btn-sm btn-danger remove-attribute">
-                        <i class="ti ti-x"></i>
-                    </button>
-                    <div class="row">
-                        <div class="col-md-4">
-                            <div class="form-group">
-                                <label class="form-label">Attribute Name <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control" name="attributes[${attributeCount}][name]" required>
+        <!-- [ Main Content ] start -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card custom-shadow">
+                    <div class="card-header">
+                        <h5>Edit Variant Product: {{ $product->name }}</h5>
+                    </div>
+                    <div class="card-body">
+                        @if ($errors->any())
+                            <div class="alert alert-danger">
+                                <ul>
+                                    @foreach ($errors->all() as $error)
+                                        <li>{{ $error }}</li>
+                                    @endforeach
+                                </ul>
                             </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="form-group">
-                                <label class="form-label">Display Name <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control" name="attributes[${attributeCount}][display_name]" required>
+                        @endif
+                        <form action="{{ route('admin.products.update', $product) }}" method="POST" enctype="multipart/form-data" id="variant-form">
+                            @csrf
+                            @method('PUT')
+                            <input type="hidden" name="has_variants" value="1">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="mb-3">
+                                        <label for="name" class="form-label">Name <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control @error('name') is-invalid @enderror" id="name" name="name" value="{{ old('name', $product->name) }}" required>
+                                        @error('name')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="form-group">
-                                <label class="form-label">Values (comma-separated) <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control" name="attributes[${attributeCount}][values]" required>
+                            <input type="hidden" name="slug" id="slug" value="{{ old('slug', $product->slug) }}">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="category_id" class="form-label">Category <span class="text-danger">*</span></label>
+                                        <select class="form-select @error('category_id') is-invalid @enderror" id="category_id" name="category_id" required>
+                                            <option value="">-- Select Category --</option>
+                                            @foreach ($categories as $category)
+                                                <option value="{{ $category->id }}" {{ old('category_id', $product->category_id) == $category->id ? 'selected' : '' }}>{{ $category->name }}</option>
+                                            @endforeach
+                                        </select>
+                                        @error('category_id')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="status" class="form-label">Status <span class="text-danger">*</span></label>
+                                        <select class="form-select @error('status') is-invalid @enderror" id="status" name="status" required>
+                                            <option value="active" {{ old('status', $product->status) == 'active' ? 'selected' : '' }}>Active</option>
+                                            <option value="inactive" {{ old('status', $product->status) == 'inactive' ? 'selected' : '' }}>Inactive</option>
+                                        </select>
+                                        @error('status')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                </div>
                             </div>
-                        </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="mb-3">
+                                        <label for="description" class="form-label">Description (Optional)</label>
+                                        <textarea class="form-control @error('description') is-invalid @enderror" id="description" name="description" rows="3">{{ old('description', $product->description) }}</textarea>
+                                        @error('description')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="mb-3">
+                                        <label for="content" class="form-label">Content (Optional)</label>
+                                        <textarea class="snettech-editor form-control @error('content') is-invalid @enderror" id="content" name="content" rows="10">{{ old('content', $product->content) }}</textarea>
+                                        @error('content')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="mb-3">
+                                        <label for="model" class="form-label">Model (Optional)</label>
+                                        <input type="text" class="form-control @error('model') is-invalid @enderror" id="model" name="model" value="{{ old('model', $product->model) }}">
+                                        @error('model')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="mb-3">
+                                        <label for="series" class="form-label">Series (Optional)</label>
+                                        <input type="text" class="form-control @error('series') is-invalid @enderror" id="series" name="series" value="{{ old('series', $product->series) }}">
+                                        @error('series')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="mb-3">
+                                        <label for="warranty_months" class="form-label">Warranty Months</label>
+                                        <input type="number" class="form-control @error('warranty_months') is-invalid @enderror" id="warranty_months" name="warranty_months" value="{{ old('warranty_months', $product->warranty_months) }}" min="0" required>
+                                        @error('warranty_months')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="is_featured" class="form-label">Is Featured</label>
+                                        <select class="form-select @error('is_featured') is-invalid @enderror" id="is_featured" name="is_featured">
+                                            <option value="0" {{ old('is_featured', $product->is_featured) == '0' ? 'selected' : '' }}>No</option>
+                                            <option value="1" {{ old('is_featured', $product->is_featured) == '1' ? 'selected' : '' }}>Yes</option>
+                                        </select>
+                                        @error('is_featured')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Variant Attributes -->
+                            <div class="mb-3">
+                                <label class="form-label">Variant Attributes <span class="text-danger">*</span></label>
+                                <div id="variant-attributes">
+                                    @if($attributeValues)
+                                        @foreach($attributeValues as $index => $attr)
+                                            <div class="row mb-2 variant-row" data-index="{{ $index }}">
+                                                <div class="col-md-4">
+                                                    <select class="form-select attribute-type @error('variants.'.$index.'.attribute_type_id') is-invalid @enderror" name="variants[{{ $index }}][attribute_type_id]" id="attribute_type_{{ $index }}" required>
+                                                        <option value="">-- Select Attribute --</option>
+                                                        @foreach ($attributeTypes as $attributeType)
+                                                            <option value="{{ $attributeType->id }}" {{ $attr['attribute_type_id'] == $attributeType->id ? 'selected' : '' }}>{{ $attributeType->name }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                    @error('variants.'.$index.'.attribute_type_id')
+                                                        <div class="invalid-feedback">{{ $message }}</div>
+                                                    @enderror
+                                                    <div class="error-message" id="error-type-{{ $index }}">Please select an attribute type.</div>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <input type="text" class="form-control attribute-values @error('variants.'.$index.'.attributes') is-invalid @enderror" name="variants[{{ $index }}][attributes][value]" id="values_{{ $index }}" placeholder="Value (e.g., Red)" value="{{ !empty($attr['values']) ? implode(',', $attr['values']) : '' }}" required>
+                                                    @error('variants.'.$index.'.attributes')
+                                                        <div class="invalid-feedback">{{ $message }}</div>
+                                                    @enderror
+                                                    <div class="error-message" id="error-values-{{ $index }}">Please enter a valid value.</div>
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <input type="text" class="form-control attribute-hex" name="variants[{{ $index }}][attributes][hex]" id="hex_{{ $index }}" placeholder="Hex Code (e.g., #FFFFFF)" value="{{ !empty($attr['hex']) ? implode(',', $attr['hex']) : '' }}">
+                                                    @error('variants.'.$index.'.hex')
+                                                        <div class="invalid-feedback">{{ $message }}</div>
+                                                    @enderror
+                                                    <div class="error-message" id="error-hex-{{ $index }}">Please enter a valid hex code or leave blank.</div>
+                                                </div>
+                                                <div class="col-md-1">
+                                                    <button type="button" class="btn btn-danger remove-value" data-index="{{ $index }}">Remove</button>
+                                                </div>
+                                            </div>
+                                        @endforeach
+                                    @else
+                                        <p>No variant attributes found. Click "Add Attribute" to create one.</p>
+                                    @endif
+                                </div>
+                                <button type="button" class="btn btn-outline-primary mt-2" id="add-value">Add Attribute</button>
+                                <div class="error-message" id="error-duplicate" style="display: none;">Duplicate attribute types are not allowed.</div>
+                                <div class="error-message" id="error-min-attributes" style="display: none;">Please add at least one attribute.</div>
+                            </div>
+                            <!-- Generated Variants (editable) -->
+                            <div class="mb-3">
+                                <label class="form-label">Variants</label>
+                                <div id="variant-list">
+                                    @if($product->variants->isNotEmpty())
+                                        @foreach($product->variants as $index => $variant)
+                                            <div class="variant-row" data-index="{{ $index }}">
+                                                <h6>Variant {{ $index + 1 }}: {{ $variant->name }}</h6>
+                                                <input type="hidden" name="variants[{{ $index }}][id]" value="{{ $variant->id }}">
+                                                <div class="row">
+                                                    <div class="col-md-3">
+                                                        <div class="mb-3">
+                                                            <label class="form-label">Name</label>
+                                                            <input type="text" class="form-control @error('variants.'.$index.'.name') is-invalid @enderror" name="variants[{{ $index }}][name]" value="{{ old('variants.'.$index.'.name', $variant->name) }}" required>
+                                                            @error('variants.'.$index.'.name')
+                                                                <div class="invalid-feedback">{{ $message }}</div>
+                                                            @enderror
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <div class="mb-3">
+                                                            <label class="form-label">Slug</label>
+                                                            <input type="text" class="form-control @error('variants.'.$index.'.slug') is-invalid @enderror" name="variants[{{ $index }}][slug]" value="{{ old('variants.'.$index.'.slug', $variant->slug) }}" required>
+                                                            @error('variants.'.$index.'.slug')
+                                                                <div class="invalid-feedback">{{ $message }}</div>
+                                                            @enderror
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <div class="mb-3">
+                                                            <label class="form-label">Stock</label>
+                                                            <input type="number" class="form-control @error('variants.'.$index.'.stock') is-invalid @enderror" name="variants[{{ $index }}][stock]" value="{{ old('variants.'.$index.'.stock', $variant->stock) }}" min="0" required>
+                                                            @error('variants.'.$index.'.stock')
+                                                                <div class="invalid-feedback">{{ $message }}</div>
+                                                            @enderror
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <div class="mb-3">
+                                                            <label class="form-label">Purchase Price</label>
+                                                            <input type="number" class="form-control @error('variants.'.$index.'.purchase_price') is-invalid @enderror" name="variants[{{ $index }}][purchase_price]" value="{{ old('variants.'.$index.'.purchase_price', $variant->purchase_price) }}" min="0" step="0.01" required>
+                                                            @error('variants.'.$index.'.purchase_price')
+                                                                <div class="invalid-feedback">{{ $message }}</div>
+                                                            @enderror
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-md-3">
+                                                        <div class="mb-3">
+                                                            <label class="form-label">Selling Price</label>
+                                                            <input type="number" class="form-control @error('variants.'.$index.'.selling_price') is-invalid @enderror" name="variants[{{ $index }}][selling_price]" value="{{ old('variants.'.$index.'.selling_price', $variant->selling_price) }}" min="0" step="0.01" required>
+                                                            @error('variants.'.$index.'.selling_price')
+                                                                <div class="invalid-feedback">{{ $message }}</div>
+                                                            @enderror
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-3">
+                                                        <div class="mb-3">
+                                                            <label class="form-label">Discount Price</label>
+                                                            <input type="number" class="form-control @error('variants.'.$index.'.discount_price') is-invalid @enderror" name="variants[{{ $index }}][discount_price]" value="{{ old('variants.'.$index.'.discount_price', $variant->discount_price) }}" min="0" step="0.01">
+                                                            @error('variants.'.$index.'.discount_price')
+                                                                <div class="invalid-feedback">{{ $message }}</div>
+                                                            @enderror
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <div class="mb-3">
+                                                            <label class="form-label">Image</label>
+                                                            <input type="file" class="form-control variant-image @error('variants.'.$index.'.image') is-invalid @enderror" name="variants[{{ $index }}][image]" onchange="previewImage({{ $index }})">
+                                                            @error('variants.'.$index.'.image')
+                                                                <div class="invalid-feedback">{{ $message }}</div>
+                                                            @enderror
+                                                            @if($variant->image)
+                                                                <div id="preview-{{ $index }}" class="preview-image-container mt-2">
+                                                                    <img src="{{ asset('Uploads/' . $variant->image) }}" class="preview-image">
+                                                                </div>
+                                                            @else
+                                                                <div id="preview-{{ $index }}" class="preview-image-container mt-2"></div>
+                                                            @endif
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-md-6">
+                                                        <div class="mb-3">
+                                                            <label class="form-label">Default Variant</label>
+                                                            <div class="form-check form-switch">
+                                                                <input class="form-check-input default-variant-toggle" type="checkbox" name="variants[{{ $index }}][is_default]" id="is_default_{{ $index }}" value="1" {{ old('variants.'.$index.'.is_default', $variant->is_default) ? 'checked' : '' }} onchange="toggleDefaultVariant({{ $index }})">
+                                                                <label class="form-check-label" for="is_default_{{ $index }}">Set as Default</label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <!-- Hidden input for attributes -->
+                                                <input type="hidden" name="variants[{{ $index }}][attributes]" value='@json($variant->combinations->map(function($combination) {
+                                                    return [
+                                                        "attribute_type_id" => $combination->attributeValue->attribute_type_id ?? null,
+                                                        "value" => $combination->attributeValue->value ?? null,
+                                                        "hex" => $combination->attributeValue->hex ?? null
+                                                    ];
+                                                })->filter()->toArray())'>
+                                            </div>
+                                        @endforeach
+                                    @else
+                                        <p>No variants found. Please add variant attributes to generate variants.</p>
+                                    @endif
+                                </div>
+                            </div>
+                            <!-- Product Attributes -->
+                            <div class="mb-3">
+                                <label class="form-label">Product Attributes (Optional)</label>
+                                <div id="product-attributes">
+                                    @if($product->attributes->isNotEmpty())
+                                        @foreach($product->attributes as $index => $attr)
+                                            <div class="row mb-2 product-attribute-row" data-index="{{ $index }}">
+                                                <div class="col-md-4">
+                                                    <select class="form-select @error('product_attributes.'.$index.'.attribute_type_id') is-invalid @enderror" name="product_attributes[{{ $index }}][attribute_type_id]">
+                                                        <option value="">-- Select Attribute --</option>
+                                                        @foreach ($attributeTypes as $attributeType)
+                                                            <option value="{{ $attributeType->id }}" {{ old('product_attributes.'.$index.'.attribute_type_id', $attr->attribute_type_id) == $attributeType->id ? 'selected' : '' }}>{{ $attributeType->name }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                    @error('product_attributes.'.$index.'.attribute_type_id')
+                                                        <div class="invalid-feedback">{{ $message }}</div>
+                                                    @enderror
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <input type="text" class="form-control @error('product_attributes.'.$index.'.value') is-invalid @enderror" name="product_attributes[{{ $index }}][value]" value="{{ old('product_attributes.'.$index.'.value', $attr->attribute_value) }}" placeholder="Value (e.g., Red)">
+                                                    @error('product_attributes.'.$index.'.value')
+                                                        <div class="invalid-feedback">{{ $message }}</div>
+                                                    @enderror
+                                                </div>
+                                                <div class="col-md-3">
+                                                    <input type="text" class="form-control @error('product_attributes.'.$index.'.hex') is-invalid @enderror" name="product_attributes[{{ $index }}][hex]" value="{{ old('product_attributes.'.$index.'.hex', $attr->hex) }}" placeholder="Hex Code (e.g., #FFFFFF)">
+                                                    @error('product_attributes.'.$index.'.hex')
+                                                        <div class="invalid-feedback">{{ $message }}</div>
+                                                    @enderror
+                                                </div>
+                                                <div class="col-md-1">
+                                                    <button type="button" class="btn btn-danger remove-product-attribute" data-index="{{ $index }}">Remove</button>
+                                                </div>
+                                            </div>
+                                        @endforeach
+                                    @else
+                                        <p>No product attributes found. Click "Add Product Attribute" to create one.</p>
+                                    @endif
+                                </div>
+                                <button type="button" class="btn btn-outline-primary mt-2" id="add-product-attribute">Add Product Attribute</button>
+                            </div>
+                            <div class="mb-3" id="submit-section">
+                                <button type="submit" class="btn btn-primary">Update Variant Product</button>
+                                <a href="{{ route('admin.products.index') }}" class="btn btn-secondary">Back</a>
+                            </div>
+                        </form>
                     </div>
                 </div>
-            `;
-            $('#attribute-fields').append(attributeHtml);
-            attributeCount++;
-        });
+            </div>
+        </div>
+        <!-- [ Main Content ] end -->
+    </div>
+</div>
 
-        // Remove attribute field
-        $(document).on('click', '.remove-attribute', function() {
-            if (confirm('Are you sure you want to remove this attribute? This will also remove all variant data for this attribute.')) {
-                $(this).closest('.attribute-item').remove();
-            }
-        });
+<script>
+let attributeIndex = {{ $attributeValues ? count($attributeValues) : 0 }};
+let productAttributeIndex = {{ $product->attributes ? count($product->attributes) : 0 }};
 
-        // Handle default variant selection
-        $('input[name="default_variant"]').change(function() {
-            $('input[name="default_variant"]').not(this).prop('checked', false);
-        });
+document.getElementById('add-value').addEventListener('click', function() {
+    const container = document.getElementById('variant-attributes');
+    const newRow = document.createElement('div');
+    newRow.className = 'row mb-2 variant-row';
+    newRow.dataset.index = attributeIndex;
+    newRow.innerHTML = `
+        <div class="col-md-4">
+            <select class="form-select attribute-type" name="variants[${attributeIndex}][attribute_type_id]" id="attribute_type_${attributeIndex}" required>
+                <option value="">-- Select Attribute --</option>
+                @foreach ($attributeTypes as $attributeType)
+                    <option value="{{ $attributeType->id }}">{{ $attributeType->name }}</option>
+                @endforeach
+            </select>
+            <div class="error-message" id="error-type-${attributeIndex}">Please select an attribute type.</div>
+        </div>
+        <div class="col-md-4">
+            <input type="text" class="form-control attribute-values" name="variants[${attributeIndex}][attributes][value]" id="values_${attributeIndex}" placeholder="Value (e.g., Red)" required>
+            <div class="error-message" id="error-values-${attributeIndex}">Please enter a valid value.</div>
+        </div>
+        <div class="col-md-3">
+            <input type="text" class="form-control attribute-hex" name="variants[${attributeIndex}][attributes][hex]" id="hex_${attributeIndex}" placeholder="Hex Code (e.g., #FFFFFF)">
+            <div class="error-message" id="error-hex-${attributeIndex}">Please enter a valid hex code or leave blank.</div>
+        </div>
+        <div class="col-md-1">
+            <button type="button" class="btn btn-danger remove-value" data-index="${attributeIndex}">Remove</button>
+        </div>
+    `;
+    container.appendChild(newRow);
+    attributeIndex++;
+    attachRemoveEvent();
+});
+
+document.getElementById('add-product-attribute').addEventListener('click', function() {
+    const container = document.getElementById('product-attributes');
+    const newRow = document.createElement('div');
+    newRow.className = 'row mb-2 product-attribute-row';
+    newRow.dataset.index = productAttributeIndex;
+    newRow.innerHTML = `
+        <div class="col-md-4">
+            <select class="form-select" name="product_attributes[${productAttributeIndex}][attribute_type_id]">
+                <option value="">-- Select Attribute --</option>
+                @foreach ($attributeTypes as $attributeType)
+                    <option value="{{ $attributeType->id }}">{{ $attributeType->name }}</option>
+                @endforeach
+            </select>
+        </div>
+        <div class="col-md-4">
+            <input type="text" class="form-control" name="product_attributes[${productAttributeIndex}][value]" placeholder="Value (e.g., Red)">
+        </div>
+        <div class="col-md-3">
+            <input type="text" class="form-control" name="product_attributes[${productAttributeIndex}][hex]" placeholder="Hex Code (e.g., #FFFFFF)">
+        </div>
+        <div class="col-md-1">
+            <button type="button" class="btn btn-danger remove-product-attribute" data-index="${productAttributeIndex}">Remove</button>
+        </div>
+    `;
+    container.appendChild(newRow);
+    productAttributeIndex++;
+    attachProductAttributeRemoveEvent();
+});
+
+function attachRemoveEvent() {
+    document.querySelectorAll('.remove-value').forEach(button => {
+        button.removeEventListener('click', removeVariantAttribute); // Tránh gắn nhiều lần
+        button.addEventListener('click', removeVariantAttribute);
     });
+}
+
+function removeVariantAttribute() {
+    const index = this.dataset.index;
+    document.querySelector(`.variant-row[data-index="${index}"]`).remove();
+}
+
+function attachProductAttributeRemoveEvent() {
+    document.querySelectorAll('.remove-product-attribute').forEach(button => {
+        button.removeEventListener('click', removeProductAttribute); // Tránh gắn nhiều lần
+        button.addEventListener('click', removeProductAttribute);
+    });
+}
+
+function removeProductAttribute() {
+    const index = this.dataset.index;
+    document.querySelector(`.product-attribute-row[data-index="${index}"]`).remove();
+}
+
+function previewImage(index) {
+    const input = document.querySelector(`input[name="variants[${index}][image]"]`);
+    const preview = document.getElementById(`preview-${index}`);
+    preview.innerHTML = '';
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const img = document.createElement('img');
+            img.src = e.target.result;
+            img.className = 'preview-image';
+            preview.appendChild(img);
+        };
+        reader.readAsDataURL(input.files[0]);
+    }
+}
+
+function toggleDefaultVariant(index) {
+    const checkboxes = document.querySelectorAll('.default-variant-toggle');
+    checkboxes.forEach((checkbox, i) => {
+        if (i !== parseInt(index)) {
+            checkbox.checked = false;
+        }
+    });
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    attachRemoveEvent();
+    attachProductAttributeRemoveEvent();
+});
 </script>
-@endpush
+@endsection

@@ -15,7 +15,7 @@ class StoreAttributeTypeRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => ['required', 'string', 'max:255', 'unique:attribute_types,name'],
+            'name' => ['required', 'string', 'max:255', 'unique:variant_attribute_types,name'],
             'status' => ['required', Rule::in(['active', 'inactive'])],
         ];
     }

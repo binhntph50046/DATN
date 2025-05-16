@@ -1,20 +1,36 @@
 <?php
-
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Admin\BannerController;
-use App\Http\Controllers\Admin\BlogController;
-use App\Http\Controllers\Admin\CategoryController;
-use App\Http\Controllers\Admin\DashboardController;
-use App\Http\Controllers\Admin\OrderController;
-use App\Http\Controllers\Admin\ProductController;
-use App\Http\Controllers\Admin\UserController;
+// Admin
+use App\Http\Controllers\admin\BlogController;
+use App\Http\Controllers\admin\UserController;
+use App\Http\Controllers\admin\OrderController;
+use App\Http\Controllers\admin\BannerController;
+use App\Http\Controllers\admin\ProductController;
+use App\Http\Controllers\admin\CategoryController;
+use App\Http\Controllers\admin\DashboardController;
 use App\Http\Controllers\Admin\VariantAttributeTypeController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Auth\AuthController;
 
-Route::get('/', function () {
-    return view('welcome');
-});
+// Client 
+use App\Http\Controllers\client\HomeController;
+use App\Http\Controllers\client\ShopController;
+use App\Http\Controllers\client\AboutController;
+use App\Http\Controllers\client\BlogController as ClientBlogController;
+use App\Http\Controllers\client\CartController;
+use App\Http\Controllers\client\CheckoutController;
+use App\Http\Controllers\client\ContactController;
+use App\Http\Controllers\client\ProductController as ClientProductController;
+
+// Client 
+Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::get('/productDetail', [ClientProductController::class, 'productDetail'])->name('productDetail');
+Route::get('/shop', [ShopController::class, 'index'])->name('shop');
+Route::get('/about', [AboutController::class, 'index'])->name('about');
+Route::get('/blog', [ClientBlogController::class, 'index'])->name('blog');
+Route::get('/contact', [ContactController::class, 'index'])->name('contact');
+Route::get('/cart', [CartController::class, 'index'])->name('cart');
+Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout');
 
 // Authentication routes
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
@@ -73,6 +89,18 @@ Route::prefix('admin')->middleware(['auth', 'role:admin|staff'])->name('admin.')
     Route::get('blogs-trash', [BlogController::class, 'trash'])->middleware('permission:view blogs')->name('blogs.trash');
     Route::put('blogs/{id}/restore', [BlogController::class, 'restore'])->middleware('permission:edit blogs')->name('blogs.restore');
     Route::delete('blogs/{id}/force-delete', [BlogController::class, 'forceDelete'])->middleware('permission:delete blogs')->name('blogs.forceDelete');
+    // Routes for VariantAttributeTypeController (CRUD for attribute types)
+    Route::prefix('attributes')->name('attributes.')->group(function () {
+        Route::get('/', [VariantAttributeTypeController::class, 'index'])->name('index');
+        Route::get('/create', [VariantAttributeTypeController::class, 'create'])->name('create');
+        Route::post('/', [VariantAttributeTypeController::class, 'store'])->name('store');
+        Route::get('/{attributeType}/edit', [VariantAttributeTypeController::class, 'edit'])->name('edit');
+        Route::put('/{attributeType}', [VariantAttributeTypeController::class, 'update'])->name('update');
+        Route::delete('/{attributeType}', [VariantAttributeTypeController::class, 'destroy'])->name('destroy');
+        Route::get('/trash', [VariantAttributeTypeController::class, 'trash'])->name('trash');
+        Route::post('/{attributeType}/restore', [VariantAttributeTypeController::class, 'restore'])->name('restore');
+        Route::delete('/{attributeType}/forceDelete', [VariantAttributeTypeController::class, 'forceDelete'])->name('forceDelete');
+    });
 
     // Product Routes
     Route::prefix('products')->name('products.')->group(function () {
@@ -86,6 +114,8 @@ Route::prefix('admin')->middleware(['auth', 'role:admin|staff'])->name('admin.')
         Route::get('/{product}/edit-variant', [ProductController::class, 'editVariant'])->middleware('permission:edit products')->name('edit-variant');
         Route::post('/', [ProductController::class, 'store'])->middleware('permission:create products')->name('store');
         Route::put('/{product}', [ProductController::class, 'update'])->middleware('permission:edit products')->name('update');
+        Route::patch('/{id}/restore', [ProductController::class, 'restore'])->middleware('permission:restore products')->name('restore');
+        Route::delete('/{id}/forceDelete', [ProductController::class, 'forceDelete'])->middleware('permission:forceDelete products')->name('forceDelete');
     });
 
     // Order Routes
@@ -113,3 +143,4 @@ Route::prefix('admin')->middleware(['auth', 'role:admin|staff'])->name('admin.')
     Route::get('roles/{user}/edit', [RoleController::class, 'edit'])->middleware('permission:addrole')->name('roles.edit');
     Route::put('roles/{user}', [RoleController::class, 'update'])->middleware('permission:addrole')->name('roles.update');
 });
+

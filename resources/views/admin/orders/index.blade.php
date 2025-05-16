@@ -1,7 +1,7 @@
 @extends('admin.layouts.app')
 
 @section('content')
-<div class="pc-container">
+<div class="pc-container card shadow-sm rounded-3 border-0 custom-shadow">
     <div class="pc-content">
         <!-- [ breadcrumb ] start -->
         <div class="page-header">
@@ -24,7 +24,7 @@
         <!-- [ Main Content ] start -->
         <div class="row">
             <div class="col-12">
-                <div class="card">
+                <div class="card shadow-sm mb-4">
                     <div class="card-header">
                         <h5>Orders List</h5>
                         <div class="d-flex justify-content-between align-items-center">
@@ -44,7 +44,7 @@
                                     </select>
                                 </div>
                                 <div class="col-md-3">
-                                    <button type="submit" class="btn btn-primary w-100">Tìm kiếm</button>
+                                    <button type="submit" class="btn btn-primary w-100">Search</button>
                                 </div>
                             </form>
                             <a href="{{ route('admin.orders.trash') }}" class="btn btn-danger btn-sm rounded-3">

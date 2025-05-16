@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\admin;
 
+use App\Models\VariantAttributeType;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -9,33 +10,80 @@ class StoreProductRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return true;  // Adjust based on your authorization logic
+        return true;
     }
 
     public function rules(): array
     {
         return [
             'name' => ['required', 'string', 'max:255'],
-            'slug' => ['nullable', 'string', 'max:255', 'unique:products,slug'],
+            'slug' => ['required', 'string', 'max:255', Rule::unique('products')],
             'description' => ['nullable', 'string'],
             'content' => ['nullable', 'string'],
             'category_id' => ['required', 'exists:categories,id'],
+            'model' => ['nullable', 'string', 'max:255'],
+            'series' => ['nullable', 'string', 'max:255'],
             'warranty_months' => ['required', 'integer', 'min:0'],
+            'is_featured' => ['nullable', 'boolean'],
             'status' => ['required', Rule::in(['active', 'inactive'])],
-            'image' => ['nullable', 'image', 'max:2048'],
             'has_variants' => ['required', 'boolean'],
-            // For simple products
             'stock' => ['required_if:has_variants,0', 'integer', 'min:0'],
             'purchase_price' => ['required_if:has_variants,0', 'numeric', 'min:0'],
             'selling_price' => ['required_if:has_variants,0', 'numeric', 'min:0'],
-            // For variant products (cross-combination)
-            'attribute_values' => ['required_if:has_variants,1', 'array'],
-            'attribute_values.*' => ['sometimes', 'array'],
-            'attribute_values.*.*' => ['required', 'string', 'max:255'],
-            // Product attributes (not used for cross-combination)
+            'discount_price' => ['nullable', 'numeric', 'min:0', 'lte:selling_price'],
+            'image' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048'],
+            'variants' => [
+                'required_if:has_variants,1',
+                'array',
+                function ($attribute, $value, $fail) {
+                    if ($this->input('has_variants') == 1) {
+                        $defaultCount = 0;
+                        foreach ($value as $variant) {
+                            if (isset($variant['is_default']) && $variant['is_default'] == 1) {
+                                $defaultCount++;
+                            }
+                        }
+                        if ($defaultCount !== 1) {
+                            $fail('Exactly one variant must be set as the default.');
+                        }
+                    }
+                },
+            ],
+            'variants.*.name' => ['required', 'string', 'max:255'],
+            'variants.*.slug' => ['required', 'string', 'max:255'],
+            'variants.*.stock' => ['required', 'integer', 'min:0'],
+            'variants.*.purchase_price' => ['required', 'numeric', 'min:0'],
+            'variants.*.selling_price' => ['required', 'numeric', 'min:0'],
+            'variants.*.discount_price' => ['nullable', 'numeric', 'min:0', 'lte:variants.*.selling_price'],
+            'variants.*.image' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048'],
+            'variants.*.is_default' => ['nullable', 'boolean'],
+            'variants.*.attributes' => [
+                'required',
+                'json',
+                function ($attribute, $value, $fail) {
+                    $attributes = json_decode($value, true);
+                    if (json_last_error() !== JSON_ERROR_NONE || !is_array($attributes)) {
+                        $fail('The ' . $attribute . ' must be a valid JSON array.');
+                        return;
+                    }
+                    foreach ($attributes as $index => $attr) {
+                        if (!isset($attr['attribute_type_id']) || !isset($attr['value'])) {
+                            $fail("Each attribute at index {$index} must contain 'attribute_type_id' and 'value'.");
+                            return;
+                        }
+                        if (!is_numeric($attr['attribute_type_id']) || !VariantAttributeType::where('id', $attr['attribute_type_id'])->exists()) {
+                            $fail("The attribute_type_id at index {$index} is invalid. Please verify the attribute type ID.");
+                        }
+                        if (!is_string($attr['value']) || strlen($attr['value']) > 255) {
+                            $fail("The value at index {$index} must be a string and not exceed 255 characters.");
+                        }
+                    }
+                },
+            ],
             'product_attributes' => ['sometimes', 'array'],
-            'product_attributes.*.attribute_type_id' => ['required_with:product_attributes.*.value', 'exists:attribute_types,id'],
+            'product_attributes.*.attribute_type_id' => ['required_with:product_attributes.*.value', 'exists:variant_attribute_types,id'],
             'product_attributes.*.value' => ['required_with:product_attributes.*.attribute_type_id', 'string', 'max:255'],
+            'product_attributes.*.hex' => ['nullable', 'string', 'max:7', 'regex:/^#[0-9A-Fa-f]{6}$/'],
         ];
     }
 
@@ -45,16 +93,22 @@ class StoreProductRequest extends FormRequest
             'name.required' => 'The product name is required.',
             'name.string' => 'The product name must be a string.',
             'name.max' => 'The product name may not be greater than 255 characters.',
+            'slug.required' => 'The slug is required.',
             'slug.unique' => 'This slug is already in use.',
+            'slug.string' => 'The slug must be a string.',
+            'slug.max' => 'The slug may not be greater than 255 characters.',
             'category_id.required' => 'The category is required.',
             'category_id.exists' => 'The selected category does not exist.',
+            'model.string' => 'The model must be a string.',
+            'model.max' => 'The model may not be greater than 255 characters.',
+            'series.string' => 'The series must be a string.',
+            'series.max' => 'The series may not be greater than 255 characters.',
             'warranty_months.required' => 'The warranty period is required.',
             'warranty_months.integer' => 'The warranty period must be an integer.',
             'warranty_months.min' => 'The warranty period must be at least 0.',
+            'is_featured.boolean' => 'The featured status must be true or false.',
             'status.required' => 'The status is required.',
             'status.in' => 'The status must be either active or inactive.',
-            'image.image' => 'The uploaded file must be an image.',
-            'image.max' => 'The image may not be greater than 2MB.',
             'has_variants.required' => 'Please specify if the product has variants.',
             'has_variants.boolean' => 'The has variants field must be true or false.',
             'stock.required_if' => 'Stock is required for simple products.',
@@ -66,16 +120,45 @@ class StoreProductRequest extends FormRequest
             'selling_price.required_if' => 'Selling price is required for simple products.',
             'selling_price.numeric' => 'Selling price must be a number.',
             'selling_price.min' => 'Selling price must be at least 0.',
-            'attribute_values.required_if' => 'Attribute values are required for products with variants.',
-            'attribute_values.array' => 'Attribute values must be an array.',
-            'attribute_values.*.*.required' => 'All attribute values are required.',
-            'attribute_values.*.*.string' => 'Attribute values must be strings.',
-            'attribute_values.*.*.max' => 'Attribute values may not be greater than 255 characters.',
+            'discount_price.numeric' => 'Discount price must be a number.',
+            'discount_price.min' => 'Discount price must be at least 0.',
+            'discount_price.lte' => 'Discount price must not exceed selling price.',
+            'image.image' => 'The image must be a valid image file.',
+            'image.mimes' => 'The image must be a JPEG, PNG, JPG, or GIF file.',
+            'image.max' => 'The image may not be greater than 2MB.',
+            'variants.required_if' => 'Variants are required for products with variants.',
+            'variants.*.name.required' => 'The variant name is required.',
+            'variants.*.name.string' => 'The variant name must be a string.',
+            'variants.*.name.max' => 'The variant name may not be greater than 255 characters.',
+            'variants.*.slug.required' => 'The variant slug is required.',
+            'variants.*.slug.string' => 'The variant slug must be a string.',
+            'variants.*.slug.max' => 'The variant slug may not be greater than 255 characters.',
+            'variants.*.stock.required' => 'Stock is required for each variant.',
+            'variants.*.stock.integer' => 'Stock must be an integer.',
+            'variants.*.stock.min' => 'Stock must be at least 0.',
+            'variants.*.purchase_price.required' => 'Purchase price is required for each variant.',
+            'variants.*.purchase_price.numeric' => 'Purchase price must be a number.',
+            'variants.*.purchase_price.min' => 'Purchase price must be at least 0.',
+            'variants.*.selling_price.required' => 'Selling price is required for each variant.',
+            'variants.*.selling_price.numeric' => 'Selling price must be a number.',
+            'variants.*.selling_price.min' => 'Selling price must be at least 0.',
+            'variants.*.discount_price.numeric' => 'Discount price must be a number.',
+            'variants.*.discount_price.min' => 'Discount price must be at least 0.',
+            'variants.*.discount_price.lte' => 'Discount price must not exceed selling price.',
+            'variants.*.image.image' => 'The variant image must be a valid image file.',
+            'variants.*.image.mimes' => 'The variant image must be a JPEG, PNG, JPG, or GIF file.',
+            'variants.*.image.max' => 'The variant image may not be greater than 2MB.',
+            'variants.*.is_default.boolean' => 'The default variant flag must be true or false.',
+            'variants.*.attributes.required' => 'Attributes are required for each variant.',
+            'variants.*.attributes.json' => 'Attributes must be a valid JSON string.',
             'product_attributes.*.attribute_type_id.required_with' => 'The attribute type is required when a value is provided.',
             'product_attributes.*.attribute_type_id.exists' => 'The selected attribute type does not exist.',
             'product_attributes.*.value.required_with' => 'The attribute value is required when a type is selected.',
             'product_attributes.*.value.string' => 'The attribute value must be a string.',
             'product_attributes.*.value.max' => 'The attribute value may not be greater than 255 characters.',
+            'product_attributes.*.hex.string' => 'The hex code must be a string.',
+            'product_attributes.*.hex.max' => 'The hex code may not be greater than 7 characters.',
+            'product_attributes.*.hex.regex' => 'The hex code must be a valid color code (e.g., #FFFFFF).',
         ];
     }
 }

@@ -15,7 +15,7 @@ class UpdateAttributeTypeRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => ['required', 'string', 'max:255', Rule::unique('attribute_types')->ignore($this->attributeType)],
+            'name' => ['required', 'string', 'max:255', Rule::unique('variant_attribute_types')->ignore($this->attributeType)],
             'status' => ['required', Rule::in(['active', 'inactive'])],
         ];
     }

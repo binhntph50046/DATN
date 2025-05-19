@@ -116,7 +116,7 @@
                                         </div>
 
                                         <div class="form-group mb-3">
-                                            <label for="image" class="form-label">Ảnh đại diện</label>
+                                            <label for="image" class="form-label">Avatar</label>
 
                                             {{-- Chỉ hiện khung preview khi đã có ảnh --}}
                                             @if ($blog->image)
@@ -159,8 +159,8 @@
                                 </div>
 
                                 <div class="d-flex justify-content-end">
-                                    <button type="submit" class="btn btn-primary">Cập nhật</button>
-                                    <a href="{{ route('admin.blogs.index') }}" class="btn btn-secondary ms-2">Quay lại</a>
+                                    <button type="submit" class="btn btn-primary">Update</button>
+                                    <a href="{{ route('admin.blogs.index') }}" class="btn btn-secondary ms-2">Back to list</a>
                                 </div>
                             </form>
                         </div>

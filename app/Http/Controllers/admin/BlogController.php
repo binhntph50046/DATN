@@ -156,9 +156,9 @@ class BlogController
     public function destroy(Blog $blog)
     {
         // Nếu có ảnh, xoá file ảnh cũ
-        if ($blog->image && file_exists(public_path($blog->image))) {
-            @unlink(public_path($blog->image));
-        }
+        // if ($blog->image && file_exists(public_path($blog->image))) {
+        //     @unlink(public_path($blog->image));
+        // }
 
         // Xoá bản ghi
         $blog->delete();

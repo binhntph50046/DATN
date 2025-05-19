@@ -1,159 +1,7 @@
+<!-- resources/views/admin/products/trash.blade.php -->
 @extends('admin.layouts.app')
-@section('title', 'Trash - Product Management')
+@section('title', 'Product Trash')
 
-@section('content')
-    <div class="pc-container">
-        <div class="pc-content">
-            <!-- [ breadcrumb ] start -->
-            <div class="page-header">
-                <div class="page-block">
-                    <div class="row align-items-center">
-                        <div class="col-md-12">
-                            <div class="page-header-title">
-                                <h5 class="m-b-10">Trash - Products</h5>
-                            </div>
-                            <ul class="breadcrumb">
-                                <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Home</a></li>
-                                <li class="breadcrumb-item" aria-current="page">Trash - Products</li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- [ breadcrumb ] end -->
-
-            <!-- [ Main Content ] start -->
-            <div class="row">
-                <div class="col-12">
-                    <div class="card">
-                        <div class="card-header">
-                            <h5>Trash Products</h5>
-                            <div class="card-header-right">
-                                <a href="{{ route('admin.products.index') }}" class="btn btn-primary btn-sm rounded-3">
-                                    <i class="ti ti-arrow-left"></i> Back to Products
-                                </a>
-                            </div>
-                        </div>
-                        <div class="card-body">
-                            @if(session('success'))
-                                <div class="alert alert-success">
-                                    {{ session('success') }}
-                                </div>
-                            @endif
-
-                            <!-- Filters -->
-                            <form method="GET" action="{{ route('admin.products.trash') }}" class="row g-3 mb-3">
-                                <div class="col-md-3">
-                                    <input type="text" name="name" class="form-control" placeholder="Search by name..." value="{{ request('name') }}">
-                                </div>
-                            
-                                <div class="col-md-3">
-                                    <select name="category_id" class="form-select">
-                                        <option value="">-- Filter by Category --</option>
-                                        @foreach($categories as $category)
-                                            <option value="{{ $category->id }}" {{ request('category_id') == $category->id ? 'selected' : '' }}>
-                                                {{ $category->name }}
-                                            </option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                            
-                                <div class="col-md-3">
-                                    <select name="status" class="form-select">
-                                        <option value="">-- Filter by Status --</option>
-                                        <option value="active" {{ request('status') == 'active' ? 'selected' : '' }}>Active</option>
-                                        <option value="inactive" {{ request('status') == 'inactive' ? 'selected' : '' }}>Inactive</option>
-                                    </select>
-                                </div>
-                            
-                                <div class="col-md-3 d-flex align-items-center">
-                                    <button type="submit" class="btn btn-primary me-2">Filter</button>
-                                    <a href="{{ route('admin.products.trash') }}" class="btn btn-secondary">Reset</a>
-                                </div>
-                            </form>
-
-                            <div class="table custom-shadow">
-                                <table class="table table-hover table-borderless">
-                                    <thead>
-                                        <tr>
-                                            <th>ID</th>
-                                            <th>Image</th>
-                                            <th>Name</th>
-                                            <th>Category</th>
-                                            <th>Price</th>
-                                            <th>Stock</th>
-                                            <th>Status</th>
-                                            <th class="text-center">Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach($products as $product)
-                                            <tr>
-                                                <td>{{ $product->id }}</td>
-                                                <td>
-                                                    @if($product->image)
-                                                        <img src="{{ asset($product->image) }}" alt="{{ $product->name }}" class="img-thumbnail" style="max-width: 50px;">
-                                                    @else
-                                                        <span class="text-muted">No image</span>
-                                                    @endif
-                                                </td>
-                                                <td>
-                                                    <div class="font-weight-bold">{{ $product->name }}</div>
-                                                    <div class="small">
-                                                        @if($product->has_variants)
-                                                            <span class="badge bg-info">Variable Product</span>
-                                                        @else
-                                                            <span class="badge bg-success">Simple Product</span>
-                                                        @endif
-                                                    </div>
-                                                </td>
-                                                <td>{{ $product->category->name ?? 'N/A' }}</td>
-                                                <td>
-                                                    @if($product->has_variants)
-                                                        <span class="text-muted">Multiple</span>
-                                                    @else
-                                                        {{ number_format($product->selling_price) }} VNĐ
-                                                    @endif
-                                                </td>
-                                                <td>{{ $product->stock }}</td>
-                                                <td>
-                                                    <span class="badge {{ $product->status == 'active' ? 'bg-success' : 'bg-danger' }}">
-                                                        {{ ucfirst($product->status) }}
-                                                    </span>
-                                                </td>
-                                                <td class="text-center">
-                                                    <div class="btn-group">
-                                                        <form action="{{ route('admin.products.restore', $product->id) }}" method="POST" class="d-inline">
-                                                            @csrf
-                                                            <button type="submit" class="btn btn-success btn-sm rounded-3 me-2" title="Restore">
-                                                                <i class="ti ti-refresh"></i>
-                                                            </button>
-                                                        </form>
-                                                        <form action="{{ route('admin.products.force-delete', $product->id) }}" method="POST" class="d-inline">
-                                                            @csrf
-                                                            @method('DELETE')
-                                                            <button type="submit" class="btn btn-danger btn-sm rounded-3" title="Delete Permanently" onclick="return confirm('Are you sure you want to permanently delete this product?')">
-                                                                <i class="ti ti-trash"></i>
-                                                            </button>
-                                                        </form>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        @endforeach
-                                    </tbody>
-                                </table>
-                                {{ $products->links() }}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- [ Main Content ] end -->
-        </div>
-    </div>
-@endsection
-
-@push('styles')
 <style>
     .custom-shadow {
         box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
@@ -161,21 +9,115 @@
         background-color: #fff;
         padding: 16px;
     }
-    .badge {
-        font-size: 0.85em;
-        padding: 0.35em 0.65em;
-    }
-    .btn-group .btn {
-        padding: 0.25rem 0.5rem;
-    }
-    .table td {
-        vertical-align: middle;
-    }
-    .table-borderless td, .table-borderless th {
-        border: 0;
-    }
-    .table-hover tbody tr:hover {
-        background-color: rgba(0,0,0,.075);
-    }
 </style>
-@endpush 
+
+@section('content')
+<div class="pc-container">
+    <div class="pc-content">
+        <!-- [ breadcrumb ] start -->
+        <div class="page-header">
+            <div class="page-block">
+                <div class="row align-items-center">
+                    <div class="col-md-12">
+                        <div class="page-header-title">
+                            <h5 class="m-b-10">Product Trash</h5>
+                        </div>
+                        <ul class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Home</a></li>
+                            <li class="breadcrumb-item"><a href="{{ route('admin.products.index') }}">Products</a></li>
+                            <li class="breadcrumb-item" aria-current="page">Trash</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- [ breadcrumb ] end -->
+
+        <!-- [ Main Content ] start -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card custom-shadow">
+                    <div class="card-header">
+                        <h5>Deleted Products</h5>
+                        <div class="card-header-right">
+                            <a href="{{ route('admin.products.index') }}" class="btn btn-secondary">Back to List</a>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        @if (session('success'))
+                            <div class="alert alert-success">{{ session('success') }}</div>
+                        @endif
+
+                        @if ($products->isEmpty())
+                            <p>No deleted products found.</p>
+                        @else
+                            <div class="table-responsive">
+                                <table class="table table-bordered table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>#</th>
+                                            <th>Image</th>
+                                            <th>Name</th>
+                                            <th>Category</th>
+                                            <th>Selling Price</th>
+                                            <th>Stock</th>
+                                            <th>Status</th>
+                                            <th>Has Variants</th>
+                                            <th>Deleted At</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach ($products as $index => $product)
+                                            <tr>
+                                                <td>{{ $products->firstItem() + $index }}</td>
+                                                <td>
+                                                    @if ($product->image)
+                                                        <img src="{{ asset('storage/' . $product->image) }}" alt="{{ $product->name }}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 5px;">
+                                                    @else
+                                                        <span class="badge bg-secondary">No image</span>
+                                                    @endif
+                                                </td>
+                                                <td>{{ $product->name }}</td>
+                                                <td>{{ $product->category ? $product->category->name : 'N/A' }}</td>
+                                                <td>{{ number_format($product->selling_price ?? 0) }} VNĐ</td>
+                                                <td>{{ $product->stock }}</td>
+                                                <td>
+                                                    <span class="badge {{ $product->status == 'active' ? 'bg-success' : 'bg-danger' }}">
+                                                        {{ ucfirst($product->status) }}
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <span class="badge {{ $product->has_variants ? 'bg-success' : 'bg-secondary' }}">
+                                                        {{ $product->has_variants ? 'Yes' : 'No' }}
+                                                    </span>
+                                                </td>
+                                                <td>{{ $product->deleted_at ? $product->deleted_at->format('d/m/Y H:i') : 'N/A' }}</td>
+                                                <td>
+                                                    <form action="{{ route('admin.products.restore', $product->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to restore this product?');">
+                                                        @csrf
+                                                        <button type="submit" class="btn btn-sm btn-success">Restore</button>
+                                                    </form>
+                                                    <form action="{{ route('admin.products.forceDelete', $product->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to permanently delete this product?');">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="submit" class="btn btn-sm btn-danger">Force Delete</button>
+                                                    </form>
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="d-flex justify-content-center">
+                                {{ $products->links() }}
+                            </div>
+                        @endif
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- [ Main Content ] end -->
+    </div>
+</div>
+@endsection

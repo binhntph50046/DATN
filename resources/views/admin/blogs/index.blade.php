@@ -111,10 +111,10 @@
                                             <tr>
                                                 <td>{{ $index + 1 }}</td>
                                                 <td>
-                                                    <a href="{{ route('admin.blogs.show', $blog->id) }}"
-                                                        class="text-primary fw-bold">
+                                                    
+                                                       
                                                         {{ Str::limit($blog->title, 50) }}
-                                                    </a>
+                                                    
                                                 </td>
                                                 <td>
                                                     @if ($blog->image)
@@ -147,7 +147,7 @@
                                                     </a>
                                                     <form action="{{ route('admin.blogs.destroy', $blog->id) }}"
                                                         method="POST" class="d-inline"
-                                                        onsubmit="return confirm('Bạn có chắc muốn xoá bài viết này không?')">
+                                                        onsubmit="return confirm('Are you sure?')">
                                                         @csrf
                                                         @method('DELETE')
                                                         <button type="submit" class="btn btn-danger btn-sm rounded-3">

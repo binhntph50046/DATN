@@ -9,6 +9,7 @@ use App\Http\Controllers\admin\ProductController;
 use App\Http\Controllers\admin\CategoryController;
 use App\Http\Controllers\admin\DashboardController;
 use App\Http\Controllers\Admin\VariantAttributeTypeController;
+use App\Http\Controllers\Admin\SpecificationController;
 // Client 
 use App\Http\Controllers\client\HomeController;
 use App\Http\Controllers\client\ShopController;
@@ -29,11 +30,8 @@ Route::get('/contact', [ContactController::class, 'index'])->name('contact');
 Route::get('/cart', [CartController::class, 'index'])->name('cart');
 Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout');
 
-
-
-
 // Admin
-// Route::prefix('admin')->middleware('auth')->name('admin.')->group(function () {
+// Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(function () {
 Route::prefix('admin')->name('admin.')->group(function () {
     // Dashboard
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
@@ -68,35 +66,29 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::delete('/{attributeType}', [VariantAttributeTypeController::class, 'destroy'])->name('destroy');
         Route::get('/trash', [VariantAttributeTypeController::class, 'trash'])->name('trash');
         Route::post('/{attributeType}/restore', [VariantAttributeTypeController::class, 'restore'])->name('restore');
-        Route::delete('/{attributeType}/forceDelete', [VariantAttributeTypeController::class, 'forceDelete'])->name('forceDelete');
     });
 
-    // Routes for ProductController (CRUD for products, both simple and variant)
-    Route::prefix('products')->name('products.')->group(function () {
-        Route::get('/', [ProductController::class, 'index'])->name('index');
-        Route::get('/trash', [ProductController::class, 'trash'])->name('trash');
-        Route::get('/create-simple', [ProductController::class, 'createSimple'])->name('create-simple');
-        Route::get('/create-variant', [ProductController::class, 'createVariant'])->name('create-variant');
-        Route::get('/{product}', [ProductController::class, 'show'])->name('show');
-        Route::get('/{product}/edit-simple', [ProductController::class, 'editSimple'])->name('edit-simple');
-        Route::get('/{product}/edit-variant', [ProductController::class, 'editVariant'])->name('edit-variant');
-        Route::post('/', [ProductController::class, 'store'])->name('store');
-        Route::put('/{product}', [ProductController::class, 'update'])->name('update');
-        Route::delete('/{product}', [ProductController::class, 'destroy'])->name('destroy');
-        Route::patch('/{id}/restore', [ProductController::class, 'restore'])->name('restore');
-        Route::delete('/{id}/forceDelete', [ProductController::class, 'forceDelete'])->name('forceDelete');
-    });
+    // Routes for ProductController (CRUD for products with variants)
+    Route::get('products', [ProductController::class, 'index'])->name('products.index');
+    Route::get('products/create', [ProductController::class, 'create'])->name('products.create');
+    Route::post('products', [ProductController::class, 'store'])->name('products.store');
+    Route::get('products/{id}', [ProductController::class, 'show'])->name('products.show');
+    Route::get('products/{id}/edit', [ProductController::class, 'edit'])->name('products.edit');
+    Route::put('products/{id}', [ProductController::class, 'update'])->name('products.update');
+    Route::delete('products/{id}', [ProductController::class, 'destroy'])->name('products.destroy');
+
+    // Category specifications and attributes
+    Route::get('categories/{category}/specifications', [CategoryController::class, 'getSpecifications'])->name('categories.specifications');
+    Route::get('categories/{category}/attributes', [CategoryController::class, 'getAttributes'])->name('categories.attributes');
 
     // Order Routes
-    Route::get('orders/trash', [OrderController::class, 'trash'])->name('orders.trash');
-    Route::post('orders/trash/restore/bulk', [OrderController::class, 'bulkRestore'])->name('orders.restore.bulk');
-    Route::post('orders/trash/force-delete/bulk', [OrderController::class, 'bulkForceDelete'])->name('orders.forceDelete.bulk');
-    Route::resource('orders', OrderController::class)->names([
-        'index' => 'orders.index',
-        'show' => 'orders.show',
-        'update' => 'orders.update',
-        'destroy' => 'orders.destroy'
-    ]);
+    Route::get('orders', [OrderController::class, 'index'])->name('orders.index');
+    // Route::get('orders/trash', [OrderController::class, 'trash'])->name('orders.trash');
+    Route::get('orders/{id}', [OrderController::class, 'show'])->name('orders.show');
+    Route::put('orders/{id}', [OrderController::class, 'update'])->name('orders.update');
+    // Route::delete('orders/{id}', [OrderController::class, 'destroy'])->name('orders.destroy');
+    // Route::post('orders/{id}/restore', [OrderController::class, 'restore'])->name('orders.restore');
+    // Route::post('orders/restore/bulk', [OrderController::class, 'restoreBulk'])->name('orders.restore.bulk');
 
     // User Routes
     Route::get('/users/trash', [UserController::class, 'trash'])->name('users.trash');
@@ -124,5 +116,10 @@ Route::prefix('admin')->name('admin.')->group(function () {
     // Xóa vĩnh viễn
     Route::delete('blogs/{id}/force-delete', [BlogController::class, 'forceDelete'])
         ->name('blogs.forceDelete');
+
+    // Product Specifications
+    Route::get('specifications/trash', [SpecificationController::class, 'trash'])->name('specifications.trash');
+    Route::post('specifications/{id}/restore', [SpecificationController::class, 'restore'])->name('specifications.restore');
+    Route::resource('specifications', SpecificationController::class);
 });
 

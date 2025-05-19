@@ -13,11 +13,23 @@ class VariantAttributeType extends Model
 
     protected $fillable = [
         'name',
-        'status',
+        'status'
     ];
 
-    public function values()
+    public function attributeValues()
     {
         return $this->hasMany(VariantAttributeValue::class, 'attribute_type_id');
+    }
+
+    public function variants()
+    {
+        return $this->hasManyThrough(
+            ProductVariant::class,
+            VariantAttributeValue::class,
+            'attribute_type_id',
+            'id',
+            'id',
+            'variant_id'
+        );
     }
 }

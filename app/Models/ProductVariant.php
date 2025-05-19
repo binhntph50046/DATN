@@ -16,18 +16,19 @@ class ProductVariant extends Model
         'sku',
         'name',
         'slug',
-        'discount_price',
         'stock',
-        'status',
-        'image',
         'purchase_price',
         'selling_price',
+        'discount_price',
+        'status',
+        'is_default'
     ];
 
     protected $casts = [
-        'discount_price' => 'decimal:2',
         'purchase_price' => 'decimal:2',
         'selling_price' => 'decimal:2',
+        'discount_price' => 'decimal:2',
+        'is_default' => 'boolean'
     ];
 
     public function product()
@@ -40,8 +41,9 @@ class ProductVariant extends Model
         return $this->hasMany(VariantCombination::class, 'variant_id');
     }
 
-    public function attributes()
+    public function attributeValues()
     {
-        return $this->hasMany(VariantAttribute::class, 'variant_id');
+        return $this->belongsToMany(VariantAttributeValue::class, 'variant_combinations', 'variant_id', 'attribute_value_id')
+            ->withTimestamps();
     }
 }

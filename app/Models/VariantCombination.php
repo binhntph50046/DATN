@@ -10,7 +10,7 @@ class VariantCombination extends Model
 
     protected $fillable = [
         'variant_id',
-        'attribute_value_id',
+        'attribute_value_id'
     ];
 
     public function variant()

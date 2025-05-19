@@ -4,10 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Traits\HasSlug;
 
 class Product extends Model
 {
-    use SoftDeletes;
+    use SoftDeletes, HasSlug;
 
     protected $table = 'products';
 
@@ -17,17 +18,14 @@ class Product extends Model
         'description',
         'content',
         'category_id',
-        'model',
-        'series',
         'warranty_months',
         'is_featured',
-        'status',
-        'has_variants',
+        'status'
     ];
 
     protected $casts = [
         'is_featured' => 'boolean',
-        'has_variants' => 'boolean',
+        'warranty_months' => 'integer'
     ];
 
     public function category()
@@ -35,13 +33,23 @@ class Product extends Model
         return $this->belongsTo(Category::class);
     }
 
-    public function attributes()
-    {
-        return $this->hasMany(ProductAttribute::class);
-    }
-
     public function variants()
     {
         return $this->hasMany(ProductVariant::class);
+    }
+
+    public function specifications()
+    {
+        return $this->hasMany(ProductSpecification::class);
+    }
+
+    public function scopeActive($query)
+    {
+        return $query->where('status', 'active');
+    }
+
+    public function scopeFeatured($query)
+    {
+        return $query->where('is_featured', true);
     }
 }

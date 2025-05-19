@@ -54,6 +54,23 @@
                                 </div>
                                 <div class="col-md-6">
                                     <div class="mb-3">
+                                        <label for="category_ids" class="form-label">Categories</label>
+                                        <select class="form-select select2" id="category_ids" name="category_ids[]" multiple required>
+                                            @foreach($categories as $category)
+                                                <option value="{{ $category->id }}" {{ in_array($category->id, old('category_ids', [])) ? 'selected' : '' }}>
+                                                    {{ $category->name }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                        @error('category_ids')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
                                         <label for="status" class="form-label">Status</label>
                                         <select class="form-select @error('status') is-invalid @enderror" id="status" name="status">
                                             <option value="active" selected>Active</option>
@@ -79,3 +96,16 @@
     </div>
 </div>
 @endsection
+
+@push('scripts')
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $('#category_ids').select2({
+            width: '100%',
+            placeholder: "Select categories"
+        });
+    });
+</script>
+@endpush

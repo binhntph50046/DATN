@@ -38,7 +38,9 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 // Admin routes
-Route::prefix('admin')->middleware(['auth', 'role:admin|staff'])->name('admin.')->group(function () {
+Route::prefix('admin')
+// ->middleware(['auth', 'role:admin|staff'])
+->name('admin.')->group(function () {
     // Dashboard
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 
@@ -68,15 +70,33 @@ Route::prefix('admin')->middleware(['auth', 'role:admin|staff'])->name('admin.')
     Route::post('categories/change-order', [CategoryController::class, 'changeOrder'])->middleware('permission:edit categories')->name('categories.changeOrder');
 
     // Banner Routes
-    Route::get('banners', [BannerController::class, 'index'])->middleware('permission:view banners')->name('banners.index');
-    Route::get('banners/create', [BannerController::class, 'create'])->middleware('permission:create banners')->name('banners.create');
-    Route::post('banners', [BannerController::class, 'store'])->middleware('permission:create banners')->name('banners.store');
-    Route::get('banners/{banner}', [BannerController::class, 'show'])->middleware('permission:view banners')->name('banners.show');
-    Route::get('banners/{banner}/edit', [BannerController::class, 'edit'])->middleware('permission:edit banners')->name('banners.edit');
-    Route::put('banners/{banner}', [BannerController::class, 'update'])->middleware('permission:edit banners')->name('banners.update');
-    Route::delete('banners/{banner}', [BannerController::class, 'destroy'])->middleware('permission:delete banners')->name('banners.destroy');
-    Route::post('banners/{banner}/move-up', [BannerController::class, 'moveUp'])->middleware('permission:edit banners')->name('banners.moveUp');
-    Route::post('banners/{banner}/move-down', [BannerController::class, 'moveDown'])->middleware('permission:edit banners')->name('banners.moveDown');
+    Route::get('banners', [BannerController::class, 'index'])
+    // ->middleware('permission:view banners')
+    ->name('banners.index');
+    Route::get('banners/create', [BannerController::class, 'create'])
+    // ->middleware('permission:create banners')
+    ->name('banners.create');
+    Route::post('banners', [BannerController::class, 'store'])
+    // ->middleware('permission:create banners')
+    ->name('banners.store');
+    Route::get('banners/{banner}', [BannerController::class, 'show'])
+    // ->middleware('permission:view banners')
+    ->name('banners.show');
+    Route::get('banners/{banner}/edit', [BannerController::class, 'edit'])
+    // ->middleware('permission:edit banners')
+    ->name('banners.edit');
+    Route::put('banners/{banner}', [BannerController::class, 'update'])
+    // ->middleware('permission:edit banners')
+    ->name('banners.update');
+    Route::delete('banners/{banner}', [BannerController::class, 'destroy'])
+    // ->middleware('permission:delete banners')
+    ->name('banners.destroy');
+    Route::post('banners/{banner}/move-up', [BannerController::class, 'moveUp'])
+    // ->middleware('permission:edit banners')
+    ->name('banners.moveUp');
+    Route::post('banners/{banner}/move-down', [BannerController::class, 'moveDown'])
+    // ->middleware('permission:edit banners')
+    ->name('banners.moveDown');
 
     // Blog Routes
     Route::get('blogs', [BlogController::class, 'index'])->middleware('permission:view blogs')->name('blogs.index');

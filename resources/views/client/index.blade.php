@@ -1,5 +1,49 @@
 @extends('client.layouts.app')
-
+@section('banner')
+ <!-- Start Hero Section -->
+ <div id="heroCarousel" class="carousel slide" data-bs-ride="carousel">
+     <div class="carousel-indicators">
+         {{-- <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="0" class="active" aria-current="true"
+             aria-label="Slide 1"></button>
+         <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="1" aria-label="Slide 2"></button>
+         <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="2" aria-label="Slide 3"></button> --}}
+         @foreach ($banners as $index => $banner)
+             <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="{{ $index }}"
+                 class="{{ $index == 0 ? 'active' : '' }}" aria-current="{{ $index == 0 ? 'true' : 'false' }}"
+                 aria-label="Slide {{ $index + 1 }}"></button>
+         @endforeach
+     </div>
+     <div class="carousel-inner">
+         @foreach ($banners as $index => $banner)
+             <div class="carousel-item {{ $index == 0 ? 'active' : '' }}"
+                 style="background-image: url('{{ asset('storage/' . $banner->image) }}');">
+                 <div class="container">
+                     <div class="row">
+                         <div class="col-lg-9">
+                             <div class="intro-excerpt">
+                                 <h1>{{ $banner->title }}</h1>
+                                 <p class="mb-4">{{ $banner->description }}</p>
+                                 <p class="d-flex align-items-center gap-2">
+                                     <a href="{{ $banner->link ?? '#' }}" class="btn btn-secondary text-nowrap me-2 d-inline-block">Shop Now</a>
+                                     <a href="#" class="btn btn-white-outline d-inline-block">Explore</a>
+                                 </p>
+                             </div>
+                         </div>
+                     </div>
+                 </div>
+             </div>
+         @endforeach
+     </div>
+     <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
+         <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+         <span class="visually-hidden">Previous</span>
+     </button>
+     <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next">
+         <span class="carousel-control-next-icon" aria-hidden="true"></span>
+         <span class="visually-hidden">Next</span>
+     </button>
+ </div>
+@endsection
 @section('content')
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
 

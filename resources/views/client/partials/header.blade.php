@@ -1,5 +1,6 @@
  <!-- Start Header/Navigation -->
- <nav class="custom-navbar navbar navbar navbar-expand-md  fixed-top navbar-dark bg-dark" arial-label="Furni navigation bar">
+ <nav class="custom-navbar navbar navbar navbar-expand-md  fixed-top navbar-dark bg-dark"
+     arial-label="Furni navigation bar">
 
      <div class="container">
          <a class="navbar-brand" href="{{ route('home') }}">Apple Store<span>.</span></a>
@@ -66,88 +67,8 @@
  </nav>
  <!-- End Header/Navigation -->
 
- <!-- Start Hero Section -->
- <div id="heroCarousel" class="carousel slide" data-bs-ride="carousel">
-     <div class="carousel-indicators">
-         <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="0" class="active" aria-current="true"
-             aria-label="Slide 1"></button>
-         <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="1" aria-label="Slide 2"></button>
-         <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="2" aria-label="Slide 3"></button>
-     </div>
-     <div class="carousel-inner">
-         <div class="carousel-item active"
-             style="background-image: url('https://www.maxis.com.my/content/dam/mxs/images/rebrand/devices/apple/iphone-16-series/iphone-16e/herobanner/pre-order/apple-iphone-16e-herobanner-mobile-2x.webp');">
-             <div class="container">
-                 <div class="row ">
-                     <div class="col-lg-9">
-                         <div class="intro-excerpt">
-                             <h1>Modern Interior <span class="d-block">Design Studio</span></h1>
-                             <p class="mb-4">Donec vitae odio quis nisl dapibus malesuada. Nullam ac aliquet velit.
-                                 Aliquam
-                                 vulputate velit imperdiet dolor tempor tristique.</p>
-                             <p><a href="" class="btn btn-secondary me-2">Shop Now</a><a href="#"
-                                     class="btn btn-white-outline">Explore</a></p>
-                         </div>
-                     </div>
-                 </div>
-             </div>
-         </div>
-         <div class="carousel-item"
-             style="background-image: url('https://shop.daisycomms.co.uk/wp-content/uploads/2023/09/Apple-iPhone-15-promo-banner-buy-now-scaled.jpg');">
-             <div class="container">
-                 <div class="row ">
-                     <div class="col-lg-9">
-                         <div class="intro-excerpt">
-                             <h1>Premium Quality <span class="d-block">Apple Products</span></h1>
-                             <p class="mb-4">Experience the best of Apple technology with our premium collection of
-                                 products.</p>
-                             <p><a href="" class="btn btn-secondary me-2">Shop Now</a><a href="#"
-                                     class="btn btn-white-outline">Explore</a></p>
-                         </div>
-                     </div>
-                 </div>
-             </div>
-         </div>
-         <div class="carousel-item"
-             style="background-image: url('https://rapticstrong.com/cdn/shop/collections/collection-banner_iPhone_Cases_Desktop_2400x.jpg?v=1625072679');">
-             <div class="container">
-                 <div class="row ">
-                     <div class="col-lg-9">
-                         <div class="intro-excerpt">
-                             <h1>Latest Technology <span class="d-block">Innovation</span></h1>
-                             <p class="mb-4">Discover the newest innovations in technology with our latest
-                                 collection.</p>
-                             <p><a href="" class="btn btn-secondary me-2">Shop Now</a><a href="#"
-                                     class="btn btn-white-outline">Explore</a></p>
-                         </div>
-                     </div>
-                 </div>
-             </div>
-         </div>
-         <div class="carousel-item"
-             style="background-image: url('https://rapticstrong.com/cdn/shop/collections/collection-banner_iPhone_Cases_Desktop_2400x.jpg?v=1625072679');">
-             <div class="container">
-                 <div class="row ">
-                     <div class="col-lg-9">
-                         <div class="intro-excerpt">
-                             <h1>Latest Technology <span class="d-block">Innovation</span></h1>
-                             <p class="mb-4">Discover the newest innovations in technology with our latest
-                                 collection.</p>
-                             <p><a href="" class="btn btn-secondary me-2">Shop Now</a><a href="#"
-                                     class="btn btn-white-outline">Explore</a></p>
-                         </div>
-                     </div>
-                 </div>
-             </div>
-         </div>
-     </div>
-     <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
-         <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-         <span class="visually-hidden">Previous</span>
-     </button>
-     <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next">
-         <span class="carousel-control-next-icon" aria-hidden="true"></span>
-         <span class="visually-hidden">Next</span>
-     </button>
- </div>
+ <!-- Start Banner -->
+ @yield('banner')
+ <!-- End Banner -->
+
  <!-- End Hero Section -->

@@ -67,6 +67,12 @@
                     </a>
                 </li>
                 <li class="pc-item">
+                    <a href="{{ route('admin.specifications.index') }}" class="pc-link">
+                        <span class="pc-micon"><i class="ti ti-tag"></i></span>
+                        <span class="pc-mtext">Thông số kỹ thuật</span>
+                    </a>
+                </li>
+                <li class="pc-item">
                     <a href="{{ route('admin.users.index') }}" class="pc-link">
                         <span class="pc-micon"><i class="ti ti-user"></i></span>
                         <span class="pc-mtext">Users</span>

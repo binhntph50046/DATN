@@ -14,7 +14,9 @@ class VariantAttributeValue extends Model
     protected $fillable = [
         'attribute_type_id',
         'value',
+        'hex',
         'status',
+        'sort_order'
     ];
 
     public function attributeType()
@@ -22,8 +24,9 @@ class VariantAttributeValue extends Model
         return $this->belongsTo(VariantAttributeType::class, 'attribute_type_id');
     }
 
-    public function combinations()
+    public function variants()
     {
-        return $this->hasMany(VariantCombination::class, 'attribute_value_id');
+        return $this->belongsToMany(ProductVariant::class, 'variant_combinations', 'attribute_value_id', 'variant_id')
+            ->withTimestamps();
     }
 }

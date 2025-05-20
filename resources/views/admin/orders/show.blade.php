@@ -65,7 +65,7 @@
                                     <tr>
                                         <th>Order Status:</th>
                                         <td>
-                                            <form id="order-status-form" action="{{ route('admin.orders.update', $order->id) }}" id="status-select" method="POST" class="d-flex align-items-center" style="gap: 8px;">
+                                            <form action="{{ route('admin.orders.update', $order->id) }}" method="POST" class="d-flex align-items-center" style="gap: 8px;">
                                                 @csrf
                                                 @method('PUT')
                                                 <select name="status" class="form-select form-select-sm" style="width: 160px;">

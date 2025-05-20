@@ -1,4 +1,5 @@
 @extends('admin.layouts.app')
+@section('title', 'Banner Management')
 
 @section('content')
 <div class="pc-container">
@@ -28,7 +29,7 @@
                     <div class="card-header">
                         <h5>Banners List</h5>
                         <div class="card-header-right">
-                            <a href="{{ route('admin.banners.create') }}" class="btn btn-primary btn-sm">
+                            <a href="{{ route('admin.banners.create') }}" class="btn btn-primary btn-sm" title="Add New Banner">
                                 <i class="ti ti-plus"></i> Add New Banner
                             </a>
                         </div>
@@ -40,14 +41,15 @@
                             </div>
                         @endif
                         <div class="table-responsive">
-                            <table class="table table-hover table-borderless">
+                            <table class="table table-hover">
                                 <thead>
                                     <tr>
                                         <th>ID</th>
                                         <th>Title</th>
                                         <th>Image</th>
                                         <th>Status</th>
-                                        <th>Order</th>
+                                        {{-- <th>Order</th> --}}
+                                        <th>Description</th>
                                         <th class="text-center">Actions</th>
                                     </tr>
                                 </thead>
@@ -72,7 +74,8 @@
                                                 {{ ucfirst($banner->status) }}
                                             </span>
                                         </td>
-                                        <td>{{ $banner->order }}</td>
+                                        {{-- <td>{{ $banner->order }}</td> --}}
+                                        <td>{{ $banner->description }}</td>
                                         <td class="text-center">
                                             <!-- Thay đổi thứ tự -->
                                             <form action="{{ route('admin.banners.moveUp', $banner->id) }}" method="POST" class="d-inline">
@@ -84,12 +87,15 @@
                                                 <button type="submit" class="btn btn-warning btn-sm" title="Move Down"><i class="ti ti-arrow-down"></i></button>
                                             </form>
                                             <!-- Edit và Delete -->
-                                            <a href="{{ route('admin.banners.edit', $banner->id) }}" class="btn btn-info btn-sm"><i class="ti ti-edit"></i> Edit</a>
+                                            <a href="{{ route('admin.banners.edit', $banner->id) }}" class="btn btn-info btn-sm" title="Edit"><i class="ti ti-edit"></i>
+                                                 {{-- Edit --}}
+                                                </a>
                                             <form action="{{ route('admin.banners.destroy', $banner->id) }}" method="POST" class="d-inline">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this banner?')">
-                                                    <i class="ti ti-trash"></i> Delete
+                                                <button type="submit" class="btn btn-danger btn-sm" title="Delete" onclick="return confirm('Are you sure you want to delete this banner?')">
+                                                    <i class="ti ti-trash"></i>
+                                                     {{-- Delete --}}
                                                 </button>
                                             </form>
                                         </td>

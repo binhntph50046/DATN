@@ -130,7 +130,7 @@ class BannerController
 
         $banner->delete();
 
-        return redirect()->route('admin.banners.index')->with('success', 'Xóa banner thành công.');
+        return redirect()->route('admin.banners.index')->with('success', 'Successfully deleted');
     }
     public function moveUp(Banner $banner)
     {
@@ -144,7 +144,7 @@ class BannerController
             $prevBanner->save();
         }
 
-        return redirect()->route('admin.banners.index')->with('success', 'Thứ tự banner đã được thay đổi.');
+        return redirect()->route('admin.banners.index')->with('success', 'Successfully moved up');
     }
 
     public function moveDown(Banner $banner)
@@ -159,7 +159,7 @@ class BannerController
             $nextBanner->save();
         }
 
-        return redirect()->route('admin.banners.index')->with('success', 'Thứ tự banner đã được thay đổi.');
+        return redirect()->route('admin.banners.index')->with('success', 'Successfully moved down');
     }
     public function updateOrder(Request $request)
     {

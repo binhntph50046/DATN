@@ -1,4 +1,5 @@
 @extends('admin.layouts.app')
+@section('title', 'Banner Management')
 
 @section('content')
 <div class="pc-container">

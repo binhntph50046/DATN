@@ -317,7 +317,21 @@ a.more {
 .product-section .product-item:hover {
   transform: translateY(-5px);
 }
-
+.discount-badge {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background-color: rgb(180, 0, 0);
+    color: white;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    text-align: center;
+    line-height: 40px;
+    font-weight: bold;
+    font-size: 14px;
+    z-index: 2;
+}
 .product-section .product-item .product-thumbnail {
   margin-bottom: 20px;
   border-radius: 10px;

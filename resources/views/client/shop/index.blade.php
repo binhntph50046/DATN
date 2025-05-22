@@ -64,7 +64,7 @@
                                     <div class="product-price-and-rating">
                                         <div class="price-wrapper">
                                             <strong class="product-price">$50.00</strong>
-                                            <span class="old-price">$60.00</span>
+                                            <span class="old-price"><del>$60.00</del></span>
                                         </div>
                                         <div class="product-rating">
                                             <i class="fas fa-star"></i>

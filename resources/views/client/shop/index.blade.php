@@ -403,7 +403,8 @@
                     <div class="blog-slider">
                         @for ($i = 0; $i < 6; $i++)
                             <div class="post-entry">
-                                <a href="#" class="post-thumbnail"><img style="border-radius: 10px 10px 0 0;"
+                                <a href="#" class="post-thumbnail"><img
+                                        style="border-radius: 10px 10px 0 0;height: 250px;width: 415px;object-fit: cover"
                                         src="images/post-3.jpg" alt="Image" class="img-fluid"></a>
                                 <div class="post-content-entry"
                                     style="padding: 15px;background: #ffffff;border-radius: 0 0 10px 10px;">

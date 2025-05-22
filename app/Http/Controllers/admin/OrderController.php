@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\admin;
+namespace App\Http\Controllers\Admin;
 
 use Illuminate\Routing\Controller;
 use App\Models\Order;
@@ -38,28 +38,30 @@ class OrderController extends Controller
 
     public function update(Request $request, Order $order)
     {
-        if (
-            ($order->status === 'pending' && $request->status === 'confirmed') ||
-            ($order->status === 'confirmed' && $request->status === 'preparing') ||
-            ($order->status === 'preparing' && $request->status === 'shipping') ||
-            ($order->status === 'shipping' && $request->status === 'completed') ||
-            ($order->status === 'completed' && $request->status === 'cancelled')
-        ) {
-            $order->update([
-                'status' => $request->status
-            ]);
+        // danh sách các trạng thái có thể thay đổi từ trạng thái hiện tại
+        $status=[
+            "pending"=>["confirmed","cancelled"],
+            "confirmed"=>["preparing","cancelled"],
+            "preparing"=>["shipping"],
+            "shipping"=>["completed"],
+            "completed"=>[],
+            "cancelled"=>[]
+        ];
+        $new_status=$request->status;
+        if(isset($status[$order->status]) && in_array($new_status, $status[$order->status])){
+                $order->update(['status' => $new_status]);
             if ($request->ajax() || $request->wantsJson()) {
                 return response()->json(['success' => true, 'status' => $order->status]);
-            }
+            }   
             return redirect()->route('admin.orders.show', $order->id)
-                ->with('success', 'Đơn hàng đã được xác nhận thành công');
+                ->with('success', 'Successfully updated status');
         }
 
         if ($request->ajax() || $request->wantsJson()) {
             return response()->json(['success' => false]);
         }
         return redirect()->route('admin.orders.show', $order->id)
-            ->with('error', 'Không thể thay đổi trạng thái đơn hàng');
+            ->with('error', 'Cannot update order status');
     }
 
 
@@ -68,7 +70,7 @@ class OrderController extends Controller
     {
         $order->delete();
         return redirect()->route('admin.orders.index')
-            ->with('success', 'Xóa đơn hàng thành công');
+            ->with('success', 'Successfully deleted order');
     }
 
     public function trash()
@@ -82,9 +84,9 @@ class OrderController extends Controller
         $ids = $request->input('ids', []);
         if (!empty($ids)) {
             Order::withTrashed()->whereIn('id', $ids)->restore();
-            return redirect()->route('admin.orders.trash')->with('success', 'Đã khôi phục các đơn hàng đã chọn!');
+            return redirect()->route('admin.orders.trash')->with('success', 'Successfully restored selected orders!');
         }
-        return redirect()->route('admin.orders.trash')->with('error', 'Vui lòng chọn ít nhất một đơn hàng!');
+        return redirect()->route('admin.orders.trash')->with('error', 'Please select at least one order!');
     }
 
     public function bulkForceDelete(Request $request)
@@ -92,9 +94,9 @@ class OrderController extends Controller
         $ids = $request->input('ids', []);
         if (!empty($ids)) {
             Order::withTrashed()->whereIn('id', $ids)->forceDelete();
-            return redirect()->route('admin.orders.trash')->with('success', 'Đã xóa vĩnh viễn các đơn hàng đã chọn!');
+            return redirect()->route('admin.orders.trash')->with('success', 'Successfully deleted selected orders!');
         }
-        return redirect()->route('admin.orders.trash')->with('error', 'Vui lòng chọn ít nhất một đơn hàng!');
+        return redirect()->route('admin.orders.trash')->with('error', 'Please select at least one order!');
     }
 }
 

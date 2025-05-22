@@ -5,11 +5,14 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Spatie\Permission\Models\Role;
 
 class UsersTableSeeder extends Seeder
 {
     public function run(): void
     {
+        $adminRole = Role::where('name', 'admin')->first();
+        
         DB::table('users')->insert([
             [
                 'name' => 'Admin',
@@ -22,7 +25,7 @@ class UsersTableSeeder extends Seeder
                 'gender' => 'other',
                 'is_verified' => true,
                 'last_login' => now(),
-                'role' => 'admin',
+                'role_id' => $adminRole->id,
                 'status' => 'active',
                 'email_verified_at' => now(),
                 'created_at' => now(),

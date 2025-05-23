@@ -1,7 +1,25 @@
 @extends('client.layouts.app')
 
 @section('content')
-
+    <!-- Shop Banner -->
+    <div class="shop-banner">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12 text-center">
+                    <h1 data-aos="fade-up">About</h1>
+                    <!-- Breadcrumbs -->
+                    <div class="breadcrumbs" data-aos="fade-up" data-aos-delay="200">
+                        <nav aria-label="breadcrumb">
+                            <ol class="breadcrumb">
+                                <li class="breadcrumb-item"><a href="{{ route('home') }}">Home</a></li>
+                                <li class="breadcrumb-item active" aria-current="page">About</li>
+                            </ol>
+                        </nav>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
     <!-- Start Why Choose Us Section -->
     <div class="why-choose-section">
         <div class="container">
@@ -260,5 +278,4 @@
         </div>
     </div>
     <!-- End Testimonial Slider -->
-
 @endsection

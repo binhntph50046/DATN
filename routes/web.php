@@ -99,23 +99,23 @@ Route::prefix('admin')->middleware(['auth', 'role:admin|staff'])->name('admin.')
         Route::get('/', [VariantAttributeTypeController::class, 'index'])->name('index');
         Route::get('/create', [VariantAttributeTypeController::class, 'create'])->name('create');
         Route::post('/', [VariantAttributeTypeController::class, 'store'])->name('store');
-        Route::get('/{attributeType}/edit', [VariantAttributeTypeController::class, 'edit'])->middleware('permission:edit attributes')->name('edit');
-        Route::put('/{attributeType}', [VariantAttributeTypeController::class, 'update'])->middleware('permission:edit attributes')->name('update');
-        Route::delete('/{attributeType}', [VariantAttributeTypeController::class, 'destroy'])->middleware('permission:delete attributes')->name('destroy');
+        Route::get('/{attributeType}/edit', [VariantAttributeTypeController::class, 'edit'])->name('edit');
+        Route::put('/{attributeType}', [VariantAttributeTypeController::class, 'update'])->name('update');
+        Route::delete('/{attributeType}', [VariantAttributeTypeController::class, 'destroy'])->name('destroy');
         Route::get('/trash', [VariantAttributeTypeController::class, 'trash'])->name('trash');
-        Route::post('/{attributeType}/restore', [VariantAttributeTypeController::class, 'restore'])->middleware('permission:edit attributes')->name('restore');
+        Route::post('/{attributeType}/restore', [VariantAttributeTypeController::class, 'restore'])->name('restore');
     });
 
     // Routes for ProductController (CRUD for products with variants)
     Route::get('products', [ProductController::class, 'index'])->name('products.index');
     Route::get('products/create', [ProductController::class, 'create'])->name('products.create');
-    Route::post('products', [ProductController::class, 'store'])->name('products.store');
-    Route::get('products/{id}', [ProductController::class, 'show'])->name('products.show');
-    Route::get('products/{id}/edit', [ProductController::class, 'edit'])->name('products.edit');
-    Route::put('products/{id}', [ProductController::class, 'update'])->name('products.update');
-    Route::delete('products/{id}', [ProductController::class, 'destroy'])->name('products.destroy');
     Route::get('products/trash', [ProductController::class, 'trash'])->name('products.trash');
-    Route::post('products/{id}/restore', [ProductController::class, 'restore'])->name('products.restore');
+    Route::post('products', [ProductController::class, 'store'])->name('products.store');
+    Route::get('products/{product}', [ProductController::class, 'show'])->name('products.show');
+    Route::get('products/{product}/edit', [ProductController::class, 'edit'])->name('products.edit');
+    Route::put('products/{product}', [ProductController::class, 'update'])->name('products.update');
+    Route::delete('products/{product}', [ProductController::class, 'destroy'])->name('products.destroy');
+    Route::post('products/{product}/restore', [ProductController::class, 'restore'])->name('products.restore');
     
 
     // Category specifications and attributes
@@ -135,18 +135,7 @@ Route::prefix('admin')->middleware(['auth', 'role:admin|staff'])->name('admin.')
     Route::get('orders/{order}', [OrderController::class, 'show'])->middleware('permission:view orders')->name('orders.show');
     Route::put('orders/{order}', [OrderController::class, 'update'])->middleware('permission:edit orders')->name('orders.update');
     Route::delete('orders/{order}', [OrderController::class, 'destroy'])->middleware('permission:delete orders')->name('orders.destroy');
-
-    // Variant Attribute Type Routes
-    Route::prefix('attributes')->name('attributes.')->group(function () {
-        Route::prefix('types')->name('types.')->group(function () {
-            Route::get('/', [VariantAttributeTypeController::class, 'index'])->name('index');
-            Route::get('/create', [VariantAttributeTypeController::class, 'create'])->name('create');
-            Route::post('/', [VariantAttributeTypeController::class, 'store'])->name('store');
-            Route::get('/{attributeType}/edit', [VariantAttributeTypeController::class, 'edit'])->name('edit');
-            Route::put('/{attributeType}', [VariantAttributeTypeController::class, 'update'])->name('update');
-            Route::delete('/{attributeType}', [VariantAttributeTypeController::class, 'destroy'])->name('destroy');
-        });
-    });
+    
     // Role Routes (chỉ admin được gán vai trò)
     Route::get('roles/{user}/edit', [RoleController::class, 'edit'])->middleware('permission:addrole')->name('roles.edit');
     Route::put('roles/{user}', [RoleController::class, 'update'])->middleware('permission:addrole')->name('roles.update');

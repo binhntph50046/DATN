@@ -121,16 +121,16 @@
                                         <tr>
                                             <td class="text-nowrap">{{ $products->firstItem() + $index }}</td>
                                             <td>
-                                                @if ($product->variants->first() && $product->variants->first()->image)
-                                                    <img src="{{ asset('uploads/' . $product->variants->first()->image) }}"
-                                                        alt="{{ $product->name }}"
-                                                        class="product-img-thumb"
-                                                        style="width: 100px; height: 100px; object-fit: cover; border-radius: 8px;">
+                                                @if ($product->default_variant_image || $product->variant_image)
+                                                    <img src="{{ asset($product->default_variant_image ?? $product->variant_image) }}"
+                                                         alt="{{ $product->name }}"
+                                                         class="product-img-thumb"
+                                                         style="width: 100px; height: 100px; object-fit: cover; border-radius: 8px;">
                                                 @else
                                                     <img src="{{ asset('uploads/default/default.jpg') }}"
-                                                        alt="default image"
-                                                        class="product-img-thumb"
-                                                        style="width: 100px; height: 100px; object-fit: cover; border-radius: 8px;">
+                                                         alt="default image"
+                                                         class="product-img-thumb"
+                                                         style="width: 100px; height: 100px; object-fit: cover; border-radius: 8px;">
                                                 @endif
                                             </td>
                                             <td class="text-nowrap" style="max-width: 140px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="{{ $product->name }}">

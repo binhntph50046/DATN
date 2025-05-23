@@ -16,7 +16,11 @@ class VariantAttributeValue extends Model
         'value',
         'hex',
         'status',
-        'sort_order'
+    ];
+
+    protected $casts = [
+        'value' => 'array',
+        'hex' => 'array',
     ];
 
     public function attributeType()

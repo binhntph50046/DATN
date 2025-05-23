@@ -28,13 +28,13 @@
                     <div class="card-header">
                         <h5>Orders List</h5>
                         <div class="d-flex justify-content-between align-items-center">
-                            <form method="GET" action="{{ route('admin.orders.index') }}" class="row g-2 align-items-center mb-2" style="max-width: 600px;">
-                                <div class="col-md-5">
+                            <form method="GET" action="{{ route('admin.orders.index') }}" class="row g-3 mb-3">
+                                <div class="col-md-3">
                                     <input type="text" name="search" class="form-control" placeholder="Tìm kiếm theo tên, email, ID..." value="{{ request('search') }}">
                                 </div>
-                                <div class="col-md-4">
+                                <div class="col-md-3">
                                     <select name="status" class="form-select">
-                                        <option value="">Tất cả trạng thái</option>
+                                        <option value="">-- Tất cả trạng thái --</option>
                                         <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Chờ xử lý</option>
                                         <option value="confirmed" {{ request('status') == 'confirmed' ? 'selected' : '' }}>Đã xác nhận</option>
                                         <option value="preparing" {{ request('status') == 'preparing' ? 'selected' : '' }}>Đang chuẩn bị</option>
@@ -44,12 +44,21 @@
                                     </select>
                                 </div>
                                 <div class="col-md-3">
-                                    <button type="submit" class="btn btn-primary w-100">Search</button>
+                                    <select name="payment_status" class="form-select">
+                                        <option value="">-- Tất cả trạng thái thanh toán --</option>
+                                        <option value="paid" {{ request('payment_status') == 'paid' ? 'selected' : '' }}>Đã thanh toán</option>
+                                        <option value="unpaid" {{ request('payment_status') == 'unpaid' ? 'selected' : '' }}>Chưa thanh toán</option>
+                                    </select>
                                 </div>
+                                <div class="col-md-3 d-flex gap-2 align-items-stretch">
+                                    <button type="submit" class="btn btn-primary btn-sm rounded-3 w-100">Lọc</button>
+                                    <a href="{{ route('admin.orders.index') }}" class="btn btn-secondary align-items-center btn-sm rounded-3 w-100">Reset</a>
+                                </div>
+                                
                             </form>
-                            <a href="{{ route('admin.orders.trash') }}" class="btn btn-danger btn-sm rounded-3">
+                            {{-- <a href="{{ route('admin.orders.trash') }}" class="btn btn-danger btn-sm rounded-3">
                                 <i class="ti ti-trash"></i> Trash
-                            </a>
+                            </a> --}}
                         </div>
                     </div>
                     <div class="card-body">
@@ -93,13 +102,13 @@
                                             <a href="{{ route('admin.orders.show', $order->id) }}" class="btn btn-primary btn-sm rounded-3 me-2">
                                                 <i class="ti ti-eye"></i> View
                                             </a>
-                                            <form action="{{ route('admin.orders.destroy', $order->id) }}" method="POST" class="d-inline">
+                                            {{-- <form action="{{ route('admin.orders.destroy', $order->id) }}" method="POST" class="d-inline">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit" class="btn btn-danger btn-sm rounded-3" onclick="return confirm('Are you sure you want to delete this order?')">
                                                     <i class="ti ti-trash"></i> Delete
                                                 </button>
-                                            </form>
+                                            </form> --}}
                                         </td>
                                     </tr>
                                     @endforeach

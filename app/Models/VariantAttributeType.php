@@ -14,10 +14,26 @@ class VariantAttributeType extends Model
     protected $fillable = [
         'name',
         'status',
+        'category_ids',
     ];
 
-    public function values()
+    protected $casts = [
+        'category_ids' => 'array',
+    ];
+
+    public function attributeValues()
     {
         return $this->hasMany(VariantAttributeValue::class, 'attribute_type_id');
+    }
+
+    public function variants()
+    {
+        return $this->hasManyThrough(
+            ProductVariant::class,
+            VariantAttributeValue::class,
+            'attribute_type_id',
+            'id',
+            'variant_id'
+        );
     }
 }

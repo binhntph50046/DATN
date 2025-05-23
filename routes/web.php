@@ -1,4 +1,5 @@
 <?php
+
 use Illuminate\Support\Facades\Route;
 // Admin
 use App\Http\Controllers\admin\BlogController;
@@ -10,7 +11,9 @@ use App\Http\Controllers\admin\CategoryController;
 use App\Http\Controllers\admin\DashboardController;
 use App\Http\Controllers\Admin\VariantAttributeTypeController;
 use App\Http\Controllers\Admin\RoleController;
-use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\Admin\SpecificationController;
+use App\Http\Controllers\admin\VoucherController;
+use App\Http\Controllers\auth\AuthController;
 
 // Client 
 use App\Http\Controllers\client\HomeController;
@@ -39,6 +42,7 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 // Admin routes
 Route::prefix('admin')->middleware(['auth', 'role:admin|staff'])->name('admin.')->group(function () {
+    // Route::prefix('admin')->name('admin.')->group(function () {
     // Dashboard
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 
@@ -89,6 +93,7 @@ Route::prefix('admin')->middleware(['auth', 'role:admin|staff'])->name('admin.')
     Route::get('blogs-trash', [BlogController::class, 'trash'])->middleware('permission:view blogs')->name('blogs.trash');
     Route::put('blogs/{id}/restore', [BlogController::class, 'restore'])->middleware('permission:edit blogs')->name('blogs.restore');
     Route::delete('blogs/{id}/force-delete', [BlogController::class, 'forceDelete'])->middleware('permission:delete blogs')->name('blogs.forceDelete');
+
     // Routes for VariantAttributeTypeController (CRUD for attribute types)
     Route::prefix('attributes')->name('attributes.')->group(function () {
         Route::get('/', [VariantAttributeTypeController::class, 'index'])->name('index');
@@ -99,24 +104,28 @@ Route::prefix('admin')->middleware(['auth', 'role:admin|staff'])->name('admin.')
         Route::delete('/{attributeType}', [VariantAttributeTypeController::class, 'destroy'])->name('destroy');
         Route::get('/trash', [VariantAttributeTypeController::class, 'trash'])->name('trash');
         Route::post('/{attributeType}/restore', [VariantAttributeTypeController::class, 'restore'])->name('restore');
-        Route::delete('/{attributeType}/forceDelete', [VariantAttributeTypeController::class, 'forceDelete'])->name('forceDelete');
     });
 
-    // Product Routes
-    Route::prefix('products')->name('products.')->group(function () {
-        Route::get('/', [ProductController::class, 'index'])->middleware('permission:view products')->name('index');
-        Route::get('/trash', [ProductController::class, 'trash'])->middleware('permission:view products')->name('trash');
-        Route::get('/{product}', [ProductController::class, 'show'])->middleware('permission:view products')->name('show');
-        Route::delete('/{product}', [ProductController::class, 'destroy'])->middleware('permission:delete products')->name('destroy');
-        Route::get('/create-simple', [ProductController::class, 'createSimple'])->middleware('permission:create products')->name('create-simple');
-        Route::get('/{product}/edit-simple', [ProductController::class, 'editSimple'])->middleware('permission:edit products')->name('edit-simple');
-        Route::get('/create-variant', [ProductController::class, 'createVariant'])->middleware('permission:create products')->name('create-variant');
-        Route::get('/{product}/edit-variant', [ProductController::class, 'editVariant'])->middleware('permission:edit products')->name('edit-variant');
-        Route::post('/', [ProductController::class, 'store'])->middleware('permission:create products')->name('store');
-        Route::put('/{product}', [ProductController::class, 'update'])->middleware('permission:edit products')->name('update');
-        Route::patch('/{id}/restore', [ProductController::class, 'restore'])->middleware('permission:restore products')->name('restore');
-        Route::delete('/{id}/forceDelete', [ProductController::class, 'forceDelete'])->middleware('permission:forceDelete products')->name('forceDelete');
-    });
+    // Routes for ProductController (CRUD for products with variants)
+    Route::get('products', [ProductController::class, 'index'])->name('products.index');
+    Route::get('products/create', [ProductController::class, 'create'])->name('products.create');
+    Route::get('products/trash', [ProductController::class, 'trash'])->name('products.trash');
+    Route::post('products', [ProductController::class, 'store'])->name('products.store');
+    Route::get('products/{product}', [ProductController::class, 'show'])->name('products.show');
+    Route::get('products/{product}/edit', [ProductController::class, 'edit'])->name('products.edit');
+    Route::put('products/{product}', [ProductController::class, 'update'])->name('products.update');
+    Route::delete('products/{product}', [ProductController::class, 'destroy'])->name('products.destroy');
+    Route::post('products/{product}/restore', [ProductController::class, 'restore'])->name('products.restore');
+    
+
+    // Category specifications and attributes
+    Route::get('categories/{category}/specifications', [CategoryController::class, 'getSpecifications'])->name('categories.specifications');
+    Route::get('categories/{category}/attributes', [CategoryController::class, 'getAttributes'])->name('categories.attributes');
+
+    // Product Specifications
+    Route::get('specifications/trash', [SpecificationController::class, 'trash'])->name('specifications.trash');
+    Route::post('specifications/{id}/restore', [SpecificationController::class, 'restore'])->name('specifications.restore');
+    Route::resource('specifications', SpecificationController::class);
 
     // Order Routes
     Route::get('orders/trash', [OrderController::class, 'trash'])->middleware('permission:view orders')->name('orders.trash');
@@ -126,21 +135,10 @@ Route::prefix('admin')->middleware(['auth', 'role:admin|staff'])->name('admin.')
     Route::get('orders/{order}', [OrderController::class, 'show'])->middleware('permission:view orders')->name('orders.show');
     Route::put('orders/{order}', [OrderController::class, 'update'])->middleware('permission:edit orders')->name('orders.update');
     Route::delete('orders/{order}', [OrderController::class, 'destroy'])->middleware('permission:delete orders')->name('orders.destroy');
-
-    // Variant Attribute Type Routes
-    Route::prefix('attributes')->name('attributes.')->group(function () {
-        Route::prefix('types')->name('types.')->group(function () {
-            Route::get('/', [VariantAttributeTypeController::class, 'index'])->middleware('permission:view attributes')->name('index');
-            Route::get('/create', [VariantAttributeTypeController::class, 'create'])->middleware('permission:create attributes')->name('create');
-            Route::post('/', [VariantAttributeTypeController::class, 'store'])->middleware('permission:create attributes')->name('store');
-            Route::get('/{attributeType}/edit', [VariantAttributeTypeController::class, 'edit'])->middleware('permission:edit attributes')->name('edit');
-            Route::put('/{attributeType}', [VariantAttributeTypeController::class, 'update'])->middleware('permission:edit attributes')->name('update');
-            Route::delete('/{attributeType}', [VariantAttributeTypeController::class, 'destroy'])->middleware('permission:delete attributes')->name('destroy');
-        });
-    });
-
+    
     // Role Routes (chỉ admin được gán vai trò)
     Route::get('roles/{user}/edit', [RoleController::class, 'edit'])->middleware('permission:addrole')->name('roles.edit');
     Route::put('roles/{user}', [RoleController::class, 'update'])->middleware('permission:addrole')->name('roles.update');
+    // Voucher Routes
+    Route::resource('vouchers', VoucherController::class);
 });
-

@@ -195,4 +195,23 @@ class CategoryController
 
         return back()->with('success', 'Category order updated successfully!');
     }
+
+    public function getSpecifications(Category $category)
+    {
+        $specifications = \App\Models\Specification::where(function ($q) use ($category) {
+            $q->whereJsonContains('category_ids', (string)$category->id)
+                ->orWhereJsonContains('category_ids', (int)$category->id);
+        })
+            ->where('status', 'active')
+            ->get(['id', 'name']);
+        return response()->json($specifications);
+    }
+
+    public function getAttributes(Category $category)
+    {
+        $attributes = \App\Models\VariantAttributeType::where('status', 'active')
+            ->whereJsonContains('category_ids', (string)$category->id)
+            ->get(['id', 'name']);
+        return response()->json($attributes);
+    }
 }

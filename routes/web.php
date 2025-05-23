@@ -13,7 +13,7 @@ use App\Http\Controllers\Admin\VariantAttributeTypeController;
 use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\SpecificationController;
 use App\Http\Controllers\admin\VoucherController;
-use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\auth\AuthController;
 
 // Client 
 use App\Http\Controllers\client\HomeController;

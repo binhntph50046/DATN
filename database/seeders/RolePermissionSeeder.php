@@ -29,6 +29,13 @@ class RolePermissionSeeder extends Seeder
             'view attributes', 'create attributes', 'edit attributes', 'delete attributes',
             // Dashboard
             'view dashboard',
+            // Categories specifications and attributes
+            'view category specifications', 
+            'view category attributes', 
+            // Product Specifications
+            'view specifications', 'trash specifications', 'restore specifications', 'delete specifications',
+            // Vouchers
+            'view vouchers', 
             // Roles
             'addrole',
         ];
@@ -53,9 +60,9 @@ class RolePermissionSeeder extends Seeder
 
         // Tạo người dùng mẫu và gán vai trò
         $admin = User::firstOrCreate(
-            ['email' => 'admincc@example.com'],
+            ['email' => 'admin@gmail.com'],
             [
-                'name' => 'Admin User',
+                'name' => 'Admin',
                 'password' => bcrypt('123123123'),
                 'phone' => '0123456789',
                 'address' => 'Hanoi',

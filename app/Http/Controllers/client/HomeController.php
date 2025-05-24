@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\client;
 
 use App\Models\Banner;
-use Illuminate\Http\Request;
 
 class HomeController
 {

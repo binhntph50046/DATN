@@ -8,7 +8,7 @@ use Illuminate\Validation\Rule;
 use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\Auth;
 
-class UserController 
+class UserController
 {
     public function index(Request $request)
     {

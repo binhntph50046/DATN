@@ -20,13 +20,28 @@ class AuthController
             'password' => 'required',
         ]);
 
-        if (Auth::attempt($credentials)) {
+        $remember = $request->filled('remember');
+
+        if (Auth::attempt($credentials, $remember)) {
             $request->session()->regenerate();
-            return redirect()->intended('/admin');
+
+            $user = Auth::user();
+
+            $user->last_login = now();
+            $user->save();
+
+            $hasAccess = $user->roles()->whereIn('name', ['admin', 'staff'])->exists();
+
+            if ($hasAccess) {
+                return redirect()->intended('/admin');
+            } else {
+                return redirect()->intended('/');
+            }
         }
 
         return back()->withErrors([
-            'email' => 'Thông tin đăng nhập không đúng.',
+            'email' => 'Incorrect login information.',
+            'password' => 'Password is not correct.',
         ]);
     }
 

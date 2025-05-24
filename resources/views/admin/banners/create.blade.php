@@ -1,4 +1,5 @@
 @extends('admin.layouts.app')
+@section('title', 'Banner Management')
 
 @section('content')
 <div class="pc-container">
@@ -75,6 +76,15 @@
                                         @enderror
                                     </div>
                                 </div>
+                                <div class="col-md-12">
+                                    <div class="mb-3">
+                                        <label for="description" class="form-label">Description</label>
+                                        <textarea class="form-control @error('description') is-invalid @enderror" id="description" name="description" rows="4">{{ old('description') }}</textarea>
+                                        @error('description')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                </div>                                
                             </div>
 
                             <div class="mb-3">

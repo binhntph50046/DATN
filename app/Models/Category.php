@@ -33,4 +33,16 @@ class Category extends Model
     {
         return $this->hasMany(Blog::class);
     }
+
+    public function specifications()
+    {
+        return $this->belongsToMany(Specification::class, 'category_specifications')
+            ->withTimestamps();
+    }
+
+    public function attributeTypes()
+    {
+        return $this->belongsToMany(VariantAttributeType::class, 'category_attribute_types')
+            ->withTimestamps();
+    }
 }

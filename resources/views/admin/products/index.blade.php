@@ -39,11 +39,8 @@
                     <div class="card-header">
                         <h5>Products List</h5>
                         <div class="card-header-right">
-                            <a href="{{ route('admin.products.create-simple') }}" class="btn btn-primary btn-sm rounded-3 me-2">
-                                <i class="ti ti-plus"></i> Add Simple Product
-                            </a>
-                            <a href="{{ route('admin.products.create-variant') }}" class="btn btn-primary btn-sm rounded-3 me-2">
-                                <i class="ti ti-plus"></i> Add Variant Product
+                            <a href="{{ route('admin.products.create') }}" class="btn btn-primary btn-sm rounded-3 me-2">
+                                <i class="ti ti-plus"></i> Add Product
                             </a>
                             <a href="{{ route('admin.products.trash') }}" class="btn btn-danger btn-sm rounded-3">
                                 <i class="ti ti-trash"></i> Trash
@@ -68,55 +65,22 @@
                                         <select name="category_id" class="form-select">
                                             <option value="">-- Select Category --</option>
                                             @foreach($categories as $category)
-    <option value="{{ $category->id }}" {{ request('category_id') == $category->id ? 'selected' : '' }}>
-        {{ $category->name }}
-    </option>
-@endforeach
+                                                <option value="{{ $category->id }}" {{ request('category_id') == $category->id ? 'selected' : '' }}>
+                                                    {{ $category->name }}
+                                                </option>
+                                            @endforeach
                                         </select>
                                     </div>
-
-                                    <div class="col-md-3">
-                                        <select name="has_variants" class="form-select">
-                                            <option value="">-- Product Type --</option>
-                                            <option value="1" {{ request('has_variants') == '1' ? 'selected' : '' }}>With Variants</option>
-                                            <option value="0" {{ request('has_variants') == '0' ? 'selected' : '' }}>Simple Product</option>
-                                        </select>
-                                    </div>
-                                
                                     <div class="col-md-3">
                                         <select name="status" class="form-select">
-                                            <option value="">-- Filter by Status --</option>
+                                            <option value="">-- Select Status --</option>
                                             <option value="active" {{ request('status') == 'active' ? 'selected' : '' }}>Active</option>
                                             <option value="inactive" {{ request('status') == 'inactive' ? 'selected' : '' }}>Inactive</option>
                                         </select>
                                     </div>
-
                                     <div class="col-md-3">
-                                        <select name="is_featured" class="form-select">
-                                            <option value="">-- Featured Status --</option>
-                                            <option value="1" {{ request('is_featured') == '1' ? 'selected' : '' }}>Featured</option>
-                                            <option value="0" {{ request('is_featured') == '0' ? 'selected' : '' }}>Not Featured</option>
-                                        </select>
-                                    </div>
-
-                                    <div class="col-md-3">
-                                        <select name="price_range" class="form-select">
-                                            <option value="">-- Price Range --</option>
-                                            <option value="0-1000000" {{ request('price_range') == '0-1000000' ? 'selected' : '' }}>Under 1M</option>
-                                            <option value="1000000-5000000" {{ request('price_range') == '1000000-5000000' ? 'selected' : '' }}>1M - 5M</option>
-                                            <option value="5000000-10000000" {{ request('price_range') == '5000000-10000000' ? 'selected' : '' }}>5M - 10M</option>
-                                            <option value="10000000-20000000" {{ request('price_range') == '10000000-20000000' ? 'selected' : '' }}>10M - 20M</option>
-                                            <option value="20000000-999999999" {{ request('price_range') == '20000000-999999999' ? 'selected' : '' }}>Over 20M</option>
-                                        </select>
-                                    </div>
-                                
-                                    <div class="col-12 mt-3">
-                                        <button type="submit" class="btn btn-primary btn-sm">
-                                            <i class="ti ti-filter"></i> Filter
-                                        </button>
-                                        <a href="{{ route('admin.products.index') }}" class="btn btn-secondary btn-sm">
-                                            <i class="ti ti-refresh"></i> Reset
-                                        </a>
+                                        <button type="submit" class="btn btn-primary">Search</button>
+                                        <a href="{{ route('admin.products.index') }}" class="btn btn-secondary">Reset</a>
                                     </div>
                                 </form>
                             </div>
@@ -147,7 +111,6 @@
                                         <th class="text-nowrap">Category</th>
                                         <th class="text-nowrap">Price</th>
                                         <th class="text-nowrap">Stock</th>
-                                        <th class="text-nowrap">Type</th>
                                         <th class="text-nowrap">Status</th>
                                         <th class="text-nowrap">Featured</th>
                                         <th class="text-center text-nowrap">Actions</th>
@@ -158,16 +121,8 @@
                                         <tr>
                                             <td class="text-nowrap">{{ $products->firstItem() + $index }}</td>
                                             <td>
-                                                @php
-                                                    $defaultVariant = $product->variants->first();
-                                                    $firstImage = null;
-                                                    if ($defaultVariant && $defaultVariant->images) {
-                                                        $images = is_array($defaultVariant->images) ? $defaultVariant->images : json_decode($defaultVariant->images, true);
-                                                        $firstImage = is_array($images) && count($images) > 0 ? $images[0] : null;
-                                                    }
-                                                @endphp
-                                                @if ($firstImage)
-                                                    <img src="{{ asset($firstImage) }}"
+                                                @if ($product->variants->first() && $product->variants->first()->image)
+                                                    <img src="{{ asset('uploads/' . $product->variants->first()->image) }}"
                                                         alt="{{ $product->name }}"
                                                         class="product-img-thumb"
                                                         style="width: 100px; height: 100px; object-fit: cover; border-radius: 8px;">
@@ -182,22 +137,32 @@
                                                 {{ $product->name }}
                                             </td>
                                             <td class="text-nowrap">{{ $product->category ? $product->category->name : 'N/A' }}</td>
-                                            <td class="text-nowrap">{{ number_format($product->variants->first()->selling_price ?? 0) }} VNĐ</td>
-                                            <td class="text-nowrap">{{ $product->variants->first()->stock ?? 0 }}</td>
                                             <td class="text-nowrap">
-                                                <span class="badge {{ $product->has_variants ? 'bg-info' : 'bg-secondary' }}">
-                                                    {{ $product->has_variants ? 'With Variants' : 'Simple' }}
-                                                </span>
+                                                @php
+                                                    $variant = $product->variants->first();
+                                                    $price = $variant ? $variant->selling_price : 0;
+                                                    $discountPrice = $variant ? $variant->discount_price : 0;
+                                                @endphp
+                                                @if ($discountPrice > 0 && $discountPrice < $price)
+                                                    <span class="text-decoration-line-through text-muted">{{ number_format($price, 0, ',', '.') }} VNĐ</span>
+                                                    <br>
+                                                    <span class="text-danger fw-bold">{{ number_format($discountPrice, 0, ',', '.') }} VNĐ</span>
+                                                @else
+                                                    <span class="text-success fw-bold">{{ number_format($price, 0, ',', '.') }} VNĐ</span>
+                                                @endif
                                             </td>
+                                            <td class="text-nowrap">{{ $product->variants->sum('stock') }}</td>
                                             <td class="text-nowrap">
-                                                <span class="badge {{ $product->status == 'active' ? 'bg-success' : 'bg-danger' }}">
+                                                <span class="badge {{ $product->status === 'active' ? 'bg-success' : 'bg-danger' }}">
                                                     {{ ucfirst($product->status) }}
                                                 </span>
                                             </td>
                                             <td class="text-nowrap">
-                                                <span class="badge {{ $product->is_featured ? 'bg-warning' : 'bg-secondary' }}">
-                                                    {{ $product->is_featured ? 'Yes' : 'No' }}
-                                                </span>
+                                                @if ($product->is_featured)
+                                                    <span class="badge bg-info">Featured</span>
+                                                @else
+                                                    <span class="badge bg-secondary">Normal</span>
+                                                @endif
                                             </td>
                                             <td class="text-center text-nowrap">
                                                 <a href="{{ route('admin.products.show', $product) }}" 
@@ -205,28 +170,18 @@
                                                    title="View Details">
                                                     <i class="ti ti-eye"></i>
                                                 </a>
-                                                @if ($product->has_variants)
-                                                    <a href="{{ route('admin.products.edit-variant', $product) }}" 
-                                                       class="btn btn-warning btn-sm rounded-3 me-2" 
-                                                       title="Edit Product">
-                                                        <i class="ti ti-edit"></i>
-                                                    </a>
-                                                @else
-                                                    <a href="{{ route('admin.products.edit-simple', $product) }}" 
-                                                       class="btn btn-warning btn-sm rounded-3 me-2" 
-                                                       title="Edit Product">
-                                                        <i class="ti ti-edit"></i>
-                                                    </a>
-                                                @endif
+                                                <a href="{{ route('admin.products.edit', $product) }}" 
+                                                   class="btn btn-warning btn-sm rounded-3 me-2" 
+                                                   title="Edit Product">
+                                                    <i class="ti ti-edit"></i>
+                                                </a>
                                                 <form action="{{ route('admin.products.destroy', $product) }}" 
                                                       method="POST" 
                                                       class="d-inline" 
                                                       onsubmit="return confirm('Are you sure you want to delete this product?');">
                                                     @csrf
                                                     @method('DELETE')
-                                                    <button type="submit" 
-                                                            class="btn btn-danger btn-sm rounded-3" 
-                                                            title="Delete Product">
+                                                    <button type="submit" class="btn btn-danger btn-sm rounded-3" title="Delete Product">
                                                         <i class="ti ti-trash"></i>
                                                     </button>
                                                 </form>
@@ -234,14 +189,14 @@
                                         </tr>
                                     @empty
                                         <tr>
-                                            <td colspan="10" class="text-center">No products found.</td>
+                                            <td colspan="9" class="text-center">No products found.</td>
                                         </tr>
                                     @endforelse
                                 </tbody>
                             </table>
                         </div>
 
-                        <div class="d-flex justify-content-center mt-4">
+                        <div class="d-flex justify-content-end mt-4">
                             {{ $products->links() }}
                         </div>
                     </div>

@@ -38,6 +38,14 @@
                     <div class="card-header">
                         <h5>Attribute Types List</h5>
                         <div class="card-header-right">
+                            <form method="GET" action="" class="d-inline-block me-2">
+                                <select name="category_id" class="form-select form-select-sm" onchange="this.form.submit()" style="width:auto;display:inline-block;">
+                                    <option value="">-- All Categories --</option>
+                                    @foreach($categories as $category)
+                                        <option value="{{ $category->id }}" {{ request('category_id') == $category->id ? 'selected' : '' }}>{{ $category->name }}</option>
+                                    @endforeach
+                                </select>
+                            </form>
                             <a href="{{ route('admin.attributes.create') }}" class="btn btn-primary btn-sm rounded-3 me-2">
                                 <i class="ti ti-plus"></i> Add New Attribute Type
                             </a>
@@ -59,6 +67,7 @@
                                     <tr>
                                         <th>ID</th>
                                         <th>Name</th>
+                                        <th>Categories</th>
                                         <th>Status</th>
                                         <th>Created At</th>
                                         <th>Actions</th>
@@ -69,6 +78,20 @@
                                         <tr>
                                             <td>{{ $attributeTypes->firstItem() + $index }}</td>
                                             <td>{{ $attributeType->name }}</td>
+                                            <td>
+                                                @if($attributeType->category_ids && is_array($attributeType->category_ids))
+                                                    @foreach($attributeType->category_ids as $categoryId)
+                                                        @php
+                                                            $category = $categories->firstWhere('id', $categoryId);
+                                                        @endphp
+                                                        @if($category)
+                                                            <span class="badge bg-info me-1">{{ $category->name }}</span>
+                                                        @endif
+                                                    @endforeach
+                                                @else
+                                                    <span class="text-muted">No categories</span>
+                                                @endif
+                                            </td>
                                             <td>
                                                 <span class="badge {{ $attributeType->status == 'active' ? 'bg-success' : 'bg-danger' }}">
                                                     {{ ucfirst($attributeType->status) }}

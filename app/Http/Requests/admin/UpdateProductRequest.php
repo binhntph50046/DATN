@@ -18,30 +18,26 @@ class UpdateProductRequest extends FormRequest
 
         return [
             'name' => ['required', 'string', 'max:255'],
-            'slug' => ['required', 'string', 'max:255', Rule::unique('products')->ignore($productId)],
+            'slug' => ['nullable', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
             'content' => ['nullable', 'string'],
             'category_id' => ['required', 'exists:categories,id'],
-            'model' => ['nullable', 'string', 'max:255'],
-            'series' => ['nullable', 'string', 'max:255'],
             'warranty_months' => ['required', 'integer', 'min:0'],
             'is_featured' => ['nullable', 'boolean'],
             'status' => ['required', Rule::in(['active', 'inactive'])],
             'has_variants' => ['required', 'boolean'],
             'variants' => [
-                'required_if:has_variants,1',
+                'required',
                 'array',
                 function ($attribute, $value, $fail) {
-                    if ($this->input('has_variants') == 1) {
-                        $defaultCount = 0;
-                        foreach ($value as $variant) {
-                            if (isset($variant['is_default']) && $variant['is_default'] == 1) {
-                                $defaultCount++;
-                            }
+                    $defaultCount = 0;
+                    foreach ($value as $variant) {
+                        if (isset($variant['is_default']) && $variant['is_default'] == 1) {
+                            $defaultCount++;
                         }
-                        if ($defaultCount !== 1) {
-                            $fail('Exactly one variant must be set as the default.');
-                        }
+                    }
+                    if ($defaultCount !== 1) {
+                        $fail('Exactly one variant must be set as the default.');
                     }
                 },
             ],

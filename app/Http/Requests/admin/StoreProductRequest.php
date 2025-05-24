@@ -17,30 +17,26 @@ class StoreProductRequest extends FormRequest
     {
         return [
             'name' => ['required', 'string', 'max:255'],
-            'slug' => ['required', 'string', 'max:255', Rule::unique('products')],
+            'slug' => ['nullable', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
             'content' => ['nullable', 'string'],
             'category_id' => ['required', 'exists:categories,id'],
-            'model' => ['nullable', 'string', 'max:255'],
-            'series' => ['nullable', 'string', 'max:255'],
             'warranty_months' => ['required', 'integer', 'min:0'],
             'is_featured' => ['nullable', 'boolean'],
             'status' => ['required', Rule::in(['active', 'inactive'])],
             'has_variants' => ['required', 'boolean'],
             'variants' => [
-                'required_if:has_variants,1',
+                'required',
                 'array',
                 function ($attribute, $value, $fail) {
-                    if ($this->input('has_variants') == 1) {
-                        $defaultCount = 0;
-                        foreach ($value as $variant) {
-                            if (isset($variant['is_default']) && $variant['is_default'] == 1) {
-                                $defaultCount++;
-                            }
+                    $defaultCount = 0;
+                    foreach ($value as $variant) {
+                        if (isset($variant['is_default']) && $variant['is_default'] == 1) {
+                            $defaultCount++;
                         }
-                        if ($defaultCount !== 1) {
-                            $fail('Exactly one variant must be set as the default.');
-                        }
+                    }
+                    if ($defaultCount !== 1) {
+                        $fail('Exactly one variant must be set as the default.');
                     }
                 },
             ],
@@ -63,16 +59,15 @@ class StoreProductRequest extends FormRequest
             'variants.*.is_default' => ['nullable', 'boolean'],
             'variants.*.attributes' => [
                 'required',
-                'json',
                 function ($attribute, $value, $fail) {
-                    $attributes = json_decode($value, true);
-                    if (json_last_error() !== JSON_ERROR_NONE || !is_array($attributes)) {
+                    $attributes = is_string($value) ? json_decode($value, true) : $value;
+                    if ((is_string($value) && json_last_error() !== JSON_ERROR_NONE) || !is_array($attributes)) {
                         $fail('The ' . $attribute . ' must be a valid JSON array.');
                         return;
                     }
                     foreach ($attributes as $index => $attr) {
                         if (!isset($attr['attribute_type_id']) || !isset($attr['value'])) {
-                            $fail("Each attribute at index {$index} must contain 'attribute_type_id' and 'value'.");
+                            $fail("Each attribute at index {$index} must contain 'attribute type id' and 'value'.");
                             return;
                         }
                         if (!is_numeric($attr['attribute_type_id']) || !VariantAttributeType::where('id', $attr['attribute_type_id'])->exists()) {

@@ -142,4 +142,3 @@ Route::prefix('admin')->middleware(['auth', 'role:admin|staff'])->name('admin.')
     // Voucher Routes
     Route::resource('vouchers', VoucherController::class)->middleware('permission:view vouchers');
 });
-

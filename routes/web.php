@@ -154,4 +154,3 @@ Route::prefix('admin')->middleware(['auth', 'role:admin|staff'])->name('admin.')
         Route::delete('/{contact}', [AdminContactController::class, 'destroy'])->name('delete');   
     });
 });
-

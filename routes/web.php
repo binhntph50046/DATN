@@ -9,9 +9,9 @@ use App\Http\Controllers\admin\BannerController;
 use App\Http\Controllers\admin\ProductController;
 use App\Http\Controllers\admin\CategoryController;
 use App\Http\Controllers\admin\DashboardController;
-use App\Http\Controllers\Admin\VariantAttributeTypeController;
-use App\Http\Controllers\Admin\RoleController;
-use App\Http\Controllers\Admin\SpecificationController;
+use App\Http\Controllers\admin\VariantAttributeTypeController;
+use App\Http\Controllers\admin\RoleController;
+use App\Http\Controllers\admin\SpecificationController;
 use App\Http\Controllers\admin\VoucherController;
 use App\Http\Controllers\auth\AuthController;
 
@@ -107,6 +107,7 @@ Route::prefix('admin')->middleware(['auth', 'role:admin|staff'])->name('admin.')
     });
 
     // Routes for ProductController (CRUD for products with variants)
+
     Route::get('products', [ProductController::class, 'index'])->middleware('permission:view products')->name('products.index');
     Route::get('products/create', [ProductController::class, 'create'])->middleware('permission:create products')->name('products.create');
     Route::get('products/trash', [ProductController::class, 'trash'])->middleware('permission:trash products')->name('products.trash');
@@ -116,7 +117,6 @@ Route::prefix('admin')->middleware(['auth', 'role:admin|staff'])->name('admin.')
     Route::put('products/{product}', [ProductController::class, 'update'])->middleware('permission:update products')->name('products.update');
     Route::delete('products/{product}', [ProductController::class, 'destroy'])->middleware('permission:destroy products')->name('products.destroy');
     Route::post('products/{product}/restore', [ProductController::class, 'restore'])->middleware('permission:restore products')->name('products.restore');
-    
 
     // Category specifications and attributes
     Route::get('categories/{category}/specifications', [CategoryController::class, 'getSpecifications'])->middleware('permission:view category specifications')->name('categories.specifications');
@@ -135,7 +135,7 @@ Route::prefix('admin')->middleware(['auth', 'role:admin|staff'])->name('admin.')
     Route::get('orders/{order}', [OrderController::class, 'show'])->middleware('permission:view orders')->name('orders.show');
     Route::put('orders/{order}', [OrderController::class, 'update'])->middleware('permission:edit orders')->name('orders.update');
     Route::delete('orders/{order}', [OrderController::class, 'destroy'])->middleware('permission:delete orders')->name('orders.destroy');
-    
+
     // Role Routes (chỉ admin được gán vai trò)
     Route::get('roles/{user}/edit', [RoleController::class, 'edit'])->middleware('permission:addrole')->name('roles.edit');
     Route::put('roles/{user}', [RoleController::class, 'update'])->middleware('permission:addrole')->name('roles.update');

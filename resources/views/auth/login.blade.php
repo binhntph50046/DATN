@@ -22,7 +22,6 @@
                 @endforeach
             </div>
         @endif
-
         <form action="{{ route('login') }}" method="POST">
             @csrf
             <div class="mb-4">

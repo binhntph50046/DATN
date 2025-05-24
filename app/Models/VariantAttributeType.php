@@ -13,7 +13,12 @@ class VariantAttributeType extends Model
 
     protected $fillable = [
         'name',
-        'status'
+        'status',
+        'category_ids',
+    ];
+
+    protected $casts = [
+        'category_ids' => 'array',
     ];
 
     public function attributeValues()
@@ -27,7 +32,6 @@ class VariantAttributeType extends Model
             ProductVariant::class,
             VariantAttributeValue::class,
             'attribute_type_id',
-            'id',
             'id',
             'variant_id'
         );

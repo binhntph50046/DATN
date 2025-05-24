@@ -32,8 +32,7 @@ class VariantAttributeTypeController
 
     public function store(StoreAttributeTypeRequest $request)
     {
-        $data = $request->validated();
-        $data['category_ids'] = $request->category_ids ?? [];
+        $data = $request->only(['name', 'status', 'category_ids']);
         VariantAttributeType::create($data);
         return redirect()->route('admin.attributes.index')->with('success', 'Attribute type created successfully.');
     }
@@ -46,8 +45,7 @@ class VariantAttributeTypeController
 
     public function update(UpdateAttributeTypeRequest $request, VariantAttributeType $attributeType)
     {
-        $data = $request->validated();
-        $data['category_ids'] = $request->category_ids ?? [];
+        $data = $request->only(['name', 'status', 'category_ids']);
         $attributeType->update($data);
         return redirect()->route('admin.attributes.index')->with('success', 'Attribute type updated successfully.');
     }

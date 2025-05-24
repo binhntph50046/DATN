@@ -1,48 +1,49 @@
 @extends('client.layouts.app')
 @section('banner')
- <!-- Start Hero Section -->
- <div id="heroCarousel" class="carousel slide" data-bs-ride="carousel">
-     <div class="carousel-indicators">
-         {{-- <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="0" class="active" aria-current="true"
+    <!-- Start Hero Section -->
+    <div id="heroCarousel" class="carousel slide" data-bs-ride="carousel">
+        <div class="carousel-indicators">
+            {{-- <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="0" class="active" aria-current="true"
              aria-label="Slide 1"></button>
          <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="1" aria-label="Slide 2"></button>
          <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="2" aria-label="Slide 3"></button> --}}
-         @foreach ($banners as $index => $banner)
-             <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="{{ $index }}"
-                 class="{{ $index == 0 ? 'active' : '' }}" aria-current="{{ $index == 0 ? 'true' : 'false' }}"
-                 aria-label="Slide {{ $index + 1 }}"></button>
-         @endforeach
-     </div>
-     <div class="carousel-inner">
-         @foreach ($banners as $index => $banner)
-             <div class="carousel-item {{ $index == 0 ? 'active' : '' }}"
-                 style="background-image: url('{{ asset('storage/' . $banner->image) }}');">
-                 <div class="container">
-                     <div class="row">
-                         <div class="col-lg-9">
-                             <div class="intro-excerpt">
-                                 <h1>{{ $banner->title }}</h1>
-                                 <p class="mb-4">{{ $banner->description }}</p>
-                                 <p class="d-flex align-items-center gap-2">
-                                     <a href="{{ $banner->link ?? '#' }}" class="btn btn-secondary text-nowrap me-2 d-inline-block">Shop Now</a>
-                                     <a href="#" class="btn btn-white-outline d-inline-block">Explore</a>
-                                 </p>
-                             </div>
-                         </div>
-                     </div>
-                 </div>
-             </div>
-         @endforeach
-     </div>
-     <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
-         <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-         <span class="visually-hidden">Previous</span>
-     </button>
-     <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next">
-         <span class="carousel-control-next-icon" aria-hidden="true"></span>
-         <span class="visually-hidden">Next</span>
-     </button>
- </div>
+            @foreach ($banners as $index => $banner)
+                <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="{{ $index }}"
+                    class="{{ $index == 0 ? 'active' : '' }}" aria-current="{{ $index == 0 ? 'true' : 'false' }}"
+                    aria-label="Slide {{ $index + 1 }}"></button>
+            @endforeach
+        </div>
+        <div class="carousel-inner">
+            @foreach ($banners as $index => $banner)
+                <div class="carousel-item {{ $index == 0 ? 'active' : '' }}"
+                    style="background-image: url('{{ asset('storage/' . $banner->image) }}');">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-lg-9">
+                                <div class="intro-excerpt">
+                                    <h1>{{ $banner->title }}</h1>
+                                    <p class="mb-4">{{ $banner->description }}</p>
+                                    <p class="d-flex align-items-center gap-2">
+                                        <a href="{{ $banner->link ?? '#' }}"
+                                            class="btn btn-secondary text-nowrap me-2 d-inline-block">Shop Now</a>
+                                        <a href="#" class="btn btn-white-outline d-inline-block">Explore</a>
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            @endforeach
+        </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+        </button>
+    </div>
 @endsection
 @section('content')
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
@@ -244,6 +245,14 @@
                         <img src="images/product-1.png" class="img-fluid product-thumbnail">
                         <h3 class="product-title">Nordic Chair</h3>
                         <strong class="product-price">$50.00</strong>
+                        <div class="product-rating">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <span>(4.9)</span>
+                        </div>
                         <div class="product-icons">
                             <span class="icon-add-to-cart"><i class="fas fa-cart-plus"></i></span>
                             <span class="icon-heart"><i class="fas fa-heart"></i></span>
@@ -254,11 +263,19 @@
                 <!-- End Column 2 -->
 
                 <!-- Start Column 3 -->
-                <div class="col-12 col-md-4 col-lg-3 mb-5 mb-md-0" data-aos="fade-up" data-aos-delay="300">
+                <div class="col-12 col-md-4 col-lg-3 mb-5 mb-md-0" data-aos="fade-up" data-aos-delay="200">
                     <a class="product-item" href="/product-detail.html">
-                        <img src="images/product-2.png" class="img-fluid product-thumbnail">
-                        <h3 class="product-title">Kruzo Aero Chair</h3>
-                        <strong class="product-price">$78.00</strong>
+                        <img src="images/product-1.png" class="img-fluid product-thumbnail">
+                        <h3 class="product-title">Nordic Chair</h3>
+                        <strong class="product-price">$50.00</strong>
+                        <div class="product-rating">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <span>(4.9)</span>
+                        </div>
                         <div class="product-icons">
                             <span class="icon-add-to-cart"><i class="fas fa-cart-plus"></i></span>
                             <span class="icon-heart"><i class="fas fa-heart"></i></span>
@@ -269,11 +286,19 @@
                 <!-- End Column 3 -->
 
                 <!-- Start Column 4 -->
-                <div class="col-12 col-md-4 col-lg-3 mb-5 mb-md-0" data-aos="fade-up" data-aos-delay="400">
-                    <a class="product-item" href="#">
-                        <img src="images/product-3.png" class="img-fluid product-thumbnail">
-                        <h3 class="product-title">Ergonomic Chair</h3>
-                        <strong class="product-price">$43.00</strong>
+                <div class="col-12 col-md-4 col-lg-3 mb-5 mb-md-0" data-aos="fade-up" data-aos-delay="200">
+                    <a class="product-item" href="/product-detail.html">
+                        <img src="images/product-1.png" class="img-fluid product-thumbnail">
+                        <h3 class="product-title">Nordic Chair</h3>
+                        <strong class="product-price">$50.00</strong>
+                        <div class="product-rating">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <span>(4.9)</span>
+                        </div>
                         <div class="product-icons">
                             <span class="icon-add-to-cart"><i class="fas fa-cart-plus"></i></span>
                             <span class="icon-heart"><i class="fas fa-heart"></i></span>
@@ -564,210 +589,219 @@
     </div>
     <!-- End Blog Section -->
 
-    
-	<!-- Inline JavaScript for Icon Functionality -->
-	<script>
-		document.querySelectorAll('.product-item').forEach(item => {
-			item.querySelector('.icon-add-to-cart').addEventListener('click', (e) => {
-				e.preventDefault();
-				alert('Added to Cart: ' + item.querySelector('.product-title').textContent);
-			});
 
-			item.querySelector('.icon-heart').addEventListener('click', (e) => {
-				e.preventDefault();
-				alert('Added to Wishlist: ' + item.querySelector('.product-title').textContent);
-			});
+    <!-- Inline JavaScript for Icon Functionality -->
+    <script>
+        document.querySelectorAll('.product-item').forEach(item => {
+            item.querySelector('.icon-add-to-cart').addEventListener('click', (e) => {
+                e.preventDefault();
+                alert('Added to Cart: ' + item.querySelector('.product-title').textContent);
+            });
 
-			item.querySelector('.icon-quick-view').addEventListener('click', (e) => {
-				e.preventDefault();
-				const modal = new bootstrap.Modal(document.getElementById('quickViewModal'));
+            item.querySelector('.icon-heart').addEventListener('click', (e) => {
+                e.preventDefault();
+                alert('Added to Wishlist: ' + item.querySelector('.product-title').textContent);
+            });
 
-				// Get product details
-				const productImage = item.querySelector('.product-thumbnail').src;
-				const productTitle = item.querySelector('.product-title').textContent;
-				const productPrice = item.querySelector('.product-price').textContent;
+            item.querySelector('.icon-quick-view').addEventListener('click', (e) => {
+                e.preventDefault();
+                const modal = new bootstrap.Modal(document.getElementById('quickViewModal'));
 
-				// Update modal content
-				document.querySelector('.quick-view-image').src = productImage;
-				document.querySelector('.quick-view-title').textContent = productTitle;
-				document.querySelector('.quick-view-price').textContent = productPrice;
+                // Get product details
+                const productImage = item.querySelector('.product-thumbnail').src;
+                const productTitle = item.querySelector('.product-title').textContent;
+                const productPrice = item.querySelector('.product-price').textContent;
 
-				// Update thumbnails
-				const thumbnails = document.querySelectorAll('#quickViewModal .thumbnail');
-				thumbnails[0].src = productImage;
-				thumbnails[1].src = 'images/product-2.png';
-				thumbnails[2].src = 'images/product-3.png';
-				thumbnails[3].src = 'images/product-1.png';
+                // Update modal content
+                document.querySelector('.quick-view-image').src = productImage;
+                document.querySelector('.quick-view-title').textContent = productTitle;
+                document.querySelector('.quick-view-price').textContent = productPrice;
 
-				// Show modal
-				modal.show();
-			});
-		});
+                // Update thumbnails
+                const thumbnails = document.querySelectorAll('#quickViewModal .thumbnail');
+                thumbnails[0].src = productImage;
+                thumbnails[1].src = 'images/product-2.png';
+                thumbnails[2].src = 'images/product-3.png';
+                thumbnails[3].src = 'images/product-1.png';
 
-		// Quick View Modal Functionality
-		document.addEventListener('DOMContentLoaded', function () {
-			// Thumbnail click handler
-			document.querySelectorAll('#quickViewModal .thumbnail').forEach(thumb => {
-				thumb.addEventListener('click', function () {
-					const mainImage = document.querySelector('#quickViewModal .quick-view-image');
-					mainImage.src = this.src;
-				});
-			});
+                // Show modal
+                modal.show();
+            });
+        });
 
-			// Color variant selection
-			document.querySelectorAll('#quickViewModal .color-option').forEach(option => {
-				option.addEventListener('click', function () {
-					document.querySelectorAll('#quickViewModal .color-option').forEach(opt => opt.classList.remove('active'));
-					this.classList.add('active');
-				});
-			});
+        // Quick View Modal Functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            // Thumbnail click handler
+            document.querySelectorAll('#quickViewModal .thumbnail').forEach(thumb => {
+                thumb.addEventListener('click', function() {
+                    const mainImage = document.querySelector('#quickViewModal .quick-view-image');
+                    mainImage.src = this.src;
+                });
+            });
 
-			// Storage option selection
-			document.querySelectorAll('#quickViewModal .storage-btn').forEach(btn => {
-				btn.addEventListener('click', function () {
-					document.querySelectorAll('#quickViewModal .storage-btn').forEach(b => b.classList.remove('active'));
-					this.classList.add('active');
-				});
-			});
+            // Color variant selection
+            document.querySelectorAll('#quickViewModal .color-option').forEach(option => {
+                option.addEventListener('click', function() {
+                    document.querySelectorAll('#quickViewModal .color-option').forEach(opt => opt
+                        .classList.remove('active'));
+                    this.classList.add('active');
+                });
+            });
 
-			// Quantity controls
-			const quantityInput = document.getElementById('quickViewQuantity');
-			const minusBtn = document.querySelector('#quickViewModal .quantity-btn.minus');
-			const plusBtn = document.querySelector('#quickViewModal .quantity-btn.plus');
+            // Storage option selection
+            document.querySelectorAll('#quickViewModal .storage-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('#quickViewModal .storage-btn').forEach(b => b
+                        .classList.remove('active'));
+                    this.classList.add('active');
+                });
+            });
 
-			minusBtn.addEventListener('click', () => {
-				const currentValue = parseInt(quantityInput.value);
-				if (currentValue > 1) {
-					quantityInput.value = currentValue - 1;
-				}
-			});
+            // Quantity controls
+            const quantityInput = document.getElementById('quickViewQuantity');
+            const minusBtn = document.querySelector('#quickViewModal .quantity-btn.minus');
+            const plusBtn = document.querySelector('#quickViewModal .quantity-btn.plus');
 
-			plusBtn.addEventListener('click', () => {
-				const currentValue = parseInt(quantityInput.value);
-				quantityInput.value = currentValue + 1;
-			});
+            minusBtn.addEventListener('click', () => {
+                const currentValue = parseInt(quantityInput.value);
+                if (currentValue > 1) {
+                    quantityInput.value = currentValue - 1;
+                }
+            });
 
-			// Add to cart button
-			document.querySelector('#quickViewModal .btn-outline-primary').addEventListener('click', function () {
-				const quantity = document.getElementById('quickViewQuantity').value;
-				const selectedColor = document.querySelector('#quickViewModal .color-option.active').dataset.color;
-				const selectedStorage = document.querySelector('#quickViewModal .storage-btn.active').dataset.storage;
+            plusBtn.addEventListener('click', () => {
+                const currentValue = parseInt(quantityInput.value);
+                quantityInput.value = currentValue + 1;
+            });
 
-				alert(`Added to cart:\nQuantity: ${quantity}\nColor: ${selectedColor}\nStorage: ${selectedStorage}GB`);
-			});
+            // Add to cart button
+            document.querySelector('#quickViewModal .btn-outline-primary').addEventListener('click', function() {
+                const quantity = document.getElementById('quickViewQuantity').value;
+                const selectedColor = document.querySelector('#quickViewModal .color-option.active').dataset
+                    .color;
+                const selectedStorage = document.querySelector('#quickViewModal .storage-btn.active')
+                    .dataset.storage;
 
-			// Buy now button
-			document.querySelector('#quickViewModal .btn-primary').addEventListener('click', function () {
-				const quantity = document.getElementById('quickViewQuantity').value;
-				const selectedColor = document.querySelector('#quickViewModal .color-option.active').dataset.color;
-				const selectedStorage = document.querySelector('#quickViewModal .storage-btn.active').dataset.storage;
+                alert(
+                    `Added to cart:\nQuantity: ${quantity}\nColor: ${selectedColor}\nStorage: ${selectedStorage}GB`);
+            });
 
-				alert(`Proceeding to checkout:\nQuantity: ${quantity}\nColor: ${selectedColor}\nStorage: ${selectedStorage}GB`);
-			});
-		});
-	</script>
+            // Buy now button
+            document.querySelector('#quickViewModal .btn-primary').addEventListener('click', function() {
+                const quantity = document.getElementById('quickViewQuantity').value;
+                const selectedColor = document.querySelector('#quickViewModal .color-option.active').dataset
+                    .color;
+                const selectedStorage = document.querySelector('#quickViewModal .storage-btn.active')
+                    .dataset.storage;
 
-	<!-- Quick View Modal -->
-	<div class="modal fade" id="quickViewModal" tabindex="-1" aria-labelledby="quickViewModalLabel" aria-hidden="true">
-		<div class="modal-dialog modal-lg">
-			<div class="modal-content">
-				<div class="modal-header">
-					<h5 class="modal-title" id="quickViewModalLabel">Quick View</h5>
-					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-				</div>
-				<div class="modal-body">
-					<div class="row">
-						<div class="col-md-6">
-							<div class="product-gallery">
-								<div class="main-image mb-4">
-									<img src="" class="img-fluid quick-view-image" alt="Product Image">
-								</div>
-								<div class="thumbnail-images">
-									<div class="row">
-										<div class="col-3">
-											<img src="images/product-1.png" class="img-fluid thumbnail"
-												alt="Thumbnail 1">
-										</div>
-										<div class="col-3">
-											<img src="images/product-2.png" class="img-fluid thumbnail"
-												alt="Thumbnail 2">
-										</div>
-										<div class="col-3">
-											<img src="images/product-3.png" class="img-fluid thumbnail"
-												alt="Thumbnail 3">
-										</div>
-										<div class="col-3">
-											<img src="images/product-1.png" class="img-fluid thumbnail"
-												alt="Thumbnail 4">
-										</div>
-									</div>
-								</div>
-							</div>
-						</div>
-						<div class="col-md-6">
-							<h3 class="quick-view-title"></h3>
-							<p class="quick-view-price"></p>
-							<p class="quick-view-description">Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-								Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+                alert(
+                    `Proceeding to checkout:\nQuantity: ${quantity}\nColor: ${selectedColor}\nStorage: ${selectedStorage}GB`);
+            });
+        });
+    </script>
 
-							<!-- Color Variants -->
-							<div class="color-variants mb-4">
-								<label class="form-label">Màu sắc:</label>
-								<div class="color-options">
-									<div class="color-option active" data-color="purple"
-										style="background-color: #8A2BE2;"></div>
-									<div class="color-option" data-color="black" style="background-color: #000000;">
-									</div>
-									<div class="color-option" data-color="gold" style="background-color: #FFD700;">
-									</div>
-									<div class="color-option" data-color="silver" style="background-color: #C0C0C0;">
-									</div>
-								</div>
-							</div>
+    <!-- Quick View Modal -->
+    <div class="modal fade" id="quickViewModal" tabindex="-1" aria-labelledby="quickViewModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="quickViewModalLabel">Quick View</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="product-gallery">
+                                <div class="main-image mb-4">
+                                    <img src="" class="img-fluid quick-view-image" alt="Product Image">
+                                </div>
+                                <div class="thumbnail-images">
+                                    <div class="row">
+                                        <div class="col-3">
+                                            <img src="images/product-1.png" class="img-fluid thumbnail"
+                                                alt="Thumbnail 1">
+                                        </div>
+                                        <div class="col-3">
+                                            <img src="images/product-2.png" class="img-fluid thumbnail"
+                                                alt="Thumbnail 2">
+                                        </div>
+                                        <div class="col-3">
+                                            <img src="images/product-3.png" class="img-fluid thumbnail"
+                                                alt="Thumbnail 3">
+                                        </div>
+                                        <div class="col-3">
+                                            <img src="images/product-1.png" class="img-fluid thumbnail"
+                                                alt="Thumbnail 4">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <h3 class="quick-view-title"></h3>
+                            <p class="quick-view-price"></p>
+                            <p class="quick-view-description">Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                                Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
 
-							<!-- Storage Options -->
-							<div class="storage-options mb-4">
-								<label class="form-label">Dung lượng:</label>
-								<div class="storage-buttons">
-									<button class="storage-btn active" data-storage="128">128GB</button>
-									<button class="storage-btn" data-storage="256">256GB</button>
-									<button class="storage-btn" data-storage="512">512GB</button>
-									<button class="storage-btn" data-storage="1024">1TB</button>
-								</div>
-							</div>
+                            <!-- Color Variants -->
+                            <div class="color-variants mb-4">
+                                <label class="form-label">Màu sắc:</label>
+                                <div class="color-options">
+                                    <div class="color-option active" data-color="purple"
+                                        style="background-color: #8A2BE2;"></div>
+                                    <div class="color-option" data-color="black" style="background-color: #000000;">
+                                    </div>
+                                    <div class="color-option" data-color="gold" style="background-color: #FFD700;">
+                                    </div>
+                                    <div class="color-option" data-color="silver" style="background-color: #C0C0C0;">
+                                    </div>
+                                </div>
+                            </div>
 
-							<!-- Quantity Selector -->
-							<div class="quantity-selector mb-4">
-								<label class="form-label">Số lượng:</label>
-								<div class="quantity-control">
-									<button class="quantity-btn minus">-</button>
-									<input type="number" id="quickViewQuantity" class="form-control" value="1" min="1"
-										readonly>
-									<button class="quantity-btn plus">+</button>
-								</div>
-							</div>
+                            <!-- Storage Options -->
+                            <div class="storage-options mb-4">
+                                <label class="form-label">Dung lượng:</label>
+                                <div class="storage-buttons">
+                                    <button class="storage-btn active" data-storage="128">128GB</button>
+                                    <button class="storage-btn" data-storage="256">256GB</button>
+                                    <button class="storage-btn" data-storage="512">512GB</button>
+                                    <button class="storage-btn" data-storage="1024">1TB</button>
+                                </div>
+                            </div>
 
-							<!-- Action Buttons -->
-							<div class="product-actions mb-4">
-								<button class="btn btn-primary">
-									<i class="fas fa-bolt me-2"></i>Mua ngay
-								</button>
-								<button class="btn btn-outline-primary">
-									<i class="fas fa-cart-plus me-2"></i>Thêm vào giỏ
-								</button>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
+                            <!-- Quantity Selector -->
+                            <div class="quantity-selector mb-4">
+                                <label class="form-label">Số lượng:</label>
+                                <div class="quantity-control">
+                                    <button class="quantity-btn minus">-</button>
+                                    <input type="number" id="quickViewQuantity" class="form-control" value="1"
+                                        min="1" readonly>
+                                    <button class="quantity-btn plus">+</button>
+                                </div>
+                            </div>
+
+                            <!-- Action Buttons -->
+                            <div class="product-actions mb-4">
+                                <button class="btn btn-primary">
+                                    <i class="fas fa-bolt me-2"></i>Mua ngay
+                                </button>
+                                <button class="btn btn-outline-primary">
+                                    <i class="fas fa-cart-plus me-2"></i>Thêm vào giỏ
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script>
-      AOS.init({
-        duration:800, // values from 0 to 3000, with step 50ms
-        once: false, // whether animation should happen only once - while scrolling down
-      });
+        AOS.init({
+            duration: 800, // values from 0 to 3000, with step 50ms
+            once: false, // whether animation should happen only once - while scrolling down
+        });
     </script>
 @endsection

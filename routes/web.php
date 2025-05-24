@@ -13,6 +13,7 @@ use App\Http\Controllers\admin\VariantAttributeTypeController;
 use App\Http\Controllers\admin\RoleController;
 use App\Http\Controllers\admin\SpecificationController;
 use App\Http\Controllers\admin\VoucherController;
+use App\Http\Controllers\admin\AdminContactController;
 use App\Http\Controllers\auth\AuthController;
 
 // Client 
@@ -34,6 +35,10 @@ Route::get('/blog', [ClientBlogController::class, 'index'])->name('blog');
 Route::get('/contact', [ContactController::class, 'index'])->name('contact');
 Route::get('/cart', [CartController::class, 'index'])->name('cart');
 Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout');
+
+//Contact Client
+Route::get('/contact', [ContactController::class, 'index'])->name('contact');
+Route::post('/contact', [ContactController::class, 'store'])->name('contact.store');
 
 // Authentication routes
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
@@ -141,5 +146,12 @@ Route::prefix('admin')->middleware(['auth', 'role:admin|staff'])->name('admin.')
     Route::put('roles/{user}', [RoleController::class, 'update'])->middleware('permission:addrole')->name('roles.update');
     // Voucher Routes
     Route::resource('vouchers', VoucherController::class)->middleware('permission:view vouchers');
+
+     //Contact Admin
+    Route::prefix('contacts')->name('contacts.')->group(function () {
+        Route::get('/', [AdminContactController::class, 'index'])->name('index');
+        Route::get('/{contact}', [AdminContactController::class, 'show'])->name('show'); 
+        Route::delete('/{contact}', [AdminContactController::class, 'destroy'])->name('delete');   
+    });
 });
 

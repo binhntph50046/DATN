@@ -122,69 +122,33 @@
             <div class="row justify-content-between">
                 <!-- Start Products Column -->
                 <div class="col-lg-8">
-                    <div class="row">
-                        <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="100">
-                            <a class="product-item" href="#">
-                                <img src="images/product-1.png" class="img-fluid product-thumbnail">
-                                <h3 class="product-title">Nordic Chair</h3>
-                                <strong class="product-price">$50.00</strong>
-                                <div class="product-rating">
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <span>(4.9)</span>
+                    <div class="product-slider">
+                        @foreach($mostViewedProducts as $product)
+                        <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="{{ $loop->iteration * 100 }}">
+                            <a class="product-item" href="{{ route('product.detail', $product->id) }}" onclick="incrementView({{ $product->id }})">
+                                <div class="product-thumbnail">
+                                    <img src="{{ asset('storage/' . $product->thumbnail) }}" class="img-fluid" alt="{{ $product->name }}">
+                                </div>
+                                <h3 class="product-title text-center">{{ $product->name }}</h3>
+                                <div class="product-price-and-rating text-center">
+                                    <strong class="product-price">{{ number_format($product->price) }}đ</strong>
+                                    <div class="product-rating d-flex justify-content-center align-items-center">
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <span>({{ number_format($product->view) }} views)</span>
+                                    </div>
                                 </div>
                                 <div class="product-icons">
                                     <span class="icon-add-to-cart"><i class="fas fa-cart-plus"></i></span>
                                     <span class="icon-heart"><i class="fas fa-heart"></i></span>
-                                    <span class="icon-quick-view"><i class="fas fa-eye"></i></span>
+                                    <span class="icon-quick-view" onclick="event.preventDefault(); showQuickView({{ $product->id }})"><i class="fas fa-eye"></i></span>
                                 </div>
                             </a>
                         </div>
-
-                        <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="200">
-                            <a class="product-item" href="#">
-                                <img src="images/product-2.png" class="img-fluid product-thumbnail">
-                                <h3 class="product-title">Kruzo Aero Chair</h3>
-                                <strong class="product-price">$78.00</strong>
-                                <div class="product-rating">
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star-half-alt"></i>
-                                    <span>(4.7)</span>
-                                </div>
-                                <div class="product-icons">
-                                    <span class="icon-add-to-cart"><i class="fas fa-cart-plus"></i></span>
-                                    <span class="icon-heart"><i class="fas fa-heart"></i></span>
-                                    <span class="icon-quick-view"><i class="fas fa-eye"></i></span>
-                                </div>
-                            </a>
-                        </div>
-
-                        <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="300">
-                            <a class="product-item" href="#">
-                                <img src="images/product-3.png" class="img-fluid product-thumbnail">
-                                <h3 class="product-title">Ergonomic Chair</h3>
-                                <strong class="product-price">$43.00</strong>
-                                <div class="product-rating">
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <span>(4.8)</span>
-                                </div>
-                                <div class="product-icons">
-                                    <span class="icon-add-to-cart"><i class="fas fa-cart-plus"></i></span>
-                                    <span class="icon-heart"><i class="fas fa-heart"></i></span>
-                                    <span class="icon-quick-view"><i class="fas fa-eye"></i></span>
-                                </div>
-                            </a>
-                        </div>
+                        @endforeach
                     </div>
                 </div>
                 <!-- End Products Column -->
@@ -193,26 +157,24 @@
                 <div class="col-lg-4">
                     <div class="popular-content" data-aos="fade-left" data-aos-delay="400">
                         <h2 class="section-title">Most Popular Products</h2>
-                        <p class="mb-4">Discover our best-selling furniture pieces that have captured the hearts of
-                            thousands of customers worldwide. These products are consistently rated highly for their
-                            exceptional quality, comfort, and design.</p>
+                        <p class="mb-4">Experience our most sought-after devices that have redefined innovation and design. These products represent the perfect blend of cutting-edge technology and elegant craftsmanship, setting new standards in the industry.</p>
 
                         <div class="popular-features">
                             <div class="feature-item">
                                 <i class="fas fa-check-circle"></i>
-                                <span>Premium Quality Materials</span>
+                                <span>Revolutionary Technology</span>
                             </div>
                             <div class="feature-item">
                                 <i class="fas fa-check-circle"></i>
-                                <span>Ergonomic Design</span>
+                                <span>Premium Build Quality</span>
                             </div>
                             <div class="feature-item">
                                 <i class="fas fa-check-circle"></i>
-                                <span>5-Star Customer Ratings</span>
+                                <span>Seamless Integration</span>
                             </div>
                             <div class="feature-item">
                                 <i class="fas fa-check-circle"></i>
-                                <span>Free Shipping Available</span>
+                                <span>Global Warranty Support</span>
                             </div>
                         </div>
 
@@ -232,9 +194,8 @@
 
                 <!-- Start Column 1 -->
                 <div class="col-md-12 col-lg-3 mb-5 mb-lg-0" data-aos="fade-right" data-aos-delay="100">
-                    <h2 class="mb-4 section-title">Crafted with excellent material.</h2>
-                    <p class="mb-4">Donec vitae odio quis nisl dapibus malesuada. Nullam ac aliquet velit. Aliquam
-                        vulputate velit imperdiet dolor tempor tristique. </p>
+                    <h2 class="mb-4 section-title">Designed for the future.</h2>
+                    <p class="mb-4">Our devices are crafted with precision and care, using the finest materials and most advanced technology. Every detail is meticulously considered to create products that are not just tools, but works of art that enhance your digital lifestyle.</p>
                     <p><a href="shop.html" class="btn">Explore</a></p>
                 </div>
                 <!-- End Column 1 -->
@@ -243,15 +204,17 @@
                 <div class="col-12 col-md-4 col-lg-3 mb-5 mb-md-0" data-aos="fade-up" data-aos-delay="200">
                     <a class="product-item" href="/product-detail.html">
                         <img src="images/product-1.png" class="img-fluid product-thumbnail">
-                        <h3 class="product-title">Nordic Chair</h3>
-                        <strong class="product-price">$50.00</strong>
-                        <div class="product-rating">
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <span>(4.9)</span>
+                        <h3 class="product-title text-center">Nordic Chair</h3>
+                        <div class="product-price-and-rating text-center">
+                            <strong class="product-price">$50.00</strong>
+                            <div class="product-rating d-flex justify-content-center align-items-center">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <span>(4.9)</span>
+                            </div>
                         </div>
                         <div class="product-icons">
                             <span class="icon-add-to-cart"><i class="fas fa-cart-plus"></i></span>
@@ -266,15 +229,17 @@
                 <div class="col-12 col-md-4 col-lg-3 mb-5 mb-md-0" data-aos="fade-up" data-aos-delay="200">
                     <a class="product-item" href="/product-detail.html">
                         <img src="images/product-1.png" class="img-fluid product-thumbnail">
-                        <h3 class="product-title">Nordic Chair</h3>
-                        <strong class="product-price">$50.00</strong>
-                        <div class="product-rating">
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <span>(4.9)</span>
+                        <h3 class="product-title text-center">Nordic Chair</h3>
+                        <div class="product-price-and-rating text-center">
+                            <strong class="product-price">$50.00</strong>
+                            <div class="product-rating d-flex justify-content-center align-items-center">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <span>(4.9)</span>
+                            </div>
                         </div>
                         <div class="product-icons">
                             <span class="icon-add-to-cart"><i class="fas fa-cart-plus"></i></span>
@@ -289,15 +254,17 @@
                 <div class="col-12 col-md-4 col-lg-3 mb-5 mb-md-0" data-aos="fade-up" data-aos-delay="200">
                     <a class="product-item" href="/product-detail.html">
                         <img src="images/product-1.png" class="img-fluid product-thumbnail">
-                        <h3 class="product-title">Nordic Chair</h3>
-                        <strong class="product-price">$50.00</strong>
-                        <div class="product-rating">
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <span>(4.9)</span>
+                        <h3 class="product-title text-center">Nordic Chair</h3>
+                        <div class="product-price-and-rating text-center">
+                            <strong class="product-price">$50.00</strong>
+                            <div class="product-rating d-flex justify-content-center align-items-center">
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <i class="fas fa-star"></i>
+                                <span>(4.9)</span>
+                            </div>
                         </div>
                         <div class="product-icons">
                             <span class="icon-add-to-cart"><i class="fas fa-cart-plus"></i></span>
@@ -683,7 +650,8 @@
                     .dataset.storage;
 
                 alert(
-                    `Added to cart:\nQuantity: ${quantity}\nColor: ${selectedColor}\nStorage: ${selectedStorage}GB`);
+                    `Added to cart:\nQuantity: ${quantity}\nColor: ${selectedColor}\nStorage: ${selectedStorage}GB`
+                    );
             });
 
             // Buy now button
@@ -695,7 +663,8 @@
                     .dataset.storage;
 
                 alert(
-                    `Proceeding to checkout:\nQuantity: ${quantity}\nColor: ${selectedColor}\nStorage: ${selectedStorage}GB`);
+                    `Proceeding to checkout:\nQuantity: ${quantity}\nColor: ${selectedColor}\nStorage: ${selectedStorage}GB`
+                    );
             });
         });
     </script>
@@ -802,6 +771,57 @@
         AOS.init({
             duration: 800, // values from 0 to 3000, with step 50ms
             once: false, // whether animation should happen only once - while scrolling down
+        });
+    </script>
+
+    <script>
+        function incrementView(productId) {
+            fetch(`/increment-view/${productId}`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if(data.success) {
+                    console.log('View incremented');
+                }
+            });
+        }
+
+        function showQuickView(productId) {
+            incrementView(productId);
+            // Your existing quick view logic here
+        }
+
+        // Initialize product slider
+        $(document).ready(function(){
+            $('.product-slider').slick({
+                dots: false,
+                infinite: true,
+                speed: 300,
+                slidesToShow: 3,
+                slidesToScroll: 1,
+                responsive: [
+                    {
+                        breakpoint: 1024,
+                        settings: {
+                            slidesToShow: 2,
+                            slidesToScroll: 1
+                        }
+                    },
+                    {
+                        breakpoint: 600,
+                        settings: {
+                            slidesToShow: 1,
+                            slidesToScroll: 1
+                        }
+                    }
+                ]
+            });
         });
     </script>
 @endsection

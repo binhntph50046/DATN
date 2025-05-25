@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Máy chủ: localhost
--- Thời gian đã tạo: Th5 23, 2025 lúc 04:16 PM
+-- Thời gian đã tạo: Th5 25, 2025 lúc 10:00 AM
 -- Phiên bản máy phục vụ: 5.7.43-log
 -- Phiên bản PHP: 8.3.15
 
@@ -44,18 +44,10 @@ CREATE TABLE `banners` (
 --
 
 INSERT INTO `banners` (`id`, `title`, `image`, `description`, `link`, `status`, `order`, `created_at`, `updated_at`) VALUES
-(1, 'Banner 1', 'banners/lVtFKahRZ7dTW16U5nwBAT89MAdSHxuLgYU61X0T.jpg', 'Hellllllllllllllllllllllo', 'http://localhost:8080/phpmyadmin', 'active', 1, '2025-05-08 15:17:47', '2025-05-19 08:27:27'),
+(1, 'Banner 1', 'banners/UwLrCgUIly4QvmBGUHp1NI6WBjMOkii7VIcayueU.jpg', 'Hellllllllllllllllllllllo', 'http://localhost:8080/phpmyadmin', 'active', 1, '2025-05-08 15:17:47', '2025-05-24 18:11:33'),
 (2, 'Banner 2', 'banner2.jpg', NULL, NULL, 'inactive', 2, '2025-05-08 15:17:48', '2025-05-11 05:58:32'),
 (3, 'Banner 3', 'banners/2T2ueXqRAEHEeqhieFmPUOQFdRFkF5zCbODRCxCf.jpg', NULL, NULL, 'active', 3, '2025-05-08 15:17:48', '2025-05-20 04:14:58'),
-(4, 'Banner 4', 'banner4.jpg', NULL, NULL, 'inactive', 7, '2025-05-08 15:17:49', '2025-05-08 16:12:00'),
-(5, 'Banner 5', 'banner5.jpg', NULL, NULL, 'active', 4, '2025-05-08 15:17:50', '2025-05-08 16:12:00'),
-(7, 'Banner 7', 'banner7.jpg', NULL, NULL, 'active', 8, '2025-05-08 15:17:51', '2025-05-20 07:33:30'),
-(8, 'Banner 8', 'banner8.jpg', NULL, NULL, 'inactive', 11, '2025-05-08 15:17:51', '2025-05-10 01:20:29'),
-(9, 'Banner 9', 'banner9.jpg', NULL, NULL, 'active', 9, '2025-05-08 15:17:51', '2025-05-20 07:33:30'),
-(12, 'NEW', 'banners/l6tY9qWWLVxdnhIoMGhdkz8IAdEZWEkauPFamCDq.jpg', NULL, 'http://datn.test:8080/admin/banners', 'active', 10, '2025-05-08 16:10:54', '2025-05-20 07:34:10'),
-(13, 'Hello', 'banners/WGqKHvZofPYclu4HMNdgDU6AI14atmqTnIcCvHTz.jpg', 'Helllllllllllo', 'http://datn.test:8080/admin/banners/11/edit', 'active', 12, '2025-05-14 14:31:41', '2025-05-20 04:15:43'),
-(14, 'HELLLLLLLLLLLLO', 'banners/3IJeuAJ3mvzXgErS411CPIWyQoAfB1W0pfKgOzlz.jpg', 'HELLLLLLLLLLO', 'http://datn.test:8080/admin/banners', 'inactive', 13, '2025-05-14 14:35:16', '2025-05-14 14:35:16'),
-(15, 'HELLLLO', 'banners/Q5skcTEApWFhruaQeRVqYTVMUKVFdfzEQbpizTfI.jpg', 'HELLLLLLO', 'http://datn.test:8080/admin/banners', 'inactive', 14, '2025-05-14 14:38:06', '2025-05-14 14:38:06');
+(4, 'Banner 4', 'banner4.jpg', NULL, NULL, 'inactive', 7, '2025-05-08 15:17:49', '2025-05-08 16:12:00');
 
 -- --------------------------------------------------------
 
@@ -99,13 +91,6 @@ CREATE TABLE `cache` (
   `value` mediumtext COLLATE utf8mb4_unicode_ci NOT NULL,
   `expiration` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Đang đổ dữ liệu cho bảng `cache`
---
-
-INSERT INTO `cache` (`key`, `value`, `expiration`) VALUES
-('laravel_cache_spatie.permission.cache', 'a:3:{s:5:\"alias\";a:4:{s:1:\"a\";s:2:\"id\";s:1:\"b\";s:4:\"name\";s:1:\"c\";s:10:\"guard_name\";s:1:\"r\";s:5:\"roles\";}s:11:\"permissions\";a:30:{i:0;a:4:{s:1:\"a\";i:1;s:1:\"b\";s:15:\"view categories\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:1;a:4:{s:1:\"a\";i:2;s:1:\"b\";s:17:\"create categories\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:2;a:4:{s:1:\"a\";i:3;s:1:\"b\";s:15:\"edit categories\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:3;a:4:{s:1:\"a\";i:4;s:1:\"b\";s:17:\"delete categories\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:4;a:4:{s:1:\"a\";i:5;s:1:\"b\";s:12:\"view banners\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:5;a:4:{s:1:\"a\";i:6;s:1:\"b\";s:14:\"create banners\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:6;a:4:{s:1:\"a\";i:7;s:1:\"b\";s:12:\"edit banners\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:7;a:4:{s:1:\"a\";i:8;s:1:\"b\";s:14:\"delete banners\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:8;a:4:{s:1:\"a\";i:9;s:1:\"b\";s:13:\"view products\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:9;a:4:{s:1:\"a\";i:10;s:1:\"b\";s:15:\"create products\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:10;a:4:{s:1:\"a\";i:11;s:1:\"b\";s:13:\"edit products\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:11;a:4:{s:1:\"a\";i:12;s:1:\"b\";s:15:\"delete products\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:12;a:4:{s:1:\"a\";i:13;s:1:\"b\";s:11:\"view orders\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:13;a:4:{s:1:\"a\";i:14;s:1:\"b\";s:13:\"create orders\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:14;a:4:{s:1:\"a\";i:15;s:1:\"b\";s:11:\"edit orders\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:15;a:4:{s:1:\"a\";i:16;s:1:\"b\";s:13:\"delete orders\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:16;a:4:{s:1:\"a\";i:17;s:1:\"b\";s:10:\"view users\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:17;a:4:{s:1:\"a\";i:18;s:1:\"b\";s:12:\"create users\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:18;a:4:{s:1:\"a\";i:19;s:1:\"b\";s:10:\"edit users\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:19;a:4:{s:1:\"a\";i:20;s:1:\"b\";s:12:\"delete users\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:20;a:4:{s:1:\"a\";i:21;s:1:\"b\";s:10:\"view blogs\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:21;a:4:{s:1:\"a\";i:22;s:1:\"b\";s:12:\"create blogs\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:22;a:4:{s:1:\"a\";i:23;s:1:\"b\";s:10:\"edit blogs\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:23;a:4:{s:1:\"a\";i:24;s:1:\"b\";s:12:\"delete blogs\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:24;a:4:{s:1:\"a\";i:25;s:1:\"b\";s:15:\"view attributes\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:25;a:4:{s:1:\"a\";i:26;s:1:\"b\";s:17:\"create attributes\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:26;a:4:{s:1:\"a\";i:27;s:1:\"b\";s:15:\"edit attributes\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:27;a:4:{s:1:\"a\";i:28;s:1:\"b\";s:17:\"delete attributes\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:28;a:4:{s:1:\"a\";i:29;s:1:\"b\";s:14:\"view dashboard\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:29;a:4:{s:1:\"a\";i:30;s:1:\"b\";s:7:\"addrole\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}}s:5:\"roles\";a:2:{i:0;a:3:{s:1:\"a\";i:1;s:1:\"b\";s:5:\"admin\";s:1:\"c\";s:3:\"web\";}i:1;a:3:{s:1:\"a\";i:2;s:1:\"b\";s:5:\"staff\";s:1:\"c\";s:3:\"web\";}}}', 1747987744);
 
 -- --------------------------------------------------------
 
@@ -200,11 +185,19 @@ CREATE TABLE `contacts` (
   `first_name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `last_name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `email` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `phone` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `phone` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `message` text COLLATE utf8mb4_unicode_ci NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NULL DEFAULT NULL
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `deleted_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Đang đổ dữ liệu cho bảng `contacts`
+--
+
+INSERT INTO `contacts` (`id`, `first_name`, `last_name`, `email`, `phone`, `message`, `created_at`, `updated_at`, `deleted_at`) VALUES
+(1, 'Mừng', 'Nguyễn Văn', 'nguyendinhkhai0103@gmail.com', '0792263516', 'ok rồi bạn', '2025-05-24 16:52:42', '2025-05-24 16:52:42', NULL);
 
 -- --------------------------------------------------------
 
@@ -370,7 +363,11 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (110, '2025_05_15_134055_create_vouchers_table', 61),
 (111, '2025_05_15_134109_create_user_vouchers_table', 61),
 (112, '2025_05_22_060948_add_cancel_reason_to_orders_table', 62),
-(113, '2024_05_22_000001_update_variant_attribute_values_to_json', 63);
+(113, '2024_05_22_000001_update_variant_attribute_values_to_json', 63),
+(114, '2025_05_19_164129_create_contacts_table', 64),
+(115, '2025_05_20_080544_add_deleted_at_to_contacts_table', 64),
+(116, '2025_05_21_124829_create_subscribers_table', 64),
+(117, '2025_05_25_013802_add_views_to_products_table', 65);
 
 -- --------------------------------------------------------
 
@@ -401,8 +398,11 @@ CREATE TABLE `model_has_roles` (
 --
 
 INSERT INTO `model_has_roles` (`role_id`, `model_type`, `model_id`) VALUES
+(1, 'App\\Models\\User', 1),
 (2, 'App\\Models\\User', 1),
-(1, 'App\\Models\\User', 2);
+(1, 'App\\Models\\User', 2),
+(2, 'App\\Models\\User', 19),
+(3, 'App\\Models\\User', 22);
 
 -- --------------------------------------------------------
 
@@ -507,7 +507,14 @@ INSERT INTO `permissions` (`id`, `name`, `guard_name`, `created_at`, `updated_at
 (27, 'edit attributes', 'web', '2025-05-15 12:40:58', '2025-05-15 12:40:58'),
 (28, 'delete attributes', 'web', '2025-05-15 12:40:58', '2025-05-15 12:40:58'),
 (29, 'view dashboard', 'web', '2025-05-15 12:40:58', '2025-05-15 12:40:58'),
-(30, 'addrole', 'web', '2025-05-15 15:05:37', '2025-05-15 15:05:37');
+(30, 'addrole', 'web', '2025-05-15 15:05:37', '2025-05-15 15:05:37'),
+(31, 'view category specifications', 'web', '2025-05-23 14:48:10', '2025-05-23 14:48:10'),
+(32, 'view category attributes', 'web', '2025-05-23 14:48:10', '2025-05-23 14:48:10'),
+(33, 'view specifications', 'web', '2025-05-23 14:48:10', '2025-05-23 14:48:10'),
+(34, 'trash specifications', 'web', '2025-05-23 14:48:10', '2025-05-23 14:48:10'),
+(35, 'restore specifications', 'web', '2025-05-23 14:48:10', '2025-05-23 14:48:10'),
+(36, 'delete specifications', 'web', '2025-05-23 14:48:10', '2025-05-23 14:48:10'),
+(37, 'view vouchers', 'web', '2025-05-23 14:48:10', '2025-05-23 14:48:10');
 
 -- --------------------------------------------------------
 
@@ -525,10 +532,18 @@ CREATE TABLE `products` (
   `warranty_months` int(11) NOT NULL DEFAULT '12',
   `is_featured` tinyint(1) NOT NULL DEFAULT '0',
   `status` enum('active','inactive') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'active',
+  `views` int(11) NOT NULL DEFAULT '0',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   `deleted_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Đang đổ dữ liệu cho bảng `products`
+--
+
+INSERT INTO `products` (`id`, `name`, `slug`, `description`, `content`, `category_id`, `warranty_months`, `is_featured`, `status`, `views`, `created_at`, `updated_at`, `deleted_at`) VALUES
+(71, 'iPhone 15 Pro Max', 'iphone-15-pro-max', 'Đây là iphone 15 Pro Max', '<p>Đ&acirc;y l&agrave; iphone 15 Pro Max</p>', 1, 12, 1, 'active', 0, '2025-05-23 08:19:10', '2025-05-23 08:39:36', NULL);
 
 -- --------------------------------------------------------
 
@@ -561,6 +576,14 @@ CREATE TABLE `product_specifications` (
   `deleted_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Đang đổ dữ liệu cho bảng `product_specifications`
+--
+
+INSERT INTO `product_specifications` (`id`, `product_id`, `specification_id`, `value`, `created_at`, `updated_at`, `deleted_at`) VALUES
+(109, 71, 5, '128GB,256GB,...', '2025-05-23 08:19:11', '2025-05-23 08:19:11', NULL),
+(110, 71, 6, '8GB', '2025-05-23 08:19:11', '2025-05-23 08:19:11', NULL);
+
 -- --------------------------------------------------------
 
 --
@@ -584,6 +607,14 @@ CREATE TABLE `product_variants` (
   `purchase_price` decimal(15,2) NOT NULL DEFAULT '0.00' COMMENT 'Giá nhập',
   `selling_price` decimal(15,2) NOT NULL DEFAULT '0.00' COMMENT 'Giá bán'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Đang đổ dữ liệu cho bảng `product_variants`
+--
+
+INSERT INTO `product_variants` (`id`, `product_id`, `sku`, `name`, `slug`, `discount_price`, `stock`, `status`, `is_default`, `created_at`, `updated_at`, `deleted_at`, `images`, `purchase_price`, `selling_price`) VALUES
+(86, 71, 'SP-00711', 'iPhone 15 Pro Max  - White', 'iphone-15-pro-max-white', NULL, 66, 'active', 1, '2025-05-23 08:19:11', '2025-05-23 08:19:11', NULL, '\"[\\\"uploads\\\\/products\\\\/1747988351_0_iphone-15-pro-max-gold-1-2-650x650.png\\\"]\"', 23000000.00, 28000000.00),
+(87, 71, 'SP-00712', 'iPhone 15 Pro Max  - Black', 'iphone-15-pro-max-black', NULL, 55, 'active', 0, '2025-05-23 08:19:11', '2025-05-23 08:19:11', NULL, '\"[\\\"uploads\\\\/products\\\\/1747988351_1_iphone-15-pro-max-blue-1-2-650x650.png\\\"]\"', 24000000.00, 29000000.00);
 
 -- --------------------------------------------------------
 
@@ -654,6 +685,13 @@ INSERT INTO `role_has_permissions` (`permission_id`, `role_id`) VALUES
 (28, 1),
 (29, 1),
 (30, 1),
+(31, 1),
+(32, 1),
+(33, 1),
+(34, 1),
+(35, 1),
+(36, 1),
+(37, 1),
 (1, 2),
 (5, 2),
 (9, 2),
@@ -687,7 +725,7 @@ CREATE TABLE `sessions` (
 --
 
 INSERT INTO `sessions` (`id`, `user_id`, `ip_address`, `user_agent`, `payload`, `last_activity`) VALUES
-('HQlFm2QVx2pyCS6YxmZ5eGN7gAIuypJxigDEyK3g', 1, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36', 'YTo1OntzOjY6Il90b2tlbiI7czo0MDoiMDY2RE5kM1U0WDczWEpJMFR6SXRPVldHRmxwM2NHWEpEakR3WXdJWSI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6MzY6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9hZG1pbi9wcm9kdWN0cyI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fXM6MzoidXJsIjthOjA6e31zOjUwOiJsb2dpbl93ZWJfNTliYTM2YWRkYzJiMmY5NDAxNTgwZjAxNGM3ZjU4ZWE0ZTMwOTg5ZCI7aToxO30=', 1747988137);
+('24rNWLWYhXVqidyxU863Jbjqc43xblqrRq4gvaS0', NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36', 'YTo0OntzOjY6Il90b2tlbiI7czo0MDoieVlQT3hhWm01VndJMkZmZHFyUTVvMDFIb0JYYmV5NFAyYnpDSVhUMCI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6MjE6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMCI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fXM6MzoidXJsIjthOjE6e3M6ODoiaW50ZW5kZWQiO3M6Mjc6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9hZG1pbiI7fX0=', 1748138351);
 
 -- --------------------------------------------------------
 
@@ -814,6 +852,26 @@ CREATE TABLE `stock_movements` (
 -- --------------------------------------------------------
 
 --
+-- Cấu trúc bảng cho bảng `subscribers`
+--
+
+CREATE TABLE `subscribers` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `email` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Đang đổ dữ liệu cho bảng `subscribers`
+--
+
+INSERT INTO `subscribers` (`id`, `email`, `created_at`, `updated_at`) VALUES
+(1, 'nguyendinhkhai0103@gmail.com', '2025-05-24 16:52:42', '2025-05-24 16:52:42');
+
+-- --------------------------------------------------------
+
+--
 -- Cấu trúc bảng cho bảng `users`
 --
 
@@ -842,8 +900,12 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `name`, `email`, `email_verified_at`, `password`, `phone`, `address`, `avatar`, `dob`, `gender`, `is_verified`, `last_login`, `status`, `remember_token`, `created_at`, `updated_at`, `deleted_at`) VALUES
-(1, 'Admin ', 'admin@gmail.com', NULL, '$2y$12$si7gRydbJe6uPDz/0pxqDuipwDwT9Q/2pVpf0HpS6k/lt5z70Uhtu', '0123456789', 'Hanoi', NULL, NULL, 'other', 0, NULL, 'active', NULL, '2025-05-16 15:31:25', '2025-05-16 15:31:25', NULL),
-(2, 'Staff ', 'staffp@gmail.com', NULL, '$2y$12$de5HWZYmyu9wLPmTzHmyJOjVt1J1uxTaBtWCyQQgZj/kIpNR7At3a', '0987654321', 'Hanoi', NULL, NULL, 'other', 0, NULL, 'active', NULL, '2025-05-15 12:40:59', '2025-05-15 12:40:59', NULL);
+(1, 'Admin ', 'admin@gmail.com', NULL, '$2y$12$si7gRydbJe6uPDz/0pxqDuipwDwT9Q/2pVpf0HpS6k/lt5z70Uhtu', '0123456789', 'Hanoi', NULL, NULL, 'other', 0, '2025-05-25 04:09:23', 'active', 'ldEFhx20QRzvzu2CZS87XOF1hHGlqLULmLx6nHD8NroiTVNg7fIXe9H3AA9S', '2025-05-16 15:31:25', '2025-05-25 04:09:23', NULL),
+(2, 'Staff ', 'staffp@gmail.com', NULL, '$2y$12$de5HWZYmyu9wLPmTzHmyJOjVt1J1uxTaBtWCyQQgZj/kIpNR7At3a', '0987654321', 'Hanoi', NULL, NULL, 'other', 0, NULL, 'active', NULL, '2025-05-15 12:40:59', '2025-05-15 12:40:59', NULL),
+(18, 'Admin User', 'admincc@example.com', NULL, 'user123123', '0123456789', 'Hanoi', NULL, NULL, 'other', 0, NULL, 'active', NULL, '2025-05-23 14:48:11', '2025-05-23 14:48:11', NULL),
+(19, 'Staff User', 'staffp@example.com', NULL, '$2y$12$WHrqm55gWHco5y8WkiNczeLnELUpkpEj3eJC3tOAxHV2QUp1o0DJm', '0987654321', 'Hanoi', NULL, NULL, 'other', 0, NULL, 'active', NULL, '2025-05-23 14:48:11', '2025-05-23 14:48:11', NULL),
+(20, 'Normal User', 'userp@example.com', NULL, '$12$si7gRydbJe6uPDz/0pxqDuipwDwT9Q/2pVpf0HpS6k/lt5z70Uhtu', '1234567890', 'Hanoi', NULL, NULL, 'other', 0, NULL, 'active', NULL, '2025-05-23 14:48:12', '2025-05-23 14:48:12', NULL),
+(22, 'Banh đẹp traiii', 'banhday@example.com', NULL, '$2y$12$2RR91Wl.OzECaT5HLkwGoufESlbD7GhGXqbFvwEEIlCJfHEUjmUti', '1234567890', 'Viet Tri ,Phu Tho', NULL, NULL, 'other', 0, '2025-05-25 04:28:32', 'active', NULL, '2025-05-25 04:23:02', '2025-05-25 04:28:32', NULL);
 
 -- --------------------------------------------------------
 
@@ -924,6 +986,14 @@ CREATE TABLE `variant_attribute_values` (
   `deleted_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Đang đổ dữ liệu cho bảng `variant_attribute_values`
+--
+
+INSERT INTO `variant_attribute_values` (`id`, `attribute_type_id`, `value`, `hex`, `status`, `created_at`, `updated_at`, `deleted_at`) VALUES
+(38, 3, '[\"White\"]', '[\"#FFFFFF\"]', 'active', '2025-05-23 08:19:11', '2025-05-23 08:19:11', NULL),
+(39, 3, '[\"Black\"]', '[\"#000000\"]', 'active', '2025-05-23 08:19:11', '2025-05-23 08:19:11', NULL);
+
 -- --------------------------------------------------------
 
 --
@@ -937,6 +1007,14 @@ CREATE TABLE `variant_combinations` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Đang đổ dữ liệu cho bảng `variant_combinations`
+--
+
+INSERT INTO `variant_combinations` (`id`, `variant_id`, `attribute_value_id`, `created_at`, `updated_at`) VALUES
+(113, 86, 38, '2025-05-23 08:19:11', '2025-05-23 08:19:11'),
+(114, 87, 39, '2025-05-23 08:19:11', '2025-05-23 08:19:11');
 
 -- --------------------------------------------------------
 
@@ -1212,6 +1290,13 @@ ALTER TABLE `stock_movements`
   ADD KEY `stock_movements_created_at_index` (`created_at`);
 
 --
+-- Chỉ mục cho bảng `subscribers`
+--
+ALTER TABLE `subscribers`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `subscribers_email_unique` (`email`);
+
+--
 -- Chỉ mục cho bảng `users`
 --
 ALTER TABLE `users`
@@ -1311,7 +1396,7 @@ ALTER TABLE `categories`
 -- AUTO_INCREMENT cho bảng `contacts`
 --
 ALTER TABLE `contacts`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT cho bảng `failed_jobs`
@@ -1329,7 +1414,7 @@ ALTER TABLE `jobs`
 -- AUTO_INCREMENT cho bảng `migrations`
 --
 ALTER TABLE `migrations`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=114;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=118;
 
 --
 -- AUTO_INCREMENT cho bảng `orders`
@@ -1347,13 +1432,13 @@ ALTER TABLE `order_items`
 -- AUTO_INCREMENT cho bảng `permissions`
 --
 ALTER TABLE `permissions`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=31;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=38;
 
 --
 -- AUTO_INCREMENT cho bảng `products`
 --
 ALTER TABLE `products`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=71;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=72;
 
 --
 -- AUTO_INCREMENT cho bảng `product_reviews`
@@ -1365,13 +1450,13 @@ ALTER TABLE `product_reviews`
 -- AUTO_INCREMENT cho bảng `product_specifications`
 --
 ALTER TABLE `product_specifications`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=109;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=111;
 
 --
 -- AUTO_INCREMENT cho bảng `product_variants`
 --
 ALTER TABLE `product_variants`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=86;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=88;
 
 --
 -- AUTO_INCREMENT cho bảng `roles`
@@ -1410,10 +1495,16 @@ ALTER TABLE `stock_movements`
   MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT cho bảng `subscribers`
+--
+ALTER TABLE `subscribers`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
 -- AUTO_INCREMENT cho bảng `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
 
 --
 -- AUTO_INCREMENT cho bảng `user_addresses`
@@ -1437,13 +1528,13 @@ ALTER TABLE `variant_attribute_types`
 -- AUTO_INCREMENT cho bảng `variant_attribute_values`
 --
 ALTER TABLE `variant_attribute_values`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=38;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=40;
 
 --
 -- AUTO_INCREMENT cho bảng `variant_combinations`
 --
 ALTER TABLE `variant_combinations`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=113;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=115;
 
 --
 -- AUTO_INCREMENT cho bảng `vouchers`

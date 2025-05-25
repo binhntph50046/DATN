@@ -234,12 +234,42 @@
                                                     </div>
                                                     <div class="mb-3">
                                                         <label class="form-label">Values <span class="text-danger">*</span></label>
-                                                        <input type="text" class="form-control attribute-values" name="attributes[0][value]" id="values_0" placeholder="Values (e.g., Red, Blue)" value="{{ old('attributes.0.value', is_array($attributeValues[0]['value'] ?? null) ? implode(', ', $attributeValues[0]['value']) : ($attributeValues[0]['value'] ?? '')) }}" required>
+                                                        @php
+                                                            // Xử lý value và hex cho thuộc tính 1
+                                                            $valueArr0 = $attributeValues[0]['value'] ?? [];
+                                                            if (is_string($valueArr0)) {
+                                                                $decoded = json_decode($valueArr0, true);
+                                                                $valueArr0 = is_array($decoded) ? $decoded : [$valueArr0];
+                                                            }
+                                                            $valueStr0 = implode(', ', $valueArr0);
+                                                            $hexArr0 = $attributeValues[0]['hex'] ?? [];
+                                                            if (is_string($hexArr0)) {
+                                                                $decoded = json_decode($hexArr0, true);
+                                                                $hexArr0 = is_array($decoded) ? $decoded : [$hexArr0];
+                                                            }
+                                                            $hexStr0 = implode(', ', $hexArr0);
+                                                        @endphp
+                                                        <input type="text" class="form-control attribute-values" name="attributes[0][value]" id="values_0" placeholder="Values (e.g., Red, Blue)" value="{{ old('attributes.0.value', $valueStr0) }}" required>
                                                         <div class="error-message" id="error-values-0">Please enter valid values.</div>
                                                     </div>
                                                     <div class="mb-3">
                                                         <label class="form-label">Color Code (if any)</label>
-                                                        <input type="text" class="form-control attribute-hex" name="attributes[0][hex]" id="hex_0" placeholder="#000000" value="{{ old('attributes.0.hex', is_array($attributeValues[0]['hex'] ?? null) ? implode(', ', $attributeValues[0]['hex']) : ($attributeValues[0]['hex'] ?? '')) }}">
+                                                        @php
+                                                            // Xử lý value và hex cho thuộc tính 1
+                                                            $valueArr0 = $attributeValues[0]['value'] ?? [];
+                                                            if (is_string($valueArr0)) {
+                                                                $decoded = json_decode($valueArr0, true);
+                                                                $valueArr0 = is_array($decoded) ? $decoded : [$valueArr0];
+                                                            }
+                                                            $valueStr0 = implode(', ', $valueArr0);
+                                                            $hexArr0 = $attributeValues[0]['hex'] ?? [];
+                                                            if (is_string($hexArr0)) {
+                                                                $decoded = json_decode($hexArr0, true);
+                                                                $hexArr0 = is_array($decoded) ? $decoded : [$hexArr0];
+                                                            }
+                                                            $hexStr0 = implode(', ', $hexArr0);
+                                                        @endphp
+                                                        <input type="text" class="form-control attribute-hex" name="attributes[0][hex]" id="hex_0" placeholder="#000000" value="{{ old('attributes.0.hex', $hexStr0) }}">
                                                         <div class="error-message" id="error-hex-0">Invalid color code.</div>
                                                     </div>
                                                 </div>
@@ -256,12 +286,27 @@
                                                     </div>
                                                     <div class="mb-3">
                                                         <label class="form-label">Values</label>
-                                                        <input type="text" class="form-control attribute-values" name="attributes[1][value]" id="values_1" placeholder="Values (e.g., Red, Blue)" value="{{ old('attributes.1.value', is_array($attributeValues[1]['value'] ?? null) ? implode(', ', $attributeValues[1]['value']) : ($attributeValues[1]['value'] ?? '')) }}">
+                                                        @php
+                                                            // Xử lý value và hex cho thuộc tính 2
+                                                            $valueArr1 = $attributeValues[1]['value'] ?? [];
+                                                            if (is_string($valueArr1)) {
+                                                                $decoded = json_decode($valueArr1, true);
+                                                                $valueArr1 = is_array($decoded) ? $decoded : [$valueArr1];
+                                                            }
+                                                            $valueStr1 = implode(', ', $valueArr1);
+                                                            $hexArr1 = $attributeValues[1]['hex'] ?? [];
+                                                            if (is_string($hexArr1)) {
+                                                                $decoded = json_decode($hexArr1, true);
+                                                                $hexArr1 = is_array($decoded) ? $decoded : [$hexArr1];
+                                                            }
+                                                            $hexStr1 = implode(', ', $hexArr1);
+                                                        @endphp
+                                                        <input type="text" class="form-control attribute-values" name="attributes[1][value]" id="values_1" placeholder="Values (e.g., Red, Blue)" value="{{ old('attributes.1.value', $valueStr1) }}">
                                                         <div class="error-message" id="error-values-1">Please enter valid values.</div>
                                                     </div>
                                                     <div class="mb-3">
                                                         <label class="form-label">Color Code (if any)</label>
-                                                        <input type="text" class="form-control attribute-hex" name="attributes[1][hex]" id="hex_1" placeholder="#000000" value="{{ old('attributes.1.hex', is_array($attributeValues[1]['hex'] ?? null) ? implode(', ', $attributeValues[1]['hex']) : ($attributeValues[1]['hex'] ?? '')) }}">
+                                                        <input type="text" class="form-control attribute-hex" name="attributes[1][hex]" id="hex_1" placeholder="#000000" value="{{ old('attributes.1.hex', $hexStr1) }}">
                                                         <div class="error-message" id="error-hex-1">Invalid color code.</div>
                                                     </div>
                                                 </div>
@@ -365,6 +410,9 @@
         let selectedTypes = new Set();
         let imagesToDelete = new Set();
         let variantsToDelete = new Set(); // Thêm set để theo dõi biến thể cần xóa
+        let askedCategory = false;
+        let askedAttribute = false;
+        let askedValueOrHex = false;
 
         document.addEventListener('DOMContentLoaded', function() {
             const categorySelect = document.getElementById('category_id');
@@ -424,24 +472,13 @@
                     }
 
                     // Hiển thị dialog xác nhận
-                    if (confirm('Changing attribute will delete all current variants. Are you sure you want to continue?')) {
-                        // Xóa toàn bộ biến thể hiện tại và đánh dấu ảnh để xóa
+                    if (confirm('Thay đổi thuộc tính sẽ xóa toàn bộ giá trị thuộc tính, mã màu và biến thể. Bạn có chắc chắn?')) {
+                        askedAttribute = true;
                         markAllVariantImagesForDelete();
-                        
-                        // Xóa mềm values và hex tương ứng
-                        const valueInput = document.getElementById(`values_${idx}`);
-                        const hexInput = document.getElementById(`hex_${idx}`);
-                        
-                        if (valueInput) {
-                            valueInput.value = '';
-                            valueInput.setAttribute('data-old-value', '');
-                        }
-                        if (hexInput) {
-                            hexInput.value = '';
-                            hexInput.setAttribute('data-old-value', '');
-                        }
-                        
-                        // Cập nhật giá trị cũ của thuộc tính
+                        markAllAttributesForDelete();
+                        // Xóa giá trị, mã màu (reset input)
+                        if (document.getElementById(`values_${idx}`)) document.getElementById(`values_${idx}`).value = '';
+                        if (document.getElementById(`hex_${idx}`)) document.getElementById(`hex_${idx}`).value = '';
                         this.setAttribute('data-old-value', newValue);
                     } else {
                         // Nếu người dùng không đồng ý, khôi phục lại giá trị cũ
@@ -460,19 +497,28 @@
             categorySelect.addEventListener('change', function() {
                 const categoryId = this.value;
                 const oldCategoryId = this.getAttribute('data-old-category');
-                
                 if (!oldCategoryId || oldCategoryId === categoryId) {
                     handleCategoryChange(categoryId);
                     return;
                 }
-
-                if (confirm('Changing category will delete all attributes and specifications. Are you sure you want to continue?')) {
-                    // Đánh dấu tất cả ảnh để xóa
+                if (!askedCategory) {
+                    if (confirm('Thay đổi danh mục sẽ xóa toàn bộ thuộc tính, giá trị thuộc tính, mã màu và biến thể. Bạn có chắc chắn?')) {
+                        askedCategory = true;
                     markAllVariantImagesForDelete();
-                    // Xử lý thay đổi danh mục
+                        markAllAttributesForDelete();
+                        // Xóa thuộc tính, giá trị, mã màu (reset input)
+                        document.getElementById('attribute_type_0').selectedIndex = 0;
+                        document.getElementById('attribute_type_1').selectedIndex = 0;
+                        document.getElementById('values_0').value = '';
+                        document.getElementById('values_1').value = '';
+                        document.getElementById('hex_0').value = '';
+                        document.getElementById('hex_1').value = '';
                     handleCategoryChange(categoryId);
                 } else {
                     this.value = oldCategoryId;
+                    }
+                } else {
+                    handleCategoryChange(categoryId);
                 }
             });
         }
@@ -493,24 +539,13 @@
                 }
 
                 // Hiển thị dialog xác nhận
-                if (confirm('Changing attribute will delete all current variants. Are you sure you want to continue?')) {
-                    // Xóa toàn bộ biến thể hiện tại và đánh dấu ảnh để xóa
+                if (confirm('Thay đổi thuộc tính sẽ xóa toàn bộ giá trị thuộc tính, mã màu và biến thể. Bạn có chắc chắn?')) {
+                    askedAttribute = true;
                     markAllVariantImagesForDelete();
-                    
-                    // Xóa mềm values và hex tương ứng
-                    const valueInput = document.getElementById(`values_${idx}`);
-                    const hexInput = document.getElementById(`hex_${idx}`);
-                    
-                    if (valueInput) {
-                        valueInput.value = '';
-                        valueInput.setAttribute('data-old-value', '');
-                    }
-                    if (hexInput) {
-                        hexInput.value = '';
-                        hexInput.setAttribute('data-old-value', '');
-                    }
-                    
-                    // Cập nhật giá trị cũ của thuộc tính
+                    markAllAttributesForDelete();
+                    // Xóa giá trị, mã màu (reset input)
+                    if (document.getElementById(`values_${idx}`)) document.getElementById(`values_${idx}`).value = '';
+                    if (document.getElementById(`hex_${idx}`)) document.getElementById(`hex_${idx}`).value = '';
                     this.setAttribute('data-old-value', newValue);
                 } else {
                     // Nếu người dùng không đồng ý, khôi phục lại giá trị cũ
@@ -522,50 +557,27 @@
             });
         });
 
-        // Thay đổi giá trị thuộc tính
-        Array.from(document.querySelectorAll('.attribute-values')).forEach((input, idx) => {
-            // Lưu giá trị ban đầu
-            input.setAttribute('data-old-value', input.value);
-
+        // Thay đổi giá trị hoặc mã màu
+        ['values_0','hex_0','values_1','hex_1'].forEach(function(id) {
+            const input = document.getElementById(id);
+            if (input) {
+                let oldVal = input.value;
             input.addEventListener('input', function() {
-                const oldValue = this.getAttribute('data-old-value');
-                const newValue = this.value;
-
-                // Nếu giá trị không thay đổi thì không cần xử lý
-                if (oldValue === newValue) {
-                    return;
-                }
-
-                // Tự động đánh dấu xóa biến thể và ảnh
+                    if (this.value !== oldVal) {
+                        if (!askedValueOrHex) {
+                            if (confirm('Thay đổi giá trị hoặc mã màu sẽ xóa toàn bộ biến thể. Bạn có chắc chắn?')) {
+                                askedValueOrHex = true;
                 markAllVariantImagesForDelete();
-                // Cập nhật giá trị cũ
-                this.setAttribute('data-old-value', newValue);
-
-                validateAttributeValues(idx);
-            });
-        });
-
-        // Thay đổi mã màu
-        Array.from(document.querySelectorAll('.attribute-hex')).forEach((input, idx) => {
-            // Lưu giá trị ban đầu
-            input.setAttribute('data-old-value', input.value);
-
-            input.addEventListener('input', function() {
-                const oldValue = this.getAttribute('data-old-value');
-                const newValue = this.value;
-
-                // Nếu giá trị không thay đổi thì không cần xử lý
-                if (oldValue === newValue) {
-                    return;
-                }
-
-                // Tự động đánh dấu xóa biến thể và ảnh
-                markAllVariantImagesForDelete();
-                // Cập nhật giá trị cũ
-                this.setAttribute('data-old-value', newValue);
-
-                validateHexValues(idx);
-            });
+                                oldVal = this.value;
+                            } else {
+                                this.value = oldVal;
+                            }
+                        } else {
+                            oldVal = this.value;
+                        }
+                    }
+                });
+            }
         });
 
         // Tạo lại biến thể
@@ -1120,6 +1132,28 @@
                         };
                         reader.readAsDataURL(file);
                     });
+                });
+            });
+        }
+
+        function markAllAttributesForDelete() {
+            // Lấy toàn bộ attribute_value_id từ các input hidden trong các variant-row
+            const form = document.getElementById('productForm');
+            // Xóa các input cũ để tránh trùng lặp
+            document.querySelectorAll('input[name="attributes_to_delete[]"]').forEach(e => e.remove());
+            document.querySelectorAll('.variant-row').forEach(row => {
+                row.querySelectorAll('input[name*="[attributes]"][name$="[attribute_type_id]"]').forEach(input => {
+                    const attrId = input.value;
+                    if (attrId) {
+                        // Thêm input ẩn vào form nếu chưa có
+                        if (!form.querySelector(`input[name="attributes_to_delete[]"][value="${attrId}"]`)) {
+                            const hidden = document.createElement('input');
+                            hidden.type = 'hidden';
+                            hidden.name = 'attributes_to_delete[]';
+                            hidden.value = attrId;
+                            form.appendChild(hidden);
+                        }
+                    }
                 });
             });
         }

@@ -28,13 +28,14 @@ use App\Http\Controllers\client\ProductController as ClientProductController;
 
 // Client 
 Route::get('/', [HomeController::class, 'index'])->name('home');
-Route::get('/productDetail', [ClientProductController::class, 'productDetail'])->name('productDetail');
+Route::get('/product/{id}', [ClientProductController::class, 'productDetail'])->name('product.detail');
 Route::get('/shop', [ShopController::class, 'index'])->name('shop');
 Route::get('/about', [AboutController::class, 'index'])->name('about');
 Route::get('/blog', [ClientBlogController::class, 'index'])->name('blog');
 Route::get('/contact', [ContactController::class, 'index'])->name('contact');
 Route::get('/cart', [CartController::class, 'index'])->name('cart');
 Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout');
+Route::post('/increment-view/{id}', [HomeController::class, 'incrementView'])->name('increment.view');
 
 //Contact Client
 Route::get('/contact', [ContactController::class, 'index'])->name('contact');
@@ -116,10 +117,10 @@ Route::prefix('admin')->middleware(['auth', 'role:admin|staff'])->name('admin.')
     Route::get('products', [ProductController::class, 'index'])->middleware('permission:view products')->name('products.index');
     Route::get('products/create', [ProductController::class, 'create'])->middleware('permission:create products')->name('products.create');
     Route::get('products/trash', [ProductController::class, 'trash'])->middleware('permission:trash products')->name('products.trash');
-    Route::post('products', [ProductController::class, 'store'])->middleware('permission:store products')->name('products.store');
+    Route::post('products', [ProductController::class, 'store'])->name('products.store');
     Route::get('products/{product}', [ProductController::class, 'show'])->middleware('permission:show products')->name('products.show');
     Route::get('products/{product}/edit', [ProductController::class, 'edit'])->middleware('permission:edit products')->name('products.edit');
-    Route::put('products/{product}', [ProductController::class, 'update'])->middleware('permission:update products')->name('products.update');
+    Route::put('products/{product}', [ProductController::class, 'update'])->name('products.update');
     Route::delete('products/{product}', [ProductController::class, 'destroy'])->middleware('permission:destroy products')->name('products.destroy');
     Route::post('products/{product}/restore', [ProductController::class, 'restore'])->middleware('permission:restore products')->name('products.restore');
 

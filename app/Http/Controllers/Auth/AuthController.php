@@ -2,12 +2,59 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\Session;
 
 class AuthController
 {
+    public function showRegisterForm()
+    {
+        return view('auth.register');
+    }
+    public function register(Request $request)
+    {
+        $request->validate([
+            'name' => 'required',
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required|min:6',
+            'address' => 'required',
+            'phone' => 'required',
+            'dob' => 'required|date',
+            'gender' => 'required|in:male,female,other',
+            'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ], [
+            'email.unique' => 'Email already exists',
+            'dob.required' => 'Date of birth is required',
+            'gender.in' => 'Gender must be Male or Female or Other',
+        ]);
+
+        $avatarPath = null;
+        if ($request->hasFile('avatar')) {
+            $file = $request->file('avatar');
+            $filename = time() . '_' . $file->getClientOriginalName();
+            $file->move(public_path('uploads/users/avatar'), $filename);
+            $avatarPath = 'uploads/users/avatar/' . $filename;
+        }
+
+        User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+            'address' => $request->address,
+            'phone' => $request->phone,
+            'dob' => $request->dob,
+            'gender' => $request->gender,
+            'avatar' => $avatarPath ?? null,
+        ]);
+
+        Role::findByName('user')->id;
+
+        return redirect('/login')->with('success', 'Register successfully!');
+    }
     public function showLoginForm()
     {
         return view('auth.login');

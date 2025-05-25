@@ -1,10 +1,10 @@
 @if (session('success'))
-    <div class="alert alert-success">
+    <div class="alert alert-success" id="success-alert">
         {{ session('success') }}
     </div>
 @endif
 @if (session('error'))
-    <div class="alert alert-danger">
+    <div class="alert alert-danger" id="error-alert">
         {{ session('error') }}
     </div>
 @endif
@@ -135,14 +135,14 @@
                 </div>
                 <div class="auth-footer row">
                     <div class="col my-1">
-                        <p class="m-0">Copyright © <a href="#">Codedthemes</a></p>
+                        <p class="m-0">Desgin By © <a href="https://www.facebook.com/nguyenbaoanhhh">Nguyen Bao Anh</a></p>
                     </div>
                     <div class="col-auto my-1">
-                        <ul class="list-inline footer-link mb-0">
+                        {{-- <ul class="list-inline footer-link mb-0">
                             <li class="list-inline-item"><a href="#">Home</a></li>
                             <li class="list-inline-item"><a href="#">Privacy Policy</a></li>
                             <li class="list-inline-item"><a href="#">Contact us</a></li>
-                        </ul>
+                        </ul> --}}
                     </div>
                 </div>
             </div>
@@ -158,7 +158,19 @@
     <script src="assets/js/pcoded.js"></script>
     <script src="assets/js/plugins/feather.min.js"></script>
 
+    <script>
+        function hideAlert(alertId) {
+            const alert = document.getElementById(alertId);
+            if (alert) {
+                setTimeout(() => {
+                    alert.style.display = 'none';
+                }, 3000); 
+            }
+        }
 
+        hideAlert('success-alert');
+        hideAlert('error-alert');
+    </script>
 
 
 

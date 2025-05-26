@@ -18,7 +18,7 @@
                                         </svg>
                                     </div> <!-- /.icon -->
                                     <div class="service-contents">
-                                        <p>43 Raymouth Rd. Baltemoer, London 3910</p>
+                                        <p>Keangnam Landmark Tower 72 Phạm Hùng, Mễ Trì, Nam Từ Liêm, Hà Nội</p>
                                     </div> <!-- /.service-contents-->
                                 </div> <!-- /.service -->
                             </div>
@@ -56,18 +56,24 @@
                             </div>
                         </div>
 
-                        <form>
+                        @if(session('success'))
+                                <div class="alert alert-success">
+                                    {{ session('success') }}
+                                </div>
+                            @endif
+                        <form id="contactForm" action="{{ route('contact.store') }}" method="post">
+                            @csrf
                             <div class="row">
                                 <div class="col-6">
                                     <div class="form-group">
-                                        <label class="text-black" for="fname">First name</label>
-                                        <input type="text" class="form-control" id="fname">
+                                        <label class="text-black" for="first_name">First name</label>
+                                        <input type="text" class="form-control" id="first_name" name="first_name" required>
                                     </div>
                                 </div>
                                 <div class="col-6">
                                     <div class="form-group">
-                                        <label class="text-black" for="lname">Last name</label>
-                                        <input type="text" class="form-control" id="lname">
+                                        <label class="text-black" for="last_name">Last name</label>
+                                        <input type="text" class="form-control" id="last_name" name="last_name" required>
                                     </div>
                                 </div>
                             </div>
@@ -75,22 +81,25 @@
                                 <div class="col-6">
                                     <div class="form-group">
                                         <label class="text-black" for="email">Email address</label>
-                                        <input type="email" class="form-control" id="email">
+                                        <input type="email" class="form-control" id="email" name="email" required>
                                     </div>
                                 </div>
                                 <div class="col-6">
                                     <div class="form-group">
                                         <label class="text-black" for="phone">Phone</label>
-                                        <input type="text" class="form-control" id="phone">
+                                        <input type="text" class="form-control" id="phone" name="phone">
                                     </div>
                                 </div>
                             </div>
 
-                            <div class="form-group mb-5">
+                            <div class="form-group mb-4">
                                 <label class="text-black" for="message">Message</label>
-                                <textarea name="" class="form-control" id="message" cols="30" rows="5"></textarea>
+                                <textarea name="message" class="form-control" id="message" cols="30" rows="5"></textarea>
                             </div>
-
+                            <div class="form-group mb-4">
+                                <input type="checkbox" name="subscribe" value="1" id="subscribe">
+                                <label for="subscribe">Tôi đồng ý nhận email khi có khuyến mãi và sản phẩm mới</label>
+                            </div>
                             <button type="submit" class="btn btn-primary-hover-outline">Send Message</button>
                         </form>
                     </div>
@@ -98,5 +107,6 @@
             </div>
         </div>
     </div>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <!-- End Contact Form -->
 @endsection

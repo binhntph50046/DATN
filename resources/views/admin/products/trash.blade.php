@@ -66,16 +66,14 @@
                             <table class="table table-hover table-borderless align-middle" style="font-size: 14px;">
                                 <thead>
                                     <tr>
-                                        <th class="text-nowrap">No.</th>
+                                        <th class="text-nowrap">ID</th>
                                         <th>Image</th>
-                                        <th class="text-nowrap">Product Name</th>
+                                        <th class="text-nowrap">Name</th>
                                         <th class="text-nowrap">Category</th>
-                                        <th class="text-nowrap">Selling Price</th>
+                                        <th class="text-nowrap">Price</th>
                                         <th class="text-nowrap">Stock</th>
-                                        <th class="text-nowrap">Type</th>
                                         <th class="text-nowrap">Status</th>
                                         <th class="text-nowrap">Featured</th>
-                                        <th class="text-nowrap">Deleted At</th>
                                         <th class="text-center text-nowrap">Actions</th>
                                     </tr>
                                 </thead>
@@ -84,60 +82,61 @@
                                         <tr>
                                             <td class="text-nowrap">{{ $products->firstItem() + $index }}</td>
                                             <td>
-                                                @if ($product->variants->first() && $product->variants->first()->image)
-                                                    <img src="{{ asset('uploads/' . $product->variants->first()->image) }}"
-                                                        alt="{{ $product->name }}"
-                                                        class="product-img-thumb"
-                                                        style="width: 100px; height: 100px; object-fit: cover; border-radius: 8px;">
+                                                @if ($product->default_variant_image || $product->variant_image)
+                                                    <img src="{{ asset($product->default_variant_image ?? $product->variant_image) }}"
+                                                         alt="{{ $product->name }}"
+                                                         class="product-img-thumb"
+                                                         style="width: 100px; height: 100px; object-fit: cover; border-radius: 8px;">
                                                 @else
                                                     <img src="{{ asset('uploads/default/default.jpg') }}"
-                                                        alt="default image"
-                                                        class="product-img-thumb"
-                                                        style="width: 100px; height: 100px; object-fit: cover; border-radius: 8px;">
+                                                         alt="default image"
+                                                         class="product-img-thumb"
+                                                         style="width: 100px; height: 100px; object-fit: cover; border-radius: 8px;">
                                                 @endif
                                             </td>
                                             <td class="text-nowrap" style="max-width: 140px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="{{ $product->name }}">
                                                 {{ $product->name }}
                                             </td>
                                             <td class="text-nowrap">{{ $product->category ? $product->category->name : 'N/A' }}</td>
-                                            <td class="text-nowrap">{{ number_format($product->variants->first()->selling_price ?? 0) }} VNĐ</td>
-                                            <td class="text-nowrap">{{ $product->variants->first()->stock ?? 0 }}</td>
                                             <td class="text-nowrap">
-                                                <span class="badge {{ $product->has_variants ? 'bg-info' : 'bg-secondary' }}">
-                                                    {{ $product->has_variants ? 'Has Variants' : 'Simple' }}
+                                                @php
+                                                    $variant = $product->variants->first();
+                                                    $price = $variant ? $variant->selling_price : 0;
+                                                    $discountPrice = $variant ? $variant->discount_price : 0;
+                                                @endphp
+                                                @if ($discountPrice > 0 && $discountPrice < $price)
+                                                    <span class="text-decoration-line-through text-muted">{{ number_format($price, 0, ',', '.') }} VNĐ</span>
+                                                    <br>
+                                                    <span class="text-danger fw-bold">{{ number_format($discountPrice, 0, ',', '.') }} VNĐ</span>
+                                                @else
+                                                    <span class="text-success fw-bold">{{ number_format($price, 0, ',', '.') }} VNĐ</span>
+                                                @endif
+                                            </td>
+                                            <td class="text-nowrap">{{ $product->variants->sum('stock') }}</td>
+                                            <td class="text-nowrap">
+                                                <span class="badge {{ $product->status === 'active' ? 'bg-success' : 'bg-danger' }}">
+                                                    {{ ucfirst($product->status) }}
                                                 </span>
                                             </td>
                                             <td class="text-nowrap">
-                                                <span class="badge {{ $product->status == 'active' ? 'bg-success' : 'bg-danger' }}">
-                                                    {{ $product->status == 'active' ? 'Active' : 'Inactive' }}
-                                                </span>
+                                                @if ($product->is_featured)
+                                                    <span class="badge bg-info">Featured</span>
+                                                @else
+                                                    <span class="badge bg-secondary">Normal</span>
+                                                @endif
                                             </td>
-                                            <td class="text-nowrap">
-                                                <span class="badge {{ $product->is_featured ? 'bg-warning' : 'bg-secondary' }}">
-                                                    {{ $product->is_featured ? 'Featured' : 'Not Featured' }}
-                                                </span>
-                                            </td>
-                                            <td class="text-nowrap">{{ $product->deleted_at ? $product->deleted_at->format('d/m/Y H:i') : 'N/A' }}</td>
                                             <td class="text-center text-nowrap">
                                                 <form action="{{ route('admin.products.restore', $product->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to restore this product?');">
                                                     @csrf
-                                                    @method('PATCH')
-                                                    <button type="submit" class="btn btn-success btn-sm rounded-3 me-2" title="Restore">
-                                                        <i class="ti ti-arrow-back-up"></i>
-                                                    </button>
-                                                </form>
-                                                <form action="{{ route('admin.products.forceDelete', $product->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this product permanently?');">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit" class="btn btn-danger btn-sm rounded-3" title="Delete Permanently">
-                                                        <i class="ti ti-trash"></i>
+                                                    <button type="submit" class="btn btn-success btn-sm rounded-3" title="Restore">
+                                                        <i class="ti ti-arrow-back-up"></i> Restore
                                                     </button>
                                                 </form>
                                             </td>
                                         </tr>
                                     @empty
                                         <tr>
-                                            <td colspan="11" class="text-center">No deleted products found.</td>
+                                            <td colspan="9" class="text-center">No deleted products found.</td>
                                         </tr>
                                     @endforelse
                                 </tbody>

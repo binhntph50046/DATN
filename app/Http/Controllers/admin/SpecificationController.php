@@ -75,4 +75,4 @@ class SpecificationController
         $specification->restore();
         return redirect()->route('admin.specifications.trash')->with('success', 'Thông số kỹ thuật đã được khôi phục thành công.');
     }
-} 
+}

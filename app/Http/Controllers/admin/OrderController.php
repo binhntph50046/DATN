@@ -57,49 +57,15 @@ class OrderController extends Controller
                 return response()->json(['success' => true, 'status' => $order->status]);
             }   
             return redirect()->route('admin.orders.show', $order->id)
-                ->with('success', 'Cập nhật trạng thái thành công');
+                ->with('success', 'Successfully updated order status');
         }
 
         if ($request->ajax() || $request->wantsJson()) {
             return response()->json(['success' => false]);
         }
         return redirect()->route('admin.orders.show', $order->id)
-            ->with('error', 'Không thể cập nhật trạng thái đơn hàng');
+            ->with('error', 'Cannot update order status');
     }
 }
 
-
-//     public function destroy(Order $order)
-//     {
-//         $order->delete();
-//         return redirect()->route('admin.orders.index')
-//             ->with('success', 'Successfully deleted order');
-//     }
-
-//     public function trash()
-//     {
-//         $orders = Order::onlyTrashed()->latest()->paginate(10);
-//         return view('admin.orders.trash', compact('orders'));
-//     }
-
-//     public function bulkRestore(Request $request)
-//     {
-//         $ids = $request->input('ids', []);
-//         if (!empty($ids)) {
-//             Order::withTrashed()->whereIn('id', $ids)->restore();
-//             return redirect()->route('admin.orders.trash')->with('success', 'Successfully restored selected orders!');
-//         }
-//         return redirect()->route('admin.orders.trash')->with('error', 'Please select at least one order!');
-//     }
-
-//     public function bulkForceDelete(Request $request)
-//     {
-//         $ids = $request->input('ids', []);
-//         if (!empty($ids)) {
-//             Order::withTrashed()->whereIn('id', $ids)->forceDelete();
-//             return redirect()->route('admin.orders.trash')->with('success', 'Successfully deleted selected orders!');
-//         }
-//         return redirect()->route('admin.orders.trash')->with('error', 'Please select at least one order!');
-//     }
-// }
 

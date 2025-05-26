@@ -31,7 +31,7 @@ class OrderController extends Controller
 
     public function show($id)
     {
-        $order = Order::withTrashed()->with(['user', 'items.product', 'items.productVariant'])->findOrFail($id);
+        $order = Order::withTrashed()->with(['user', 'items.product', 'items.variant'])->findOrFail($id);
         return view('admin.orders.show', compact('order'));
     }
 

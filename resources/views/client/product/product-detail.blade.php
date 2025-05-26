@@ -509,7 +509,7 @@
         document.querySelectorAll('.variant-group').forEach(function(group) {
             const label = group.querySelector('label.form-label');
             if (label) {
-                // Lấy tên thuộc tính từ label
+                // Lấy tên thuộc tính từ label, loại bỏ dấu : và trim
                 let typeName = label.textContent.split(':')[0].trim();
                 requiredTypes.push(typeName);
             }
@@ -524,7 +524,10 @@
                 document.querySelectorAll('.color-option, .storage-btn').forEach(el => el.classList.remove('active'));
 
                 selectedVariant.combinations.forEach(comb => {
-                    const typeName = comb.attribute_value.attribute_type.name;
+                    // Luôn trim tên thuộc tính
+                    const typeName = comb.attribute_value.attribute_type.name.trim();
+                    // Tìm key đúng trong requiredTypes (bất kể hoa/thường)
+                    const matchedType = requiredTypes.find(t => t.toLowerCase() === typeName.toLowerCase()) || typeName;
                     // Lấy value đúng dạng
                     let value = comb.attribute_value.value;
                     if (typeof value === 'string') {
@@ -532,11 +535,11 @@
                     }
                     value = Array.isArray(value) ? value[0] : value;
 
-                    selectedValues[typeName] = value;
-                    selectedVariants[typeName] = variantId;
+                    selectedValues[matchedType] = value;
+                    selectedVariants[matchedType] = variantId;
 
                     // Cập nhật trạng thái active cho các nút
-                    document.querySelectorAll('[data-attr-type=\"' + typeName + '\"]').forEach(el => {
+                    document.querySelectorAll('[data-attr-type="' + typeName + '"]').forEach(el => {
                         let elValue = el.getAttribute('data-color') || el.textContent.trim();
                         if (elValue == value) {
                             el.classList.add('active');
@@ -565,15 +568,16 @@
                 return;
             }
             // Remove active class from all swatches of this attribute type
-            document.querySelectorAll('.color-option[data-attr-type=\"' + typeName + '\"], .storage-btn[data-attr-type=\"' + typeName + '\"]').forEach(opt => opt.classList.remove('active'));
+            document.querySelectorAll('.color-option[data-attr-type="' + typeName + '"], .storage-btn[data-attr-type="' + typeName + '"]').forEach(opt => opt.classList.remove('active'));
             // Add active to current
             el.classList.add('active');
             // Update label nếu có
             const labelSpan = document.getElementById('selected-' + typeName + '-value');
             if (labelSpan) labelSpan.textContent = value;
             // Lưu lựa chọn
-            selectedVariants[typeName] = variantId;
-            selectedValues[typeName] = value;
+            const matchedType = requiredTypes.find(t => t.toLowerCase() === typeName.toLowerCase()) || typeName;
+            selectedVariants[matchedType] = variantId;
+            selectedValues[matchedType] = value;
             // Tìm variant id đúng với tất cả thuộc tính đã chọn
             let key = requiredTypes.map(type => selectedValues[type] || '').join('|');
             let matchedVariantId = attributeToVariant[key];
@@ -605,13 +609,16 @@
 
         document.getElementById('buyNowBtn').addEventListener('click', function(e) {
             const variantId = getSelectedVariantId();
+            const quantity = parseInt(document.getElementById('quantity').value) || 1;
+            const mainImage = document.getElementById('mainProductImage').src;
+
             if (!variantId) {
                 alert('Vui lòng chọn đầy đủ thuộc tính sản phẩm trước khi đặt hàng!');
                 e.preventDefault();
                 return false;
             }
-            // Thực hiện logic đặt hàng với variantId
-            // ...
+            // Chuyển hướng kèm query string
+            window.location.href = '/checkout?variant_id=' + variantId + '&quantity=' + quantity + '&image=' + encodeURIComponent(mainImage);
         });
 
         let currentImageIndex = 0;

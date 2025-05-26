@@ -35,6 +35,9 @@ Route::get('/blog', [ClientBlogController::class, 'index'])->name('blog');
 Route::get('/contact', [ContactController::class, 'index'])->name('contact');
 Route::get('/cart', [CartController::class, 'index'])->name('cart');
 Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout');
+Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
+
+
 Route::post('/increment-view/{id}', [HomeController::class, 'incrementView'])->name('increment.view');
 
 //Contact Client
@@ -156,4 +159,11 @@ Route::prefix('admin')->middleware(['auth', 'role:admin|staff'])->name('admin.')
         Route::get('/{contact}', [AdminContactController::class, 'show'])->name('show'); 
         Route::delete('/{contact}', [AdminContactController::class, 'destroy'])->name('delete');   
     });
+
+    
 });
+
+// Theo dõi đơn hàng sau khi đặt hàng
+Route::get('/order/tracking/{order}', [CheckoutController::class, 'tracking'])->name('order.tracking');
+Route::get('/order/invoice/{order}', [CheckoutController::class, 'invoice'])->name('order.invoice');
+Route::get('/order/resend-invoice/{order}', [CheckoutController::class, 'resendInvoice'])->name('order.resend-invoice');

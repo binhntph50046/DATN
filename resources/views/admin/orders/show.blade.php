@@ -133,7 +133,13 @@
                                         </tr>
                                         <tr>
                                             <th>Image:</th>
-                                            <td><img src="{{ $item->productVariant->image }}" alt="{{ $item->productVariant->name }}" style="width: 100px; height: 100px;"></td>
+                                            @php
+                                                $images = $item->variant && $item->variant->images ? json_decode($item->variant->images, true) : [];
+                                                $imgSrc = isset($images[0]) ? asset($images[0]) : asset('uploads/default/default.jpg');
+                                            @endphp
+                                            <td>
+                                                <img src="{{ $imgSrc }}" alt="{{ $item->variant->name ?? '' }}" style="width: 100px; height: 100px;">
+                                            </td>
                                         </tr>
                                         <tr>
                                             <th>Quantity:</th>

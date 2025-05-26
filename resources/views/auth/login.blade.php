@@ -93,8 +93,8 @@
                                 </div>
                                 {{-- <a href="{{ route('password.request') }}" class="text-secondary f-w-400">Forgot Password?</a> --}}
                             </div>
-                            <div class="d-grid mt-4">
-                                <button type="submit" class="btn btn-primary">Login</button>
+                            <div class="d-grid mt-4 justify-content-center">
+                                <button type="submit" style="width: 200px" class="btn btn-primary">Login</button>
                             </div>
                             <div class="saprator mt-3">
                                 <span>Login with</span>

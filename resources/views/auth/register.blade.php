@@ -117,11 +117,6 @@
                                 </div>
 
                                 <div class="col-md-6 mb-3">
-                                    <label class="form-label">Avatar</label>
-                                    <input type="file" name="avatar" class="form-control">
-                                </div>
-
-                                <div class="form-group mb-3">
                                     <label class="form-label">Password</label>
                                     <input type="password" name="password" class="form-control"
                                         placeholder="Password">

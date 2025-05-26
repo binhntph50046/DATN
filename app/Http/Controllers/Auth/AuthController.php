@@ -26,20 +26,11 @@ class AuthController
             'phone' => 'required',
             'dob' => 'required|date',
             'gender' => 'required|in:male,female,other',
-            'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ], [
             'email.unique' => 'Email already exists',
             'dob.required' => 'Date of birth is required',
             'gender.in' => 'Gender must be Male or Female or Other',
         ]);
-
-        $avatarPath = null;
-        if ($request->hasFile('avatar')) {
-            $file = $request->file('avatar');
-            $filename = time() . '_' . $file->getClientOriginalName();
-            $file->move(public_path('uploads/users/avatar'), $filename);
-            $avatarPath = 'uploads/users/avatar/' . $filename;
-        }
 
         $user = User::create([
             'name' => $request->name,
@@ -49,7 +40,6 @@ class AuthController
             'phone' => $request->phone,
             'dob' => $request->dob,
             'gender' => $request->gender,
-            'avatar' => $avatarPath,
         ]);
 
         $user->assignRole('user');

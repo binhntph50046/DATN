@@ -489,6 +489,15 @@
                     validateAttributeType(idx);
                 });
             });
+
+            // Thêm sự kiện cho nút xóa ảnh
+            document.querySelectorAll('.remove-image').forEach(button => {
+                button.addEventListener('click', function() {
+                    const imagePath = this.dataset.image;
+                    const variantIndex = this.dataset.variant;
+                    markImageForDelete(imagePath, variantIndex);
+                });
+            });
         });
 
         // Thay đổi danh mục
@@ -504,7 +513,7 @@
                 if (!askedCategory) {
                     if (confirm('Thay đổi danh mục sẽ xóa toàn bộ thuộc tính, giá trị thuộc tính, mã màu và biến thể. Bạn có chắc chắn?')) {
                         askedCategory = true;
-                    markAllVariantImagesForDelete();
+                        markAllVariantImagesForDelete();
                         markAllAttributesForDelete();
                         // Xóa thuộc tính, giá trị, mã màu (reset input)
                         document.getElementById('attribute_type_0').selectedIndex = 0;
@@ -617,7 +626,7 @@
                 // Xử lý images_to_delete
                 if (imagesToDelete && imagesToDelete.size > 0) {
                     Array.from(imagesToDelete).forEach(path => {
-                        if (path) { // chỉ thêm nếu có path thực sự
+                        if (path) {
                             const input = document.createElement('input');
                             input.type = 'hidden';
                             input.name = 'images_to_delete[]';
@@ -1157,5 +1166,29 @@
                 });
             });
         }
+
+        function markImageForDelete(imagePath, variantIndex) {
+            imagesToDelete.add(imagePath);
+            // Ẩn cả khối div chứa ảnh và nút xóa
+            const previewContainer = document.getElementById(`preview-${variantIndex}`);
+            if (previewContainer) {
+                const btns = previewContainer.querySelectorAll('.remove-image');
+                btns.forEach(btn => {
+                    if (btn.dataset.image === imagePath) {
+                        btn.parentElement.style.display = 'none';
+                    }
+                });
+            }
+        }
+
+        // Thêm event delegation cho nút xóa ảnh
+        document.addEventListener('click', function(e) {
+            if (e.target.closest('.remove-image')) {
+                const btn = e.target.closest('.remove-image');
+                const imagePath = btn.dataset.image;
+                const variantIndex = btn.dataset.variant;
+                markImageForDelete(imagePath, variantIndex);
+            }
+        });
     </script>
 @endsection

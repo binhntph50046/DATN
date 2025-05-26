@@ -6,7 +6,7 @@ use App\Models\Product;
 
 class ProductController
 {
-    public function productDetail($id)
+    public function productDetail($slug)
     {
         $product = Product::with([
             'category',
@@ -15,14 +15,14 @@ class ProductController
             },
             'specifications.specification',
             'defaultVariant'
-        ])->findOrFail($id);
+        ])->where('slug', $slug)->firstOrFail();
             
         // Increment view count
         $product->increment('views');
         
         // Get related products (same category, excluding current product)
         $relatedProducts = Product::where('category_id', $product->category_id)
-            ->where('id', '!=', $id)
+            ->where('slug', '!=', $slug)
             ->take(4)
             ->get();
             

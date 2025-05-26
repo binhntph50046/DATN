@@ -171,9 +171,24 @@ class ProductController
 
             // Handle marked images for deletion
             if ($request->has('images_to_delete')) {
-                $imagesToDelete = is_string($request->images_to_delete) ? json_decode($request->images_to_delete, true) : $request->images_to_delete;
-                if (is_array($imagesToDelete)) {
-                    foreach ($imagesToDelete as $imagePath) {
+                $imagesToDelete = is_array($request->images_to_delete) ? $request->images_to_delete : [];
+                foreach ($imagesToDelete as $imagePath) {
+                    // Xóa ảnh khỏi variant
+                    $variants = $product->variants;
+                    foreach ($variants as $variant) {
+                        $images = json_decode($variant->images, true);
+                        if (is_array($images)) {
+                            $images = array_filter($images, function($img) use ($imagePath) {
+                                return $img !== $imagePath;
+                            });
+                            $variant->images = json_encode(array_values($images));
+                            $variant->save();
+                        }
+                    }
+
+                    // Xóa file vật lý nếu không còn variant nào sử dụng
+                    $imageVariantsCount = ProductVariant::where('images', 'like', '%"' . addslashes($imagePath) . '"%')->count();
+                    if ($imageVariantsCount == 0) {
                         $fullPath = public_path($imagePath);
                         if (file_exists($fullPath)) {
                             @unlink($fullPath);
@@ -256,7 +271,7 @@ class ProductController
                                 }
                             }
                         }
-                        $variant->forceDelete();
+                        $variant->delete();
                     }
                 }
 
@@ -472,7 +487,7 @@ class ProductController
 
         // Load variants with combinations and images
         $product->load(['variants' => function($query) {
-            $query->with(['combinations.attributeValue.attributeType']);
+            $query->whereNull('deleted_at')->with(['combinations.attributeValue.attributeType']);
         }]);
 
         // Prepare attributeValues for form (gộp tất cả giá trị của từng attribute_type_id từ tất cả biến thể)

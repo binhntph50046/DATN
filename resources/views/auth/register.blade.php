@@ -58,8 +58,7 @@
         <div class="auth-wrapper v3">
             <div class="auth-form">
                 <div class="auth-header">
-                    <a href="#"><img src="{{ asset('uploads/images/petshop.PNG') }}" width="70px"
-                            alt="img"></a>
+                    <a href="#"><img src="/images/logo/Apple_Store.png" width="190px" alt="img"></a>
                 </div>
                 <div class="card my-5" style="max-width: 750px;">
                     <div class="card-body">

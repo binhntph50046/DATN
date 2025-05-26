@@ -58,8 +58,7 @@
         <div class="auth-wrapper v3">
             <div class="auth-form">
                 <div class="auth-header">
-                    <a href="#"><img src="{{ asset('uploads/images/petshop.PNG') }}" width="70px"
-                            alt="img"></a>
+                    <a href="#"><img src="/images/logo/Apple_Store.png" width="190px" alt="img"></a>
                 </div>
                 <div class="card my-5">
                     <div class="card-body">
@@ -135,7 +134,8 @@
                 </div>
                 <div class="auth-footer row">
                     <div class="col my-1">
-                        <p class="m-0">Desgin By © <a href="https://www.facebook.com/nguyenbaoanhhh">Nguyen Bao Anh</a></p>
+                        <p class="m-0">Desgin By © <a href="https://www.facebook.com/nguyenbaoanhhh">Nguyen Bao
+                                Anh</a></p>
                     </div>
                     <div class="col-auto my-1">
                         {{-- <ul class="list-inline footer-link mb-0">
@@ -164,7 +164,7 @@
             if (alert) {
                 setTimeout(() => {
                     alert.style.display = 'none';
-                }, 3000); 
+                }, 3000);
             }
         }
 

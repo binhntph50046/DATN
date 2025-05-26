@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\Session;
@@ -40,7 +41,7 @@ class AuthController
             $avatarPath = 'uploads/users/avatar/' . $filename;
         }
 
-        User::create([
+        $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
@@ -48,10 +49,16 @@ class AuthController
             'phone' => $request->phone,
             'dob' => $request->dob,
             'gender' => $request->gender,
-            'avatar' => $avatarPath ?? null,
+            'avatar' => $avatarPath,
         ]);
 
-        Role::findByName('user')->id;
+        $user->assignRole('user');
+        
+        // DB::table('model_has_roles')->insert([
+        //     'role_id' => 3,
+        //     'model_type' => User::class,
+        //     'model_id' => $user->id
+        // ]);
 
         return redirect('/login')->with('success', 'Register successfully!');
     }

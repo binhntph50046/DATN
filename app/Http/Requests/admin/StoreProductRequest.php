@@ -20,6 +20,7 @@ class StoreProductRequest extends FormRequest
             'description' => 'nullable|string',
             'content' => 'nullable|string',
             'is_featured' => 'nullable|boolean',
+            'views' => 'nullable|integer|in:0',
             'specifications' => 'nullable|array',
             'specifications.*.specification_id' => 'required_with:specifications.*.value|exists:specifications,id',
             'specifications.*.value' => 'nullable|string|max:255',
@@ -56,6 +57,8 @@ class StoreProductRequest extends FormRequest
             'category_id.required' => 'Please select a category.',
             'category_id.exists' => 'Invalid category.',
             'warranty_months.integer' => 'Warranty period must be an integer.',
+            'views.integer' => 'Views must be an integer.',
+            'views.in' => 'Views must be 0 for new products.',
             'specifications.*.specification_id.required_with' => 'Specification ID is required when value is provided.',
             'specifications.*.specification_id.exists' => 'Invalid specification.',
             'attributes.required' => 'At least one attribute is required to create variants.',
@@ -128,6 +131,11 @@ class StoreProductRequest extends FormRequest
                     }
                 }
             }
+
+            // Ensure views is 0 for new products
+            if ($this->has('views') && $this->input('views') !== 0) {
+                $validator->errors()->add('views', 'Views must be 0 for new products.');
+            }
         });
     }
 
@@ -154,6 +162,9 @@ class StoreProductRequest extends FormRequest
             }
         }
         
-        $this->merge(['attributes' => $attributes]);
+        $this->merge([
+            'attributes' => $attributes,
+            'views' => 0 // Always set views to 0 for new products
+        ]);
     }
 }

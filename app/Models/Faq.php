@@ -5,8 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Subscriber extends Model
+class Faq extends Model
 {
     use SoftDeletes;
-    protected $fillable = ['email', 'name'];
+    protected $fillable = ['question', 'answer', 'keywords', 'status'];
 }

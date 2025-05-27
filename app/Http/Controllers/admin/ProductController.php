@@ -152,6 +152,8 @@ class ProductController
             // Ensure at least one default variant
             $this->ensureDefaultVariant($product);
 
+            // Gửi sự kiện tạo sản phẩm
+            event(new \App\Mail\ProductCreated($product));
             DB::commit();
             return redirect()->route('admin.products.index')->with('success', 'Product created successfully!');
         } catch (\Exception $e) {

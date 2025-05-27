@@ -14,6 +14,8 @@ use App\Http\Controllers\admin\RoleController;
 use App\Http\Controllers\admin\SpecificationController;
 use App\Http\Controllers\admin\VoucherController;
 use App\Http\Controllers\admin\AdminContactController;
+use App\Http\Controllers\admin\SubcriberController;
+use App\Http\Controllers\admin\FaqController;
 use App\Http\Controllers\auth\AuthController;
 
 // Client 
@@ -24,6 +26,7 @@ use App\Http\Controllers\client\BlogController as ClientBlogController;
 use App\Http\Controllers\client\CartController;
 use App\Http\Controllers\client\CheckoutController;
 use App\Http\Controllers\client\ContactController;
+use App\Http\Controllers\client\ChatBotController;
 use App\Http\Controllers\client\ProductController as ClientProductController;
 
 // Client 
@@ -39,6 +42,11 @@ Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout');
 //Contact Client
 Route::get('/contact', [ContactController::class, 'index'])->name('contact');
 Route::post('/contact', [ContactController::class, 'store'])->name('contact.store');
+
+//Subcribe
+Route::post('/subscribe', [\App\Http\Controllers\client\SubscribeController::class, 'store'])->name('subscribe.store');
+
+//Chatbot
 
 // Authentication routes
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
@@ -147,11 +155,34 @@ Route::prefix('admin')->middleware(['auth', 'role:admin|staff'])->name('admin.')
     // Voucher Routes
     Route::resource('vouchers', VoucherController::class)->middleware('permission:view vouchers');
 
-     //Contact Admin
+    //Contact Admin
     Route::prefix('contacts')->name('contacts.')->group(function () {
         Route::get('/', [AdminContactController::class, 'index'])->name('index');
-        Route::get('/{contact}', [AdminContactController::class, 'show'])->name('show'); 
-        Route::delete('/{contact}', [AdminContactController::class, 'destroy'])->name('delete');   
+        Route::get('/trash', [AdminContactController::class, 'trash'])->name('trash');
+        Route::get('/{contact}', [AdminContactController::class, 'show'])->name('show');
+        Route::delete('/{contact}', [AdminContactController::class, 'destroy'])->name('delete');
+        Route::patch('/restore/{id}', [AdminContactController::class, 'restore'])->name('restore');
+        Route::delete('/force-delete/{id}', [AdminContactController::class, 'forceDelete'])->name('forceDelete');
+    });
+    //Subscriber Admin
+    Route::prefix('subscribers')->name('subscribers.')->group(function () {
+        Route::get('/', [SubcriberController::class, 'index'])->name('index');
+        Route::delete('/{subscribers}', [SubcriberController::class, 'destroy'])->name('delete');
+        Route::get('/trash', [SubcriberController::class, 'trash'])->name('trash');
+        Route::patch('/restore/{id}', [SubcriberController::class, 'restore'])->name('restore');
+    });
+    // FAQ Routes
+    Route::prefix('faqs')->name('faqs.')->group(function () {
+        Route::get('/', [FaqController::class, 'index'])->name('index');
+        Route::get('/create', [FaqController::class, 'create'])->name('create');
+        Route::post('/', [FaqController::class, 'store'])->name('store');
+        Route::get('/{faq}', [FaqController::class, 'show'])->name('show');
+        Route::get('/{faq}/edit', [FaqController::class, 'edit'])->name('edit');
+        Route::put('/{faq}', [FaqController::class, 'update'])->name('update');
+        Route::delete('/{faq}', [FaqController::class, 'destroy'])->name('destroy');
+        Route::get('/trash', [FaqController::class, 'trash'])->name('trash');
+        Route::post('/{faq}/restore', [FaqController::class, 'restore'])->name('restore');
+        Route::delete('/{faq}/forceDelete', [FaqController::class, 'forceDelete'])->name('forceDelete');
     });
 });
 

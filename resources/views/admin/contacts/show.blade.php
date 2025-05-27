@@ -21,10 +21,10 @@
         <div class="row">
             <div class="col-12">
                 <div class="card">
-                    <div class="card-header">
+                    <div class="card-header d-flex justify-content-between align-items-center">
                         <h5>Contact Details</h5>
-                        <a href="{{ route('admin.contacts.index') }}" class="btn btn-sm btn-light">
-                            <i class="ti ti-arrow-left"></i> Back
+                        <a href="{{ route('admin.contacts.index') }}" class="btn btn-secondary btn-sm rounded-3">
+                            <i class="ti ti-arrow-left"></i> Back to List
                         </a>
                     </div>
                     <div class="card-body">

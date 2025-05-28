@@ -47,7 +47,7 @@
                                 <label for="image" class="form-label">Image</label>
                                 @if ($banner->image)
                                     <div class="mb-2">
-                                        <img src="{{ asset('storage/' . $banner->image) }}" alt="Current Image" width="200">
+                                        <img src="{{ asset($banner->image) }}" alt="Current Image" width="200">
                                     </div>
                                 @endif
                                 <input type="file" class="form-control @error('image') is-invalid @enderror" id="image" name="image">

@@ -187,7 +187,7 @@ a.more {
 
 .hero p {
   color: rgba(255, 255, 255, 0.5);
-  margin-botom: 30px;
+  margin-bottom: 30px;
 }
 
 .hero .hero-img-wrap {
@@ -1292,9 +1292,15 @@ textarea {
   overflow: hidden;
   border-radius: 10px;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  max-width: 550px;
+  margin: 0 auto;
 }
 
 #quickViewModal .main-image img {
+  width: 100%;
+  height: auto;
+  max-height: 550px;
+  object-fit: contain;
   transition: transform 0.3s ease;
 }
 
@@ -1490,11 +1496,15 @@ textarea {
   border-radius: 10px;
   overflow: hidden;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  max-width: 450px;
+  margin: 0 auto;
 }
 
 .product-gallery .main-image img {
   width: 100%;
   height: auto;
+  max-height: 450px;
+  object-fit: contain;
   transition: transform 0.3s ease;
 }
 

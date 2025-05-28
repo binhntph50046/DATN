@@ -52,6 +52,7 @@ class ProductController
                 'content' => $request->content,
                 'is_featured' => $request->has('is_featured') ? 1 : 0,
                 'status' => 'active',
+                'views' => 0, // Set default views to 0
             ];
 
             $product = Product::create($productData);
@@ -170,9 +171,24 @@ class ProductController
 
             // Handle marked images for deletion
             if ($request->has('images_to_delete')) {
-                $imagesToDelete = is_string($request->images_to_delete) ? json_decode($request->images_to_delete, true) : $request->images_to_delete;
-                if (is_array($imagesToDelete)) {
-                    foreach ($imagesToDelete as $imagePath) {
+                $imagesToDelete = is_array($request->images_to_delete) ? $request->images_to_delete : [];
+                foreach ($imagesToDelete as $imagePath) {
+                    // Xóa ảnh khỏi variant
+                    $variants = $product->variants;
+                    foreach ($variants as $variant) {
+                        $images = json_decode($variant->images, true);
+                        if (is_array($images)) {
+                            $images = array_filter($images, function($img) use ($imagePath) {
+                                return $img !== $imagePath;
+                            });
+                            $variant->images = json_encode(array_values($images));
+                            $variant->save();
+                        }
+                    }
+
+                    // Xóa file vật lý nếu không còn variant nào sử dụng
+                    $imageVariantsCount = ProductVariant::where('images', 'like', '%"' . addslashes($imagePath) . '"%')->count();
+                    if ($imageVariantsCount == 0) {
                         $fullPath = public_path($imagePath);
                         if (file_exists($fullPath)) {
                             @unlink($fullPath);
@@ -255,7 +271,7 @@ class ProductController
                                 }
                             }
                         }
-                        $variant->forceDelete();
+                        $variant->delete();
                     }
                 }
 
@@ -420,6 +436,18 @@ class ProductController
             // Ensure at least one default variant
             $this->ensureDefaultVariant($product);
 
+            // Trong hàm update, sau khi xử lý variants_to_delete và images_to_delete, thêm xử lý attributes_to_delete nếu có
+            if ($request->has('attributes_to_delete')) {
+                $attributesToDelete = is_array($request->attributes_to_delete) ? $request->attributes_to_delete : [];
+                foreach ($attributesToDelete as $attrId) {
+                    // Xóa thật attribute value (nếu không còn combination nào dùng)
+                    $count = \App\Models\VariantCombination::where('attribute_value_id', $attrId)->count();
+                    if ($count == 0) {
+                        \App\Models\VariantAttributeValue::withTrashed()->where('id', $attrId)->forceDelete();
+                    }
+                }
+            }
+
             DB::commit();
             return redirect()->route('admin.products.index')->with('success', 'Product updated successfully!');
         } catch (\Exception $e) {
@@ -459,21 +487,51 @@ class ProductController
 
         // Load variants with combinations and images
         $product->load(['variants' => function($query) {
-            $query->with(['combinations.attributeValue.attributeType']);
+            $query->whereNull('deleted_at')->with(['combinations.attributeValue.attributeType']);
         }]);
 
-        // Prepare attributeValues for form (if there are variants)
+        // Prepare attributeValues for form (gộp tất cả giá trị của từng attribute_type_id từ tất cả biến thể)
         $attributeValues = [];
         if ($product->variants->isNotEmpty()) {
-            $firstVariant = $product->variants->first();
-            if ($firstVariant && $firstVariant->combinations->isNotEmpty()) {
-                foreach ($firstVariant->combinations as $comb) {
-                    $attributeValues[] = [
-                        'attribute_type_id' => $comb->attributeValue->attribute_type_id,
-                        'value' => $comb->attributeValue->value,
-                        'hex' => $comb->attributeValue->hex,
-                    ];
+            $attributeMap = [];
+            foreach ($product->variants as $variant) {
+                foreach ($variant->combinations as $comb) {
+                    $typeId = $comb->attributeValue->attribute_type_id;
+                    // Value
+                    $value = $comb->attributeValue->value;
+                    if (is_string($value)) {
+                        $decoded = json_decode($value, true);
+                        $value = is_array($decoded) ? $decoded : [$value];
+                    }
+                    // Hex
+                    $hex = $comb->attributeValue->hex;
+                    if (is_string($hex)) {
+                        $decoded = json_decode($hex, true);
+                        $hex = is_array($decoded) ? $decoded : [$hex];
+                    }
+                    // Gộp value/hex theo typeId
+                    if (!isset($attributeMap[$typeId])) {
+                        $attributeMap[$typeId] = ['value' => [], 'hex' => []];
+                    }
+                    foreach ($value as $v) {
+                        if ($v !== '' && !in_array($v, $attributeMap[$typeId]['value'])) {
+                            $attributeMap[$typeId]['value'][] = $v;
+                        }
+                    }
+                    foreach ($hex as $h) {
+                        if ($h !== '' && !in_array($h, $attributeMap[$typeId]['hex'])) {
+                            $attributeMap[$typeId]['hex'][] = $h;
+                        }
+                    }
                 }
+            }
+            // Đưa về dạng mảng cho view
+            foreach ($attributeMap as $typeId => $data) {
+                $attributeValues[] = [
+                    'attribute_type_id' => $typeId,
+                    'value' => $data['value'],
+                    'hex' => $data['hex'],
+                    ];
             }
         }
 

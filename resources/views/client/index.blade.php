@@ -122,69 +122,80 @@
             <div class="row justify-content-between">
                 <!-- Start Products Column -->
                 <div class="col-lg-8">
-                    <div class="row">
-                        <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="100">
-                            <a class="product-item" href="#">
-                                <img src="images/product-1.png" class="img-fluid product-thumbnail">
-                                <h3 class="product-title">Nordic Chair</h3>
-                                <strong class="product-price">$50.00</strong>
-                                <div class="product-rating">
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <span>(4.9)</span>
-                                </div>
-                                <div class="product-icons">
-                                    <span class="icon-add-to-cart"><i class="fas fa-cart-plus"></i></span>
-                                    <span class="icon-heart"><i class="fas fa-heart"></i></span>
-                                    <span class="icon-quick-view"><i class="fas fa-eye"></i></span>
-                                </div>
-                            </a>
-                        </div>
+                    <div class="product-slider">
+                        @foreach ($mostViewedProducts as $productGroup)
+                            <div class="product-row">
+                                @foreach ($productGroup as $product)
+                                    <div class="col-md-4 mb-4" data-aos="fade-up"
+                                        data-aos-delay="{{ $loop->iteration * 100 }}">
+                                        <a class="product-item" href="{{ route('product.detail', $product->slug) }}"
+                                            onclick="incrementView('{{ $product->id }}')">
+                                            <div class="product-thumbnail text-center">
+                                                @php
+                                                    $defaultImage = asset('uploads/default/default.jpg');
+                                                    $variantImage = null;
+                                                    $defaultVariant = $product->variants->first();
 
-                        <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="200">
-                            <a class="product-item" href="#">
-                                <img src="images/product-2.png" class="img-fluid product-thumbnail">
-                                <h3 class="product-title">Kruzo Aero Chair</h3>
-                                <strong class="product-price">$78.00</strong>
-                                <div class="product-rating">
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star-half-alt"></i>
-                                    <span>(4.7)</span>
-                                </div>
-                                <div class="product-icons">
-                                    <span class="icon-add-to-cart"><i class="fas fa-cart-plus"></i></span>
-                                    <span class="icon-heart"><i class="fas fa-heart"></i></span>
-                                    <span class="icon-quick-view"><i class="fas fa-eye"></i></span>
-                                </div>
-                            </a>
-                        </div>
+                                                    if ($defaultVariant && $defaultVariant->images) {
+                                                        $images = json_decode($defaultVariant->images, true);
+                                                        if (!empty($images[0])) {
+                                                            $variantImage = asset($images[0]);
+                                                        }
+                                                    }
 
-                        <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="300">
-                            <a class="product-item" href="#">
-                                <img src="images/product-3.png" class="img-fluid product-thumbnail">
-                                <h3 class="product-title">Ergonomic Chair</h3>
-                                <strong class="product-price">$43.00</strong>
-                                <div class="product-rating">
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <i class="fas fa-star"></i>
-                                    <span>(4.8)</span>
-                                </div>
-                                <div class="product-icons">
-                                    <span class="icon-add-to-cart"><i class="fas fa-cart-plus"></i></span>
-                                    <span class="icon-heart"><i class="fas fa-heart"></i></span>
-                                    <span class="icon-quick-view"><i class="fas fa-eye"></i></span>
-                                </div>
-                            </a>
-                        </div>
+                                                    if (!$variantImage) {
+                                                        $otherVariant = $product->variants->skip(1)->first();
+                                                        if ($otherVariant && $otherVariant->images) {
+                                                            $images = json_decode($otherVariant->images, true);
+                                                            if (!empty($images[0])) {
+                                                                $variantImage = asset($images[0]);
+                                                            }
+                                                        }
+                                                    }
+                                                @endphp
+
+                                                <img src="{{ $variantImage ?? $defaultImage }}" class="img-fluid mx-auto"
+                                                    alt="{{ $product->name }}"
+                                                    style="max-height: 200px; object-fit: contain;">
+                                            </div>
+                                            <h3 class="product-title text-center">{{ $product->name }}</h3>
+                                            <div class="product-price-and-rating text-center">
+                                                @if ($product->variants->isNotEmpty())
+                                                    @php
+                                                        $variant = $product->variants->first();
+                                                    @endphp
+                                                    @if ($variant->discount_price)
+                                                        <strong
+                                                            class="product-price text-decoration-line-through text-muted">{{ number_format($variant->selling_price) }}đ</strong>
+                                                        <strong
+                                                            class="product-price text-danger ms-2">{{ number_format($variant->discount_price) }}đ</strong>
+                                                    @else
+                                                        <strong
+                                                            class="product-price">{{ number_format($variant->selling_price) }}đ</strong>
+                                                    @endif
+                                                @endif
+                                                <div
+                                                    class="product-rating d-flex justify-content-center align-items-center">
+                                                    <i class="fas fa-star"></i>
+                                                    <i class="fas fa-star"></i>
+                                                    <i class="fas fa-star"></i>
+                                                    <i class="fas fa-star"></i>
+                                                    <i class="fas fa-star"></i>
+                                                    <span>({{ number_format($product->views) }} views)</span>
+                                                </div>
+                                            </div>
+                                            <div class="product-icons">
+                                                <span class="icon-add-to-cart"><i class="fas fa-cart-plus"></i></span>
+                                                <span class="icon-heart"><i class="fas fa-heart"></i></span>
+                                                <span class="icon-quick-view"
+                                                    onclick="event.preventDefault(); showQuickView({{ $product->id }})"><i
+                                                        class="fas fa-eye"></i></span>
+                                            </div>
+                                        </a>
+                                    </div>
+                                @endforeach
+                            </div>
+                        @endforeach
                     </div>
                 </div>
                 <!-- End Products Column -->
@@ -193,30 +204,30 @@
                 <div class="col-lg-4">
                     <div class="popular-content" data-aos="fade-left" data-aos-delay="400">
                         <h2 class="section-title">Most Popular Products</h2>
-                        <p class="mb-4">Discover our best-selling furniture pieces that have captured the hearts of
-                            thousands of customers worldwide. These products are consistently rated highly for their
-                            exceptional quality, comfort, and design.</p>
+                        <p class="mb-4">Experience our most sought-after devices that have redefined innovation and
+                            design. These products represent the perfect blend of cutting-edge technology and elegant
+                            craftsmanship, setting new standards in the industry.</p>
 
                         <div class="popular-features">
                             <div class="feature-item">
                                 <i class="fas fa-check-circle"></i>
-                                <span>Premium Quality Materials</span>
+                                <span>Revolutionary Technology</span>
                             </div>
                             <div class="feature-item">
                                 <i class="fas fa-check-circle"></i>
-                                <span>Ergonomic Design</span>
+                                <span>Premium Build Quality</span>
                             </div>
                             <div class="feature-item">
                                 <i class="fas fa-check-circle"></i>
-                                <span>5-Star Customer Ratings</span>
+                                <span>Seamless Integration</span>
                             </div>
                             <div class="feature-item">
                                 <i class="fas fa-check-circle"></i>
-                                <span>Free Shipping Available</span>
+                                <span>Global Warranty Support</span>
                             </div>
                         </div>
 
-                        <p><a href="shop.html" class="btn">View All Products</a></p>
+                        <p><a href="{{ route('shop') }}" class="btn">View All Products</a></p>
                     </div>
                 </div>
                 <!-- End Text Column -->
@@ -229,85 +240,86 @@
     <div class="product-section" data-aos="fade-up">
         <div class="container">
             <div class="row">
-
                 <!-- Start Column 1 -->
                 <div class="col-md-12 col-lg-3 mb-5 mb-lg-0" data-aos="fade-right" data-aos-delay="100">
-                    <h2 class="mb-4 section-title">Crafted with excellent material.</h2>
-                    <p class="mb-4">Donec vitae odio quis nisl dapibus malesuada. Nullam ac aliquet velit. Aliquam
-                        vulputate velit imperdiet dolor tempor tristique. </p>
-                    <p><a href="shop.html" class="btn">Explore</a></p>
+                    <h2 class="mb-4 section-title">Designed for the future.</h2>
+                    <p class="mb-4">Our devices are crafted with precision and care, using the finest materials and most
+                        advanced technology. Every detail is meticulously considered to create products that are not just
+                        tools, but works of art that enhance your digital lifestyle.</p>
+                    <p><a href="{{ route('shop') }}" class="btn">Explore</a></p>
                 </div>
                 <!-- End Column 1 -->
 
-                <!-- Start Column 2 -->
-                <div class="col-12 col-md-4 col-lg-3 mb-5 mb-md-0" data-aos="fade-up" data-aos-delay="200">
-                    <a class="product-item" href="/product-detail.html">
-                        <img src="images/product-1.png" class="img-fluid product-thumbnail">
-                        <h3 class="product-title">Nordic Chair</h3>
-                        <strong class="product-price">$50.00</strong>
-                        <div class="product-rating">
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <span>(4.9)</span>
-                        </div>
-                        <div class="product-icons">
-                            <span class="icon-add-to-cart"><i class="fas fa-cart-plus"></i></span>
-                            <span class="icon-heart"><i class="fas fa-heart"></i></span>
-                            <span class="icon-quick-view"><i class="fas fa-eye"></i></span>
-                        </div>
-                    </a>
-                </div>
-                <!-- End Column 2 -->
+                <!-- Start Latest Products Column -->
+                <div class="col-lg-9">
+                    <div class="product-slider">
+                        <div class="product-row">
+                            @foreach ($latestProducts as $product)
+                                <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="{{ $loop->iteration * 100 }}">
+                                    <a class="product-item" href="{{ route('product.detail', $product->slug) }}"
+                                        onclick="incrementView('{{ $product->id }}')">
+                                        <div class="product-thumbnail text-center">
+                                            @php
+                                                $defaultImage = asset('uploads/default/default.jpg');
+                                                $variantImage = null;
+                                                $defaultVariant = $product->variants->first();
 
-                <!-- Start Column 3 -->
-                <div class="col-12 col-md-4 col-lg-3 mb-5 mb-md-0" data-aos="fade-up" data-aos-delay="200">
-                    <a class="product-item" href="/product-detail.html">
-                        <img src="images/product-1.png" class="img-fluid product-thumbnail">
-                        <h3 class="product-title">Nordic Chair</h3>
-                        <strong class="product-price">$50.00</strong>
-                        <div class="product-rating">
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <span>(4.9)</span>
-                        </div>
-                        <div class="product-icons">
-                            <span class="icon-add-to-cart"><i class="fas fa-cart-plus"></i></span>
-                            <span class="icon-heart"><i class="fas fa-heart"></i></span>
-                            <span class="icon-quick-view"><i class="fas fa-eye"></i></span>
-                        </div>
-                    </a>
-                </div>
-                <!-- End Column 3 -->
+                                                if ($defaultVariant && $defaultVariant->images) {
+                                                    $images = json_decode($defaultVariant->images, true);
+                                                    if (!empty($images[0])) {
+                                                        $variantImage = asset($images[0]);
+                                                    }
+                                                }
 
-                <!-- Start Column 4 -->
-                <div class="col-12 col-md-4 col-lg-3 mb-5 mb-md-0" data-aos="fade-up" data-aos-delay="200">
-                    <a class="product-item" href="/product-detail.html">
-                        <img src="images/product-1.png" class="img-fluid product-thumbnail">
-                        <h3 class="product-title">Nordic Chair</h3>
-                        <strong class="product-price">$50.00</strong>
-                        <div class="product-rating">
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <i class="fas fa-star"></i>
-                            <span>(4.9)</span>
-                        </div>
-                        <div class="product-icons">
-                            <span class="icon-add-to-cart"><i class="fas fa-cart-plus"></i></span>
-                            <span class="icon-heart"><i class="fas fa-heart"></i></span>
-                            <span class="icon-quick-view"><i class="fas fa-eye"></i></span>
-                        </div>
-                    </a>
-                </div>
-                <!-- End Column 4 -->
+                                                if (!$variantImage) {
+                                                    $otherVariant = $product->variants->skip(1)->first();
+                                                    if ($otherVariant && $otherVariant->images) {
+                                                        $images = json_decode($otherVariant->images, true);
+                                                        if (!empty($images[0])) {
+                                                            $variantImage = asset($images[0]);
+                                                        }
+                                                    }
+                                                }
+                                            @endphp
 
+                                            <img src="{{ $variantImage ?? $defaultImage }}" class="img-fluid mx-auto"
+                                                alt="{{ $product->name }}"
+                                                style="max-height: 200px; object-fit: contain;">
+                                        </div>
+                                        <h3 class="product-title text-center">{{ $product->name }}</h3>
+                                        <div class="product-price-and-rating text-center">
+                                            @if ($product->variants->isNotEmpty())
+                                                @php
+                                                    $variant = $product->variants->first();
+                                                @endphp
+                                                @if ($variant->discount_price)
+                                                    <strong class="product-price text-decoration-line-through text-muted">{{ number_format($variant->selling_price) }}đ</strong>
+                                                    <strong class="product-price text-danger ms-2">{{ number_format($variant->discount_price) }}đ</strong>
+                                                @else
+                                                    <strong class="product-price">{{ number_format($variant->selling_price) }}đ</strong>
+                                                @endif
+                                            @endif
+                                            <div class="product-rating d-flex justify-content-center align-items-center">
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <i class="fas fa-star"></i>
+                                                <span>({{ number_format($product->views) }} views)</span>
+                                            </div>
+                                        </div>
+                                        <div class="product-icons">
+                                            <span class="icon-add-to-cart"><i class="fas fa-cart-plus"></i></span>
+                                            <span class="icon-heart"><i class="fas fa-heart"></i></span>
+                                            <span class="icon-quick-view" onclick="event.preventDefault(); showQuickView({{ $product->id }})"><i class="fas fa-eye"></i></span>
+                                        </div>
+                                    </a>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
+                <!-- End Latest Products Column -->
             </div>
         </div>
     </div>
@@ -683,7 +695,8 @@
                     .dataset.storage;
 
                 alert(
-                    `Added to cart:\nQuantity: ${quantity}\nColor: ${selectedColor}\nStorage: ${selectedStorage}GB`);
+                    `Added to cart:\nQuantity: ${quantity}\nColor: ${selectedColor}\nStorage: ${selectedStorage}GB`
+                );
             });
 
             // Buy now button
@@ -695,7 +708,8 @@
                     .dataset.storage;
 
                 alert(
-                    `Proceeding to checkout:\nQuantity: ${quantity}\nColor: ${selectedColor}\nStorage: ${selectedStorage}GB`);
+                    `Proceeding to checkout:\nQuantity: ${quantity}\nColor: ${selectedColor}\nStorage: ${selectedStorage}GB`
+                );
             });
         });
     </script>
@@ -804,4 +818,249 @@
             once: false, // whether animation should happen only once - while scrolling down
         });
     </script>
+
+    <script>
+        function incrementView(productId) {
+            fetch(`/increment-view/${productId}`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        console.log('View incremented');
+                    }
+                });
+        }
+
+        function showQuickView(productId) {
+            incrementView(productId);
+            // Your existing quick view logic here
+        }
+
+        // Initialize product slider
+        $(document).ready(function() {
+            $('.product-slider').slick({
+                dots: true,
+                infinite: true,
+                speed: 300,
+                slidesToShow: 1,
+                slidesToScroll: 1,
+                autoplay: true,
+                autoplaySpeed: 3000,
+                arrows: true,
+                responsive: [{
+                        breakpoint: 1024,
+                        settings: {
+                            slidesToShow: 1,
+                            slidesToScroll: 1
+                        }
+                    },
+                    {
+                        breakpoint: 600,
+                        settings: {
+                            slidesToShow: 1,
+                            slidesToScroll: 1
+                        }
+                    }
+                ]
+            });
+        });
+
+        // Initialize latest products slider
+        $(document).ready(function() {
+            $('.latest-products-slider').slick({
+                dots: true,
+                infinite: true,
+                speed: 300,
+                slidesToShow: 3,
+                slidesToScroll: 1,
+                autoplay: true,
+                autoplaySpeed: 3000,
+                arrows: true,
+                responsive: [{
+                        breakpoint: 1024,
+                        settings: {
+                            slidesToShow: 2,
+                            slidesToScroll: 1
+                        }
+                    },
+                    {
+                        breakpoint: 600,
+                        settings: {
+                            slidesToShow: 1,
+                            slidesToScroll: 1
+                        }
+                    }
+                ]
+            });
+        });
+    </script>
+
+    <style>
+        .product-slider {
+            margin: 0 -15px;
+        }
+
+        .product-row {
+            display: flex;
+            flex-wrap: wrap;
+            margin: 0 -15px;
+            justify-content: space-between;
+        }
+
+        .product-slider .slick-slide {
+            padding: 0 15px;
+        }
+
+        .product-thumbnail {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 200px;
+            margin-bottom: 15px;
+        }
+
+        .product-thumbnail img {
+            max-width: 100%;
+            height: auto;
+            transition: transform 0.3s ease;
+        }
+
+        .product-item {
+            display: block;
+            text-decoration: none;
+            color: inherit;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .product-item:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+        }
+
+        .product-item:hover .product-thumbnail img {
+            transform: scale(1.001);
+            transition: transform 0.2s ease;
+        }
+
+        .product-title {
+            font-size: 1.1rem;
+            margin: 10px 0;
+            color: #333;
+        }
+
+        .product-price-and-rating {
+            margin: 10px 0;
+        }
+
+        .product-icons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .product-icons span {
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 50%;
+            background: #f8f9fa;
+            transition: all 0.3s ease;
+        }
+
+        .product-icons span:hover {
+            background: #e9ecef;
+            color: #007bff;
+        }
+
+        .product-slider .slick-prev,
+        .product-slider .slick-next {
+            z-index: 1;
+            width: 40px;
+            height: 40px;
+            background: #fff;
+            border-radius: 50%;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .product-slider .slick-prev {
+            left: -20px;
+        }
+
+        .product-slider .slick-next {
+            right: -20px;
+        }
+
+        .product-slider .slick-prev:before,
+        .product-slider .slick-next:before {
+            font-size: 20px;
+            color: #333;
+        }
+
+        .product-slider .slick-dots {
+            bottom: -30px;
+        }
+
+        .product-slider .slick-dots li button:before {
+            font-size: 12px;
+        }
+
+        /* Latest Products Slider Styles */
+        .latest-products-slider {
+            margin: 0 -15px;
+        }
+
+        .latest-products-slider .slick-slide {
+            padding: 0 15px;
+        }
+
+        .latest-products-slider .slick-prev,
+        .latest-products-slider .slick-next {
+            z-index: 1;
+            width: 40px;
+            height: 40px;
+            background: #fff;
+            border-radius: 50%;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .latest-products-slider .slick-prev {
+            left: -20px;
+        }
+
+        .latest-products-slider .slick-next {
+            right: -20px;
+        }
+
+        .latest-products-slider .slick-prev:before,
+        .latest-products-slider .slick-next:before {
+            font-size: 20px;
+            color: #333;
+        }
+
+        .latest-products-slider .slick-dots {
+            bottom: -30px;
+        }
+
+        .latest-products-slider .slick-dots li button:before {
+            font-size: 12px;
+        }
+
+        @media (max-width: 768px) {
+            .product-row {
+                justify-content: center;
+            }
+
+            .col-md-4 {
+                width: 100%;
+                max-width: 300px;
+            }
+        }
+    </style>
 @endsection

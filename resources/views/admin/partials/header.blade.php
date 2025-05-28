@@ -122,22 +122,31 @@
                 <li class="dropdown pc-h-item header-user-profile">
                     <a class="pc-head-link dropdown-toggle arrow-none me-0" data-bs-toggle="dropdown" href="#"
                         role="button" aria-haspopup="false" data-bs-auto-close="outside" aria-expanded="false">
-                        <img src="assets/images/user/avatar-2.jpg" alt="user-image" class="user-avtar">
-                        <span>Stebin Ben</span>
+                        @if (Auth::user()->avatar)
+                            <img src="{{ asset(Auth::user()->avatar) }}" alt="user-image" class="user-avtar">
+                        @else
+                            <img src="/assets/images/user/avatar-2.jpg" alt="user-image" class="user-avtar">
+                        @endif
+                        <span>{{ Auth::user()->name }}</span>
                     </a>
                     <div class="dropdown-menu dropdown-user-profile dropdown-menu-end pc-h-dropdown">
                         <div class="dropdown-header">
                             <div class="d-flex mb-1">
                                 <div class="flex-shrink-0">
-                                    <img src="assets/images/user/avatar-2.jpg" alt="user-image"
-                                        class="user-avtar wid-35">
+                                    @if (Auth::user()->avatar)
+                                        <img src="{{ asset(Auth::user()->avatar) }}" alt="user-image"
+                                            class="user-avtar">
+                                    @else
+                                        <img src="/assets/images/user/avatar-2.jpg" alt="user-image"
+                                            class="user-avtar">
+                                    @endif
                                 </div>
                                 <div class="flex-grow-1 ms-3">
-                                    <h6 class="mb-1">Stebin Ben</h6>
-                                    <span>UI/UX Designer</span>
+                                    <h6 class="mb-1">{{ Auth::user()->name }}</h6>
+                                    <span>{{ Auth::user()->email }}</span>
                                 </div>
-                                <a href="#!" class="pc-head-link bg-transparent"><i
-                                        class="ti ti-power text-danger"></i></a>
+                                {{-- <a href="#!" class="pc-head-link bg-transparent"><i
+                                        class="ti ti-power text-danger"></i></a> --}}
                             </div>
                         </div>
                         <ul class="nav drp-tabs nav-fill nav-tabs" id="mydrpTab" role="tablist">
@@ -173,10 +182,14 @@
                                     <i class="ti ti-wallet"></i>
                                     <span>Billing</span>
                                 </a>
-                                <a href="#!" class="dropdown-item">
-                                    <i class="ti ti-power"></i>
-                                    <span>Logout</span>
-                                </a>
+                                <form action="{{ route('logout') }}" method="POST" class="m-0 p-0">
+                                    @csrf
+                                    <button type="submit"
+                                        class="dropdown-item w-100 text-start bg-transparent border-0">
+                                        <i class="ti ti-power"></i>
+                                        <span>Logout</span>
+                                    </button>
+                                </form>
                             </div>
                             <div class="tab-pane fade" id="drp-tab-2" role="tabpanel" aria-labelledby="drp-t2"
                                 tabindex="0">

@@ -24,6 +24,7 @@ use App\Http\Controllers\client\BlogController as ClientBlogController;
 use App\Http\Controllers\client\CartController;
 use App\Http\Controllers\client\CheckoutController;
 use App\Http\Controllers\client\ContactController;
+use App\Http\Controllers\client\OrderController as ClientOrderController;
 use App\Http\Controllers\client\ProductController as ClientProductController;
 
 // Client 
@@ -144,8 +145,9 @@ Route::prefix('admin')->middleware(['auth', 'role:admin|staff'])->name('admin.')
     Route::post('orders/trash/force-delete/bulk', [OrderController::class, 'bulkForceDelete'])->middleware('permission:delete orders')->name('orders.forceDelete.bulk');
     Route::get('orders', [OrderController::class, 'index'])->middleware('permission:view orders')->name('orders.index');
     Route::get('orders/{order}', [OrderController::class, 'show'])->middleware('permission:view orders')->name('orders.show');
-    Route::put('orders/{order}', [OrderController::class, 'update'])->middleware('permission:edit orders')->name('orders.update');
+  //  Route::put('orders/{order}', [OrderController::class, 'update'])->middleware('permission:edit orders')->name('orders.update');
     Route::delete('orders/{order}', [OrderController::class, 'destroy'])->middleware('permission:delete orders')->name('orders.destroy');
+    Route::put('orders/{order}/status', [OrderController::class, 'updateStatus'])->middleware('permission:edit orders')->name('orders.updateStatus');
 
     // Role Routes (chỉ admin được gán vai trò)
     Route::get('roles/{user}/edit', [RoleController::class, 'edit'])->middleware('permission:addrole')->name('roles.edit');
@@ -164,6 +166,8 @@ Route::prefix('admin')->middleware(['auth', 'role:admin|staff'])->name('admin.')
 });
 
 // Theo dõi đơn hàng sau khi đặt hàng
+Route::get('/order',[ClientOrderController::class,'index'])->name('order.index');
+Route::post('/order/cancel/{order}', [ClientOrderController::class, 'cancel'])->name('order.cancel');
 Route::get('/order/tracking/{order}', [CheckoutController::class, 'tracking'])->name('order.tracking');
 Route::get('/order/invoice/{order}', [CheckoutController::class, 'invoice'])->name('order.invoice');
 Route::get('/order/resend-invoice/{order}', [CheckoutController::class, 'resendInvoice'])->name('order.resend-invoice');

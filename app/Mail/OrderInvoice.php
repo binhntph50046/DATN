@@ -58,4 +58,5 @@ class OrderInvoice extends Mailable
         return $this->subject('Hóa đơn đơn hàng #' . $this->order->id)
                     ->view('emails.order-invoice');
     }
+    
 }

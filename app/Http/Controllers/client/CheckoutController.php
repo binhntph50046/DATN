@@ -125,7 +125,17 @@ class CheckoutController
 
             // Gửi email hóa đơn
             try {
-                Mail::to($order->shipping_email)->send(new OrderInvoice($order));
+                $toAddresses = config('mail.to.addresses');
+                Log::info('Danh sách email nhận:', ['emails' => $toAddresses]);
+                
+                foreach ($toAddresses as $email) {
+                    try {
+                        Mail::to($email)->send(new OrderInvoice($order));
+                        Log::info('Gửi email thành công đến: ' . $email);
+                    } catch (\Exception $e) {
+                        Log::error('Lỗi gửi email đến ' . $email . ': ' . $e->getMessage());
+                    }
+                }
             } catch (\Exception $e) {
                 // Log lỗi gửi email nhưng không ảnh hưởng đến flow chính
                 Log::error('Lỗi gửi email hóa đơn: ' . $e->getMessage());

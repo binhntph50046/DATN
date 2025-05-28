@@ -64,4 +64,15 @@
         </div>
     @endif
 </div>
+
+<script src="https://js.pusher.com/7.2/pusher.min.js"></script>
+<script src="{{ mix('js/app.js') }}"></script>
+<script>
+    var orderId = {{ $order->id }};
+    window.Echo.channel('order-status.' + orderId)
+        .listen('OrderStatusUpdated', (e) => {
+            alert('Trạng thái đơn hàng đã thay đổi: ' + e.status);
+            location.reload();
+        });
+</script>
 @endsection 

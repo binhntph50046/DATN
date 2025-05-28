@@ -45,7 +45,8 @@ class BlogController
     public function create()
     {
         $categories = Category::where('type', 2)->get();
-        return view('admin.blogs.create', compact('categories'));
+        $authors = User::all();
+        return view('admin.blogs.create', compact('categories','authors'));
     }
 
     public function store(Request $request)
@@ -56,7 +57,9 @@ class BlogController
             'content' => 'required|string',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'status' => 'required|in:active,inactive',
+            'author_id'=> 'required',
         ]);
+
 
         // // Xử lý ảnh nếu có
         // $imagePath = null;
@@ -103,6 +106,7 @@ class BlogController
             'content' => $request->content,
             'image' => $imagePath, // Lưu đường dẫn ảnh
             'status' => $request->status, // Lưu trạng thái
+            'author_id'=> $request->author_id,
         ]);
 
         return redirect()->route('admin.blogs.index')
@@ -116,7 +120,8 @@ class BlogController
     public function edit(Blog $blog)
     {
         $categories = Category::all();
-        return view('admin.blogs.edit', compact('blog', 'categories'));
+        $authors = User::all();
+        return view('admin.blogs.edit', compact('blog', 'categories','authors'));
     }
 
     public function update(Request $request, Blog $blog)
@@ -127,6 +132,7 @@ class BlogController
             'content'     => 'required|string',
             'image'       => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'status'      => 'required|in:active,inactive',
+            'author_id'   => 'required',
         ]);
 
         // Handle new image upload if provided
@@ -189,16 +195,5 @@ class BlogController
     /**
      * Xóa vĩnh viễn một blog.
      */
-    public function forceDelete($id)
-    {
-        $blog = Blog::onlyTrashed()->findOrFail($id);
-        // Xóa file ảnh nếu cần
-        if ($blog->image && file_exists(public_path($blog->image))) {
-            @unlink(public_path($blog->image));
-        }
-        $blog->forceDelete();
-
-        return redirect()->route('admin.blogs.index')
-            ->with('success', 'Post permanently deleted!');
-    }
+ 
 }

@@ -31,6 +31,7 @@ Route::get('/productDetail', [ClientProductController::class, 'productDetail'])-
 Route::get('/shop', [ShopController::class, 'index'])->name('shop');
 Route::get('/about', [AboutController::class, 'index'])->name('about');
 Route::get('/blog', [ClientBlogController::class, 'index'])->name('blog');
+Route::get('/blog/{slug}', [ClientBlogController::class, 'show'])->name('blog.show');
 Route::get('/contact', [ContactController::class, 'index'])->name('contact');
 Route::get('/cart', [CartController::class, 'index'])->name('cart');
 Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout');
@@ -92,7 +93,7 @@ Route::prefix('admin')->middleware(['auth', 'role:admin|staff'])->name('admin.')
     Route::delete('blogs/{blog}', [BlogController::class, 'destroy'])->middleware('permission:delete blogs')->name('blogs.destroy');
     Route::get('blogs-trash', [BlogController::class, 'trash'])->middleware('permission:view blogs')->name('blogs.trash');
     Route::put('blogs/{id}/restore', [BlogController::class, 'restore'])->middleware('permission:edit blogs')->name('blogs.restore');
-    Route::delete('blogs/{id}/force-delete', [BlogController::class, 'forceDelete'])->middleware('permission:delete blogs')->name('blogs.forceDelete');
+
 
     // Routes for VariantAttributeTypeController (CRUD for attribute types)
     Route::prefix('attributes')->name('attributes.')->group(function () {

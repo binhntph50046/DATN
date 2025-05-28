@@ -92,13 +92,7 @@
                                                         <i class="ti ti-restore"></i> Restore
                                                     </button>
                                                 </form>
-                                                <form action="{{ route('admin.blogs.forceDelete', $blog->id) }}" method="POST" class="d-inline">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure?')" title="Delete Permanently">
-                                                        <i class="ti ti-trash"></i> Delete Permanently
-                                                    </button>
-                                                </form>
+                                               
                                             </td>
 
                                             </tr>

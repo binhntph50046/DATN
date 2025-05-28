@@ -155,12 +155,29 @@
                                                 <div class="invalid-feedback">{{ $message }}</div>
                                             @enderror
                                         </div>
+                                        <div class="form-group mb-3">
+                                            <label for="author_id" class="form-label">Author</label>
+                                            <select name="author_id" id="author_id"
+                                                class="form-select @error('author_id') is-invalid @enderror">
+                                                <option value="">Select Author</option>
+                                                @foreach ($authors as $author)
+                                                    <option value="{{ $author->id }}"
+                                                        {{ old('author_id', $blog->author_id) == $author->id ? 'selected' : '' }}>
+                                                        {{ $author->name }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                            @error('author_id')
+                                                <div class="invalid-feedback">{{ $message }}</div>
+                                            @enderror
+                                        </div>
                                     </div>
                                 </div>
 
                                 <div class="d-flex justify-content-end">
                                     <button type="submit" class="btn btn-primary">Update</button>
-                                    <a href="{{ route('admin.blogs.index') }}" class="btn btn-secondary ms-2">Back to list</a>
+                                    <a href="{{ route('admin.blogs.index') }}" class="btn btn-secondary ms-2">Back to
+                                        list</a>
                                 </div>
                             </form>
                         </div>

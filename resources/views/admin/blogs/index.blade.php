@@ -110,11 +110,8 @@
                                         @forelse ($blogs as $index => $blog)
                                             <tr>
                                                 <td>{{ $index + 1 }}</td>
-                                                <td>
-                                                    
-                                                       
-                                                        {{ Str::limit($blog->title, 50) }}
-                                                    
+                                                <td>   
+                                                        {{ Str::limit($blog->title, 50) }}                                      
                                                 </td>
                                                 <td>
                                                     @if ($blog->image)

@@ -14,8 +14,15 @@ use App\Http\Controllers\admin\RoleController;
 use App\Http\Controllers\admin\SpecificationController;
 use App\Http\Controllers\admin\VoucherController;
 use App\Http\Controllers\admin\AdminContactController;
+// Auth
+use App\Http\Controllers\admin\SubcriberController;
+use App\Http\Controllers\admin\FaqController;
 use App\Http\Controllers\auth\AuthController;
+
 use App\Http\Controllers\client\PaymentController;
+=======
+use App\Http\Controllers\Auth\GoogleController;
+
 // Client 
 use App\Http\Controllers\client\HomeController;
 use App\Http\Controllers\client\ShopController;
@@ -24,7 +31,11 @@ use App\Http\Controllers\client\BlogController as ClientBlogController;
 use App\Http\Controllers\client\CartController;
 use App\Http\Controllers\client\CheckoutController;
 use App\Http\Controllers\client\ContactController;
+
 use App\Http\Controllers\client\OrderController as ClientOrderController;
+=======
+use App\Http\Controllers\client\ChatBotController;
+
 use App\Http\Controllers\client\ProductController as ClientProductController;
 
 // Client 
@@ -33,6 +44,7 @@ Route::get('/product/{slug}', [ClientProductController::class, 'productDetail'])
 Route::get('/shop', [ShopController::class, 'index'])->name('shop');
 Route::get('/about', [AboutController::class, 'index'])->name('about');
 Route::get('/blog', [ClientBlogController::class, 'index'])->name('blog');
+Route::get('/blog/{slug}', [ClientBlogController::class, 'show'])->name('blog.show');
 Route::get('/contact', [ContactController::class, 'index'])->name('contact');
 Route::get('/cart', [CartController::class, 'index'])->name('cart');
 Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout');
@@ -48,12 +60,20 @@ Route::post('/increment-view/{id}', [HomeController::class, 'incrementView'])->n
 Route::get('/contact', [ContactController::class, 'index'])->name('contact');
 Route::post('/contact', [ContactController::class, 'store'])->name('contact.store');
 
+//Subcribe
+Route::post('/subscribe', [\App\Http\Controllers\client\SubscribeController::class, 'store'])->name('subscribe.store');
+
+//Chatbot
+
 // Authentication routes
 Route::get('/register', [AuthController::class, 'showRegisterForm'])->name('register');
 Route::post('/register', [AuthController::class, 'register']);
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
+Route::get('/auth/google', [GoogleController::class, 'redirectToGoogle'])->name('auth.google.redirect');
+Route::get('/auth/google/callback', [GoogleController::class, 'handleGoogleCallback']);
 
 // Admin routes
 Route::prefix('admin')->middleware(['auth', 'role:admin|staff'])->name('admin.')->group(function () {
@@ -107,7 +127,7 @@ Route::prefix('admin')->middleware(['auth', 'role:admin|staff'])->name('admin.')
     Route::delete('blogs/{blog}', [BlogController::class, 'destroy'])->middleware('permission:delete blogs')->name('blogs.destroy');
     Route::get('blogs-trash', [BlogController::class, 'trash'])->middleware('permission:view blogs')->name('blogs.trash');
     Route::put('blogs/{id}/restore', [BlogController::class, 'restore'])->middleware('permission:edit blogs')->name('blogs.restore');
-    Route::delete('blogs/{id}/force-delete', [BlogController::class, 'forceDelete'])->middleware('permission:delete blogs')->name('blogs.forceDelete');
+
 
     // Routes for VariantAttributeTypeController (CRUD for attribute types)
     Route::prefix('attributes')->name('attributes.')->group(function () {
@@ -158,11 +178,34 @@ Route::prefix('admin')->middleware(['auth', 'role:admin|staff'])->name('admin.')
     // Voucher Routes
     Route::resource('vouchers', VoucherController::class)->middleware('permission:view vouchers');
 
-     //Contact Admin
+    //Contact Admin
     Route::prefix('contacts')->name('contacts.')->group(function () {
         Route::get('/', [AdminContactController::class, 'index'])->name('index');
-        Route::get('/{contact}', [AdminContactController::class, 'show'])->name('show'); 
-        Route::delete('/{contact}', [AdminContactController::class, 'destroy'])->name('delete');   
+        Route::get('/trash', [AdminContactController::class, 'trash'])->name('trash');
+        Route::get('/{contact}', [AdminContactController::class, 'show'])->name('show');
+        Route::delete('/{contact}', [AdminContactController::class, 'destroy'])->name('delete');
+        Route::patch('/restore/{id}', [AdminContactController::class, 'restore'])->name('restore');
+        Route::delete('/force-delete/{id}', [AdminContactController::class, 'forceDelete'])->name('forceDelete');
+    });
+    //Subscriber Admin
+    Route::prefix('subscribers')->name('subscribers.')->group(function () {
+        Route::get('/', [SubcriberController::class, 'index'])->name('index');
+        Route::delete('/{subscribers}', [SubcriberController::class, 'destroy'])->name('delete');
+        Route::get('/trash', [SubcriberController::class, 'trash'])->name('trash');
+        Route::patch('/restore/{id}', [SubcriberController::class, 'restore'])->name('restore');
+    });
+    // FAQ Routes
+    Route::prefix('faqs')->name('faqs.')->group(function () {
+        Route::get('/', [FaqController::class, 'index'])->name('index');
+        Route::get('/create', [FaqController::class, 'create'])->name('create');
+        Route::post('/', [FaqController::class, 'store'])->name('store');
+        Route::get('/{faq}', [FaqController::class, 'show'])->name('show');
+        Route::get('/{faq}/edit', [FaqController::class, 'edit'])->name('edit');
+        Route::put('/{faq}', [FaqController::class, 'update'])->name('update');
+        Route::delete('/{faq}', [FaqController::class, 'destroy'])->name('destroy');
+        Route::get('/trash', [FaqController::class, 'trash'])->name('trash');
+        Route::post('/{faq}/restore', [FaqController::class, 'restore'])->name('restore');
+        Route::delete('/{faq}/forceDelete', [FaqController::class, 'forceDelete'])->name('forceDelete');
     });
 
     

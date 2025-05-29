@@ -34,7 +34,10 @@ class ContactController
         // Nếu khách đồng ý nhận email
         if ($request->has('subscribe') && $request->boolean('subscribe')) {
             // Nếu chưa có email này trong subscribers thì lưu
-            Subscriber::firstOrCreate(['email' => $validated['email']]);
+            Subscriber::firstOrCreate(
+                ['email' => $validated['email']],
+                ['name' => $validated['first_name'] . ' ' . $validated['last_name']]
+            );
         }
 
         // Trả về redirect nếu là form submit thông thường

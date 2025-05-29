@@ -17,7 +17,7 @@ use App\Http\Controllers\admin\AdminContactController;
 // Auth
 use App\Http\Controllers\admin\SubcriberController;
 use App\Http\Controllers\admin\FaqController;
-use App\Http\Controllers\auth\AuthController;
+use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Auth\GoogleController;
 // Client 
 use App\Http\Controllers\client\HomeController;

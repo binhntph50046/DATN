@@ -99,7 +99,7 @@
                             <div class="saprator mt-3">
                                 <span>Login with</span>
                             </div>
-                            <div class="row">
+                            <div class="row justify-content-center">
                                 <div class="col-4"> 
                                     <div class="d-grid">
                                         <a href="{{ route('auth.google.redirect') }}"
@@ -118,7 +118,7 @@
                                         </button>
                                     </div>
                                 </div>
-                                <div class="col-4">
+                                <div class="col-6">
                                     <div class="d-grid">
                                         <a href="{{ route('auth.facebook.redirect') }}"
                                             class="btn mt-2 btn-light-primary bg-light text-muted">

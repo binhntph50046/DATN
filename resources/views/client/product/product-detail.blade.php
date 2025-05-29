@@ -8,7 +8,8 @@
                 <!-- Product Images -->
                 <div class="col-lg-6 mb-5">
                     <div class="product-gallery">
-                        <div class="main-image mb-4">
+                        <div class="main-image mb-4 position-relative">
+                            <button id="prevImageBtn" class="image-nav-btn" style="display:none;" onclick="showPrevImage()"><i class="fas fa-chevron-left"></i></button>
                             @php
                                 $defaultVariant = $product->defaultVariant;
                                 $images = $defaultVariant ? json_decode($defaultVariant->images, true) : [];
@@ -29,16 +30,12 @@
                             @endphp
                             <img src="{{ asset($mainImage) }}" class="img-fluid" alt="{{ $product->name }}"
                                 id="mainProductImage">
+                            <button id="nextImageBtn" class="image-nav-btn" style="display:none;" onclick="showNextImage()"><i class="fas fa-chevron-right"></i></button>
                         </div>
-                        <div class="thumbnail-images">
-                            <div class="row" id="thumbnailsRow">
-                                @foreach ($allImages as $image)
-                                    <div class="col-3">
-                                        <img src="{{ asset($image) }}" class="img-fluid thumbnail" alt="Thumbnail"
-                                            onclick="changeMainImage(this.src)">
-                                    </div>
-                                @endforeach
-                            </div>
+                        <div class="thumbnail-slider position-relative">
+                            <button id="thumbPrevBtn" class="image-nav-btn" style="left:0;top:50%;transform:translateY(-50%);" onclick="scrollThumbnails(-1)"><i class="fas fa-chevron-left"></i></button>
+                            <div class="row flex-nowrap overflow-auto" id="thumbnailsRow" style="scroll-behavior:smooth; margin:0 48px;"></div>
+                            <button id="thumbNextBtn" class="image-nav-btn" style="right:0;top:50%;transform:translateY(-50%);" onclick="scrollThumbnails(1)"><i class="fas fa-chevron-right"></i></button>
                         </div>
                     </div>
                 </div>
@@ -407,6 +404,61 @@
         .table th.bg-light {
             background: #f8f9fa !important;
         }
+
+        .image-nav-btn {
+            width: 48px;
+            height: 48px;
+            background: rgba(0,0,0,0.18);
+            border: none;
+            border-radius: 50%;
+            color: #fff;
+            font-size: 2rem;
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 3;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+        }
+        .image-nav-btn:hover {
+            background: rgba(0,0,0,0.35);
+        }
+        #prevImageBtn { left: 12px; }
+        #nextImageBtn { right: 12px; }
+        .thumbnail-slider { position: relative; }
+        #thumbPrevBtn, #thumbNextBtn {
+            top: 50%;
+            transform: translateY(-50%);
+            position: absolute;
+            z-index: 2;
+            background: rgba(0,0,0,0.18);
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            font-size: 1.3rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+        }
+        #thumbPrevBtn { left: 0; }
+        #thumbNextBtn { right: 0; }
+        #thumbPrevBtn:hover, #thumbNextBtn:hover { background: rgba(0,0,0,0.35); }
+        #thumbnailsRow {
+            margin: 0 48px;
+            overflow-x: auto;
+            flex-wrap: nowrap !important;
+            white-space: nowrap;
+            scroll-behavior: smooth;
+        }
+        #thumbnailsRow .col-3 { flex: 0 0 auto; width: 80px; max-width: 80px; padding: 0 4px; }
+        #thumbnailsRow img.thumbnail { border-radius: 8px; border: 2px solid transparent; }
+        #thumbnailsRow img.thumbnail.active { border: 2px solid #007bff; }
     </style>
 
     <script>
@@ -457,38 +509,85 @@
         document.querySelectorAll('.variant-group').forEach(function(group) {
             const label = group.querySelector('label.form-label');
             if (label) {
-                // Lấy tên thuộc tính từ label
+                // Lấy tên thuộc tính từ label, loại bỏ dấu : và trim
                 let typeName = label.textContent.split(':')[0].trim();
                 requiredTypes.push(typeName);
             }
         });
 
+        // Thêm hàm mới để chọn tất cả thuộc tính của một biến thể (KHÔNG dùng .click() lồng nhau)
+        function selectAllAttributesOfVariant(variantId) {
+            const variants = @json($product->variants);
+            const selectedVariant = variants.find(v => v.id === variantId);
+            if (selectedVariant) {
+                // Reset trạng thái active cho tất cả các nhóm thuộc tính
+                document.querySelectorAll('.color-option, .storage-btn').forEach(el => el.classList.remove('active'));
+
+                selectedVariant.combinations.forEach(comb => {
+                    // Luôn trim tên thuộc tính
+                    const typeName = comb.attribute_value.attribute_type.name.trim();
+                    // Tìm key đúng trong requiredTypes (bất kể hoa/thường)
+                    const matchedType = requiredTypes.find(t => t.toLowerCase() === typeName.toLowerCase()) || typeName;
+                    // Lấy value đúng dạng
+                    let value = comb.attribute_value.value;
+                    if (typeof value === 'string') {
+                        try { value = JSON.parse(value); } catch { value = [value]; }
+                    }
+                    value = Array.isArray(value) ? value[0] : value;
+
+                    selectedValues[matchedType] = value;
+                    selectedVariants[matchedType] = variantId;
+
+                    // Cập nhật trạng thái active cho các nút
+                    document.querySelectorAll('[data-attr-type="' + typeName + '"]').forEach(el => {
+                        let elValue = el.getAttribute('data-color') || el.textContent.trim();
+                        if (elValue == value) {
+                            el.classList.add('active');
+                        }
+                    });
+                    // Cập nhật label nếu có
+                    const labelSpan = document.getElementById('selected-' + typeName + '-value');
+                    if (labelSpan) labelSpan.textContent = value;
+                });
+
+                // Cập nhật ảnh và giá
+                if (variantData[variantId]) {
+                    if (variantData[variantId].images.length > 0) {
+                        document.getElementById('mainProductImage').src = '{{ asset('') }}' + variantData[variantId].images[0];
+                        updateThumbnails(variantData[variantId].images);
+                    }
+                    document.getElementById('productPrice').textContent = variantData[variantId].price.toLocaleString('vi-VN') + ' VNĐ';
+                }
+            }
+        }
+
         function selectVariant(variantId, value, typeName, el) {
+            // Nếu là click vào màu sắc thì chọn toàn bộ thuộc tính của biến thể đó
+            if (el.classList.contains('color-option')) {
+                selectAllAttributesOfVariant(variantId);
+                return;
+            }
             // Remove active class from all swatches of this attribute type
-            document.querySelectorAll('.color-option[data-attr-type="' + typeName + '"], .storage-btn[data-attr-type="' +
-                typeName + '"]').forEach(opt => opt.classList.remove('active'));
+            document.querySelectorAll('.color-option[data-attr-type="' + typeName + '"], .storage-btn[data-attr-type="' + typeName + '"]').forEach(opt => opt.classList.remove('active'));
             // Add active to current
             el.classList.add('active');
             // Update label nếu có
             const labelSpan = document.getElementById('selected-' + typeName + '-value');
             if (labelSpan) labelSpan.textContent = value;
             // Lưu lựa chọn
-            selectedVariants[typeName] = variantId;
-            selectedValues[typeName] = value;
-
+            const matchedType = requiredTypes.find(t => t.toLowerCase() === typeName.toLowerCase()) || typeName;
+            selectedVariants[matchedType] = variantId;
+            selectedValues[matchedType] = value;
             // Tìm variant id đúng với tất cả thuộc tính đã chọn
             let key = requiredTypes.map(type => selectedValues[type] || '').join('|');
             let matchedVariantId = attributeToVariant[key];
-
             // Cập nhật ảnh và giá nếu tìm được variant id hợp lệ
             if (matchedVariantId && variantData[matchedVariantId]) {
                 if (variantData[matchedVariantId].images.length > 0) {
-                    document.getElementById('mainProductImage').src = '{{ asset('') }}' + variantData[matchedVariantId]
-                        .images[0];
+                    document.getElementById('mainProductImage').src = '{{ asset('') }}' + variantData[matchedVariantId].images[0];
                     updateThumbnails(variantData[matchedVariantId].images);
                 }
-                document.getElementById('productPrice').textContent = variantData[matchedVariantId].price.toLocaleString(
-                    'vi-VN') + ' VNĐ';
+                document.getElementById('productPrice').textContent = variantData[matchedVariantId].price.toLocaleString('vi-VN') + ' VNĐ';
             }
         }
 
@@ -510,29 +609,76 @@
 
         document.getElementById('buyNowBtn').addEventListener('click', function(e) {
             const variantId = getSelectedVariantId();
+            const quantity = parseInt(document.getElementById('quantity').value) || 1;
+            const mainImage = document.getElementById('mainProductImage').src;
+
             if (!variantId) {
                 alert('Vui lòng chọn đầy đủ thuộc tính sản phẩm trước khi đặt hàng!');
                 e.preventDefault();
                 return false;
             }
-            // Thực hiện logic đặt hàng với variantId
-            // ...
+            // Chuyển hướng kèm query string
+            window.location.href = '/checkout?variant_id=' + variantId + '&quantity=' + quantity + '&image=' + encodeURIComponent(mainImage);
         });
 
-        function changeMainImage(src) {
-            document.getElementById('mainProductImage').src = src;
+        let currentImageIndex = 0;
+        let currentImages = @json($images);
+
+        function updateMainImageByIndex(idx) {
+            if (currentImages.length > 0) {
+                document.getElementById('mainProductImage').src = '{{ asset('') }}' + currentImages[idx];
+                currentImageIndex = idx;
+                updateImageNavButtons();
+                // Highlight thumbnail
+                document.querySelectorAll('#thumbnailsRow img.thumbnail').forEach((el, i) => {
+                    if (i === idx) el.classList.add('active');
+                    else el.classList.remove('active');
+                });
+            }
+        }
+
+        function showPrevImage() {
+            if (currentImages.length > 1 && currentImageIndex > 0) {
+                updateMainImageByIndex(currentImageIndex - 1);
+            }
+        }
+
+        function showNextImage() {
+            if (currentImages.length > 1 && currentImageIndex < currentImages.length - 1) {
+                updateMainImageByIndex(currentImageIndex + 1);
+            }
+        }
+
+        function updateImageNavButtons() {
+            document.getElementById('prevImageBtn').style.display = (currentImages.length > 1 && currentImageIndex > 0) ? '' : 'none';
+            document.getElementById('nextImageBtn').style.display = (currentImages.length > 1 && currentImageIndex < currentImages.length - 1) ? '' : 'none';
         }
 
         function updateThumbnails(images) {
             const container = document.getElementById('thumbnailsRow');
             container.innerHTML = '';
-            images.forEach(img => {
+            currentImages = images;
+            currentImageIndex = 0;
+            images.forEach((img, idx) => {
                 const div = document.createElement('div');
                 div.className = 'col-3';
-                div.innerHTML =
-                    `<img src=\"{{ asset('') }}${img}\" class=\"img-fluid thumbnail\" alt=\"Thumbnail\" onclick=\"changeMainImage(this.src)\">`;
+                div.innerHTML = `<img src="{{ asset('') }}${img}" class="img-fluid thumbnail${idx===0?' active':''}" alt="Thumbnail" onclick="changeMainImageByIndex(${idx})">`;
                 container.appendChild(div);
             });
+            updateMainImageByIndex(0);
+        }
+
+        function changeMainImageByIndex(idx) {
+            updateMainImageByIndex(idx);
+        }
+
+        function changeMainImage(src) {
+            const idx = currentImages.findIndex(img => ('{{ asset('') }}' + img) === src);
+            if (idx !== -1) {
+                updateMainImageByIndex(idx);
+            } else {
+                document.getElementById('mainProductImage').src = src;
+            }
         }
 
         // Khi vào trang, hiển thị tất cả ảnh nhỏ
@@ -554,5 +700,11 @@
         document.addEventListener('DOMContentLoaded', function() {
             showTab('desc');
         });
+
+        function scrollThumbnails(direction) {
+            const row = document.getElementById('thumbnailsRow');
+            const scrollAmount = 120; // px mỗi lần cuộn
+            row.scrollBy({ left: direction * scrollAmount, behavior: 'smooth' });
+        }
     </script>
 @endsection

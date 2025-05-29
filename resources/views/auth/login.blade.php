@@ -99,7 +99,7 @@
                             <div class="saprator mt-3">
                                 <span>Login with</span>
                             </div>
-                            {{-- <div class="row">
+                            <div class="row">
                                 <div class="col-4"> 
                                     <div class="d-grid">
                                         <a href="{{ route('auth.google.redirect') }}"
@@ -110,7 +110,7 @@
                                         </a>
                                     </div>
                                 </div>
-                                <div class="col-4">
+                                {{-- <div class="col-4">
                                     <div class="d-grid">
                                         <button type="button" class="btn mt-2 btn-light-primary bg-light text-muted">
                                             <img src="../assets/images/authentication/twitter.svg" alt="img"> <span
@@ -127,8 +127,8 @@
                                             <span class="d-none d-sm-inline-block">Facebook</span>
                                         </a>
                                     </div>
-                                </div>
-                            </div> --}}
+                                </div> --}}
+                            </div>
                         </form>
                     </div>
                 </div>

@@ -118,8 +118,7 @@
 
                                 <div class="col-md-6 mb-3">
                                     <label class="form-label">Password</label>
-                                    <input type="password" name="password" class="form-control"
-                                        placeholder="Password">
+                                    <input type="password" name="password" class="form-control" placeholder="Password">
                                 </div>
                             </div>
 
@@ -136,35 +135,40 @@
                         <div class="row">
                             <div class="col-4">
                                 <div class="d-grid">
-                                    <button type="button" class="btn mt-2 btn-light-primary bg-light text-muted">
-                                        <img src="../assets/images/authentication/google.svg" alt="img"> <span
-                                            class="d-none d-sm-inline-block"> Google</span>
-                                    </button>
+                                    <a href="{{ route('auth.google.redirect') }}"
+                                        class="btn mt-2 btn-light-primary bg-light text-muted">
+                                        <img src="{{ asset('assets/images/authentication/google.svg') }}"
+                                            alt="Google">
+                                        <span class="d-none d-sm-inline-block">Google</span>
+                                    </a>
                                 </div>
                             </div>
-                            <div class="col-4">
-                                <div class="d-grid">
-                                    <button type="button" class="btn mt-2 btn-light-primary bg-light text-muted">
-                                        <img src="../assets/images/authentication/twitter.svg" alt="img"> <span
-                                            class="d-none d-sm-inline-block"> Twitter</span>
-                                    </button>
+                            {{-- <div class="col-4">
+                                    <div class="d-grid">
+                                        <button type="button" class="btn mt-2 btn-light-primary bg-light text-muted">
+                                            <img src="../assets/images/authentication/twitter.svg" alt="img"> <span
+                                                class="d-none d-sm-inline-block"> Twitter</span>
+                                        </button>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="col-4">
-                                <div class="d-grid">
-                                    <button type="button" class="btn mt-2 btn-light-primary bg-light text-muted">
-                                        <img src="../assets/images/authentication/facebook.svg" alt="img"> <span
-                                            class="d-none d-sm-inline-block"> Facebook</span>
-                                    </button>
-                                </div>
-                            </div>
+                                <div class="col-4">
+                                    <div class="d-grid">
+                                        <a href="{{ route('auth.facebook.redirect') }}"
+                                            class="btn mt-2 btn-light-primary bg-light text-muted">
+                                            <img src="{{ asset('assets/images/authentication/facebook.svg') }}"
+                                                alt="Facebook"> 
+                                            <span class="d-none d-sm-inline-block">Facebook</span>
+                                        </a>
+                                    </div>
+                                </div> --}}
                         </div>
                     </div>
                 </div>
 
                 <div class="auth-footer row">
                     <div class="col my-1">
-                        <p class="m-0">Desgin By © <a href="https://www.facebook.com/nguyenbaoanhhh">Nguyen Bao Anh</a></p>
+                        <p class="m-0">Desgin By © <a href="https://www.facebook.com/nguyenbaoanhhh">Nguyen Bao
+                                Anh</a></p>
                     </div>
                     <div class="col-auto my-1">
                         {{-- <ul class="list-inline footer-link mb-0">
@@ -192,7 +196,7 @@
             if (alert) {
                 setTimeout(() => {
                     alert.style.display = 'none';
-                }, 3000); 
+                }, 3000);
             }
         }
 

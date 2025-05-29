@@ -14,10 +14,11 @@ use App\Http\Controllers\admin\RoleController;
 use App\Http\Controllers\admin\SpecificationController;
 use App\Http\Controllers\admin\VoucherController;
 use App\Http\Controllers\admin\AdminContactController;
+// Auth
 use App\Http\Controllers\admin\SubcriberController;
 use App\Http\Controllers\admin\FaqController;
 use App\Http\Controllers\auth\AuthController;
-
+use App\Http\Controllers\Auth\GoogleController;
 // Client 
 use App\Http\Controllers\client\HomeController;
 use App\Http\Controllers\client\ShopController;
@@ -56,6 +57,9 @@ Route::post('/register', [AuthController::class, 'register']);
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
+Route::get('/auth/google', [GoogleController::class, 'redirectToGoogle'])->name('auth.google.redirect');
+Route::get('/auth/google/callback', [GoogleController::class, 'handleGoogleCallback']);
 
 // Admin routes
 Route::prefix('admin')->middleware(['auth', 'role:admin|staff'])->name('admin.')->group(function () {

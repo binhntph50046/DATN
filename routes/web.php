@@ -15,6 +15,8 @@ use App\Http\Controllers\admin\SpecificationController;
 use App\Http\Controllers\admin\VoucherController;
 use App\Http\Controllers\admin\AdminContactController;
 // Auth
+use App\Http\Controllers\admin\SubcriberController;
+use App\Http\Controllers\admin\FaqController;
 use App\Http\Controllers\auth\AuthController;
 use App\Http\Controllers\Auth\GoogleController;
 // Client 
@@ -25,21 +27,29 @@ use App\Http\Controllers\client\BlogController as ClientBlogController;
 use App\Http\Controllers\client\CartController;
 use App\Http\Controllers\client\CheckoutController;
 use App\Http\Controllers\client\ContactController;
+use App\Http\Controllers\client\ChatBotController;
 use App\Http\Controllers\client\ProductController as ClientProductController;
 
 // Client 
 Route::get('/', [HomeController::class, 'index'])->name('home');
-Route::get('/productDetail', [ClientProductController::class, 'productDetail'])->name('productDetail');
+Route::get('/product/{slug}', [ClientProductController::class, 'productDetail'])->name('product.detail');
 Route::get('/shop', [ShopController::class, 'index'])->name('shop');
 Route::get('/about', [AboutController::class, 'index'])->name('about');
 Route::get('/blog', [ClientBlogController::class, 'index'])->name('blog');
+Route::get('/blog/{slug}', [ClientBlogController::class, 'show'])->name('blog.show');
 Route::get('/contact', [ContactController::class, 'index'])->name('contact');
 Route::get('/cart', [CartController::class, 'index'])->name('cart');
 Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout');
+Route::post('/increment-view/{id}', [HomeController::class, 'incrementView'])->name('increment.view');
 
 //Contact Client
 Route::get('/contact', [ContactController::class, 'index'])->name('contact');
 Route::post('/contact', [ContactController::class, 'store'])->name('contact.store');
+
+//Subcribe
+Route::post('/subscribe', [\App\Http\Controllers\client\SubscribeController::class, 'store'])->name('subscribe.store');
+
+//Chatbot
 
 // Authentication routes
 Route::get('/register', [AuthController::class, 'showRegisterForm'])->name('register');
@@ -103,7 +113,7 @@ Route::prefix('admin')->middleware(['auth', 'role:admin|staff'])->name('admin.')
     Route::delete('blogs/{blog}', [BlogController::class, 'destroy'])->middleware('permission:delete blogs')->name('blogs.destroy');
     Route::get('blogs-trash', [BlogController::class, 'trash'])->middleware('permission:view blogs')->name('blogs.trash');
     Route::put('blogs/{id}/restore', [BlogController::class, 'restore'])->middleware('permission:edit blogs')->name('blogs.restore');
-    Route::delete('blogs/{id}/force-delete', [BlogController::class, 'forceDelete'])->middleware('permission:delete blogs')->name('blogs.forceDelete');
+
 
     // Routes for VariantAttributeTypeController (CRUD for attribute types)
     Route::prefix('attributes')->name('attributes.')->group(function () {
@@ -119,15 +129,15 @@ Route::prefix('admin')->middleware(['auth', 'role:admin|staff'])->name('admin.')
 
     // Routes for ProductController (CRUD for products with variants)
 
-    Route::get('products', [ProductController::class, 'index'])->middleware('permission:view products')->name('products.index');
-    Route::get('products/create', [ProductController::class, 'create'])->middleware('permission:create products')->name('products.create');
-    Route::get('products/trash', [ProductController::class, 'trash'])->middleware('permission:trash products')->name('products.trash');
-    Route::post('products', [ProductController::class, 'store'])->middleware('permission:store products')->name('products.store');
-    Route::get('products/{product}', [ProductController::class, 'show'])->middleware('permission:show products')->name('products.show');
-    Route::get('products/{product}/edit', [ProductController::class, 'edit'])->middleware('permission:edit products')->name('products.edit');
-    Route::put('products/{product}', [ProductController::class, 'update'])->middleware('permission:update products')->name('products.update');
-    Route::delete('products/{product}', [ProductController::class, 'destroy'])->middleware('permission:destroy products')->name('products.destroy');
-    Route::post('products/{product}/restore', [ProductController::class, 'restore'])->middleware('permission:restore products')->name('products.restore');
+    Route::get('products', [ProductController::class, 'index'])->name('products.index');
+    Route::get('products/create', [ProductController::class, 'create'])->name('products.create');
+    Route::get('products/trash', [ProductController::class, 'trash'])->name('products.trash');
+    Route::post('products', [ProductController::class, 'store'])->name('products.store');
+    Route::get('products/{product}', [ProductController::class, 'show'])->name('products.show');
+    Route::get('products/{product}/edit', [ProductController::class, 'edit'])->name('products.edit');
+    Route::put('products/{product}', [ProductController::class, 'update'])->name('products.update');
+    Route::delete('products/{product}', [ProductController::class, 'destroy'])->name('products.destroy');
+    Route::post('products/{product}/restore', [ProductController::class, 'restore'])->name('products.restore');
 
     // Category specifications and attributes
     Route::get('categories/{category}/specifications', [CategoryController::class, 'getSpecifications'])->middleware('permission:view category specifications')->name('categories.specifications');
@@ -153,10 +163,33 @@ Route::prefix('admin')->middleware(['auth', 'role:admin|staff'])->name('admin.')
     // Voucher Routes
     Route::resource('vouchers', VoucherController::class)->middleware('permission:view vouchers');
 
-     //Contact Admin
+    //Contact Admin
     Route::prefix('contacts')->name('contacts.')->group(function () {
         Route::get('/', [AdminContactController::class, 'index'])->name('index');
-        Route::get('/{contact}', [AdminContactController::class, 'show'])->name('show'); 
-        Route::delete('/{contact}', [AdminContactController::class, 'destroy'])->name('delete');   
+        Route::get('/trash', [AdminContactController::class, 'trash'])->name('trash');
+        Route::get('/{contact}', [AdminContactController::class, 'show'])->name('show');
+        Route::delete('/{contact}', [AdminContactController::class, 'destroy'])->name('delete');
+        Route::patch('/restore/{id}', [AdminContactController::class, 'restore'])->name('restore');
+        Route::delete('/force-delete/{id}', [AdminContactController::class, 'forceDelete'])->name('forceDelete');
+    });
+    //Subscriber Admin
+    Route::prefix('subscribers')->name('subscribers.')->group(function () {
+        Route::get('/', [SubcriberController::class, 'index'])->name('index');
+        Route::delete('/{subscribers}', [SubcriberController::class, 'destroy'])->name('delete');
+        Route::get('/trash', [SubcriberController::class, 'trash'])->name('trash');
+        Route::patch('/restore/{id}', [SubcriberController::class, 'restore'])->name('restore');
+    });
+    // FAQ Routes
+    Route::prefix('faqs')->name('faqs.')->group(function () {
+        Route::get('/', [FaqController::class, 'index'])->name('index');
+        Route::get('/create', [FaqController::class, 'create'])->name('create');
+        Route::post('/', [FaqController::class, 'store'])->name('store');
+        Route::get('/{faq}', [FaqController::class, 'show'])->name('show');
+        Route::get('/{faq}/edit', [FaqController::class, 'edit'])->name('edit');
+        Route::put('/{faq}', [FaqController::class, 'update'])->name('update');
+        Route::delete('/{faq}', [FaqController::class, 'destroy'])->name('destroy');
+        Route::get('/trash', [FaqController::class, 'trash'])->name('trash');
+        Route::post('/{faq}/restore', [FaqController::class, 'restore'])->name('restore');
+        Route::delete('/{faq}/forceDelete', [FaqController::class, 'forceDelete'])->name('forceDelete');
     });
 });

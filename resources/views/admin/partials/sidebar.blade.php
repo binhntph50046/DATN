@@ -98,8 +98,20 @@
                 </li>
                 <li class="pc-item">
                     <a href="{{ route('admin.contacts.index') }}" class="pc-link">
-                        <span class="pc-micon"><i class="ti ti-news"></i></span>
+                        <span class="pc-micon"><i class="ti ti-message"></i></span>
                         <span class="pc-mtext">Contacts</span>
+                    </a>
+                </li>
+                <li class="pc-item">
+                    <a href="{{ route('admin.subscribers.index') }}" class="pc-link">
+                        <span class="pc-micon"><i class="ti ti-mail"></i></span>
+                        <span class="pc-mtext">Subscribers Email</span>
+                    </a>
+                </li>
+                <li class="pc-item">
+                    <a href="{{ route('admin.faqs.index') }}" class="pc-link">
+                        <span class="pc-micon"><i class="ti ti-mail"></i></span>
+                        <span class="pc-mtext">Faq</span>
                     </a>
                 </li>
 

@@ -14,7 +14,8 @@ class Product extends Model
 
     protected $fillable = [
         'name', 'slug', 'description', 'content', 'category_id',
-        'warranty_months', 'is_featured', 'status'
+        'warranty_months', 'is_featured', 'status', 
+        'views'
     ];
 
     protected $casts = [

@@ -48,7 +48,11 @@ class AdminContactController
 
         return view('admin.contacts.show', compact('contact'));
     }
-
+    public function trash()
+    {
+        $contacts = Contact::onlyTrashed()->paginate(12);
+        return view('admin.contacts.trash', compact('contacts'));
+    }
     /**
      * Xóa contact vào thùng rác (soft delete)
      */
@@ -60,7 +64,20 @@ class AdminContactController
             ->route('admin.contacts.index')
             ->with('success', 'Contact delete successfully');
     }
+    public function restore($id)
+    {
+        $contact = Contact::onlyTrashed()->findOrFail($id);
+        $contact->restore();
 
+        return redirect()->route('admin.contacts.trash')->with('success', 'Khôi phục liên hệ thành công!');
+    }
+    public function forceDelete($id)
+    {
+        $contact = Contact::onlyTrashed()->findOrFail($id);
+        $contact->forceDelete();
+
+        return redirect()->route('admin.contacts.trash')->with('success', 'Xóa liên hệ vĩnh viễn thành công!');
+    }
     /**
      * Đánh dấu là đã đọc (dùng cho AJAX nếu cần)
      */

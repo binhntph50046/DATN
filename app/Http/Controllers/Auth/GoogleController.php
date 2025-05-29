@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Auth;
 
+use Illuminate\Support\Str;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -23,11 +24,19 @@ class GoogleController
                 ['email' => $googleUser->getEmail()],
                 [
                     'name' => $googleUser->getName(),
-                    'password' => bcrypt('google_login'), // hoặc random()
+                    'password' => bcrypt(Str::random(16)), // hoặc random()
+                    'provider' => 'google',
+                    'provider_id' => $googleUser->getId(),
                     'email_verified_at' => now(),
                     // Có thể thêm avatar, etc.
                 ]
             );
+            if (!$user->provider || !$user->provider_id) {
+                $user->update([
+                    'provider' => 'google',
+                    'provider_id' => $googleUser->getId(),
+                ]);
+            }
 
             Auth::login($user);
 

@@ -1,13 +1,15 @@
 import axios from 'axios';
 import Echo from 'laravel-echo';
+import Pusher from 'pusher-js';
+
 window.axios = axios;
-window.Pusher = require('pusher-js');
+window.Pusher = Pusher;
 
 window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 
 window.Echo = new Echo({
     broadcaster: 'pusher',
-    key: 'f372a8661682ad70e76b',
-    cluster: 'ap1',
+    key: process.env.MIX_PUSHER_APP_KEY,
+    cluster: process.env.MIX_PUSHER_APP_CLUSTER,
     forceTLS: true
 });

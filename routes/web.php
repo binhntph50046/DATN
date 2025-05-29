@@ -15,7 +15,7 @@ use App\Http\Controllers\admin\SpecificationController;
 use App\Http\Controllers\admin\VoucherController;
 use App\Http\Controllers\admin\AdminContactController;
 use App\Http\Controllers\auth\AuthController;
-
+use App\Http\Controllers\client\PaymentController;
 // Client 
 use App\Http\Controllers\client\HomeController;
 use App\Http\Controllers\client\ShopController;
@@ -37,6 +37,9 @@ Route::get('/contact', [ContactController::class, 'index'])->name('contact');
 Route::get('/cart', [CartController::class, 'index'])->name('cart');
 Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout');
 Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
+Route::get('/checkout/vnpay/callback', [CheckoutController::class, 'vnpayCallback'])->name('checkout.vnpay.callback');
+Route::post('/payment/vnpay', [PaymentController::class, 'vnPay'])->name('vnpay.payment');
+Route::get('/payment/vnpay/return', [PaymentController::class, 'vnPayReturn'])->name('vnpay.return');
 
 
 Route::post('/increment-view/{id}', [HomeController::class, 'incrementView'])->name('increment.view');

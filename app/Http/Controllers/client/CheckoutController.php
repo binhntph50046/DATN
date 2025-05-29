@@ -142,7 +142,7 @@ class CheckoutController
             }
 
             // Chuyển hướng sang trang theo dõi/tracking đơn hàng
-            return redirect()->route('order.tracking', $order->id);
+            return redirect()->route('order.index');
 
         } catch (\Exception $e) {
             DB::rollBack();

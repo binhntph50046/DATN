@@ -21,7 +21,16 @@
                 <div class="col-md-6 mb-5 mb-md-0">
                     <h2 class="h3 mb-3 text-black">Thông tin đơn hàng của bạn</h2>
                     <div class="p-3 p-lg-5 border bg-white">
-                        <form action="{{ route('checkout.store') }}" method="POST" id="checkoutForm">
+                        @if($errors->any())
+                            <div class="alert alert-danger">
+                                <ul>
+                                    @foreach ($errors->all() as $error)
+                                        <li>{{ $error }}</li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        @endif
+                        <form action="{{ route('vnpay.payment') }}" method="POST" id="checkoutForm">
                             @csrf
                             <input type="hidden" name="variant_id" value="{{ $variant ? $variant->id : '' }}">
                             <input type="hidden" name="quantity" value="{{ $quantity ?? 1 }}">
@@ -39,51 +48,54 @@
                                     <option value="9">Trung Quốc</option>
                                 </select>
                             </div>
-                            <div class="form-group row">
-                                <div class="col-md-6">
-                                    <label for="c_fname" class="text-black">Tên <span
-                                            class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" id="c_fname" name="c_fname" required>
+                            <div id="address-fields">
+                                <div class="form-group row">
+                                    <div class="col-md-6">
+                                        <label for="c_fname" class="text-black">Tên <span
+                                                class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" id="c_fname" name="c_fname" required
+                                            value="{{ old('c_fname', Auth::check() ? explode(' ', Auth::user()->name)[0] : '') }}">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="c_lname" class="text-black">Họ <span
+                                                class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" id="c_lname" name="c_lname" required
+                                            value="{{ old('c_lname', Auth::check() ? explode(' ', Auth::user()->name)[1] ?? '' : '') }}">
+                                    </div>
                                 </div>
-                                <div class="col-md-6">
-                                    <label for="c_lname" class="text-black">Họ <span
-                                            class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" id="c_lname" name="c_lname" required>
+                                <div class="form-group row">
+                                    <div class="col-md-12">
+                                        <label for="c_address" class="text-black">Địa chỉ <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" id="c_address" name="c_address" required
+                                            value="{{ old('c_address', Auth::check() ? Auth::user()->address : '') }}">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col-md-6">
+                                        <label for="c_state_country" class="text-black">Tỉnh / Quốc gia <span
+                                                class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" id="c_state_country" name="c_state_country">
+                                    </div>
+                                    <div class="col-md-6">
+                                            <label for="c_postal_zip" class="text-black">Mã bưu điện <span
+                                                class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" id="c_postal_zip" name="c_postal_zip">
+                                    </div>
+                                </div>
+                                <div class="form-group row mb-5">
+                                    <div class="col-md-6">
+                                        <label for="c_email_address" class="text-black">Email <span
+                                                class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" id="c_email_address" name="c_email_address" required
+                                            value="{{ old('c_email_address', Auth::check() ? Auth::user()->email : '') }}">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="c_phone" class="text-black">Số điện thoại <span class="text-danger">*</span></label>
+                                        <input type="text" class="form-control" id="c_phone" name="c_phone" required
+                                            value="{{ old('c_phone', Auth::check() ? Auth::user()->phone : '') }}">
+                                    </div>
                                 </div>
                             </div>
-
-                            <div class="form-group row">
-                                <div class="col-md-12">
-                                    <label for="c_address" class="text-black">Địa chỉ <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" id="c_address" name="c_address" required>
-                                </div>
-                            </div>
-
-                            <div class="form-group row">
-                                <div class="col-md-6">
-                                    <label for="c_state_country" class="text-black">Tỉnh / Quốc gia <span
-                                            class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" id="c_state_country" name="c_state_country">
-                                </div>
-                                <div class="col-md-6">
-                                        <label for="c_postal_zip" class="text-black">Mã bưu điện <span
-                                            class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" id="c_postal_zip" name="c_postal_zip">
-                                </div>
-                            </div>
-
-                            <div class="form-group row mb-5">
-                                <div class="col-md-6">
-                                    <label for="c_email_address" class="text-black">Email <span
-                                            class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" id="c_email_address" name="c_email_address" required>
-                                </div>
-                                <div class="col-md-6">
-                                    <label for="c_phone" class="text-black">Số điện thoại <span class="text-danger">*</span></label>
-                                    <input type="text" class="form-control" id="c_phone" name="c_phone" required>
-                                </div>
-                            </div>
-
                             <div class="form-group">
                                 <label for="c_order_notes" class="text-black">Ghi chú đơn hàng</label>
                                 <textarea name="c_order_notes" id="c_order_notes" cols="30" rows="5" class="form-control"
@@ -100,22 +112,37 @@
                                         </label>
                                     </div>
                                     <div class="form-check">
-                                        <input class="form-check-input" type="radio" name="payment_method" id="pm_bank" value="bank_transfer">
-                                        <label class="form-check-label" for="pm_bank">
-                                            <i class="fas fa-qrcode me-2"></i> Chuyển khoản / Mã QR / VNPay
+                                        <input class="form-check-input" type="radio" name="payment_method" id="pm_vnpay" value="vnpay">
+                                        <label class="form-check-label" for="pm_vnpay">
+                                            <i class="fas fa-qrcode me-2"></i> Thanh toán qua VNPay
                                         </label>
                                     </div>
+                                    {{-- <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="payment_method" id="pm_qr" value="qr">
+                                        <label class="form-check-label" for="pm_qr">
+                                            <i class="fas fa-qrcode me-2"></i> Thanh toán qua QR Code
+                                        </label>
+                                    </div> --}}
                                     <div class="form-check">
-                                        <input class="form-check-input" type="radio" name="payment_method" id="pm_card" value="credit_card">
-                                        <label class="form-check-label" for="pm_card">
-                                            <i class="fas fa-credit-card me-2"></i> Thẻ tín dụng
+                                        <input class="form-check-input" type="radio" name="payment_method" id="pm_bank" value="bank_transfer">
+                                        <label class="form-check-label" for="pm_bank">
+                                            <i class="fas fa-university me-2"></i> Chuyển khoản ngân hàng
                                         </label>
                                     </div>
                                 </div>
                             </div>
 
+                            @if(Auth::check())
+                                <div class="form-check mb-3">
+                                    <input class="form-check-input" type="checkbox" id="use_new_address">
+                                    <label class="form-check-label" for="use_new_address">
+                                        Sử dụng địa chỉ giao hàng khác
+                                    </label>
+                                </div>
+                            @endif
+
                             <div class="form-group mt-4">
-                                <button class="btn btn-black btn-lg py-3 btn-block w-100" type="submit">
+                                <button class="btn btn-black btn-lg py-3 btn-block w-100" type="submit" id="checkout-button">
                                     Đặt hàng
                                 </button>
                             </div>
@@ -202,5 +229,47 @@
     </div>
     <script>
         localStorage.removeItem('checkout_product');
+    </script>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const checkoutForm = document.getElementById('checkoutForm');
+        const checkoutButton = document.getElementById('checkout-button');
+        const originalAction = checkoutForm.action; // Lưu action mặc định (VNPay)
+
+        checkoutForm.addEventListener('submit', function(e) {
+            const paymentMethod = document.querySelector('input[name="payment_method"]:checked').value;
+            if (paymentMethod === 'vnpay') {
+                checkoutForm.action = originalAction; // Gửi về VNPay
+                checkoutButton.disabled = true;
+                checkoutButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang xử lý...';
+            } else {
+                // Gửi về route checkout.store (COD, bank_transfer)
+                checkoutForm.action = "{{ route('checkout.store') }}";
+            }
+        });
+    });
+    </script>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const checkbox = document.getElementById('use_new_address');
+        const addressFields = document.getElementById('address-fields');
+        if (checkbox) {
+            checkbox.addEventListener('change', function() {
+                if (checkbox.checked) {
+                    // Xóa giá trị các trường để nhập mới
+                    addressFields.querySelectorAll('input').forEach(el => el.value = '');
+                } else {
+                    // Gán lại giá trị user
+                    @if(Auth::check())
+                        addressFields.querySelector('input[name="c_fname"]').value = "{{ explode(' ', Auth::user()->name)[0] }}";
+                        addressFields.querySelector('input[name="c_lname"]').value = "{{ explode(' ', Auth::user()->name)[1] ?? '' }}";
+                        addressFields.querySelector('input[name="c_address"]').value = "{{ Auth::user()->address }}";
+                        addressFields.querySelector('input[name="c_email_address"]').value = "{{ Auth::user()->email }}";
+                        addressFields.querySelector('input[name="c_phone"]').value = "{{ Auth::user()->phone }}";
+                    @endif
+                }
+            });
+        }
+    });
     </script>
 @endsection

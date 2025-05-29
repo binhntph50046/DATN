@@ -9,6 +9,7 @@ use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
+use App\Models\Order;
 
 class OrderStatusUpdated implements ShouldBroadcast
 {
@@ -19,7 +20,7 @@ class OrderStatusUpdated implements ShouldBroadcast
     /**
      * Create a new event instance.
      */
-    public function __construct($order)
+    public function __construct(Order $order)
     {
         $this->order = $order;
     }
@@ -27,18 +28,26 @@ class OrderStatusUpdated implements ShouldBroadcast
     /**
      * Get the channels the event should broadcast on.
      *
-     * @return \Illuminate\Broadcasting\Channel
+     * @return array<int, \Illuminate\Broadcasting\Channel>
      */
-    public function broadcastOn()
-    {
-        return new Channel('order-status.' . $this->order->id);
-    }
-
-    public function broadcastWith()
+    public function broadcastOn(): array
     {
         return [
-            'status' => $this->order->status,
+            new Channel('order-status.' . $this->order->id),
+        ];
+    }
+
+    /**
+     * Get the data to broadcast.
+     *
+     * @return array
+     */
+    public function broadcastWith(): array
+    {
+        return [
             'order_id' => $this->order->id,
+            'status' => $this->order->status,
+            'status_text' => $this->order->getStatusTextAttribute()
         ];
     }
 }

@@ -1,5 +1,6 @@
+<!-- resources/views/admin/faqs/index.blade.php -->
 @extends('admin.layouts.app')
-@section('title', 'Contact Management')
+@section('title', 'FAQ Management')
 
 <style>
     .custom-shadow {
@@ -9,7 +10,7 @@
         padding: 16px;
     }
     
-    .message-preview {
+    .answer-preview {
         max-width: 300px;
         white-space: nowrap;
         overflow: hidden;
@@ -26,11 +27,11 @@
                 <div class="row align-items-center">
                     <div class="col-md-12">
                         <div class="page-header-title">
-                            <h5 class="m-b-10">Contacts</h5>
+                            <h5 class="m-b-10">FAQs</h5>
                         </div>
                         <ul class="breadcrumb">
                             <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Home</a></li>
-                            <li class="breadcrumb-item" aria-current="page">Contacts</li>
+                            <li class="breadcrumb-item" aria-current="page">FAQs</li>
                         </ul>
                     </div>
                 </div>
@@ -43,9 +44,12 @@
             <div class="col-12">
                 <div class="card">
                     <div class="card-header d-flex justify-content-between align-items-center">
-                        <h5>Contacts List</h5>
+                        <h5>FAQs List</h5>
                         <div>
-                            <a href="{{ route('admin.contacts.trash') }}" class="btn btn-danger btn-sm rounded-3">
+                            <a href="{{ route('admin.faqs.create') }}" class="btn btn-primary btn-sm rounded-3 me-2">
+                                <i class="ti ti-plus"></i> Add FAQ
+                            </a>
+                            <a href="{{ route('admin.faqs.trash') }}" class="btn btn-danger btn-sm rounded-3">
                                 <i class="ti ti-trash"></i> Trash
                             </a>
                         </div>
@@ -58,22 +62,20 @@
                         @endif
                         <div class="card shadow-sm mb-4">
                             <div class="card-body">
-                                <form method="GET" action="{{ route('admin.contacts.index') }}" class="row g-3 mb-3">
-                                    <div class="col-md-4">
-                                        <input type="text" name="name" class="form-control" placeholder="Search by name..." value="{{ request('name') }}">
+                                <form method="GET" action="{{ route('admin.faqs.index') }}" class="row g-3 mb-3">
+                                    <div class="col-md-6">
+                                        <input type="text" name="question" class="form-control" placeholder="Search by question..." value="{{ request('question') }}">
                                     </div>
-                                
-                                    <div class="col-md-4">
-                                        <input type="email" name="email" class="form-control" placeholder="Search by email..." value="{{ request('email') }}">
+                                    <div class="col-md-6">
+                                        <select name="status" class="form-control">
+                                            <option value="">All Statuses</option>
+                                            <option value="active" {{ request('status') == 'active' ? 'selected' : '' }}>Active</option>
+                                            <option value="inactive" {{ request('status') == 'inactive' ? 'selected' : '' }}>Inactive</option>
+                                        </select>
                                     </div>
-
-                                    <div class="col-md-4">
-                                        <input type="text" name="phone" class="form-control" placeholder="Search by phone..." value="{{ request('phone') }}">
-                                    </div>
-                
                                     <div class="col-12 mt-3">
                                         <button type="submit" class="btn btn-primary btn-sm">Filter</button>
-                                        <a href="{{ route('admin.contacts.index') }}" class="btn btn-secondary btn-sm">Reset</a>
+                                        <a href="{{ route('admin.faqs.index') }}" class="btn btn-secondary btn-sm">Reset</a>
                                     </div>
                                 </form>
                             </div>
@@ -83,34 +85,34 @@
                                 <thead>
                                     <tr>
                                         <th>ID</th>
-                                        <th>Name</th>
-                                        <th>Email</th>
-                                        <th>Phone</th>
-                                        <th>Message</th>
+                                        <th>Question</th>
+                                        <th>Answer</th>
+                                        <th>Status</th>
                                         <th>Date</th>
                                         <th class="text-center">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach($contacts as $contact)
+                                    @foreach($faqs as $faq)
                                     <tr>
-                                        <td>{{ $contact->id }}</td>
-                                        <td>{{ $contact->first_name }} {{ $contact->last_name }}</td>
-                                        <td>{{ $contact->email }}</td>
-                                        <td>{{ $contact->phone ?? 'N/A' }}</td>
-                                        <td class="message-preview" title="{{ $contact->message }}">
-                                            {{ Str::limit($contact->message, 50) }}
+                                        <td>{{ $faq->id }}</td>
+                                        <td>{{ $faq->question }}</td>
+                                        <td class="answer-preview" title="{{ $faq->answer }}">
+                                            {{ Str::limit($faq->answer, 50) }}
                                         </td>
-                                        
-                                        <td>{{ $contact->created_at->format('d/m/Y H:i') }}</td>
+                                        <td>{{ ucfirst($faq->status) }}</td>
+                                        <td>{{ $faq->created_at->format('d/m/Y H:i') }}</td>
                                         <td class="text-center">
-                                            <a href="{{ route('admin.contacts.show', $contact->id) }}" class="btn btn-info btn-sm rounded-3 me-2">
+                                            <a href="{{ route('admin.faqs.show', $faq->id) }}" class="btn btn-info btn-sm rounded-3 me-2">
                                                 <i class="ti ti-eye"></i> View
                                             </a>
-                                            <form action="{{ route('admin.contacts.delete', $contact->id) }}" method="POST" class="d-inline">
+                                            <a href="{{ route('admin.faqs.edit', $faq->id) }}" class="btn btn-warning btn-sm rounded-3 me-2">
+                                                <i class="ti ti-pencil"></i> Edit
+                                            </a>
+                                            <form action="{{ route('admin.faqs.destroy', $faq->id) }}" method="POST" class="d-inline">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" class="btn btn-danger btn-sm round    -3" onclick="return confirm('Are you sure you want to delete this contact?')">
+                                                <button type="submit" class="btn btn-danger btn-sm rounded-3" onclick="return confirm('Are you sure you want to delete this FAQ?')">
                                                     <i class="ti ti-trash"></i> Delete
                                                 </button>
                                             </form>
@@ -119,7 +121,7 @@
                                     @endforeach
                                 </tbody>
                             </table>
-                            {{ $contacts->links() }}
+                            {{ $faqs->links() }}
                         </div>
                     </div>
                 </div>

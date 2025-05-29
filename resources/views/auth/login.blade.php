@@ -117,8 +117,8 @@
                                                 class="d-none d-sm-inline-block"> Twitter</span>
                                         </button>
                                     </div>
-                                </div>
-                                <div class="col-6">
+                                </div> --}}
+                                <div class="col-4">
                                     <div class="d-grid">
                                         <a href="{{ route('auth.facebook.redirect') }}"
                                             class="btn mt-2 btn-light-primary bg-light text-muted">
@@ -127,7 +127,7 @@
                                             <span class="d-none d-sm-inline-block">Facebook</span>
                                         </a>
                                     </div>
-                                </div> --}}
+                                </div>
                             </div>
                         </form>
                     </div>
@@ -157,7 +157,13 @@
     <script src="assets/js/fonts/custom-font.js"></script>
     <script src="assets/js/pcoded.js"></script>
     <script src="assets/js/plugins/feather.min.js"></script>
-
+    <script>
+        if (window.location.hash === '#_=_') {
+            history.replaceState ?
+                history.replaceState(null, null, window.location.href.split('#')[0]) :
+                window.location.hash = '';
+        }
+    </script>
     <script>
         function hideAlert(alertId) {
             const alert = document.getElementById(alertId);

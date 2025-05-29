@@ -29,7 +29,8 @@ class FacebookController
                     'password' => bcrypt(Str::random(16)),
                     'provider' => 'facebook',
                     'provider_id' => $fbUser->getId(),
-                    'avatar' => $fbUser->getAvatar(), // Nếu muốn lưu avatar
+                    'email_verified_at' => now(),
+                    'avatar' => $fbUser->getAvatar(), 
                 ]
             );
             if (!$user->provider || !$user->provider_id) {

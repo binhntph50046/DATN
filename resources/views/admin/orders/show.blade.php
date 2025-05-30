@@ -65,7 +65,7 @@
                                     <tr>
                                         <th>Order Status:</th>
                                         <td>
-                                            <form action="{{ route('admin.orders.update', $order->id) }}" method="POST" class="d-flex align-items-center" style="gap: 8px;">
+                                            <form method="POST" action="{{ route('admin.orders.updateStatus', $order->id) }}">
                                                 @csrf
                                                 @method('PUT')
                                                 <select name="status" class="form-select form-select-sm" style="width: 160px;">
@@ -95,6 +95,10 @@
                                     <tr>
                                         <th>Order Date:</th>
                                         <td>{{ $order->created_at->format('d/m/Y H:i') }}</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Lý do huỷ đơn:</th>
+                                        <td class="text-danger">{{ $order->cancel_reason }}</td>
                                     </tr>
                                 </table>
                             </div>
@@ -133,7 +137,13 @@
                                         </tr>
                                         <tr>
                                             <th>Image:</th>
-                                            <td><img src="{{ $item->productVariant->image }}" alt="{{ $item->productVariant->name }}" style="width: 100px; height: 100px;"></td>
+                                            @php
+                                                $images = $item->variant && $item->variant->images ? json_decode($item->variant->images, true) : [];
+                                                $imgSrc = isset($images[0]) ? asset($images[0]) : asset('uploads/default/default.jpg');
+                                            @endphp
+                                            <td>
+                                                <img src="{{ $imgSrc }}" alt="{{ $item->variant->name ?? '' }}" style="width: 100px; height: 100px;">
+                                            </td>
                                         </tr>
                                         <tr>
                                             <th>Quantity:</th>

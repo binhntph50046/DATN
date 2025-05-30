@@ -95,6 +95,21 @@
                                         <input type="text" class="form-control @error('slug') is-invalid @enderror" id="slug" name="slug" value="{{ old('slug', $category->slug) }}" disabled>
                                     </div>
                                 </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="image" class="form-label">Current Image</label>
+                                        @if($category->image)
+                                            <div class="mt-0">
+                                                <img src="{{ asset($category->image) }}" alt="{{ $category->name }}" class="img-thumbnail" style="max-height: 100px;">
+                                            </div>
+                                        @endif
+                                        <label for="image" class="form-label">Image New</label>
+                                        <input type="file" class="form-control @error('image') is-invalid @enderror" id="image" name="image">
+                                        @error('image')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                </div>
                             </div>
 
                             <div class="mb-3">

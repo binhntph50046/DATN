@@ -353,17 +353,19 @@
                             </div>
                         </div>
                         <div class="col-md-6">
-                            <h3 class="quick-view-title"></h3>
+                            <h3 class="quick-view-title product-title"></h3>
                             <div class="product-price mb-4">
                                 <span class="current-price quick-view-price"></span>
-                                    </div>
-                            <div class="product-category mb-3">
-                                <strong>Category:</strong> <span class="quick-view-category"></span>
-                                    </div>
-                            <div class="product-warranty mb-3">
-                                <strong>Warranty:</strong> <span class="quick-view-warranty"></span>
                             </div>
-                            <div id="quickViewVariantGroups">
+                            <div class="product-meta">
+                                <div class="product-category mb-3">
+                                    <strong>Category:</strong> <span class="quick-view-category"></span>
+                                </div>
+                                <div class="product-warranty mb-3">
+                                    <strong>Warranty:</strong> <span class="quick-view-warranty"></span>
+                                </div>
+                            </div>
+                            <div id="quickViewVariantGroups" class="product-variants">
                                 <!-- Dynamic variant groups will be inserted here -->
                             </div>
                             <div class="quantity-selector mb-4">
@@ -375,40 +377,12 @@
                                 </div>
                             </div>
                             <div class="product-actions mb-4">
-                                <button class="btn btn-primary" id="quickViewBuyNowBtn">
+                                <button class="btn btn-primary buy-now-btn" id="quickViewBuyNowBtn">
                                     <i class="fas fa-bolt me-2"></i>Buy Now
                                 </button>
-                                <button class="btn btn-outline-primary" id="quickViewAddToCartBtn">
+                                <button class="btn btn-outline-primary add-to-cart-btn" id="quickViewAddToCartBtn">
                                     <i class="fas fa-cart-plus me-2"></i>Add to Cart
                                 </button>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Tabs Section -->
-                    <div class="mt-4">
-                        <div class="d-flex justify-content-center mb-4" style="gap: 18px;">
-                            <button class="tab-btn-custom" id="quickview-tab-desc-btn" onclick="quickViewShowTab('desc')">Mô tả</button>
-                            <button class="tab-btn-custom" id="quickview-tab-spec-btn" onclick="quickViewShowTab('spec')">Thông số kỹ thuật</button>
-                        </div>
-                        <div id="quickview-tab-desc" class="tab-content" style="display: block;">
-                            <div class="card">
-                                <div class="card-body quick-view-description">
-                                </div>
-                            </div>
-                        </div>
-                        <div id="quickview-tab-spec" class="tab-content" style="display: none;">
-                            <div class="card">
-                                <div class="card-body p-0">
-                                    <table class="table mb-0">
-                                        <thead>
-                                            <tr>
-                                                <th colspan="2" class="bg-light fw-bold">Cấu hình & Bộ nhớ</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody id="quickViewSpecifications">
-                                        </tbody>
-                                    </table>
-                                </div>
                             </div>
                         </div>
                     </div>
@@ -557,24 +531,7 @@
                     $('.quick-view-title').text(product.name);
                     $('.quick-view-category').text(product.category ? product.category.name : 'N/A');
                     $('.quick-view-warranty').text(`${product.warranty_months || 'N/A'} months`);
-                    $('.quick-view-description').html(product.content);
                     
-                    // Update specifications
-                    const specBody = document.getElementById('quickViewSpecifications');
-                    specBody.innerHTML = '';
-                    if (product.specifications && product.specifications.length > 0) {
-                        product.specifications.forEach(spec => {
-                            const row = document.createElement('tr');
-                            row.innerHTML = `
-                                <td class="text-secondary" style="width: 220px;">${spec.specification.name}</td>
-                                <td>${spec.value}</td>
-                            `;
-                            specBody.appendChild(row);
-                        });
-                    } else {
-                        specBody.innerHTML = '<tr><td colspan="2">Chưa có thông số kỹ thuật.</td></tr>';
-                    }
-
                     // Setup variant data
                     product.variants.forEach(variant => {
                         quickViewVariantData[variant.id] = {
@@ -588,7 +545,7 @@
                             return Array.isArray(value) ? value[0] : (typeof value === 'string' ? value : value[0]);
                         });
                         quickViewAttributeToVariant[attrValues.join('|')] = variant.id;
-            });
+                    });
 
                     // Generate variant groups HTML
                     const variantGroups = document.getElementById('quickViewVariantGroups');
@@ -620,14 +577,14 @@
                         groupDiv.className = 'variant-group mb-4';
                         
                         const labelHtml = `
-                            <label class="form-label">
+                            <label class="form-label variant-label">
                                 ${typeName}
-                                ${hasHex ? `<span id="quickview-selected-${typeName}-value" class="ms-2 badge bg-light text-dark border"></span>` : ''}
+                                ${hasHex ? `<span id="quickview-selected-${typeName}-value" class="selected-value"></span>` : ''}
                             </label>
                         `;
                         
                         const optionsDiv = document.createElement('div');
-                        optionsDiv.className = 'variant-options mt-2 d-flex gap-3';
+                        optionsDiv.className = 'variant-options';
                         
                         if (hasHex) {
                             values.forEach(item => {
@@ -650,7 +607,7 @@
                                 const value = Array.isArray(item.value) ? item.value[0] : item.value;
                                 optionsDiv.innerHTML += `
                                     <button type="button"
-                                        class="storage-btn"
+                                        class="variant-btn"
                                         data-variant-id="${item.variantId}"
                                         data-attr-type="${typeName}"
                                         onclick="quickViewSelectVariant(${item.variantId}, '${value}', '${typeName}', this)">
@@ -673,7 +630,6 @@
 
                     // Show modal
                     $('#quickViewModal').modal('show');
-                    quickViewShowTab('desc');
                     
                 } catch (error) {
                     console.error('Error fetching product details:', error);
@@ -730,15 +686,6 @@
         let quickViewSelectedValues = {};
         let quickViewRequiredTypes = [];
         let currentQuickViewProduct = null;
-
-        function quickViewShowTab(tab) {
-            document.getElementById('quickview-tab-desc').style.display = 'none';
-            document.getElementById('quickview-tab-spec').style.display = 'none';
-            document.getElementById('quickview-tab-desc-btn').classList.remove('active');
-            document.getElementById('quickview-tab-spec-btn').classList.remove('active');
-            document.getElementById('quickview-tab-' + tab).style.display = 'block';
-            document.getElementById('quickview-tab-' + tab + '-btn').classList.add('active');
-        }
 
         function updateQuickViewMainImageByIndex(idx) {
             if (quickViewCurrentImages.length > 0) {
@@ -801,7 +748,7 @@
             
             const selectedVariant = currentQuickViewProduct.variants.find(v => v.id === variantId);
             if (selectedVariant) {
-                document.querySelectorAll('#quickViewModal .color-option, #quickViewModal .storage-btn')
+                document.querySelectorAll('#quickViewModal .color-option, #quickViewModal .variant-btn')
                     .forEach(el => el.classList.remove('active'));
 
                 selectedVariant.combinations.forEach(comb => {
@@ -921,6 +868,234 @@
                 flex: 0 0 calc(100% - 20px);
                 max-width: calc(100% - 20px);
             }
+        }
+
+        /* Quick View Modal Styles */
+        #quickViewModal .modal-dialog {
+            max-width: 1200px;
+            margin: 30px auto;
+        }
+
+        #quickViewModal .modal-content {
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        #quickViewModal .modal-body {
+            padding: 30px;
+        }
+
+        #quickViewModal .product-title {
+            font-size: 32px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        #quickViewModal .product-price {
+            font-size: 28px;
+            color: #333;
+            font-weight: 600;
+            margin-bottom: 25px;
+        }
+
+        #quickViewModal .product-meta {
+            margin: 25px 0;
+            padding: 20px 0;
+            border-top: 1px solid #eee;
+            border-bottom: 1px solid #eee;
+        }
+
+        #quickViewModal .product-meta > div {
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+
+        #quickViewModal .product-meta strong {
+            min-width: 120px;
+            color: #666;
+        }
+
+        #quickViewModal .variant-label {
+            font-size: 16px;
+            color: #333;
+            margin-bottom: 12px;
+        }
+
+        #quickViewModal .color-option {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid #fff;
+            box-shadow: 0 0 0 1px #ddd;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+
+        #quickViewModal .color-option.active {
+            border-color: #fff;
+            box-shadow: 0 0 0 2px #0071e3;
+        }
+
+        #quickViewModal .color-option:hover {
+            transform: scale(1.1);
+        }
+
+        #quickViewModal .variant-options {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        #quickViewModal .variant-btn {
+            padding: 10px 20px;
+            border: 1px solid #ddd;
+            background: #fff;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 14px;
+            color: #333;
+        }
+
+        #quickViewModal .variant-btn.active {
+            border-color: #0071e3;
+            background: #0071e3;
+            color: #fff;
+        }
+
+        #quickViewModal .variant-btn:hover {
+            border-color: #0071e3;
+        }
+
+        #quickViewModal .quantity-control {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 25px 0;
+        }
+
+        #quickViewModal .quantity-btn {
+            width: 40px;
+            height: 40px;
+            border: 1px solid #ddd;
+            background: #fff;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 18px;
+        }
+
+        #quickViewModal .quantity-btn:hover {
+            border-color: #0071e3;
+            color: #0071e3;
+        }
+
+        #quickViewModal #quickViewQuantity {
+            width: 70px;
+            height: 40px;
+            text-align: center;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+
+        #quickViewModal .product-actions {
+            display: flex;
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        #quickViewModal .buy-now-btn,
+        #quickViewModal .add-to-cart-btn {
+            flex: 1;
+            padding: 12px 0;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+            text-transform: none;
+        }
+
+        #quickViewModal .buy-now-btn {
+            background: #47624F;
+            color: #fff;
+            border: none;
+        }
+
+        #quickViewModal .buy-now-btn:hover {
+            background: #3a4f40;
+        }
+
+        #quickViewModal .add-to-cart-btn {
+            border: 1px solid #47624F;
+            color: #47624F;
+            background: transparent;
+        }
+
+        #quickViewModal .add-to-cart-btn:hover {
+            background: rgba(71, 98, 79, 0.04);
+        }
+
+        #quickViewModal .buy-now-btn i,
+        #quickViewModal .add-to-cart-btn i {
+            font-size: 18px;
+        }
+
+        #quickViewModal .main-image {
+            background: #fff;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        #quickViewModal .main-image img {
+            width: 100%;
+            height: auto;
+            object-fit: contain;
+        }
+
+        #quickViewModal .thumbnail-slider {
+            padding: 0 40px;
+            position: relative;
+        }
+
+        #quickViewModal .thumbnail-slider img {
+            border: 2px solid transparent;
+            border-radius: 8px;
+            padding: 5px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            max-width: 80px;
+        }
+
+        #quickViewModal .thumbnail-slider img.active {
+            border-color: #0071e3;
+        }
+
+        #quickViewPrevImageBtn {
+            left: 0;
+        }
+
+        #quickViewNextImageBtn {
+            right: 0;
+        }
+
+        #quickViewModal .selected-value {
+            margin-left: 10px;
+            color: #666;
+            font-weight: normal;
         }
     </style>
 @endsection

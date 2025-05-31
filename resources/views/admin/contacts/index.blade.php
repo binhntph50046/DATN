@@ -42,8 +42,13 @@
         <div class="row">
             <div class="col-12">
                 <div class="card">
-                    <div class="card-header">
+                    <div class="card-header d-flex justify-content-between align-items-center">
                         <h5>Contacts List</h5>
+                        <div>
+                            <a href="{{ route('admin.contacts.trash') }}" class="btn btn-danger btn-sm rounded-3">
+                                <i class="ti ti-trash"></i> Trash
+                            </a>
+                        </div>
                     </div>
                     <div class="card-body">
                         @if(session('success'))

@@ -41,6 +41,11 @@ class Product extends Model
         return $this->hasMany(ProductSpecification::class);
     }
 
+    public function reviews()
+    {
+        return $this->hasMany(ProductReview::class);
+    }
+
     public function defaultVariant()
     {
         return $this->hasOne(ProductVariant::class)->where('is_default', 1);

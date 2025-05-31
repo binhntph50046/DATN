@@ -34,7 +34,6 @@ use App\Http\Controllers\client\PaymentController;
 
 
 use App\Http\Controllers\client\OrderController as ClientOrderController;
-=======
 use App\Http\Controllers\client\ChatBotController;
 
 use App\Http\Controllers\client\ProductController as ClientProductController;
@@ -42,7 +41,8 @@ use App\Http\Controllers\client\WishlistController;
 
 // Client 
 Route::get('/', [HomeController::class, 'index'])->name('home');
-Route::get('/product/{slug}', [ClientProductController::class, 'productDetail'])->name('product.detail');
+Route::get('/product/{slug}', [ClientProductController::class, 'show'])->name('product.detail');
+Route::get('/api/products/{id}', [ClientProductController::class, 'getProductDetails']);
 Route::get('/shop', [ShopController::class, 'index'])->name('shop');
 Route::get('/about', [AboutController::class, 'index'])->name('about');
 Route::get('/blog', [ClientBlogController::class, 'index'])->name('blog');

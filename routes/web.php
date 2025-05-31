@@ -17,11 +17,9 @@ use App\Http\Controllers\admin\AdminContactController;
 // Auth
 use App\Http\Controllers\admin\SubcriberController;
 use App\Http\Controllers\admin\FaqController;
-use App\Http\Controllers\auth\AuthController;
-
-use App\Http\Controllers\client\PaymentController;
-=======
+use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Auth\GoogleController;
+use App\Http\Controllers\client\PaymentController;
 
 // Client 
 use App\Http\Controllers\client\HomeController;
@@ -33,14 +31,14 @@ use App\Http\Controllers\client\CheckoutController;
 use App\Http\Controllers\client\ContactController;
 
 use App\Http\Controllers\client\OrderController as ClientOrderController;
-=======
 use App\Http\Controllers\client\ChatBotController;
 
 use App\Http\Controllers\client\ProductController as ClientProductController;
 
 // Client 
 Route::get('/', [HomeController::class, 'index'])->name('home');
-Route::get('/product/{slug}', [ClientProductController::class, 'productDetail'])->name('product.detail');
+Route::get('/product/{slug}', [ClientProductController::class, 'show'])->name('product.detail');
+Route::get('/api/products/{id}', [ClientProductController::class, 'getProductDetails']);
 Route::get('/shop', [ShopController::class, 'index'])->name('shop');
 Route::get('/about', [AboutController::class, 'index'])->name('about');
 Route::get('/blog', [ClientBlogController::class, 'index'])->name('blog');

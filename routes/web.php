@@ -14,11 +14,14 @@ use App\Http\Controllers\admin\RoleController;
 use App\Http\Controllers\admin\SpecificationController;
 use App\Http\Controllers\admin\VoucherController;
 use App\Http\Controllers\admin\AdminContactController;
-// Auth
 use App\Http\Controllers\admin\SubcriberController;
 use App\Http\Controllers\admin\FaqController;
-use App\Http\Controllers\auth\AuthController;
+
+// Auth
+use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\Auth\FacebookController;
 use App\Http\Controllers\Auth\GoogleController;
+
 // Client 
 use App\Http\Controllers\client\HomeController;
 use App\Http\Controllers\client\ShopController;
@@ -27,7 +30,13 @@ use App\Http\Controllers\client\BlogController as ClientBlogController;
 use App\Http\Controllers\client\CartController;
 use App\Http\Controllers\client\CheckoutController;
 use App\Http\Controllers\client\ContactController;
+use App\Http\Controllers\client\PaymentController;
+
+
+use App\Http\Controllers\client\OrderController as ClientOrderController;
+=======
 use App\Http\Controllers\client\ChatBotController;
+
 use App\Http\Controllers\client\ProductController as ClientProductController;
 use App\Http\Controllers\client\WishlistController;
 
@@ -41,6 +50,12 @@ Route::get('/blog/{slug}', [ClientBlogController::class, 'show'])->name('blog.sh
 Route::get('/contact', [ContactController::class, 'index'])->name('contact');
 Route::get('/cart', [CartController::class, 'index'])->name('cart');
 Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout');
+Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
+Route::get('/checkout/vnpay/callback', [CheckoutController::class, 'vnpayCallback'])->name('checkout.vnpay.callback');
+Route::post('/payment/vnpay', [PaymentController::class, 'vnPay'])->name('vnpay.payment');
+Route::get('/payment/vnpay/return', [PaymentController::class, 'vnPayReturn'])->name('vnpay.return');
+
+
 Route::post('/increment-view/{id}', [HomeController::class, 'incrementView'])->name('increment.view');
 
 //Contact Client
@@ -68,6 +83,8 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 Route::get('/auth/google', [GoogleController::class, 'redirectToGoogle'])->name('auth.google.redirect');
 Route::get('/auth/google/callback', [GoogleController::class, 'handleGoogleCallback']);
+Route::get('/auth/facebook', [FacebookController::class, 'redirectToFacebook'])->name('auth.facebook.redirect');
+Route::get('/auth/facebook/callback', [FacebookController::class, 'handleFacebookCallback']);
 
 // Admin routes
 Route::prefix('admin')->middleware(['auth', 'role:admin|staff'])->name('admin.')->group(function () {
@@ -163,8 +180,9 @@ Route::prefix('admin')->middleware(['auth', 'role:admin|staff'])->name('admin.')
     Route::post('orders/trash/force-delete/bulk', [OrderController::class, 'bulkForceDelete'])->middleware('permission:delete orders')->name('orders.forceDelete.bulk');
     Route::get('orders', [OrderController::class, 'index'])->middleware('permission:view orders')->name('orders.index');
     Route::get('orders/{order}', [OrderController::class, 'show'])->middleware('permission:view orders')->name('orders.show');
-    Route::put('orders/{order}', [OrderController::class, 'update'])->middleware('permission:edit orders')->name('orders.update');
+  //  Route::put('orders/{order}', [OrderController::class, 'update'])->middleware('permission:edit orders')->name('orders.update');
     Route::delete('orders/{order}', [OrderController::class, 'destroy'])->middleware('permission:delete orders')->name('orders.destroy');
+    Route::put('orders/{order}/status', [OrderController::class, 'updateStatus'])->middleware('permission:edit orders')->name('orders.updateStatus');
 
     // Role Routes (chỉ admin được gán vai trò)
     Route::get('roles/{user}/edit', [RoleController::class, 'edit'])->middleware('permission:addrole')->name('roles.edit');
@@ -201,4 +219,13 @@ Route::prefix('admin')->middleware(['auth', 'role:admin|staff'])->name('admin.')
         Route::post('/{faq}/restore', [FaqController::class, 'restore'])->name('restore');
         Route::delete('/{faq}/forceDelete', [FaqController::class, 'forceDelete'])->name('forceDelete');
     });
+
+    
 });
+
+// Theo dõi đơn hàng sau khi đặt hàng
+Route::get('/order',[ClientOrderController::class,'index'])->name('order.index');
+Route::post('/order/cancel/{order}', [ClientOrderController::class, 'cancel'])->name('order.cancel');
+Route::get('/order/tracking/{order}', [CheckoutController::class, 'tracking'])->name('order.tracking');
+Route::get('/order/invoice/{order}', [CheckoutController::class, 'invoice'])->name('order.invoice');
+Route::get('/order/resend-invoice/{order}', [CheckoutController::class, 'resendInvoice'])->name('order.resend-invoice');

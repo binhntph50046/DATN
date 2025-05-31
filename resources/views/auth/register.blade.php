@@ -132,7 +132,7 @@
                             <span>Sign up with</span>
                         </div>
 
-                        <div class="row">
+                        <div class="row justify-content-center">
                             <div class="col-4">
                                 <div class="d-grid">
                                     <a href="{{ route('auth.google.redirect') }}"
@@ -150,17 +150,17 @@
                                                 class="d-none d-sm-inline-block"> Twitter</span>
                                         </button>
                                     </div>
-                                </div>
-                                <div class="col-4">
-                                    <div class="d-grid">
-                                        <a href="{{ route('auth.facebook.redirect') }}"
-                                            class="btn mt-2 btn-light-primary bg-light text-muted">
-                                            <img src="{{ asset('assets/images/authentication/facebook.svg') }}"
-                                                alt="Facebook"> 
-                                            <span class="d-none d-sm-inline-block">Facebook</span>
-                                        </a>
-                                    </div>
                                 </div> --}}
+                            <div class="col-4">
+                                <div class="d-grid">
+                                    <a href="{{ route('auth.facebook.redirect') }}"
+                                        class="btn mt-2 btn-light-primary bg-light text-muted">
+                                        <img src="{{ asset('assets/images/authentication/facebook.svg') }}"
+                                            alt="Facebook">
+                                        <span class="d-none d-sm-inline-block">Facebook</span>
+                                    </a>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

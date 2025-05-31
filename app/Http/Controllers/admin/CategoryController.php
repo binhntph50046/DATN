@@ -46,11 +46,20 @@ class CategoryController
             'name' => 'required|string|max:255',
             'parent_id' => 'nullable|exists:categories,id',
             'type' => 'required|in:1,2',
-            'status' => 'required|in:active,inactive'
+            'status' => 'required|in:active,inactive',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
         ]);
 
         $data = $request->all();
         $data['slug'] = Str::slug($request->name);
+
+        // Handle image upload
+        if ($request->hasFile('image')) {
+            $image = $request->file('image');
+            $imageName = time() . '_' . $image->getClientOriginalName();
+            $image->move(public_path('uploads/categories'), $imageName);
+            $data['image'] = 'uploads/categories/' . $imageName;
+        }
 
         // Nếu không có danh mục cha (parent_id = null), thì lấy order lớn nhất của danh mục cha
         if (is_null($data['parent_id'])) {
@@ -90,11 +99,25 @@ class CategoryController
             'name' => 'required|string|max:255',
             'parent_id' => 'nullable|exists:categories,id',
             'type' => 'required|in:1,2',
-            'status' => 'required|in:active,inactive'
+            'status' => 'required|in:active,inactive',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
         ]);
 
         $data = $request->all();
         $data['slug'] = Str::slug($request->name);
+
+        // Handle image upload
+        if ($request->hasFile('image')) {
+            // Delete old image if exists
+            if ($category->image && file_exists(public_path($category->image))) {
+                unlink(public_path($category->image));
+            }
+
+            $image = $request->file('image');
+            $imageName = time() . '_' . $image->getClientOriginalName();
+            $image->move(public_path('uploads/categories'), $imageName);
+            $data['image'] = 'uploads/categories/' . $imageName;
+        }
 
         $category->update($data);
 

@@ -46,4 +46,9 @@ class Category extends Model
         return $this->belongsToMany(VariantAttributeType::class, 'category_attribute_types')
             ->withTimestamps();
     }
+
+    public function products()
+    {
+        return $this->hasMany(Product::class);
+    }
 }

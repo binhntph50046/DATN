@@ -37,10 +37,12 @@ use App\Http\Controllers\client\OrderController as ClientOrderController;
 use App\Http\Controllers\client\ChatBotController;
 
 use App\Http\Controllers\client\ProductController as ClientProductController;
+use App\Http\Controllers\client\WishlistController;
 
 // Client 
 Route::get('/', [HomeController::class, 'index'])->name('home');
-Route::get('/product/{slug}', [ClientProductController::class, 'productDetail'])->name('product.detail');
+Route::get('/product/{slug}', [ClientProductController::class, 'show'])->name('product.detail');
+Route::get('/api/products/{id}', [ClientProductController::class, 'getProductDetails']);
 Route::get('/shop', [ShopController::class, 'index'])->name('shop');
 Route::get('/about', [AboutController::class, 'index'])->name('about');
 Route::get('/blog', [ClientBlogController::class, 'index'])->name('blog');
@@ -59,6 +61,13 @@ Route::post('/increment-view/{id}', [HomeController::class, 'incrementView'])->n
 //Contact Client
 Route::get('/contact', [ContactController::class, 'index'])->name('contact');
 Route::post('/contact', [ContactController::class, 'store'])->name('contact.store');
+
+// Wishlist Routes
+Route::middleware(['auth'])->group(function () {
+    Route::get('/wishlist', [WishlistController::class, 'index'])->name('wishlist.index');
+    Route::post('/wishlist/add/{product}', [WishlistController::class, 'add'])->name('wishlist.add');
+    Route::delete('/wishlist/remove/{product}', [WishlistController::class, 'remove'])->name('wishlist.remove');
+});
 
 //Subcribe
 Route::post('/subscribe', [\App\Http\Controllers\client\SubscribeController::class, 'store'])->name('subscribe.store');
@@ -94,6 +103,7 @@ Route::prefix('admin')->middleware(['auth', 'role:admin|staff'])->name('admin.')
     Route::get('users/{user}/edit', [UserController::class, 'edit'])->middleware('permission:edit users')->name('users.edit');
     Route::put('users/{user}', [UserController::class, 'update'])->middleware('permission:edit users')->name('users.update');
     Route::delete('users/{user}', [UserController::class, 'destroy'])->middleware('permission:delete users')->name('users.destroy');
+    Route::post('/users/toggle-status/{user}', [UserController::class, 'toggleStatus'])->name('users.toggle-status');
 
     // Category Routes
     Route::get('categories', [CategoryController::class, 'index'])->middleware('permission:view categories')->name('categories.index');

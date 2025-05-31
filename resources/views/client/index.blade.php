@@ -186,7 +186,23 @@
                                             </div>
                                             <div class="product-icons">
                                                 <span class="icon-add-to-cart"><i class="fas fa-cart-plus"></i></span>
-                                                <span class="icon-heart"><i class="fas fa-heart"></i></span>
+                                                @auth
+                                                    <form action="{{ route('wishlist.add', $product->id) }}" method="POST"
+                                                        style="display: none;" id="wishlist-form-{{ $product->id }}">
+                                                        @csrf
+                                                    </form>
+                                                    <span class="icon-heart icon-add-to-wishlist"
+                                                        onclick="event.preventDefault(); document.getElementById('wishlist-form-{{ $product->id }}').submit();"
+                                                        title="Thêm vào yêu thích">
+                                                        <i class="fas fa-heart"></i>
+                                                    </span>
+                                                @else
+                                                    <a href="{{ route('login') }}" class="icon-heart icon-add-to-wishlist"
+                                                        title="Đăng nhập để thêm vào yêu thích">
+                                                        <i class="fas fa-heart"></i>
+                                                    </a>
+                                                @endauth
+
                                                 <span class="icon-quick-view"
                                                     onclick="event.preventDefault(); showQuickView({{ $product->id }})"><i
                                                         class="fas fa-eye"></i></span>
@@ -255,7 +271,8 @@
                     <div class="product-slider">
                         <div class="product-row">
                             @foreach ($latestProducts as $product)
-                                <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="{{ $loop->iteration * 100 }}">
+                                <div class="col-md-4 mb-4" data-aos="fade-up"
+                                    data-aos-delay="{{ $loop->iteration * 100 }}">
                                     <a class="product-item" href="{{ route('product.detail', $product->slug) }}"
                                         onclick="incrementView('{{ $product->id }}')">
                                         <div class="product-thumbnail text-center">
@@ -293,10 +310,13 @@
                                                     $variant = $product->variants->first();
                                                 @endphp
                                                 @if ($variant->discount_price)
-                                                    <strong class="product-price text-decoration-line-through text-muted">{{ number_format($variant->selling_price) }}đ</strong>
-                                                    <strong class="product-price text-danger ms-2">{{ number_format($variant->discount_price) }}đ</strong>
+                                                    <strong
+                                                        class="product-price text-decoration-line-through text-muted">{{ number_format($variant->selling_price) }}đ</strong>
+                                                    <strong
+                                                        class="product-price text-danger ms-2">{{ number_format($variant->discount_price) }}đ</strong>
                                                 @else
-                                                    <strong class="product-price">{{ number_format($variant->selling_price) }}đ</strong>
+                                                    <strong
+                                                        class="product-price">{{ number_format($variant->selling_price) }}đ</strong>
                                                 @endif
                                             @endif
                                             <div class="product-rating d-flex justify-content-center align-items-center">
@@ -310,8 +330,25 @@
                                         </div>
                                         <div class="product-icons">
                                             <span class="icon-add-to-cart"><i class="fas fa-cart-plus"></i></span>
-                                            <span class="icon-heart"><i class="fas fa-heart"></i></span>
-                                            <span class="icon-quick-view" onclick="event.preventDefault(); showQuickView({{ $product->id }})"><i class="fas fa-eye"></i></span>
+                                             @auth
+                                                    <form action="{{ route('wishlist.add', $product->id) }}" method="POST"
+                                                        style="display: none;" id="wishlist-form-{{ $product->id }}">
+                                                        @csrf
+                                                    </form>
+                                                    <span class="icon-heart icon-add-to-wishlist"
+                                                        onclick="event.preventDefault(); document.getElementById('wishlist-form-{{ $product->id }}').submit();"
+                                                        title="Thêm vào yêu thích">
+                                                        <i class="fas fa-heart"></i>
+                                                    </span>
+                                                @else
+                                                    <a href="{{ route('login') }}" class="icon-heart icon-add-to-wishlist"
+                                                        title="Đăng nhập để thêm vào yêu thích">
+                                                        <i class="fas fa-heart"></i>
+                                                    </a>
+                                                @endauth
+                                            <span class="icon-quick-view"
+                                                onclick="event.preventDefault(); showQuickView({{ $product->id }})"><i
+                                                    class="fas fa-eye"></i></span>
                                         </div>
                                     </a>
                                 </div>
@@ -610,10 +647,11 @@
                 alert('Added to Cart: ' + item.querySelector('.product-title').textContent);
             });
 
-            item.querySelector('.icon-heart').addEventListener('click', (e) => {
-                e.preventDefault();
-                alert('Added to Wishlist: ' + item.querySelector('.product-title').textContent);
-            });
+            // item.querySelector('.icon-add-to-wishlist').addEventListener('click', (e) => {
+            //     e.preventDefault();
+            //     alert('Added to Wishlist: ' + item.querySelector('.product-title').textContent);
+            // });
+
 
             item.querySelector('.icon-quick-view').addEventListener('click', (e) => {
                 e.preventDefault();

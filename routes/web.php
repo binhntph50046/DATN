@@ -14,13 +14,12 @@ use App\Http\Controllers\admin\RoleController;
 use App\Http\Controllers\admin\SpecificationController;
 use App\Http\Controllers\admin\VoucherController;
 use App\Http\Controllers\admin\AdminContactController;
-// Auth
 use App\Http\Controllers\admin\SubcriberController;
 use App\Http\Controllers\admin\FaqController;
-use App\Http\Controllers\auth\AuthController;
 
-use App\Http\Controllers\client\PaymentController;
-=======
+// Auth
+use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\Auth\FacebookController;
 use App\Http\Controllers\Auth\GoogleController;
 
 // Client 
@@ -31,6 +30,8 @@ use App\Http\Controllers\client\BlogController as ClientBlogController;
 use App\Http\Controllers\client\CartController;
 use App\Http\Controllers\client\CheckoutController;
 use App\Http\Controllers\client\ContactController;
+use App\Http\Controllers\client\PaymentController;
+
 
 use App\Http\Controllers\client\OrderController as ClientOrderController;
 =======
@@ -74,6 +75,8 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 Route::get('/auth/google', [GoogleController::class, 'redirectToGoogle'])->name('auth.google.redirect');
 Route::get('/auth/google/callback', [GoogleController::class, 'handleGoogleCallback']);
+Route::get('/auth/facebook', [FacebookController::class, 'redirectToFacebook'])->name('auth.facebook.redirect');
+Route::get('/auth/facebook/callback', [FacebookController::class, 'handleFacebookCallback']);
 
 // Admin routes
 Route::prefix('admin')->middleware(['auth', 'role:admin|staff'])->name('admin.')->group(function () {

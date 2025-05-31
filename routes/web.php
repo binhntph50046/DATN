@@ -18,9 +18,9 @@ use App\Http\Controllers\admin\SubcriberController;
 use App\Http\Controllers\admin\FaqController;
 
 // Auth
-use App\Http\Controllers\Auth\AuthController;
-use App\Http\Controllers\Auth\FacebookController;
-use App\Http\Controllers\Auth\GoogleController;
+use App\Http\Controllers\auth\AuthController;
+use App\Http\Controllers\auth\FacebookController;
+use App\Http\Controllers\auth\GoogleController;
 
 // Client 
 use App\Http\Controllers\client\HomeController;

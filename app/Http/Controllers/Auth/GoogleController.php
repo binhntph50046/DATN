@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Auth;
 
+use Illuminate\Support\Str;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -23,18 +24,28 @@ class GoogleController
                 ['email' => $googleUser->getEmail()],
                 [
                     'name' => $googleUser->getName(),
-                    'password' => bcrypt('google_login'), // hoặc random()
+                    'password' => bcrypt(Str::random(16)),
+                    'provider' => 'google',
+                    'provider_id' => $googleUser->getId(),
                     'email_verified_at' => now(),
-                    // Có thể thêm avatar, etc.
+                    'avatar' => $googleUser->getAvatar(),
                 ]
             );
+            if (!$user->provider || !$user->provider_id) {
+                $user->update([
+                    'provider' => 'google',
+                    'provider_id' => $googleUser->getId(),
+                ]);
+            }
+            $user->update([
+                'avatar' => $googleUser->getAvatar()
+            ]);
 
             Auth::login($user);
 
-            return redirect()->route('home'); // chuyển hướng sau khi đăng nhập
-
+            return redirect()->route('home');
         } catch (\Exception $e) {
-            return redirect()->route('login')->with('error', 'Lỗi: ' . $e->getMessage());
+            return redirect()->route('login')->with('error', 'Đăng nhập Google thất bại: ' . $e->getMessage());
         }
     }
 }

@@ -16,6 +16,7 @@ class Category extends Model
         'order',
         'status',
         'type',
+        'image',
         'deleted_at'
     ];
 

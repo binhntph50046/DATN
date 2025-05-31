@@ -88,6 +88,18 @@
                                 </div>
                             </div>
 
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="image" class="form-label">Image</label>
+                                        <input type="file" class="form-control @error('image') is-invalid @enderror" id="image" name="image">
+                                        @error('image')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                </div>
+                            </div>
+
                             <div class="mb-3">
                                 <button type="submit" class="btn btn-primary">Create Category</button>
                                 <a href="{{ route('admin.categories.index') }}" class="btn btn-secondary">Back</a>

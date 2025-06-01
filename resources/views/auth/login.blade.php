@@ -158,13 +158,6 @@
     <script src="assets/js/pcoded.js"></script>
     <script src="assets/js/plugins/feather.min.js"></script>
     <script>
-        if (window.location.hash === '#_=_') {
-            history.replaceState ?
-                history.replaceState(null, null, window.location.href.split('#')[0]) :
-                window.location.hash = '';
-        }
-    </script>
-    <script>
         function hideAlert(alertId) {
             const alert = document.getElementById(alertId);
             if (alert) {

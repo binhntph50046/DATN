@@ -65,25 +65,15 @@
     @endif
 </div>
 
-<script src="https://js.pusher.com/7.2/pusher.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/laravel-echo@1.15.0/dist/echo.iife.js"></script>
 <script>
-    window.Echo = new Echo({
-        broadcaster: 'pusher',
-        key: '8c861504cc7097ffc352',
-        cluster: 'ap1',
-        forceTLS: true
-    });
-
-    var orderId = {{ $order->id }};
-    window.Echo.channel('order-status.' + orderId)
-        .subscribed(() => {
-            console.log('Đã subscribe channel: order-status.' + orderId);
-        })
-        .listen('App\\Events\\OrderStatusUpdated', (e) => {
-            console.log('Đã nhận event:', e);
-            // Cập nhật trạng thái trên giao diện
-            document.getElementById('order-status-text').innerText = e.status_text;
-        });
+    setTimeout(() => {
+        let orderId = {{ $order->id }};
+        window.Echo.channel('orderStatus.' + orderId)
+            .listen('.OrderStatusUpdated', (e) => {
+                console.log('Đã nhận event:', e);
+                document.getElementById('order-status-text').innerText = e.status_text;
+            });
+    }, 200);
 </script>
-@endsection 
+@endsection
+

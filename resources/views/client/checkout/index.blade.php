@@ -117,12 +117,6 @@
                                             <i class="fas fa-qrcode me-2"></i> Thanh toán qua VNPay
                                         </label>
                                     </div>
-                                    {{-- <div class="form-check">
-                                        <input class="form-check-input" type="radio" name="payment_method" id="pm_qr" value="qr">
-                                        <label class="form-check-label" for="pm_qr">
-                                            <i class="fas fa-qrcode me-2"></i> Thanh toán qua QR Code
-                                        </label>
-                                    </div> --}}
                                     <div class="form-check">
                                         <input class="form-check-input" type="radio" name="payment_method" id="pm_bank" value="bank_transfer">
                                         <label class="form-check-label" for="pm_bank">

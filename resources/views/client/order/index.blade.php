@@ -202,5 +202,9 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 5000);
     });
 });
+
+
+
+
 </script>
 @endsection

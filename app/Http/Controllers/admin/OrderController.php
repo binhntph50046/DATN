@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use Illuminate\Routing\Controller;
 use App\Models\Order;
 use Illuminate\Http\Request;
+use App\Events\OrderStatusUpdated;
 
 class OrderController extends Controller
 {
@@ -34,36 +35,6 @@ class OrderController extends Controller
         $order = Order::withTrashed()->with(['user', 'items.product', 'items.variant'])->findOrFail($id);
         return view('admin.orders.show', compact('order'));
     }
-    // public function update(Request $request, $id)
-    // {
-    //     $order = Order::findOrFail($id);
-        
-    //     // danh sách các trạng thái có thể thay đổi từ trạng thái hiện tại
-    //     $status = [
-    //         "pending" => ["confirmed", "cancelled"],
-    //         "confirmed" => ["preparing", "cancelled"],
-    //         "preparing" => ["shipping"],
-    //         "shipping" => ["completed"],
-    //         "completed" => [],
-    //         "cancelled" => []
-    //     ];
-        
-    //     $new_status = $request->status;
-    //     if(isset($status[$order->status]) && in_array($new_status, $status[$order->status])) {
-    //         $order->update(['status' => $new_status]);
-    //         if ($request->ajax() || $request->wantsJson()) {
-    //             return response()->json(['success' => true, 'status' => $order->status]);
-    //         }   
-    //         return redirect()->route('admin.orders.show', $order->id)
-    //             ->with('success', 'Successfully updated order status');
-    //     }
-
-    //     if ($request->ajax() || $request->wantsJson()) {
-    //         return response()->json(['success' => false]);
-    //     }
-    //     return redirect()->route('admin.orders.show', $order->id)
-    //         ->with('error', 'Cannot update order status');
-    // }
     public function updateStatus(Request $request, $id)
     {
         $order = Order::findOrFail($id);
@@ -92,7 +63,7 @@ class OrderController extends Controller
         $new_status = $request->status;
         if(isset($status[$order->status]) && in_array($new_status, $status[$order->status])) {
             $order->update(['status' => $new_status]);
-            event(new \App\Events\OrderStatusUpdated($order));
+            event(new OrderStatusUpdated($order));
             if ($request->ajax() || $request->wantsJson()) {
                 return response()->json(['success' => true, 'status' => $order->status]);
             }   

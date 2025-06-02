@@ -20,6 +20,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick-theme.css" />
     <title>@yield('title')</title>
+    @yield("scripts")
 </head>
 
 <body>
@@ -36,7 +37,9 @@
     <script src="{{ asset('js/bootstrap.bundle.min.js') }}"></script>
     <script src="{{ asset('js/tiny-slider.js') }}"></script>
     <script src="{{ asset('js/custom.js') }}"></script>
-
+    @vite('resources/js/app.js')
+ 
+   
 </body>
 
 </html>

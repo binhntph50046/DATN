@@ -9,13 +9,16 @@ use Illuminate\Support\Facades\Auth;
 
 class OrderController 
 {
-    public function index()
+    public function index(Request $request)
     {
-        $orders = Order::where('user_id', Auth::id())
-            ->with(['items.product', 'items.variant'])
-            ->latest()
-            ->paginate(5);
-            
+        $query = Order::where('user_id', Auth::id());
+
+        if ($request->has('status') && $request->status != null) {
+            $query->where('status', $request->status);
+        }
+
+        $orders = $query->orderBy('created_at', 'desc')->paginate(10);
+
         return view('client.order.index', compact('orders'));
     }
 

@@ -8,6 +8,31 @@
         <p class="text-muted mb-0">Quản lý và theo dõi đơn hàng của bạn</p>
     </div>
 
+    <!-- Tabs for order status -->
+    <ul class="nav nav-tabs mb-4">
+        <li class="nav-item">
+            <a class="nav-link {{ request('status') == null ? 'active' : '' }}" href="{{ route('order.index') }}">Tất cả</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {{ request('status') == 'pending' ? 'active' : '' }}" href="{{ route('order.index', ['status' => 'pending']) }}">Chưa thanh toán</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {{ request('status') == 'confirmed' ? 'active' : '' }}" href="{{ route('order.index', ['status' => 'confirmed']) }}">Chờ xác nhận</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {{ request('status') == 'preparing' ? 'active' : '' }}" href="{{ route('order.index', ['status' => 'preparing']) }}">Đang chuẩn bị</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {{ request('status') == 'shipping' ? 'active' : '' }}" href="{{ route('order.index', ['status' => 'shipping']) }}">Đang giao</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {{ request('status') == 'completed' ? 'active' : '' }}" href="{{ route('order.index', ['status' => 'completed']) }}">Đã giao</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {{ request('status') == 'cancelled' ? 'active' : '' }}" href="{{ route('order.index', ['status' => 'cancelled']) }}">Đã hủy</a>
+        </li>
+    </ul>
+
     <!-- Success Alert -->
     @if(session('success'))
         <div class="alert alert-success alert-dismissible fade show d-flex align-items-center" role="alert">

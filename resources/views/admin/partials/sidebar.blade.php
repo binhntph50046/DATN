@@ -97,6 +97,12 @@
                     </a>
                 </li>
                 <li class="pc-item">
+                    <a href="{{ route('admin.flash-sales.index') }}" class="pc-link">
+                        <span class="pc-micon"><i class="ti ti-news"></i></span>
+                        <span class="pc-mtext">Flash Sale</span>
+                    </a>
+                </li>
+                <li class="pc-item">
                     <a href="{{ route('admin.contacts.index') }}" class="pc-link">
                         <span class="pc-micon"><i class="ti ti-news"></i></span>
                         <span class="pc-mtext">Contacts</span>

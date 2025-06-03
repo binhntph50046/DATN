@@ -151,6 +151,7 @@ Route::prefix('admin')->middleware(['auth', 'role:admin|staff'])->name('admin.')
         Route::delete('/{attributeType}', [VariantAttributeTypeController::class, 'destroy'])->middleware('permission:destroy attributes')->name('destroy');
         Route::get('/trash', [VariantAttributeTypeController::class, 'trash'])->middleware('permission:trash attributes')->name('trash');
         Route::post('/{attributeType}/restore', [VariantAttributeTypeController::class, 'restore'])->middleware('permission:restore attributes')->name('restore');
+        Route::post('/store-values', [VariantAttributeTypeController::class, 'storeValues'])->middleware('permission:create attributes')->name('store-values');
     });
 
     // Routes for ProductController (CRUD for products with variants)

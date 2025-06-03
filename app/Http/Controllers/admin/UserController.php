@@ -195,4 +195,12 @@ class UserController
         $user->delete();
         return redirect()->route('admin.users.index')->with('success', 'Xóa tài khoản thành công');
     }
+
+    public function toggleStatus(Request $request, User $user)
+    {
+        $newStatus = $request->input('status'); // Lấy trạng thái từ form
+        $user->update(['status' => $newStatus]);
+
+        return redirect()->route('admin.users.index')->with('success', 'Trạng thái tài khoản đã được cập nhật thành ' . ucfirst($newStatus) . '!');
+    }
 }

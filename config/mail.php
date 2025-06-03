@@ -115,4 +115,9 @@ return [
         'name' => env('MAIL_FROM_NAME', 'Example'),
     ],
 
+    'to' => [
+        'addresses' => explode(',', env('MAIL_TO_ADDRESSES', '')),
+        'name' => env('MAIL_FROM_NAME', 'Example'),
+    ],
+
 ];

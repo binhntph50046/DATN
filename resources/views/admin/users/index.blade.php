@@ -1,7 +1,18 @@
-@extends('admin.layouts.app')
-@section('title', 'User Management')
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>User Management</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    @extends('admin.layouts.app')
 
-@section('content')
+    @section('title', 'User Management')
+
+    @section('content')
     <div class="pc-container">
         <div class="pc-content">
             <!-- [ breadcrumb ] -->
@@ -113,10 +124,20 @@
                                                 <td>{{ $user->email }}</td>
                                                 <td>{{ ucfirst($user->getRoleNames()->first() ?? 'None') }}</td>
                                                 <td>
-                                                    <span
-                                                        class="badge {{ $user->status === 'active' ? 'bg-success' : 'bg-danger' }}">
-                                                        {{ ucfirst($user->status) }}
-                                                    </span>
+                                                    @can('edit users')
+                                                        <form action="{{ route('admin.users.toggle-status', $user->id) }}" method="POST" class="d-inline">
+                                                            @csrf
+                                                            <input type="hidden" name="status" value="{{ $user->status === 'active' ? 'inactive' : 'active' }}">
+                                                            <button type="submit" class="btn btn-sm {{ $user->status === 'active' ? 'btn-success' : 'btn-danger' }}"
+                                                                onclick="return confirm('Bạn có chắc muốn thay đổi trạng thái tài khoản này?')">
+                                                                {{ $user->status === 'active' ? 'Active' : 'Inactive' }}
+                                                            </button>
+                                                        </form>
+                                                    @else
+                                                        <span class="badge {{ $user->status === 'active' ? 'bg-success' : 'bg-danger' }}">
+                                                            {{ ucfirst($user->status) }}
+                                                        </span>
+                                                    @endcan
                                                 </td>
                                                 <td class="text-center">
                                                     @can('view users')
@@ -167,31 +188,35 @@
             </div>
         </div>
     </div>
-@endsection
 
-@push('styles')
-<style>
-    .custom-shadow {
-        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
-        border-radius: 12px;
-        background-color: #fff;
-        padding: 16px;
-    }
-    .badge {
-        font-size: 0.85em;
-        padding: 0.35em 0.65em;
-    }
-    .btn-group .btn {
-        padding: 0.25rem 0.5rem;
-    }
-    .table td {
-        vertical-align: middle;
-    }
-    .table-borderless td, .table-borderless th {
-        border: 0;
-    }
-    .table-hover tbody tr:hover {
-        background-color: rgba(0,0,0,.075);
-    }
-</style>
-@endpush
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    @endsection
+
+    @push('styles')
+    <style>
+        .custom-shadow {
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            background-color: #fff;
+            padding: 16px;
+        }
+        .badge {
+            font-size: 0.85em;
+            padding: 0.35em 0.65em;
+        }
+        .btn-group .btn {
+            padding: 0.25rem 0.5rem;
+        }
+        .table td {
+            vertical-align: middle;
+        }
+        .table-borderless td, .table-borderless th {
+            border: 0;
+        }
+        .table-hover tbody tr:hover {
+            background-color: rgba(0,0,0,.075);
+        }
+    </style>
+    @endpush
+</body>
+</html>

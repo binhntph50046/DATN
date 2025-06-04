@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\admin;
+namespace App\Http\Controllers\Admin;
 
 use Illuminate\Routing\Controller;
 use App\Models\Order;
@@ -31,64 +31,81 @@ class OrderController extends Controller
 
     public function show($id)
     {
-        $order = Order::withTrashed()->with(['user', 'items.product', 'items.productVariant'])->findOrFail($id);
+        $order = Order::withTrashed()->with(['user', 'items.product', 'items.variant'])->findOrFail($id);
         return view('admin.orders.show', compact('order'));
     }
+    // public function update(Request $request, $id)
+    // {
+    //     $order = Order::findOrFail($id);
+        
+    //     // danh sách các trạng thái có thể thay đổi từ trạng thái hiện tại
+    //     $status = [
+    //         "pending" => ["confirmed", "cancelled"],
+    //         "confirmed" => ["preparing", "cancelled"],
+    //         "preparing" => ["shipping"],
+    //         "shipping" => ["completed"],
+    //         "completed" => [],
+    //         "cancelled" => []
+    //     ];
+        
+    //     $new_status = $request->status;
+    //     if(isset($status[$order->status]) && in_array($new_status, $status[$order->status])) {
+    //         $order->update(['status' => $new_status]);
+    //         if ($request->ajax() || $request->wantsJson()) {
+    //             return response()->json(['success' => true, 'status' => $order->status]);
+    //         }   
+    //         return redirect()->route('admin.orders.show', $order->id)
+    //             ->with('success', 'Successfully updated order status');
+    //     }
 
-
-    public function update(Request $request, Order $order)
+    //     if ($request->ajax() || $request->wantsJson()) {
+    //         return response()->json(['success' => false]);
+    //     }
+    //     return redirect()->route('admin.orders.show', $order->id)
+    //         ->with('error', 'Cannot update order status');
+    // }
+    public function updateStatus(Request $request, $id)
     {
-        if (
-            ($order->status === 'pending' && $request->status === 'confirmed') ||
-            ($order->status === 'confirmed' && $request->status === 'preparing') ||
-            ($order->status === 'preparing' && $request->status === 'shipping') ||
-            ($order->status === 'shipping' && $request->status === 'completed') ||
-            ($order->status === 'completed' && $request->status === 'cancelled')
-        ) {
-            $order->update([
-                'status' => $request->status
+        $order = Order::findOrFail($id);
+        
+        // Nếu đơn đã bị huỷ hoặc đã hoàn thành thì không cho cập nhật nữa
+    if (in_array($order->status, ['cancelled', 'completed'])) {
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Đơn hàng đã ' . ($order->status === 'cancelled' ? 'bị hủy' : 'hoàn thành') . ', không thể cập nhật trạng thái.'
             ]);
+        }
+        return redirect()->route('admin.orders.show', $order->id)
+            ->with('error', 'Không thể cập nhật trạng thái vì đơn hàng đã ' . ($order->status === 'cancelled' ? 'bị hủy' : 'hoàn thành') . '.');
+    }
+        // danh sách các trạng thái có thể thay đổi từ trạng thái hiện tại
+        $status = [
+            "pending" => ["confirmed", "cancelled"],
+            "confirmed" => ["preparing", "cancelled"],
+            "preparing" => ["shipping"],
+            "shipping" => ["completed"],
+            "completed" => [],
+            "cancelled" => []
+        ];
+        
+        $new_status = $request->status;
+        if(isset($status[$order->status]) && in_array($new_status, $status[$order->status])) {
+            $order->update(['status' => $new_status]);
+            event(new \App\Events\OrderStatusUpdated($order));
             if ($request->ajax() || $request->wantsJson()) {
                 return response()->json(['success' => true, 'status' => $order->status]);
-            }
+            }   
             return redirect()->route('admin.orders.show', $order->id)
-                ->with('success', 'Đơn hàng đã được xác nhận thành công');
+                ->with('success', 'Successfully updated order status');
         }
 
         if ($request->ajax() || $request->wantsJson()) {
             return response()->json(['success' => false]);
         }
         return redirect()->route('admin.orders.show', $order->id)
-            ->with('error', 'Không thể thay đổi trạng thái đơn hàng');
-    }
-
-
-
-    public function destroy(Order $order)
-    {
-        $order->delete();
-        return redirect()->route('admin.orders.index')
-            ->with('success', 'Xóa đơn hàng thành công');
-    }
-
-    public function trash()
-    {
-        $orders = Order::onlyTrashed()->latest()->paginate(10);
-        return view('admin.orders.trash', compact('orders'));
-    }
-
-    public function restore($id)
-    {
-        $order = Order::withTrashed()->findOrFail($id);
-        $order->restore();
-        return redirect()->route('admin.orders.trash')->with('success', 'Khôi phục đơn hàng thành công!');
-    }
-
-    public function forceDelete($id)
-    {
-        $order = Order::withTrashed()->findOrFail($id);
-        $order->forceDelete();
-        return redirect()->route('admin.orders.trash')->with('success', 'Đã xóa vĩnh viễn đơn hàng!');
+            ->with('error', 'Cannot update order status');
     }
 }
+
 

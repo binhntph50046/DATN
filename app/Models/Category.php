@@ -16,6 +16,7 @@ class Category extends Model
         'order',
         'status',
         'type',
+        'image',
         'deleted_at'
     ];
 
@@ -32,5 +33,22 @@ class Category extends Model
     public function blogs()
     {
         return $this->hasMany(Blog::class);
+    }
+
+    public function specifications()
+    {
+        return $this->belongsToMany(Specification::class, 'category_specifications')
+            ->withTimestamps();
+    }
+
+    public function attributeTypes()
+    {
+        return $this->belongsToMany(VariantAttributeType::class, 'category_attribute_types')
+            ->withTimestamps();
+    }
+
+    public function products()
+    {
+        return $this->hasMany(Product::class);
     }
 }

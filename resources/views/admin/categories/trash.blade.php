@@ -55,6 +55,7 @@
                                 <thead>
                                     <tr>
                                         <th>ID</th>
+                                        <th>Image</th>
                                         <th>Name</th>
                                         <th>Slug</th>
                                         <th>Parent</th>
@@ -69,6 +70,13 @@
                                             foreach ($categories as $category) {
                                                 echo '<tr>';
                                                 echo '<td>' . $index++ . '</td>';
+                                                echo '<td>';
+                                                if ($category->image) {
+                                                    echo '<img src="' . asset($category->image) . '" alt="' . $category->name . '" class="img-thumbnail" style="max-height: 50px;">';
+                                                } else {
+                                                    echo '<span class="text-muted">No image</span>';
+                                                }
+                                                echo '</td>';
                                                 $parentName = $category->parent ? $category->parent->name : 'No Parent';
                                                 echo '<td>' . $prefix . ($category->parent_id ? '└─ ' : '') . $category->name . '</td>';
                                                 echo '<td>' . $category->slug . '</td>';
@@ -81,11 +89,11 @@
                                                 echo method_field('POST');
                                                 echo '<button type="submit" class="btn btn-success btn-sm rounded-3 me-2" onclick="return confirm(\'Are you sure you want to restore this category?\')"><i class="ti ti-refresh"></i> Restore</button>';
                                                 echo '</form>';
-                                                echo '<form action="' . route('admin.categories.forceDelete', $category->id) . '" method="POST" class="d-inline">';
-                                                echo csrf_field();
-                                                echo method_field('DELETE');
-                                                echo '<button type="submit" class="btn btn-danger btn-sm rounded-3" onclick="return confirm(\'Are you sure you want to permanently delete this category?\')"><i class="ti ti-trash"></i> Delete</button>';
-                                                echo '</form>';
+                                                // echo '<form action="' . route('admin.categories.forceDelete', $category->id) . '" method="POST" class="d-inline">';
+                                                // echo csrf_field();
+                                                // echo method_field('DELETE');
+                                                // echo '<button type="submit" class="btn btn-danger btn-sm rounded-3" onclick="return confirm(\'Are you sure you want to permanently delete this category?\')"><i class="ti ti-trash"></i> Delete</button>';
+                                                // echo '</form>';
                                                 echo '</td>';
                                                 echo '</tr>';
 

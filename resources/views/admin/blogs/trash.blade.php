@@ -1,43 +1,120 @@
 @extends('admin.layouts.app')
-@section('title', 'Thùng rác blog')
+
+@section('title', 'Trash Blogs')
+
+<style>
+    .custom-shadow {
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+        border-radius: 12px;
+        background-color: #fff;
+        padding: 16px;
+    }
+</style>
 
 @section('content')
-<div class="pc-container">
-  <div class="pc-content">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-      <h4>Thùng rác bài viết</h4>
-      <a href="{{ route('admin.blogs.index') }}" class="btn btn-secondary">Quay lại danh sách</a>
-    </div>
-
-    <div class="row g-4">
-      @foreach($blogs as $blog)
-        <div class="col-md-4">
-          <div class="card">
-            @if($blog->image)
-              <img src="{{ asset($blog->image) }}" class="card-img-top" alt="">
-            @endif
-            <div class="card-body">
-              <h6>{{ $blog->title }}</h6>
-              <p><small>Đã xóa: {{ $blog->deleted_at->format('d/m/Y H:i') }}</small></p>
-              <div class="d-flex gap-2">
-                <form action="{{ route('admin.blogs.restore', $blog->id) }}" method="POST">
-                  @csrf @method('PUT')
-                  <button class="btn btn-sm btn-success">Khôi phục</button>
-                </form>
-                <form action="{{ route('admin.blogs.forceDelete', $blog->id) }}" method="POST" onsubmit="return confirm('Xóa vĩnh viễn?')">
-                  @csrf @method('DELETE')
-                  <button class="btn btn-sm btn-danger">Xóa vĩnh viễn</button>
-                </form>
-              </div>
+    <div class="pc-container">
+        <div class="pc-content">
+            <!-- [ breadcrumb ] start -->
+            <div class="page-header">
+                <div class="page-block">
+                    <div class="row align-items-center">
+                        <div class="col-md-12">
+                            <div class="page-header-title">
+                                <h5 class="m-b-10">Trash</h5>
+                            </div>
+                            <ul class="breadcrumb">
+                                <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Home</a></li>
+                                <li class="breadcrumb-item" aria-current="page">Trash</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
             </div>
-          </div>
-        </div>
-      @endforeach
-    </div>
+            <!-- [ breadcrumb ] end -->
 
-    <div class="mt-4">
-      {{ $blogs->links() }}
+            <!-- [ Main Content ] start -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5>Trashed Blogs List</h5>
+                            <div>
+                                <a href="{{ route('admin.blogs.index') }}" class="btn btn-primary btn-sm rounded-3">
+                                    <i class="ti ti-arrow-left"></i> Back to List
+                                </a>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            @if (session('success'))
+                                <div class="alert alert-success">
+                                    {{ session('success') }}
+                                </div>
+                            @endif
+
+                            <div class="table-responsive custom-shadow">
+                                <table class="table table-hover table-borderless align-middle">
+                                    <thead>
+                                        <tr>
+                                            <th>STT</th>
+                                            <th>Title</th>
+                                            <th>Image</th>
+                                            <th>Category</th>
+                                            <th>Author</th>
+                                            <th>Deleted At</th>
+                                            <th class="text-center">Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @forelse ($blogs as $index => $blog)
+                                            <tr>
+                                                <td>{{ $index + 1 }}</td>
+                                                <td>{{ Str::limit($blog->title, 50) }}</td>
+                                                <td>
+                                                    @if ($blog->image)
+                                                        @php
+                                                            $filename = basename($blog->image);
+                                                            $url = asset('uploads/blogs/' . $filename);
+                                                        @endphp
+                                                        <img src="{{ $url }}" alt="{{ $blog->title }}"
+                                                            style="width:80px;height:50px;object-fit:cover;">
+                                                    @else
+                                                        <span>Không có</span>
+                                                    @endif
+                                                </td>
+                                                <td>{{ $blog->category->name ?? 'Chưa có' }}</td>
+                                                <td>{{ $blog->author->name ?? 'Admin' }}</td>
+                                                <td>{{ $blog->deleted_at->format('d/m/Y H:i') }}</td>
+                                               <td class="text-center">
+                                                <form action="{{ route('admin.blogs.restore', $blog->id) }}" method="POST" class="d-inline">
+                                                    @csrf
+                                                    @method('PUT')
+                                                    <button type="submit" class="btn btn-success btn-sm me-1" onclick="return confirm('Are you sure?')" title="Restore">
+                                                        <i class="ti ti-restore"></i> Restore
+                                                    </button>
+                                                </form>
+                                               
+                                            </td>
+
+                                            </tr>
+                                        @empty
+                                            <tr>
+                                                <td colspan="7" class="text-center text-muted">
+                                                    Không có bài viết nào trong thùng rác.
+                                                </td>
+                                            </tr>
+                                        @endforelse
+                                    </tbody>
+                                </table>
+
+                                {{-- nếu cần phân trang --}}
+                                {{-- {{ $trashedBlogs->links() }} --}}
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- [ Main Content ] end -->
+        </div>
     </div>
-  </div>
-</div>
 @endsection

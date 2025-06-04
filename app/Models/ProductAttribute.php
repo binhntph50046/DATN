@@ -2,25 +2,26 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class ProductAttribute extends Model
 {
-    use HasFactory;
+    protected $table = 'product_attributes';
 
     protected $fillable = [
         'product_id',
         'attribute_name',
         'attribute_value',
-    ];
-
-    protected $casts = [
-        'attribute_value' => 'string',
+        'hex',
     ];
 
     public function product()
     {
         return $this->belongsTo(Product::class);
+    }
+
+    public function attributeType()
+    {
+        return $this->belongsTo(VariantAttributeType::class, 'attribute_type_id');
     }
 }

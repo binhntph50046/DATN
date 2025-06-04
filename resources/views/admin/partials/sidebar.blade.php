@@ -45,7 +45,7 @@
                 <li class="pc-item">
                     <a href="{{ route('admin.categories.index') }}" class="pc-link">
                         <span class="pc-micon"><i class="ti ti-layout-grid"></i></span>
-                         <span class="pc-mtext">Categories</span>
+                        <span class="pc-mtext">Categories</span>
                     </a>
                 </li>
                 <li class="pc-item">
@@ -58,6 +58,18 @@
                     <a href="{{ route('admin.products.index') }}" class="pc-link">
                         <span class="pc-micon"><i class="ti ti-package"></i></span>
                         <span class="pc-mtext">Products</span>
+                    </a>
+                </li>
+                <li class="pc-item">
+                    <a href="{{ route('admin.attributes.index') }}" class="pc-link">
+                        <span class="pc-micon"><i class="ti ti-tag"></i></span>
+                        <span class="pc-mtext">Attributes</span>
+                    </a>
+                </li>
+                <li class="pc-item">
+                    <a href="{{ route('admin.specifications.index') }}" class="pc-link">
+                        <span class="pc-micon"><i class="ti ti-tag"></i></span>
+                        <span class="pc-mtext">Thông số kỹ thuật</span>
                     </a>
                 </li>
                 <li class="pc-item">
@@ -76,6 +88,36 @@
                     <a href="{{ route('admin.blogs.index') }}" class="pc-link">
                         <span class="pc-micon"><i class="ti ti-news"></i></span>
                         <span class="pc-mtext">Blogs</span>
+                    </a>
+                </li>
+                <li class="pc-item">
+                    <a href="{{ route('admin.vouchers.index') }}" class="pc-link">
+                        <span class="pc-micon"><i class="ti ti-news"></i></span>
+                        <span class="pc-mtext">Voucher</span>
+                    </a>
+                </li>
+                <li class="pc-item">
+                    <a href="{{ route('admin.flash-sales.index') }}" class="pc-link">
+                        <span class="pc-micon"><i class="ti ti-news"></i></span>
+                        <span class="pc-mtext">Flash Sale</span>
+                    </a>
+                </li>
+                <li class="pc-item">
+                    <a href="{{ route('admin.contacts.index') }}" class="pc-link">
+                        <span class="pc-micon"><i class="ti ti-message"></i></span>
+                        <span class="pc-mtext">Contacts</span>
+                    </a>
+                </li>
+                <li class="pc-item">
+                    <a href="{{ route('admin.subscribers.index') }}" class="pc-link">
+                        <span class="pc-micon"><i class="ti ti-mail"></i></span>
+                        <span class="pc-mtext">Subscribers Email</span>
+                    </a>
+                </li>
+                <li class="pc-item">
+                    <a href="{{ route('admin.faqs.index') }}" class="pc-link">
+                        <span class="pc-micon"><i class="ti ti-mail"></i></span>
+                        <span class="pc-mtext">Faq</span>
                     </a>
                 </li>
 

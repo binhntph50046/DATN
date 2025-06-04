@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\admin;
+namespace App\Http\Controllers\Admin;
 
 use App\Models\Banner;
 use Illuminate\Support\Facades\Storage;
@@ -38,6 +38,7 @@ class BannerController
             'title' => 'required|string|max:255',
             'image' => 'required|image|mimes:jpeg,png,jpg,gif',
             'status' => 'required|in:active,inactive',
+            'description' => 'nullable|string|max:255',
             'link' => 'nullable|url',
         ]);
 
@@ -51,13 +52,33 @@ class BannerController
         $banner->status = $request->status;
         $banner->order = $newOrder;
         $banner->link = $request->link;
+        $banner->description = $request->description;
+
+        // // Xử lý upload ảnh
+        // if ($request->hasFile('image')) {
+        //     // Lưu ảnh vào thư mục 'banners' trong storage
+        //     $imagePath = $request->file('image')->store('banners', 'public');
+        //     $banner->image = $imagePath;
+        // }
 
         // Xử lý upload ảnh
         if ($request->hasFile('image')) {
-            // Lưu ảnh vào thư mục 'banners' trong storage
-            $imagePath = $request->file('image')->store('banners', 'public');
-            $banner->image = $imagePath;
+            $image = $request->file('image');
+            $imageName = uniqid() . '.' . $image->getClientOriginalExtension(); // tạo tên ảnh duy nhất
+            $uploadPath = public_path('uploads/banners');
+
+            // Tạo thư mục nếu chưa có
+            if (!file_exists($uploadPath)) {
+                mkdir($uploadPath, 0755, true);
+            }
+
+            // Di chuyển ảnh vào thư mục public/uploads/banners
+            $image->move($uploadPath, $imageName);
+
+            // Lưu đường dẫn tương đối vào DB (để dùng với asset())
+            $banner->image = 'uploads/banners/' . $imageName;
         }
+
 
         // Lưu banner vào cơ sở dữ liệu
         $banner->save();
@@ -91,6 +112,7 @@ class BannerController
         $request->validate([
             'title' => 'required|string|max:255',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif',
+            'description' => 'nullable|string|max:255',
             'status' => 'required|in:active,inactive',
             'link' => 'nullable|url',
         ]);
@@ -98,16 +120,28 @@ class BannerController
         $banner->title = $request->title;
         $banner->status = $request->status;
         $banner->link = $request->link;
+        $banner->description = $request->description;
 
         if ($request->hasFile('image')) {
             // Xoá ảnh cũ nếu cần
-            if ($banner->image && Storage::disk('public')->exists($banner->image)) {
-                Storage::disk('public')->delete($banner->image);
+            if ($banner->image && file_exists(public_path($banner->image))) {
+                unlink(public_path($banner->image));
             }
 
-            $imagePath = $request->file('image')->store('banners', 'public');
-            $banner->image = $imagePath;
+            $image = $request->file('image');
+            $imageName = uniqid() . '.' . $image->getClientOriginalExtension(); // Tạo tên ảnh duy nhất
+            $uploadPath = public_path('uploads/banners');
+
+            // Tạo thư mục nếu chưa tồn tại
+            if (!file_exists($uploadPath)) {
+                mkdir($uploadPath, 0755, true);
+            }
+
+            $image->move($uploadPath, $imageName); // Di chuyển ảnh đến thư mục public/uploads/banners
+
+            $banner->image = 'uploads/banners/' . $imageName; // Lưu đường dẫn tương đối
         }
+
 
         $banner->save();
 
@@ -126,7 +160,7 @@ class BannerController
 
         $banner->delete();
 
-        return redirect()->route('admin.banners.index')->with('success', 'Xóa banner thành công.');
+        return redirect()->route('admin.banners.index')->with('success', 'Successfully deleted');
     }
     public function moveUp(Banner $banner)
     {
@@ -140,7 +174,7 @@ class BannerController
             $prevBanner->save();
         }
 
-        return redirect()->route('admin.banners.index')->with('success', 'Thứ tự banner đã được thay đổi.');
+        return redirect()->route('admin.banners.index')->with('success', 'Successfully moved up');
     }
 
     public function moveDown(Banner $banner)
@@ -155,7 +189,7 @@ class BannerController
             $nextBanner->save();
         }
 
-        return redirect()->route('admin.banners.index')->with('success', 'Thứ tự banner đã được thay đổi.');
+        return redirect()->route('admin.banners.index')->with('success', 'Successfully moved down');
     }
     public function updateOrder(Request $request)
     {

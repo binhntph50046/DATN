@@ -4,9 +4,9 @@
 <div class="pc-container">
     <div class="pc-content">
         <!-- [ breadcrumb ] start -->
-        <div class="page-header">
+        <div class="page-header ">
             <div class="page-block">
-                <div class="row align-items-center">
+                <div class="row align-items-center mb-4">
                     <div class="col-md-12">
                         <div class="page-header-title">
                             <h5 class="m-b-10">Order Details</h5>
@@ -35,11 +35,10 @@
                         {{ session('error') }}
                     </div>
                 @endif
-
                 <div class="card">
                     <div class="card-body">
                         <div class="row">
-                            <div class="col-md-6">
+                            <div class="col-md-6 shadow-sm mb-4">
                                 <h4>Customer Information</h4>
                                 <table class="table table-borderless">
                                     <tr>
@@ -60,13 +59,13 @@
                                     </tr>
                                 </table>
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-6 shadow-sm mb-4">
                                 <h4>Order Status</h4>
                                 <table class="table table-borderless">
                                     <tr>
                                         <th>Order Status:</th>
                                         <td>
-                                            <form id="order-status-form" action="{{ route('admin.orders.update', $order->id) }}" method="POST" class="d-flex align-items-center" style="gap: 8px;">
+                                            <form method="POST" action="{{ route('admin.orders.updateStatus', $order->id) }}">
                                                 @csrf
                                                 @method('PUT')
                                                 <select name="status" class="form-select form-select-sm" style="width: 160px;">
@@ -97,12 +96,16 @@
                                         <th>Order Date:</th>
                                         <td>{{ $order->created_at->format('d/m/Y H:i') }}</td>
                                     </tr>
+                                    <tr>
+                                        <th>Lý do huỷ đơn:</th>
+                                        <td class="text-danger">{{ $order->cancel_reason }}</td>
+                                    </tr>
                                 </table>
                             </div>
                         </div>
 
                         <div class="row mt-4">
-                            <div class="col-md-6">
+                            <div class="col-md-6 shadow-sm mb-4">
                                 <h4>Order Summary</h4>
                                 <table class="table table-borderless">
                                     <tr>
@@ -124,7 +127,7 @@
                                 </table>
                             </div>
                            
-                            <div class="col-md-6">
+                            <div class="col-md-6 shadow-sm mb-4">
                                 <h4>Order Items</h4>
                                 <table class="table table-borderless">
                                     @foreach($order->items as $item)
@@ -133,8 +136,14 @@
                                             <td>{{ $item->product->name ?? 'N/A' }}</td>
                                         </tr>
                                         <tr>
-                                            <th>Variant:</th>
-                                            <td>{{ $item->productVariant->name ?? 'N/A' }}</td>
+                                            <th>Image:</th>
+                                            @php
+                                                $images = $item->variant && $item->variant->images ? json_decode($item->variant->images, true) : [];
+                                                $imgSrc = isset($images[0]) ? asset($images[0]) : asset('uploads/default/default.jpg');
+                                            @endphp
+                                            <td>
+                                                <img src="{{ $imgSrc }}" alt="{{ $item->variant->name ?? '' }}" style="width: 100px; height: 100px;">
+                                            </td>
                                         </tr>
                                         <tr>
                                             <th>Quantity:</th>
@@ -148,7 +157,7 @@
                                             <th>Total:</th>
                                             <td>{{ number_format($item->total) }} VNĐ</td>
                                         </tr>
-                                        <tr><td colspan="2"><hr></td></tr>
+                                       
                                     @endforeach
                                 </table>
                             </div>
@@ -179,6 +188,8 @@
             }, 3000);
         }
     });
+
+    
 </script>
 
 @endsection 

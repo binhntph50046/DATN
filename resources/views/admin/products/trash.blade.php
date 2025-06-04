@@ -1,5 +1,5 @@
 @extends('admin.layouts.app')
-@section('title', 'Trash - Product Management')
+@section('title', 'Products Trash')
 
 <style>
     .custom-shadow {
@@ -8,8 +8,20 @@
         background-color: #fff;
         padding: 16px;
     }
+    .table th, .table td { padding: 0.35rem 0.5rem; }
+    .table .text-nowrap { white-space: nowrap; }
+    .product-img-thumb {
+        box-shadow: 0 2px 12px 0 rgba(0,0,0,0.12), 0 1.5px 4px 0 rgba(0,0,0,0.08);
+        border: 2px solid #eee;
+        transition: transform 0.2s, border-color 0.2s;
+    }
+    .product-img-thumb:hover {
+        transform: scale(1.08);
+        border-color: #007bff;
+        box-shadow: 0 4px 18px 0 rgba(0,123,255,0.15), 0 3px 8px 0 rgba(0,0,0,0.10);
+        z-index: 2;
+    }
 </style>
-
 @section('content')
 <div class="pc-container">
     <div class="pc-content">
@@ -19,11 +31,12 @@
                 <div class="row align-items-center">
                     <div class="col-md-12">
                         <div class="page-header-title">
-                            <h5 class="m-b-10">Trash - Products</h5>
+                            <h5 class="m-b-10">Products Trash</h5>
                         </div>
                         <ul class="breadcrumb">
-                            <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Home</a></li>
-                            <li class="breadcrumb-item" aria-current="page">Trash - Products</li>
+                            <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
+                            <li class="breadcrumb-item"><a href="{{ route('admin.products.index') }}">Products</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">Trash</li>
                         </ul>
                     </div>
                 </div>
@@ -36,10 +49,10 @@
             <div class="col-12">
                 <div class="card">
                     <div class="card-header">
-                        <h5>Trash Products</h5>
+                        <h5>Deleted Products List</h5>
                         <div class="card-header-right">
-                            <a href="{{ route('admin.products.index') }}" class="btn btn-primary btn-sm rounded-3">
-                                <i class="ti ti-arrow-left"></i> Back to Products
+                            <a href="{{ route('admin.products.index') }}" class="btn btn-secondary btn-sm rounded-3">
+                                <i class="ti ti-arrow-left"></i> Back to Product List
                             </a>
                         </div>
                     </div>
@@ -49,91 +62,87 @@
                                 {{ session('success') }}
                             </div>
                         @endif
-
-                        <!-- Bộ lọc tìm kiếm -->
-                        <form method="GET" action="{{ route('admin.products.trash') }}" class="row g-3 mb-3">
-                            <div class="col-md-3">
-                                <input type="text" name="name" class="form-control" placeholder="Search by name..." value="{{ request('name') }}">
-                            </div>
-                        
-                            <div class="col-md-3">
-                                <select name="category_id" class="form-select">
-                                    <option value="">-- Filter by Category --</option>
-                                    @foreach($categories as $category)
-                                        <option value="{{ $category->id }}" {{ request('category_id') == $category->id ? 'selected' : '' }}>
-                                            {{ $category->name }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        
-                            <div class="col-md-3">
-                                <select name="status" class="form-select">
-                                    <option value="">-- Filter by Status --</option>
-                                    <option value="active" {{ request('status') == 'active' ? 'selected' : '' }}>Active</option>
-                                    <option value="inactive" {{ request('status') == 'inactive' ? 'selected' : '' }}>Inactive</option>
-                                </select>
-                            </div>
-                        
-                            <div class="col-md-3 d-flex align-items-center">
-                                <button type="submit" class="btn btn-primary me-2">Filter</button>
-                                <a href="{{ route('admin.products.trash') }}" class="btn btn-secondary">Reset</a>
-                            </div>
-                        </form>
-
                         <div class="table custom-shadow">
-                            <table class="table table-hover table-borderless">
+                            <table class="table table-hover table-borderless align-middle" style="font-size: 14px;">
                                 <thead>
                                     <tr>
-                                        <th>ID</th>
+                                        <th class="text-nowrap">ID</th>
                                         <th>Image</th>
-                                        <th>Name</th>
-                                        <th>Category</th>
-                                        <th>Price</th>
-                                        <th>Stock</th>
-                                        <th>Status</th>
-                                        <th class="text-center">Actions</th>
+                                        <th class="text-nowrap">Name</th>
+                                        <th class="text-nowrap">Category</th>
+                                        <th class="text-nowrap">Price</th>
+                                        <th class="text-nowrap">Stock</th>
+                                        <th class="text-nowrap">Status</th>
+                                        <th class="text-nowrap">Featured</th>
+                                        <th class="text-center text-nowrap">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach($products as $product)
+                                    @forelse ($products as $index => $product)
                                         <tr>
-                                            <td>{{ $product->id }}</td>
+                                            <td class="text-nowrap">{{ $products->firstItem() + $index }}</td>
                                             <td>
-                                                @if($product->image)
-                                                    <img src="{{ asset($product->image) }}" alt="{{ $product->name }}" class="img-thumbnail" style="max-width: 50px;">
+                                                @if ($product->default_variant_image || $product->variant_image)
+                                                    <img src="{{ asset($product->default_variant_image ?? $product->variant_image) }}"
+                                                         alt="{{ $product->name }}"
+                                                         class="product-img-thumb"
+                                                         style="width: 100px; height: 100px; object-fit: cover; border-radius: 8px;">
                                                 @else
-                                                    <span class="text-muted">No image</span>
+                                                    <img src="{{ asset('uploads/default/default.jpg') }}"
+                                                         alt="default image"
+                                                         class="product-img-thumb"
+                                                         style="width: 100px; height: 100px; object-fit: cover; border-radius: 8px;">
                                                 @endif
                                             </td>
-                                            <td>{{ $product->name }}</td>
-                                            <td>{{ $product->category->name ?? 'N/A' }}</td>
-                                            <td>{{ number_format($product->price) }} VNĐ</td>
-                                            <td>{{ $product->stock }}</td>
-                                            <td>
-                                                <span class="badge {{ $product->status == 'active' ? 'bg-success' : 'bg-danger' }}">
+                                            <td class="text-nowrap" style="max-width: 140px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="{{ $product->name }}">
+                                                {{ $product->name }}
+                                            </td>
+                                            <td class="text-nowrap">{{ $product->category ? $product->category->name : 'N/A' }}</td>
+                                            <td class="text-nowrap">
+                                                @php
+                                                    $variant = $product->variants->first();
+                                                    $price = $variant ? $variant->selling_price : 0;
+                                                    $discountPrice = $variant ? $variant->discount_price : 0;
+                                                @endphp
+                                                @if ($discountPrice > 0 && $discountPrice < $price)
+                                                    <span class="text-decoration-line-through text-muted">{{ number_format($price, 0, ',', '.') }} VNĐ</span>
+                                                    <br>
+                                                    <span class="text-danger fw-bold">{{ number_format($discountPrice, 0, ',', '.') }} VNĐ</span>
+                                                @else
+                                                    <span class="text-success fw-bold">{{ number_format($price, 0, ',', '.') }} VNĐ</span>
+                                                @endif
+                                            </td>
+                                            <td class="text-nowrap">{{ $product->variants->sum('stock') }}</td>
+                                            <td class="text-nowrap">
+                                                <span class="badge {{ $product->status === 'active' ? 'bg-success' : 'bg-danger' }}">
                                                     {{ ucfirst($product->status) }}
                                                 </span>
                                             </td>
-                                            <td class="text-center">
-                                                <form action="{{ route('admin.products.restore', $product->id) }}" method="POST" class="d-inline">
+                                            <td class="text-nowrap">
+                                                @if ($product->is_featured)
+                                                    <span class="badge bg-info">Featured</span>
+                                                @else
+                                                    <span class="badge bg-secondary">Normal</span>
+                                                @endif
+                                            </td>
+                                            <td class="text-center text-nowrap">
+                                                <form action="{{ route('admin.products.restore', $product->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to restore this product?');">
                                                     @csrf
-                                                    <button type="submit" class="btn btn-success btn-sm rounded-3 me-2" onclick="return confirm('Are you sure you want to restore this product?')">
-                                                        <i class="ti ti-refresh"></i> Restore
-                                                    </button>
-                                                </form>
-                                                <form action="{{ route('admin.products.forceDelete', $product->id) }}" method="POST" class="d-inline">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit" class="btn btn-danger btn-sm rounded-3" onclick="return confirm('Are you sure you want to permanently delete this product?')">
-                                                        <i class="ti ti-trash"></i> Delete
+                                                    <button type="submit" class="btn btn-success btn-sm rounded-3" title="Restore">
+                                                        <i class="ti ti-arrow-back-up"></i> Restore
                                                     </button>
                                                 </form>
                                             </td>
                                         </tr>
-                                    @endforeach
+                                    @empty
+                                        <tr>
+                                            <td colspan="9" class="text-center">No deleted products found.</td>
+                                        </tr>
+                                    @endforelse
                                 </tbody>
                             </table>
+                        </div>
+                        <div class="d-flex justify-content-center mt-4">
                             {{ $products->links() }}
                         </div>
                     </div>
@@ -143,4 +152,4 @@
         <!-- [ Main Content ] end -->
     </div>
 </div>
-@endsection 
+@endsection

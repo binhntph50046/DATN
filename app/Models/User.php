@@ -8,12 +8,13 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
-
+use Spatie\Permission\Models\Role;
+use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable, HasApiTokens, SoftDeletes;
+    use HasFactory, Notifiable, HasApiTokens, SoftDeletes, HasRoles;
 
     /**
      * The attributes that are mass assignable.
@@ -23,7 +24,10 @@ class User extends Authenticatable
     protected $fillable = [
         'name',
         'email',
+        'email_verified_at',
         'password',
+        'provider',
+        'provider_id',
         'phone',
         'address',
         'avatar',
@@ -31,10 +35,9 @@ class User extends Authenticatable
         'gender',
         'is_verified',
         'last_login',
-        'role',
         'status',
     ];
-    
+
     /**
      * The attributes that should be hidden for serialization.
      *
@@ -60,7 +63,7 @@ class User extends Authenticatable
 
     public function addresses()
     {
-        return $this->hasMany(UserAddress::class);
+        // return $this->hasMany(UserAddress::class);
     }
 
     public function orders()
@@ -70,20 +73,25 @@ class User extends Authenticatable
 
     public function cart()
     {
-        return $this->hasOne(Cart::class);
+        // return $this->hasOne(Cart::class);
     }
 
-    public function wishlist()
+    public function wishlists()
     {
-        return $this->hasOne(Wishlist::class);
+        return $this->hasMany(Wishlist::class);
     }
 
     public function reviews()
     {
-        return $this->hasMany(ProductReview::class);
+        // return $this->hasMany(ProductReview::class);
     }
     public function blogs()
     {
         return $this->hasMany(Blog::class, 'author_id');
+    }
+    public function roles()
+    {
+        return $this->belongsToMany(Role::class, 'model_has_roles', 'model_id', 'role_id')
+            ->where('model_type', self::class);
     }
 }

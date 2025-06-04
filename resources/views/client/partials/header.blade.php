@@ -41,8 +41,8 @@
                      </a>
                      <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
                          @guest
-                             <li><a class="dropdown-item" href="#">Register</a></li>
-                             <li><a class="dropdown-item" href="#">Login</a></li>
+                             <li><a class="dropdown-item" href="{{ route('register')}}">Register</a></li>
+                             <li><a class="dropdown-item" href="{{ route('login')}}">Login</a></li>
                          @else
                              <li><a class="dropdown-item" href="#">Profile</a></li>
                              <li><a class="dropdown-item" href="#">Order History</a></li>

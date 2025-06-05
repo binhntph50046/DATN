@@ -104,14 +104,12 @@
                                                             onclick="event.preventDefault(); showQuickView({{ $wishlist->id }})">
                                                             <i class="fas fa-eye"></i>
                                                         </span>
-                                                        <form action="{{ route('wishlist.remove', $wishlist->id) }}"
-                                                            method="POST" style="display: none;"
-                                                            id="remove-wishlist-{{ $wishlist->id }}">
+                                                        <form action="{{ route('wishlist.toggle', $wishlist) }}" method="POST" style="display: none;"
+                                                            id="remove-wishlist-{{ $wishlist->id }}" class="wishlist-form">
                                                             @csrf
-                                                            @method('DELETE')
                                                         </form>
                                                         <span class="icon-trash icon-remove-from-wishlist"
-                                                            onclick="event.preventDefault(); document.getElementById('remove-wishlist-{{ $wishlist->id }}').submit();"
+                                                            onclick="event.preventDefault(); removeFromWishlist('{{ $wishlist->id }}', '{{ route('wishlist.toggle', $wishlist) }}');"
                                                             title="Xóa khỏi yêu thích">
                                                             <i class="fas fa-trash"></i>
                                                         </span>
@@ -357,6 +355,87 @@
                     );
             });
         });
+
+        function removeFromWishlist(productId, url) {
+            const form = document.getElementById(`remove-wishlist-${productId}`);
+            const formData = new FormData(form);
+            
+            fetch(url, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Accept': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status) {
+                    showToast(data.message, data.type);
+                    // Reload trang sau 1 giây để cập nhật UI
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 1000);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showToast('Đã xảy ra lỗi, vui lòng thử lại!', 'danger');
+            });
+        }
+
+        function showToast(message, type) {
+            const toastContainer = document.querySelector('.toast-container');
+            if (!toastContainer) {
+                console.error('Toast container not found');
+                return;
+            }
+
+            const toastEl = document.createElement('div');
+            toastEl.className = `toast`;
+            toastEl.setAttribute('role', 'alert');
+            toastEl.setAttribute('aria-live', 'assertive');
+            toastEl.setAttribute('aria-atomic', 'true');
+
+            // Create toast header
+            const toastHeader = document.createElement('div');
+            toastHeader.className = 'toast-header';
+            toastHeader.innerHTML = `
+                <i class="fas ${type === 'success' ? 'fa-check-circle text-success' : 
+                              type === 'danger' ? 'fa-exclamation-circle text-danger' : 
+                              type === 'warning' ? 'fa-info-circle text-warning' : 
+                              'fa-info-circle text-info'} me-2"></i>
+                <strong class="me-auto">${type === 'success' ? 'Thành công' : 
+                               type === 'danger' ? 'Lỗi' : 
+                               type === 'warning' ? 'Thông báo' : 
+                               'Thông tin'}</strong>
+                <small>Vừa xong</small>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            `;
+
+            // Create toast body
+            const toastBody = document.createElement('div');
+            toastBody.className = 'toast-body';
+            toastBody.textContent = message;
+
+            // Append header and body to toast
+            toastEl.appendChild(toastHeader);
+            toastEl.appendChild(toastBody);
+
+            // Add toast to container
+            toastContainer.appendChild(toastEl);
+
+            // Initialize and show toast
+            const toast = new bootstrap.Toast(toastEl, {
+                delay: 3000
+            });
+            toast.show();
+
+            // Remove toast after it's hidden
+            toastEl.addEventListener('hidden.bs.toast', () => {
+                toastEl.remove();
+            });
+        }
     </script>
 
     <style>

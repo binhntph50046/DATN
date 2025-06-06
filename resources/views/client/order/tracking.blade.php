@@ -1,15 +1,21 @@
 @extends('client.layouts.app')
 
 @section('content')
-<div class="container py-5">
+<style>
+    .container.pt-5 {
+        padding-top: 110px !important;
+    }
+</style>
+<div class="container pt-5">
     <h2>Chi tiết đơn hàng #{{ $order->id }}</h2>
-    <p>Trạng thái: <strong id="order-status-text">{{ $order->getStatusTextAttribute() }}</strong></p>
+    <pp>Trạng thái: <strong id="order-status-text">{{ $order->getStatusTextAttribute() }}</strong></pp>
     <p>Ngày đặt: {{ $order->created_at->format('d/m/Y H:i') }}</p>
     <hr>
     <h4>Thông tin sản phẩm</h4>
     <table class="table">
         <thead>
             <tr>
+                <th>Hình ảnh</th>
                 <th>Sản phẩm</th>
                 <th>Biến thể</th>
                 <th>Số lượng</th>
@@ -20,6 +26,13 @@
         <tbody>
             @foreach($order->items as $item)
                 <tr>
+                    <td>
+                        @php
+                            $images = $item->variant && $item->variant->images ? json_decode($item->variant->images, true) : [];
+                            $imgSrc = isset($images[0]) ? asset($images[0]) : (isset($item->product->image) ? asset($item->product->image) : asset('uploads/default/default.jpg'));
+                        @endphp
+                        <img src="{{ $imgSrc }}" alt="" style="width:60px; height:60px; object-fit:cover;">
+                    </td>
                     <td>{{ $item->product->name ?? '' }}</td>
                     <td>{{ $item->variant->name ?? '' }}</td>
                     <td>{{ $item->quantity }}</td>
@@ -39,10 +52,11 @@
     <h4>Tổng tiền: <span class="text-danger">{{ number_format($order->total_price) }} VNĐ</span></h4>
     
     <div class="mt-4">
-        <a href="{{ route('order.invoice', $order->id) }}" class="btn btn-primary" target="_blank">
+        {{-- <a href="{{ route('order.invoice', $order->id) }}" class="btn btn-primary" target="_blank">
             <i class="fas fa-print"></i> In hóa đơn
-        </a>
-        <form action="{{ route('order.resend-invoice', $order->id) }}" method="GET" class="d-inline">
+        </a> --}}
+        <form action="{{ route('order.request-resend-invoice', $order->id) }}" method="POST" class="d-inline">
+            @csrf
             <button type="submit" class="btn btn-info">
                 <i class="fas fa-envelope"></i> Gửi lại hóa đơn qua email
             </button>
@@ -56,6 +70,7 @@
         <div class="alert alert-success mt-3">
             {{ session('success') }}
         </div>
+        
     @endif
 
     @if(session('error'))

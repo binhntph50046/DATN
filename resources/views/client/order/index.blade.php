@@ -10,6 +10,7 @@
 
     <!-- Tabs for order status -->
     <ul class="nav nav-tabs mb-4">
+        
         <li class="nav-item">
             <a class="nav-link {{ request('status') == null ? 'active' : '' }}" href="{{ route('order.index') }}">Tất cả</a>
         </li>
@@ -59,6 +60,7 @@
                     <thead class="bg-light">
                         <tr>
                             <th class="border-0 p-3">Mã đơn hàng</th>
+                            <th class="border-0 p-3">Hình ảnh</th>
                             <th class="border-0 p-3">Ngày đặt</th>
                             <th class="border-0 p-3">Tổng tiền</th>
                             <th class="border-0 p-3">Trạng thái</th>
@@ -70,6 +72,14 @@
                             <tr class="align-middle">
                                 <td class="p-3">
                                     <span class="fw-bold text-dark">#{{ $order->id }}</span>
+                                </td>
+                                <td class="p-3">
+                                    @php
+                                        $firstItem = $order->items->first();
+                                        $images = $firstItem && $firstItem->variant && $firstItem->variant->images ? json_decode($firstItem->variant->images, true) : [];
+                                        $imgSrc = isset($images[0]) ? asset($images[0]) : (isset($firstItem->product->image) ? asset($firstItem->product->image) : asset('uploads/default/default.jpg'));
+                                    @endphp
+                                    <img src="{{ $imgSrc }}" alt="" style="width:60px; height:60px; object-fit:cover;">
                                 </td>
                                 <td class="p-3">
                                     <div class="d-flex flex-column">
@@ -125,6 +135,7 @@
                                         @endif
                                     </div>
 
+                                   
                                     <!-- Cancel Modal -->
                                     <div class="modal fade" id="cancelModal{{ $order->id }}" tabindex="-1" aria-labelledby="cancelModalLabel{{ $order->id }}" aria-hidden="true">
                                         <div class="modal-dialog modal-dialog-centered">

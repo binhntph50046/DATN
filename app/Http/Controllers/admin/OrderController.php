@@ -29,7 +29,6 @@ class OrderController extends Controller
         $orders = $query->latest()->paginate(10)->appends($request->all());
         return view('admin.orders.index', compact('orders'));
     }
-
     public function show($id)
     {
         $order = Order::withTrashed()->with(['user', 'items.product', 'items.variant'])->findOrFail($id);
@@ -38,8 +37,7 @@ class OrderController extends Controller
     public function updateStatus(Request $request, $id)
     {
         $order = Order::findOrFail($id);
-        
-        // Nếu đơn đã bị huỷ hoặc đã hoàn thành thì không cho cập nhật nữa
+       // Nếu đơn đã bị huỷ hoặc đã hoàn thành thì không cho cập nhật nữa
     if (in_array($order->status, ['cancelled', 'completed'])) {
         if ($request->ajax() || $request->wantsJson()) {
             return response()->json([
@@ -59,7 +57,6 @@ class OrderController extends Controller
             "completed" => [],
             "cancelled" => []
         ];
-        
         $new_status = $request->status;
         if(isset($status[$order->status]) && in_array($new_status, $status[$order->status])) {
             $order->update(['status' => $new_status]);
@@ -68,14 +65,14 @@ class OrderController extends Controller
                 return response()->json(['success' => true, 'status' => $order->status]);
             }   
             return redirect()->route('admin.orders.show', $order->id)
-                ->with('success', 'Successfully updated order status');
+                    ->with('success', 'Cập nhật trạng thái đơn hàng thành công');
         }
 
         if ($request->ajax() || $request->wantsJson()) {
             return response()->json(['success' => false]);
         }
         return redirect()->route('admin.orders.show', $order->id)
-            ->with('error', 'Cannot update order status');
+            ->with('error', 'Không thể cập nhật trạng thái đơn hàng');
     }
 }
 

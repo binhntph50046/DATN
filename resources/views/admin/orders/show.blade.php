@@ -64,7 +64,7 @@
                                 <table class="table table-borderless">
                                     <tr>
                                         <th>Order Status:</th>
-                                        <td>
+                                        <td class="d-flex align-items-center">
                                             <form method="POST" action="{{ route('admin.orders.updateStatus', $order->id) }}">
                                                 @csrf
                                                 @method('PUT')
@@ -168,6 +168,15 @@
                             <h4>Notes</h4>
                             <p>{{ $order->notes }}</p>
                         </div>
+                        @endif
+
+                        @php
+                            $invoice = \App\Models\Invoice::where('order_id', $order->id)->first();
+                        @endphp
+                        @if($invoice)
+                            <a href="{{ route('admin.invoices.show', $invoice->id) }}" class="btn btn-success btn-sm rounded-3" title="Xuất hóa đơn">
+                                <i class="fas fa-file-invoice"></i>
+                            </a>
                         @endif
                     </div>
                 </div>

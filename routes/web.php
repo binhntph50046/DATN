@@ -14,6 +14,7 @@ use App\Http\Controllers\admin\RoleController;
 use App\Http\Controllers\admin\SpecificationController;
 use App\Http\Controllers\admin\VoucherController;
 use App\Http\Controllers\admin\AdminContactController;
+use App\Http\Controllers\Admin\InvoiceController;
 use App\Http\Controllers\auth\AuthController;
 use App\Http\Controllers\client\PaymentController;
 // Client 
@@ -26,6 +27,7 @@ use App\Http\Controllers\client\CheckoutController;
 use App\Http\Controllers\client\ContactController;
 use App\Http\Controllers\client\OrderController as ClientOrderController;
 use App\Http\Controllers\client\ProductController as ClientProductController;
+use App\Http\Controllers\admin\ResendInvoiceRequestController;
 
 // Client 
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -40,6 +42,7 @@ Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.s
 Route::get('/checkout/vnpay/callback', [CheckoutController::class, 'vnpayCallback'])->name('checkout.vnpay.callback');
 Route::post('/payment/vnpay', [PaymentController::class, 'vnPay'])->name('vnpay.payment');
 Route::get('/payment/vnpay/return', [PaymentController::class, 'vnPayReturn'])->name('vnpay.return');
+
 
 
 Route::post('/increment-view/{id}', [HomeController::class, 'incrementView'])->name('increment.view');
@@ -151,7 +154,11 @@ Route::prefix('admin')->middleware(['auth', 'role:admin|staff'])->name('admin.')
   //  Route::put('orders/{order}', [OrderController::class, 'update'])->middleware('permission:edit orders')->name('orders.update');
     Route::delete('orders/{order}', [OrderController::class, 'destroy'])->middleware('permission:delete orders')->name('orders.destroy');
     Route::put('orders/{order}/status', [OrderController::class, 'updateStatus'])->middleware('permission:edit orders')->name('orders.updateStatus');
+    Route::post('orders/{order}/export-invoice', [InvoiceController::class, 'export'])->name('orders.export-invoice');
 
+    //Invoice Routes
+    Route::resource('invoices', InvoiceController::class);
+    Route::get('invoices/{invoice}/pdf', [InvoiceController::class, 'exportPdf'])->name('invoices.export-pdf');
     // Role Routes (chỉ admin được gán vai trò)
     Route::get('roles/{user}/edit', [RoleController::class, 'edit'])->middleware('permission:addrole')->name('roles.edit');
     Route::put('roles/{user}', [RoleController::class, 'update'])->middleware('permission:addrole')->name('roles.update');
@@ -165,7 +172,10 @@ Route::prefix('admin')->middleware(['auth', 'role:admin|staff'])->name('admin.')
         Route::delete('/{contact}', [AdminContactController::class, 'destroy'])->name('delete');   
     });
 
-    
+    Route::get('resend-invoice-requests', [ResendInvoiceRequestController::class, 'index'])->name('resend-invoice-requests.index');
+    Route::post('resend-invoice-requests/{id}/approve', [ResendInvoiceRequestController::class, 'approve'])->name('resend-invoice-requests.approve');
+    Route::post('resend-invoice-requests/{id}/reject', [ResendInvoiceRequestController::class, 'reject'])->name('resend-invoice-requests.reject');
+
 });
 
 // Theo dõi đơn hàng sau khi đặt hàng
@@ -174,3 +184,7 @@ Route::post('/order/cancel/{order}', [ClientOrderController::class, 'cancel'])->
 Route::get('/order/tracking/{order}', [CheckoutController::class, 'tracking'])->name('order.tracking');
 Route::get('/order/invoice/{order}', [CheckoutController::class, 'invoice'])->name('order.invoice');
 Route::get('/order/resend-invoice/{order}', [CheckoutController::class, 'resendInvoice'])->name('order.resend-invoice');
+
+Route::prefix('order')->name('order.')->group(function () {
+    Route::post('{id}/request-resend-invoice', [ClientOrderController::class, 'requestResendInvoice'])->name('request-resend-invoice');
+});

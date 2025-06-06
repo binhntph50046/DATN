@@ -16,6 +16,7 @@
                             <li class="breadcrumb-item" aria-current="page">Orders</li>
                         </ul>
                     </div>
+                    
                 </div>
             </div>
         </div>
@@ -52,7 +53,7 @@
                                 </div>
                                 <div class="col-md-3 d-flex gap-2 align-items-stretch">
                                     <button type="submit" class="btn btn-primary btn-sm rounded-3 w-100">Lọc</button>
-                                    <a href="{{ route('admin.orders.index') }}" class="btn btn-secondary align-items-center btn-sm rounded-3 w-100">Reset</a>
+                                    <a href="{{ route('admin.orders.index') }}" class="btn btn-secondary d-flex justify-content-center align-items-center btn-sm rounded-3 w-100">Reset</a>
                                 </div>
                                 
                             </form>
@@ -109,8 +110,23 @@
                                         </td>
                                         <td class="text-center">
                                             <a href="{{ route('admin.orders.show', $order->id) }}" class="btn btn-primary btn-sm rounded-3 me-2">
-                                                <i class="ti ti-eye"></i> View
+                                                <i class="ti ti-eye"></i> 
                                             </a>
+                                            @php
+                                                $invoice = \App\Models\Invoice::where('order_id', $order->id)->first();
+                                            @endphp
+                                            @if(!$invoice)
+                                                <form action="{{ route('admin.orders.export-invoice', $order->id) }}" method="POST" class="d-inline">
+                                                    @csrf
+                                                    <button type="submit" class="btn btn-success btn-sm rounded-3" title="Xuất hóa đơn">
+                                                        <i class="fas fa-file-invoice"></i>
+                                                    </button>
+                                                </form>
+                                            @else
+                                                <a href="{{ route('admin.invoices.show', $invoice->id) }}" class="btn btn-success btn-sm rounded-3" title="Xem hóa đơn">
+                                                    <i class="fas fa-file-invoice"></i>
+                                                </a>
+                                            @endif
                                             {{-- <form action="{{ route('admin.orders.destroy', $order->id) }}" method="POST" class="d-inline">
                                                 @csrf
                                                 @method('DELETE')

@@ -25,7 +25,7 @@
         }
 
         .header {
-            background-color: #000000;
+            background-color: #ffffff;
             text-align: center;
             padding: 10px;
         }
@@ -109,7 +109,7 @@
 <body>
     <div class="container">
         <div class="header">
-            <img src="{{ asset('uploads/images/petshop.PNG') }}" alt="PetShop Logo">
+            <img src="{{ asset('images/iphone.png') }}" alt="Apple Logo">
         </div>
         <div class="content">
             <h1>Khôi phục mật khẩu tài khoản</h1>

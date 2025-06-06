@@ -114,7 +114,7 @@
         <div class="content">
             <h1>Khôi phục mật khẩu tài khoản</h1>
             <p>Kính thưa Quý khách,</p>
-            <p>Chúng tôi ghi nhận yêu cầu khôi phục mật khẩu cho tài khoản của Quý khách tại PetShop. Để tiếp tục quy
+            <p>Chúng tôi ghi nhận yêu cầu khôi phục mật khẩu cho tài khoản của Quý khách tại Apple Store. Để tiếp tục quy
                 trình, xin vui lòng nhấn vào nút bên dưới nhằm kích hoạt quá trình đặt lại mật khẩu một cách an toàn và
                 nhanh chóng.</p>
             <a href="{{ $resetUrl }}" class="button">Khôi phục ngay</a>

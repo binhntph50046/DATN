@@ -149,13 +149,13 @@
             <!-- Category Products -->
             @foreach ($categories as $category)
                 @if ($category->products->count() > 0)
-            <div class="row mb-5" data-aos="fade-up">
-                <div class="col-12">
+                    <div class="row mb-5" data-aos="fade-up">
+                        <div class="col-12">
                             <h2 class="section-title text-center mb-3 mt-5">
                                 <i class="fa-brands fa-apple"></i>{{ $category->name }}
                             </h2>
-                </div>
-                <div class="col-12">
+                        </div>
+                        <div class="col-12">
                             @if ($category->products->count() >= 4)
                                 <div class="product-slider category-slider">
                                     @foreach ($category->products as $product)
@@ -189,9 +189,9 @@
                                                     <img src="{{ $variantImage ?? $defaultImage }}"
                                                         class="img-fluid mx-auto" alt="{{ $product->name }}"
                                                         style="max-height: 200px; object-fit: contain;">
-                                    </div>
+                                                </div>
                                                 <h3 class="product-title">{{ $product->name }}</h3>
-                                    <div class="product-price-and-rating">
+                                                <div class="product-price-and-rating">
                                                     <div class="price-wrapper">
                                                         @if ($product->discount_price)
                                                             <strong
@@ -203,7 +203,7 @@
                                                                 class="product-price">{{ number_format($product->price) }}đ</strong>
                                                         @endif
                                                     </div>
-                                        <div class="product-rating">
+                                                    <div class="product-rating">
                                                         @php
                                                             $rating = $product->reviews->avg('rating') ?? 0;
                                                             $fullStars = floor($rating);
@@ -211,7 +211,7 @@
                                                         @endphp
                                                         @for ($i = 1; $i <= 5; $i++)
                                                             @if ($i <= $fullStars)
-                                            <i class="fas fa-star"></i>
+                                                                <i class="fas fa-star"></i>
                                                             @elseif($i == $fullStars + 1 && $halfStar)
                                                                 <i class="fas fa-star-half-alt"></i>
                                                             @else
@@ -219,9 +219,9 @@
                                                             @endif
                                                         @endfor
                                                         <span>({{ number_format($product->views) }} lượt xem)</span>
-                                        </div>
-                                    </div>
-                                    <div class="product-icons">
+                                                    </div>
+                                                </div>
+                                                <div class="product-icons">
                                                     <span class="icon-add-to-cart" data-product-id="{{ $product->id }}">
                                                         <i class="fas fa-cart-plus"></i>
                                                     </span>
@@ -231,11 +231,11 @@
                                                     <span class="icon-quick-view" data-product-id="{{ $product->id }}">
                                                         <i class="fas fa-eye"></i>
                                                     </span>
-                                    </div>
-                                </a>
+                                                </div>
+                                            </a>
                                         </div>
                                     @endforeach
-                                    </div>
+                                </div>
                             @else
                                 <div class="row product-grid">
                                     @foreach ($category->products as $product)
@@ -269,9 +269,9 @@
                                                         <img src="{{ $variantImage ?? $defaultImage }}"
                                                             class="img-fluid mx-auto" alt="{{ $product->name }}"
                                                             style="max-height: 200px; object-fit: contain;">
-                </div>
+                                                    </div>
                                                     <h3 class="product-title">{{ $product->name }}</h3>
-                                    <div class="product-price-and-rating">
+                                                    <div class="product-price-and-rating">
                                                         <div class="price-wrapper">
                                                             @if ($product->discount_price)
                                                                 <strong
@@ -282,8 +282,8 @@
                                                                 <strong
                                                                     class="product-price">{{ number_format($product->price) }}đ</strong>
                                                             @endif
-                                    </div>
-                                        <div class="product-rating">
+                                                        </div>
+                                                        <div class="product-rating">
                                                             @php
                                                                 $rating = $product->reviews->avg('rating') ?? 0;
                                                                 $fullStars = floor($rating);
@@ -291,17 +291,17 @@
                                                             @endphp
                                                             @for ($i = 1; $i <= 5; $i++)
                                                                 @if ($i <= $fullStars)
-                                            <i class="fas fa-star"></i>
+                                                                    <i class="fas fa-star"></i>
                                                                 @elseif($i == $fullStars + 1 && $halfStar)
                                                                     <i class="fas fa-star-half-alt"></i>
                                                                 @else
                                                                     <i class="far fa-star"></i>
                                                                 @endif
-                        @endfor
+                                                            @endfor
                                                             <span>({{ number_format($product->views) }} lượt xem)</span>
-                                        </div>
-                                    </div>
-                                    <div class="product-icons">
+                                                        </div>
+                                                    </div>
+                                                    <div class="product-icons">
                                                         <span class="icon-add-to-cart"
                                                             data-product-id="{{ $product->id }}">
                                                             <i class="fas fa-cart-plus"></i>
@@ -313,14 +313,14 @@
                                                             data-product-id="{{ $product->id }}">
                                                             <i class="fas fa-eye"></i>
                                                         </span>
-                                    </div>
-                                </a>
-                            </div>
+                                                    </div>
+                                                </a>
+                                            </div>
                                         </div>
                                     @endforeach
                                 </div>
                             @endif
-                            </div>
+                        </div>
                     </div>
                 @endif
             @endforeach
@@ -341,14 +341,24 @@
                         <div class="col-md-6">
                             <div class="product-gallery">
                                 <div class="main-image mb-4 position-relative">
-                                    <button id="quickViewPrevImageBtn" class="image-nav-btn" style="display:none;"><i class="fas fa-chevron-left"></i></button>
-                                    <img src="" class="img-fluid quick-view-image" id="quickViewMainImage" alt="Product Image">
-                                    <button id="quickViewNextImageBtn" class="image-nav-btn" style="display:none;"><i class="fas fa-chevron-right"></i></button>
+                                    <button id="quickViewPrevImageBtn" class="image-nav-btn" style="display:none;"><i
+                                            class="fas fa-chevron-left"></i></button>
+                                    <img src="" class="img-fluid quick-view-image" id="quickViewMainImage"
+                                        alt="Product Image">
+                                    <button id="quickViewNextImageBtn" class="image-nav-btn" style="display:none;"><i
+                                            class="fas fa-chevron-right"></i></button>
                                 </div>
                                 <div class="thumbnail-slider position-relative">
-                                    <button id="quickViewThumbPrevBtn" class="image-nav-btn" style="left:0;top:50%;transform:translateY(-50%);" onclick="quickViewScrollThumbnails(-1)"><i class="fas fa-chevron-left"></i></button>
-                                    <div class="row flex-nowrap overflow-auto" id="quickViewThumbnailsRow" style="scroll-behavior:smooth; margin:0 48px;"></div>
-                                    <button id="quickViewThumbNextBtn" class="image-nav-btn" style="right:0;top:50%;transform:translateY(-50%);" onclick="quickViewScrollThumbnails(1)"><i class="fas fa-chevron-right"></i></button>
+                                    <button id="quickViewThumbPrevBtn" class="image-nav-btn"
+                                        style="left:0;top:50%;transform:translateY(-50%);"
+                                        onclick="quickViewScrollThumbnails(-1)"><i
+                                            class="fas fa-chevron-left"></i></button>
+                                    <div class="row flex-nowrap overflow-auto" id="quickViewThumbnailsRow"
+                                        style="scroll-behavior:smooth; margin:0 48px;"></div>
+                                    <button id="quickViewThumbNextBtn" class="image-nav-btn"
+                                        style="right:0;top:50%;transform:translateY(-50%);"
+                                        onclick="quickViewScrollThumbnails(1)"><i
+                                            class="fas fa-chevron-right"></i></button>
                                 </div>
                             </div>
                         </div>
@@ -372,7 +382,8 @@
                                 <label class="form-label">Quantity:</label>
                                 <div class="quantity-control">
                                     <button class="quantity-btn minus">-</button>
-                                    <input type="number" id="quickViewQuantity" class="form-control" value="1" min="1" readonly>
+                                    <input type="number" id="quickViewQuantity" class="form-control" value="1"
+                                        min="1" readonly>
                                     <button class="quantity-btn plus">+</button>
                                 </div>
                             </div>
@@ -431,30 +442,30 @@
             });
 
             // Initialize blog slider
-                $('.blog-slider').slick({
+            $('.blog-slider').slick({
                 dots: false,
-                    infinite: true,
-                    speed: 300,
-                    slidesToShow: 3,
-                    slidesToScroll: 3,
-                    arrows: true,
+                infinite: true,
+                speed: 300,
+                slidesToShow: 3,
+                slidesToScroll: 3,
+                arrows: true,
                 variableWidth: false,
-                    responsive: [{
-                            breakpoint: 1024,
-                            settings: {
-                                slidesToShow: 2,
+                responsive: [{
+                        breakpoint: 1024,
+                        settings: {
+                            slidesToShow: 2,
                             slidesToScroll: 2
-                            }
-                        },
-                        {
-                            breakpoint: 600,
-                            settings: {
-                                slidesToShow: 1,
-                                slidesToScroll: 1
-                            }
                         }
-                    ]
-                });
+                    },
+                    {
+                        breakpoint: 600,
+                        settings: {
+                            slidesToShow: 1,
+                            slidesToScroll: 1
+                        }
+                    }
+                ]
+            });
 
             // Initialize all product category sliders
             $('.category-slider').each(function() {
@@ -498,7 +509,7 @@
                 if (slideCount < 4) {
                     $slider.addClass('few-items');
                 }
-                });
+            });
 
             // Countdown Timer for Flash Sale
             function updateCountdown() {
@@ -512,13 +523,13 @@
                 e.stopPropagation();
 
                 const productId = $(this).data('product-id');
-                
+
                 try {
                     const response = await fetch(`/api/products/${productId}`);
                     const product = await response.json();
-                    
+
                     currentQuickViewProduct = product;
-                    
+
                     // Reset previous data
                     quickViewVariantData = {};
                     quickViewAttributeToVariant = {};
@@ -531,7 +542,7 @@
                     $('.quick-view-title').text(product.name);
                     $('.quick-view-category').text(product.category ? product.category.name : 'N/A');
                     $('.quick-view-warranty').text(`${product.warranty_months || 'N/A'} months`);
-                    
+
                     // Setup variant data
                     product.variants.forEach(variant => {
                         quickViewVariantData[variant.id] = {
@@ -542,7 +553,8 @@
                         // Create attribute mapping
                         const attrValues = variant.combinations.map(comb => {
                             const value = comb.attribute_value.value;
-                            return Array.isArray(value) ? value[0] : (typeof value === 'string' ? value : value[0]);
+                            return Array.isArray(value) ? value[0] : (typeof value ===
+                                'string' ? value : value[0]);
                         });
                         quickViewAttributeToVariant[attrValues.join('|')] = variant.id;
                     });
@@ -572,25 +584,27 @@
                     Object.entries(attributeGroups).forEach(([typeName, valuesSet]) => {
                         const values = Array.from(valuesSet).map(v => JSON.parse(v));
                         const hasHex = values.some(v => v.hex && v.hex[0]);
-                        
+
                         const groupDiv = document.createElement('div');
                         groupDiv.className = 'variant-group mb-4';
-                        
+
                         const labelHtml = `
                             <label class="form-label variant-label">
                                 ${typeName}
                                 ${hasHex ? `<span id="quickview-selected-${typeName}-value" class="selected-value"></span>` : ''}
                             </label>
                         `;
-                        
+
                         const optionsDiv = document.createElement('div');
                         optionsDiv.className = 'variant-options';
-                        
+
                         if (hasHex) {
                             values.forEach(item => {
-                                const value = Array.isArray(item.value) ? item.value[0] : item.value;
-                                const hex = Array.isArray(item.hex) ? item.hex[0] : item.hex;
-                                
+                                const value = Array.isArray(item.value) ? item.value[
+                                    0] : item.value;
+                                const hex = Array.isArray(item.hex) ? item.hex[0] : item
+                                    .hex;
+
                                 optionsDiv.innerHTML += `
                                     <div class="color-option"
                                         title="${value}"
@@ -604,7 +618,8 @@
                             });
                         } else {
                             values.forEach(item => {
-                                const value = Array.isArray(item.value) ? item.value[0] : item.value;
+                                const value = Array.isArray(item.value) ? item.value[
+                                    0] : item.value;
                                 optionsDiv.innerHTML += `
                                     <button type="button"
                                         class="variant-btn"
@@ -616,21 +631,22 @@
                                 `;
                             });
                         }
-                        
+
                         groupDiv.innerHTML = labelHtml;
                         groupDiv.appendChild(optionsDiv);
                         variantGroups.appendChild(groupDiv);
                     });
 
                     // Set initial variant
-                    const defaultVariant = product.variants.find(v => v.is_default) || product.variants[0];
+                    const defaultVariant = product.variants.find(v => v.is_default) || product.variants[
+                        0];
                     if (defaultVariant) {
                         quickViewSelectAllAttributesOfVariant(defaultVariant.id);
                     }
 
                     // Show modal
                     $('#quickViewModal').modal('show');
-                    
+
                 } catch (error) {
                     console.error('Error fetching product details:', error);
                 }
@@ -670,7 +686,8 @@
                     alert('Vui lòng chọn đầy đủ thuộc tính sản phẩm trước khi đặt hàng!');
                     return;
                 }
-                window.location.href = '/checkout?variant_id=' + variantId + '&quantity=' + quantity + '&image=' + encodeURIComponent(mainImage);
+                window.location.href = '/checkout?variant_id=' + variantId + '&quantity=' + quantity +
+                    '&image=' + encodeURIComponent(mainImage);
             });
 
             // Image navigation buttons
@@ -701,10 +718,11 @@
         }
 
         function updateQuickViewImageNavButtons() {
-            document.getElementById('quickViewPrevImageBtn').style.display = 
+            document.getElementById('quickViewPrevImageBtn').style.display =
                 (quickViewCurrentImages.length > 1 && quickViewCurrentImageIndex > 0) ? '' : 'none';
-            document.getElementById('quickViewNextImageBtn').style.display = 
-                (quickViewCurrentImages.length > 1 && quickViewCurrentImageIndex < quickViewCurrentImages.length - 1) ? '' : 'none';
+            document.getElementById('quickViewNextImageBtn').style.display =
+                (quickViewCurrentImages.length > 1 && quickViewCurrentImageIndex < quickViewCurrentImages.length - 1) ? '' :
+                'none';
         }
 
         function quickViewShowPrevImage() {
@@ -727,7 +745,8 @@
             images.forEach((img, idx) => {
                 const div = document.createElement('div');
                 div.className = 'col-3';
-                div.innerHTML = `<img src="${img}" class="img-fluid thumbnail${idx===0?' active':''}" alt="Thumbnail" onclick="quickViewChangeMainImageByIndex(${idx})">`;
+                div.innerHTML =
+                    `<img src="${img}" class="img-fluid thumbnail${idx===0?' active':''}" alt="Thumbnail" onclick="quickViewChangeMainImageByIndex(${idx})">`;
                 container.appendChild(div);
             });
             updateQuickViewMainImageByIndex(0);
@@ -740,12 +759,15 @@
         function quickViewScrollThumbnails(direction) {
             const row = document.getElementById('quickViewThumbnailsRow');
             const scrollAmount = 120;
-            row.scrollBy({ left: direction * scrollAmount, behavior: 'smooth' });
+            row.scrollBy({
+                left: direction * scrollAmount,
+                behavior: 'smooth'
+            });
         }
 
         function quickViewSelectAllAttributesOfVariant(variantId) {
             if (!currentQuickViewProduct) return;
-            
+
             const selectedVariant = currentQuickViewProduct.variants.find(v => v.id === variantId);
             if (selectedVariant) {
                 document.querySelectorAll('#quickViewModal .color-option, #quickViewModal .variant-btn')
@@ -753,10 +775,15 @@
 
                 selectedVariant.combinations.forEach(comb => {
                     const typeName = comb.attribute_value.attribute_type.name.trim();
-                    const matchedType = quickViewRequiredTypes.find(t => t.toLowerCase() === typeName.toLowerCase()) || typeName;
+                    const matchedType = quickViewRequiredTypes.find(t => t.toLowerCase() === typeName
+                    .toLowerCase()) || typeName;
                     let value = comb.attribute_value.value;
                     if (typeof value === 'string') {
-                        try { value = JSON.parse(value); } catch { value = [value]; }
+                        try {
+                            value = JSON.parse(value);
+                        } catch {
+                            value = [value];
+                        }
                     }
                     value = Array.isArray(value) ? value[0] : value;
 
@@ -769,7 +796,7 @@
                             el.classList.add('active');
                         }
                     });
-                    
+
                     const labelSpan = document.getElementById('quickview-selected-' + typeName + '-value');
                     if (labelSpan) labelSpan.textContent = value;
                 });
@@ -780,7 +807,7 @@
                         const images = quickViewVariantData[variantId].images.map(img => baseUrl + img);
                         updateQuickViewThumbnails(images);
                     }
-                    document.querySelector('#quickViewModal .quick-view-price').textContent = 
+                    document.querySelector('#quickViewModal .quick-view-price').textContent =
                         quickViewVariantData[variantId].price.toLocaleString('vi-VN') + ' VNĐ';
                 }
             }
@@ -812,7 +839,7 @@
                     const images = quickViewVariantData[matchedVariantId].images.map(img => baseUrl + img);
                     updateQuickViewThumbnails(images);
                 }
-                document.querySelector('#quickViewModal .quick-view-price').textContent = 
+                document.querySelector('#quickViewModal .quick-view-price').textContent =
                     quickViewVariantData[matchedVariantId].price.toLocaleString('vi-VN') + ' VNĐ';
             }
         }
@@ -879,7 +906,7 @@
         #quickViewModal .modal-content {
             border: none;
             border-radius: 12px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
 
         #quickViewModal .modal-body {
@@ -907,7 +934,7 @@
             border-bottom: 1px solid #eee;
         }
 
-        #quickViewModal .product-meta > div {
+        #quickViewModal .product-meta>div {
             margin-bottom: 15px;
             display: flex;
             align-items: center;
@@ -1057,7 +1084,7 @@
             border-radius: 12px;
             padding: 20px;
             margin-bottom: 20px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
         }
 
         #quickViewModal .main-image img {

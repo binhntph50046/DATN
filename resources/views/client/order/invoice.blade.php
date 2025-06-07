@@ -9,6 +9,7 @@
         table th, table td { padding: 8px; border-bottom: 1px solid #eee; }
         .total { font-weight: bold; color: #d00; }
         .text-right { text-align: right; }
+        
     </style>
 </head>
 <body>

@@ -70,7 +70,7 @@
                                             value="{{ old('c_address', Auth::check() ? Auth::user()->address : '') }}">
                                     </div>
                                 </div>
-                                <div class="form-group row">
+                                {{-- <div class="form-group row">
                                     <div class="col-md-6">
                                         <label for="c_state_country" class="text-black">Tỉnh / Quốc gia <span
                                                 class="text-danger">*</span></label>
@@ -81,7 +81,7 @@
                                                 class="text-danger">*</span></label>
                                         <input type="text" class="form-control" id="c_postal_zip" name="c_postal_zip">
                                     </div>
-                                </div>
+                                </div> --}}
                                 <div class="form-group row mb-5">
                                     <div class="col-md-6">
                                         <label for="c_email_address" class="text-black">Email <span
@@ -117,12 +117,6 @@
                                             <i class="fas fa-qrcode me-2"></i> Thanh toán qua VNPay
                                         </label>
                                     </div>
-                                    {{-- <div class="form-check">
-                                        <input class="form-check-input" type="radio" name="payment_method" id="pm_qr" value="qr">
-                                        <label class="form-check-label" for="pm_qr">
-                                            <i class="fas fa-qrcode me-2"></i> Thanh toán qua QR Code
-                                        </label>
-                                    </div> --}}
                                     <div class="form-check">
                                         <input class="form-check-input" type="radio" name="payment_method" id="pm_bank" value="bank_transfer">
                                         <label class="form-check-label" for="pm_bank">

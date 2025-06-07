@@ -3,10 +3,6 @@
     <!-- Start Hero Section -->
     <div id="heroCarousel" class="carousel slide" data-bs-ride="carousel">
         <div class="carousel-indicators">
-            {{-- <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="0" class="active" aria-current="true"
-             aria-label="Slide 1"></button>
-         <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="1" aria-label="Slide 2"></button>
-         <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="2" aria-label="Slide 3"></button> --}}
             @foreach ($banners as $index => $banner)
                 <button type="button" data-bs-target="#heroCarousel" data-bs-slide-to="{{ $index }}"
                     class="{{ $index == 0 ? 'active' : '' }}" aria-current="{{ $index == 0 ? 'true' : 'false' }}"
@@ -16,7 +12,7 @@
         <div class="carousel-inner">
             @foreach ($banners as $index => $banner)
                 <div class="carousel-item {{ $index == 0 ? 'active' : '' }}"
-                    style="background-image: url('{{ asset('storage/' . $banner->image) }}');">
+                    style="background-image: url('{{ asset($banner->image) }}');">
                     <div class="container">
                         <div class="row">
                             <div class="col-lg-9">
@@ -48,6 +44,9 @@
 @section('content')
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
 
+    <!-- Toast Container -->
+    <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1050;"></div>
+
     <!-- Start Why Choose Us Section -->
     <div class="why-choose-section" data-aos="fade-up">
         <div class="container">
@@ -63,7 +62,7 @@
                                 <div class="icon">
                                     <img src="images/truck.svg" alt="Image" class="imf-fluid">
                                 </div>
-                                <h3>Fast &amp; Free Shipping</h3>
+                                <h3>Fast & Free Shipping</h3>
                                 <p>Donec vitae odio quis nisl dapibus malesuada. Nullam ac aliquet velit. Aliquam
                                     vulputate.</p>
                             </div>
@@ -101,7 +100,6 @@
                                     vulputate.</p>
                             </div>
                         </div>
-
                     </div>
                 </div>
 
@@ -110,7 +108,6 @@
                         <img src="images/why-choose-us-img.jpg" alt="Image" class="img-fluid">
                     </div>
                 </div>
-
             </div>
         </div>
     </div>
@@ -187,22 +184,25 @@
                                             <div class="product-icons">
                                                 <span class="icon-add-to-cart"><i class="fas fa-cart-plus"></i></span>
                                                 @auth
-                                                    <form action="{{ route('wishlist.add', $product->id) }}" method="POST"
+                                                    <form action="{{ route('wishlist.toggle', $product) }}" method="POST"
                                                         style="display: none;" id="wishlist-form-{{ $product->id }}">
                                                         @csrf
+                                                        <input type="hidden" name="product_name"
+                                                            value="{{ $product->name }}">
                                                     </form>
-                                                    <span class="icon-heart icon-add-to-wishlist"
-                                                        onclick="event.preventDefault(); document.getElementById('wishlist-form-{{ $product->id }}').submit();"
-                                                        title="Thêm vào yêu thích">
+                                                    <span
+                                                        class="icon-heart icon-add-to-wishlist {{ in_array($product->id, $wishlistProductIds ?? []) ? 'in-wishlist' : '' }}"
+                                                        onclick="event.preventDefault(); toggleWishlist('{{ $product->id }}', '{{ route('wishlist.toggle', $product) }}', this)"
+                                                        title="{{ in_array($product->id, $wishlistProductIds ?? []) ? 'Xóa khỏi yêu thích' : 'Thêm vào yêu thích' }}">
                                                         <i class="fas fa-heart"></i>
                                                     </span>
                                                 @else
-                                                    <a href="{{ route('login') }}" class="icon-heart icon-add-to-wishlist"
+                                                    <span class="icon-heart icon-add-to-wishlist"
+                                                        onclick="event.preventDefault(); showLoginPrompt()"
                                                         title="Đăng nhập để thêm vào yêu thích">
                                                         <i class="fas fa-heart"></i>
-                                                    </a>
+                                                    </span>
                                                 @endauth
-
                                                 <span class="icon-quick-view"
                                                     onclick="event.preventDefault(); showQuickView({{ $product->id }})"><i
                                                         class="fas fa-eye"></i></span>
@@ -277,7 +277,7 @@
                                         onclick="incrementView('{{ $product->id }}')">
                                         <div class="product-thumbnail text-center">
                                             @php
-                                                $defaultImage = asset('uploads/default/default.jpg');
+                                                $defaultImage = asset('Uploads/default/default.jpg');
                                                 $variantImage = null;
                                                 $defaultVariant = $product->variants->first();
 
@@ -330,22 +330,25 @@
                                         </div>
                                         <div class="product-icons">
                                             <span class="icon-add-to-cart"><i class="fas fa-cart-plus"></i></span>
-                                             @auth
-                                                    <form action="{{ route('wishlist.add', $product->id) }}" method="POST"
-                                                        style="display: none;" id="wishlist-form-{{ $product->id }}">
-                                                        @csrf
-                                                    </form>
-                                                    <span class="icon-heart icon-add-to-wishlist"
-                                                        onclick="event.preventDefault(); document.getElementById('wishlist-form-{{ $product->id }}').submit();"
-                                                        title="Thêm vào yêu thích">
-                                                        <i class="fas fa-heart"></i>
-                                                    </span>
-                                                @else
-                                                    <a href="{{ route('login') }}" class="icon-heart icon-add-to-wishlist"
-                                                        title="Đăng nhập để thêm vào yêu thích">
-                                                        <i class="fas fa-heart"></i>
-                                                    </a>
-                                                @endauth
+                                            @auth
+                                                <form action="{{ route('wishlist.toggle', $product) }}" method="POST"
+                                                    style="display: none;" id="wishlist-form-{{ $product->id }}">
+                                                    @csrf
+                                                    <input type="hidden" name="product_name" value="{{ $product->name }}">
+                                                </form>
+                                                <span
+                                                    class="icon-heart icon-add-to-wishlist {{ in_array($product->id, $wishlistProductIds ?? []) ? 'in-wishlist' : '' }}"
+                                                    onclick="event.preventDefault(); toggleWishlist('{{ $product->id }}', '{{ route('wishlist.toggle', $product) }}', this)"
+                                                    title="{{ in_array($product->id, $wishlistProductIds ?? []) ? 'Xóa khỏi yêu thích' : 'Thêm vào yêu thích' }}">
+                                                    <i class="fas fa-heart"></i>
+                                                </span>
+                                            @else
+                                                <span class="icon-heart icon-add-to-wishlist"
+                                                    onclick="event.preventDefault(); showLoginPrompt()"
+                                                    title="Đăng nhập để thêm vào yêu thích">
+                                                    <i class="fas fa-heart"></i>
+                                                </span>
+                                            @endauth
                                             <span class="icon-quick-view"
                                                 onclick="event.preventDefault(); showQuickView({{ $product->id }})"><i
                                                     class="fas fa-eye"></i></span>
@@ -357,6 +360,258 @@
                     </div>
                 </div>
                 <!-- End Latest Products Column -->
+
+                <!-- JavaScript for Wishlist -->
+                <script>
+                    // Định nghĩa các hàm toàn cục
+                    function showLoginPrompt() {
+                        console.log('Showing login prompt');
+                        showToast('Vui lòng đăng nhập để thêm sản phẩm vào danh sách yêu thích.', 'danger');
+                    }
+
+                    function addToWishlist(productId, url) {
+                        console.log('Adding to wishlist', {
+                            productId,
+                            url
+                        });
+                        const form = document.getElementById(`wishlist-form-${productId}`);
+                        if (!form) {
+                            console.error('Form not found for productId:', productId);
+                            showToast('Lỗi hệ thống, vui lòng thử lại!', 'danger');
+                            return;
+                        }
+
+                        const formData = new FormData(form);
+                        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+                        if (!csrfToken) {
+                            console.error('CSRF token not found');
+                            showToast('Lỗi hệ thống, vui lòng thử lại!', 'danger');
+                            return;
+                        }
+
+                        fetch(url, {
+                                method: 'POST',
+                                body: formData,
+                                headers: {
+                                    'X-CSRF-TOKEN': csrfToken,
+                                    'Accept': 'application/json'
+                                }
+                            })
+                            .then(response => {
+                                console.log('Response status:', response.status);
+                                console.log('Response headers:', Object.fromEntries(response.headers));
+                                const contentType = response.headers.get('content-type');
+                                if (!contentType || !contentType.includes('application/json')) {
+                                    throw new Error('Invalid JSON response');
+                                }
+                                return response.json().catch(err => {
+                                    throw new Error('Failed to parse JSON: ' + err.message);
+                                });
+                            })
+                            .then(data => {
+                                console.log('Response data:', data);
+                                if (!data.status || !data.message || !data.type) {
+                                    throw new Error('Invalid response format');
+                                }
+                                showToast(data.message, data.type);
+                            })
+                            .catch(error => {
+                                console.error('Error:', error.message || error);
+                                showToast('Đã xảy ra lỗi, vui lòng thử lại! (' + (error.message || 'Unknown error') + ')',
+                                    'danger');
+                            });
+                    }
+
+                    function showToast(message, type) {
+                        console.log('Showing toast:', {
+                            message,
+                            type
+                        });
+                        const toastContainer = document.querySelector('.toast-container');
+                        if (!toastContainer) {
+                            console.error('Toast container not found');
+                            return;
+                        }
+
+                        setTimeout(() => {
+                            const toastEl = document.createElement('div');
+                            toastEl.className = `toast`;
+                            toastEl.setAttribute('role', 'alert');
+                            toastEl.setAttribute('aria-live', 'assertive');
+                            toastEl.setAttribute('aria-atomic', 'true');
+
+                            // Create toast header
+                            const toastHeader = document.createElement('div');
+                            toastHeader.className = 'toast-header';
+                            toastHeader.innerHTML = `
+                                <i class="fas ${type === 'success' ? 'fa-check-circle text-success' : 
+                                              type === 'danger' ? 'fa-exclamation-circle text-danger' : 
+                                              type === 'warning' ? 'fa-info-circle text-warning' : 
+                                              'fa-info-circle text-info'} me-2"></i>
+                                <strong class="me-auto">${type === 'success' ? 'Thành công' : 
+                                               type === 'danger' ? 'Lỗi' : 
+                                               type === 'warning' ? 'Thông báo' : 
+                                               'Thông tin'}</strong>
+                                <small>Vừa xong</small>
+                                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+                            `;
+
+                            // Create toast body
+                            const toastBody = document.createElement('div');
+                            toastBody.className = 'toast-body';
+                            toastBody.textContent = message;
+
+                            // Append header and body to toast
+                            toastEl.appendChild(toastHeader);
+                            toastEl.appendChild(toastBody);
+
+                            // Add toast to container
+                            toastContainer.appendChild(toastEl);
+
+                            // Initialize and show toast
+                            const toast = new bootstrap.Toast(toastEl, {
+                                delay: 3000
+                            });
+                            toast.show();
+
+                            // Remove toast after it's hidden
+                            toastEl.addEventListener('hidden.bs.toast', () => {
+                                toastEl.remove();
+                            });
+                        }, 100);
+                    }
+
+                    // Function to toggle wishlist status
+                    async function toggleWishlist(productId, url, iconElement) {
+                        console.log('Toggling wishlist', {
+                            productId,
+                            url
+                        });
+                        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+                        if (!csrfToken) {
+                            console.error('CSRF token not found');
+                            showToast('Lỗi hệ thống, vui lòng thử lại!', 'danger');
+                            return;
+                        }
+
+                        try {
+                            const response = await fetch(url, {
+                                method: 'POST',
+                                headers: {
+                                    'X-CSRF-TOKEN': csrfToken,
+                                    'Accept': 'application/json',
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify({
+                                    product_id: productId
+                                })
+                            });
+
+                            const contentType = response.headers.get('content-type');
+                            if (!contentType || !contentType.includes('application/json')) {
+                                throw new Error('Invalid JSON response');
+                            }
+                            const data = await response.json();
+
+                            if (data.status) {
+                                showToast(data.message, data.type);
+                                if (data.type === 'success') {
+                                    // Cập nhật trạng thái icon dựa trên response
+                                    if (data.in_wishlist) {
+                                        iconElement.classList.add('in-wishlist');
+                                        iconElement.title = 'Xóa khỏi yêu thích';
+                                    } else {
+                                        iconElement.classList.remove('in-wishlist');
+                                        iconElement.title = 'Thêm vào yêu thích';
+                                    }
+                                }
+                            } else {
+                                showToast(data.message || 'Đã xảy ra lỗi, vui lòng thử lại!', data.type || 'danger');
+                            }
+                        } catch (error) {
+                            console.error('Error toggling wishlist:', error.message || error);
+                            showToast('Đã xảy ra lỗi: ' + (error.message || 'Unknown error'), 'danger');
+                        }
+                    }
+                </script>
+
+                <!-- CSRF Meta Tag -->
+                <meta name="csrf-token" content="{{ csrf_token() }}">
+
+                <!-- CSS for Toast and Heart Icon -->
+                <style>
+                    /* Toast Custom Style */
+                    .toast-container {
+                        z-index: 1100 !important;
+                        position: fixed !important;
+                        top: 80px !important;
+                        right: 20px !important;
+                    }
+
+                    .toast {
+                        background: white !important;
+                        border: none !important;
+                        border-radius: 8px !important;
+                        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+                    }
+
+                    .toast-header-custom {
+                        border-bottom: none;
+                        padding: 12px 16px;
+                        background-color: transparent;
+                    }
+
+                    .toast-success {
+                        background: linear-gradient(135deg, #4CAF50, #2E7D32);
+                    }
+
+                    .toast-error {
+                        background: linear-gradient(135deg, #F44336, #C62828);
+                    }
+
+                    .toast-warning {
+                        background: linear-gradient(135deg, #FF9800, #EF6C00);
+                    }
+
+                    .toast-info {
+                        background: linear-gradient(135deg, #2196F3, #1565C0);
+                    }
+
+                    .toast-icon {
+                        font-size: 1.5rem;
+                        margin-right: 10px;
+                    }
+
+                    .toast-progress {
+                        height: 4px;
+                        background: rgba(255, 255, 255, 0.3);
+                        position: absolute;
+                        bottom: 0;
+                        left: 0;
+                        width: 100%;
+                    }
+
+                    .toast-progress-bar {
+                        height: 100%;
+                        background: white;
+                        animation: progressBar 3s linear forwards;
+                    }
+
+                    @keyframes progressBar {
+                        from {
+                            width: 100%;
+                        }
+
+                        to {
+                            width: 0%;
+                        }
+                    }
+
+                    /* Style for heart icon when product is in wishlist */
+                    .icon-heart.in-wishlist i {
+                        color: red;
+                    }
+                </style>
             </div>
         </div>
     </div>
@@ -452,18 +707,15 @@
             <div class="row justify-content-center">
                 <div class="col-lg-12" data-aos="fade-up" data-aos-delay="100">
                     <div class="testimonial-slider-wrap text-center">
-
                         <div id="testimonial-nav">
                             <span class="prev" data-controls="prev"><span class="fa fa-chevron-left"></span></span>
                             <span class="next" data-controls="next"><span class="fa fa-chevron-right"></span></span>
                         </div>
 
                         <div class="testimonial-slider">
-
                             <div class="item">
                                 <div class="row justify-content-center">
                                     <div class="col-lg-8 mx-auto">
-
                                         <div class="testimonial-block text-center d-flex justify-content-center">
                                             <div class="author-info col-lg-4">
                                                 <div class="author-pic">
@@ -473,15 +725,14 @@
                                                 <span class="position d-block mb-3">CEO, Co-Founder, XYZ Inc.</span>
                                             </div>
                                             <blockquote class="mb-5 col-lg-8">
-                                                <p>&ldquo;Donec facilisis quam ut purus rutrum lobortis. Donec vitae
+                                                <p>"Donec facilisis quam ut purus rutrum lobortis. Donec vitae
                                                     odio quis nisl dapibus malesuada. Nullam ac aliquet velit. Aliquam
                                                     vulputate velit imperdiet dolor tempor tristique. Pellentesque
                                                     habitant morbi tristique senectus et netus et malesuada fames ac
                                                     turpis egestas. Integer convallis volutpat dui quis
-                                                    scelerisque.&rdquo;</p>
+                                                    scelerisque."</p>
                                             </blockquote>
                                         </div>
-
                                     </div>
                                 </div>
                             </div>
@@ -490,7 +741,6 @@
                             <div class="item">
                                 <div class="row justify-content-center">
                                     <div class="col-lg-8 mx-auto">
-
                                         <div class="testimonial-block text-center d-flex justify-content-center">
                                             <div class="author-info col-lg-4">
                                                 <div class="author-pic">
@@ -500,15 +750,14 @@
                                                 <span class="position d-block mb-3">CEO, Co-Founder, XYZ Inc.</span>
                                             </div>
                                             <blockquote class="mb-5 col-lg-8">
-                                                <p>&ldquo;Donec facilisis quam ut purus rutrum lobortis. Donec vitae
+                                                <p>"Donec facilisis quam ut purus rutrum lobortis. Donec vitae
                                                     odio quis nisl dapibus malesuada. Nullam ac aliquet velit. Aliquam
                                                     vulputate velit imperdiet dolor tempor tristique. Pellentesque
                                                     habitant morbi tristique senectus et netus et malesuada fames ac
                                                     turpis egestas. Integer convallis volutpat dui quis
-                                                    scelerisque.&rdquo;</p>
+                                                    scelerisque."</p>
                                             </blockquote>
                                         </div>
-
                                     </div>
                                 </div>
                             </div>
@@ -517,7 +766,6 @@
                             <div class="item">
                                 <div class="row justify-content-center">
                                     <div class="col-lg-8 mx-auto">
-
                                         <div class="testimonial-block text-center d-flex justify-content-center">
                                             <div class="author-info col-lg-4">
                                                 <div class="author-pic">
@@ -527,15 +775,14 @@
                                                 <span class="position d-block mb-3">CEO, Co-Founder, XYZ Inc.</span>
                                             </div>
                                             <blockquote class="mb-5 col-lg-8">
-                                                <p>&ldquo;Donec facilisis quam ut purus rutrum lobortis. Donec vitae
+                                                <p>"Donec facilisis quam ut purus rutrum lobortis. Donec vitae
                                                     odio quis nisl dapibus malesuada. Nullam ac aliquet velit. Aliquam
                                                     vulputate velit imperdiet dolor tempor tristique. Pellentesque
                                                     habitant morbi tristique senectus et netus et malesuada fames ac
                                                     turpis egestas. Integer convallis volutpat dui quis
-                                                    scelerisque.&rdquo;</p>
+                                                    scelerisque."</p>
                                             </blockquote>
                                         </div>
-
                                     </div>
                                 </div>
                             </div>
@@ -544,7 +791,6 @@
                             <div class="item">
                                 <div class="row justify-content-center">
                                     <div class="col-lg-8 mx-auto">
-
                                         <div class="testimonial-block text-center d-flex justify-content-center">
                                             <div class="author-info col-lg-4">
                                                 <div class="author-pic">
@@ -554,22 +800,19 @@
                                                 <span class="position d-block mb-3">CEO, Co-Founder, XYZ Inc.</span>
                                             </div>
                                             <blockquote class="mb-5 col-lg-8">
-                                                <p>&ldquo;Donec facilisis quam ut purus rutrum lobortis. Donec vitae
+                                                <p>"Donec facilisis quam ut purus rutrum lobortis. Donec vitae
                                                     odio quis nisl dapibus malesuada. Nullam ac aliquet velit. Aliquam
                                                     vulputate velit imperdiet dolor tempor tristique. Pellentesque
                                                     habitant morbi tristique senectus et netus et malesuada fames ac
                                                     turpis egestas. Integer convallis volutpat dui quis
-                                                    scelerisque.&rdquo;</p>
+                                                    scelerisque."</p>
                                             </blockquote>
                                         </div>
-
                                     </div>
                                 </div>
                             </div>
                             <!-- END item -->
-
                         </div>
-
                     </div>
                 </div>
             </div>
@@ -590,7 +833,6 @@
             </div>
 
             <div class="row">
-
                 <div class="col-12 col-sm-6 col-md-4 mb-4 mb-md-0" data-aos="fade-up" data-aos-delay="100">
                     <div class="post-entry">
                         <a href="#" class="post-thumbnail"><img src="images/post-1.jpg" alt="Image"
@@ -632,33 +874,25 @@
                         </div>
                     </div>
                 </div>
-
             </div>
         </div>
     </div>
     <!-- End Blog Section -->
-
 
     <!-- Inline JavaScript for Icon Functionality -->
     <script>
         document.querySelectorAll('.product-item').forEach(item => {
             item.querySelector('.icon-add-to-cart').addEventListener('click', (e) => {
                 e.preventDefault();
-                alert('Added to Cart: ' + item.querySelector('.product-title').textContent);
+                showToast('Added to Cart: ' + item.querySelector('.product-title').textContent, 'success');
             });
-
-            // item.querySelector('.icon-add-to-wishlist').addEventListener('click', (e) => {
-            //     e.preventDefault();
-            //     alert('Added to Wishlist: ' + item.querySelector('.product-title').textContent);
-            // });
-
 
             item.querySelector('.icon-quick-view').addEventListener('click', (e) => {
                 e.preventDefault();
                 const modal = new bootstrap.Modal(document.getElementById('quickViewModal'));
 
                 // Get product details
-                const productImage = item.querySelector('.product-thumbnail').src;
+                const productImage = item.querySelector('.product-thumbnail img').src;
                 const productTitle = item.querySelector('.product-title').textContent;
                 const productPrice = item.querySelector('.product-price').textContent;
 
@@ -732,8 +966,9 @@
                 const selectedStorage = document.querySelector('#quickViewModal .storage-btn.active')
                     .dataset.storage;
 
-                alert(
-                    `Added to cart:\nQuantity: ${quantity}\nColor: ${selectedColor}\nStorage: ${selectedStorage}GB`
+                showToast(
+                    `Added to cart: Quantity: ${quantity}, Color: ${selectedColor}, Storage: ${selectedStorage}GB`,
+                    'success'
                 );
             });
 
@@ -745,8 +980,9 @@
                 const selectedStorage = document.querySelector('#quickViewModal .storage-btn.active')
                     .dataset.storage;
 
-                alert(
-                    `Proceeding to checkout:\nQuantity: ${quantity}\nColor: ${selectedColor}\nStorage: ${selectedStorage}GB`
+                showToast(
+                    `Proceeding to checkout: Quantity: ${quantity}, Color: ${selectedColor}, Storage: ${selectedStorage}GB`,
+                    'success'
                 );
             });
         });
@@ -852,8 +1088,8 @@
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script>
         AOS.init({
-            duration: 800, // values from 0 to 3000, with step 50ms
-            once: false, // whether animation should happen only once - while scrolling down
+            duration: 800,
+            once: false,
         });
     </script>
 
@@ -877,7 +1113,7 @@
 
         function showQuickView(productId) {
             incrementView(productId);
-            // Your existing quick view logic here
+            // Existing quick view logic
         }
 
         // Initialize product slider
@@ -1049,7 +1285,6 @@
             font-size: 12px;
         }
 
-        /* Latest Products Slider Styles */
         .latest-products-slider {
             margin: 0 -15px;
         }

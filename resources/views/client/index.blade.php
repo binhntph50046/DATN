@@ -16,7 +16,7 @@
         <div class="carousel-inner">
             @foreach ($banners as $index => $banner)
                 <div class="carousel-item {{ $index == 0 ? 'active' : '' }}"
-                    style="background-image: url('{{ asset('storage/' . $banner->image) }}');">
+                    style="background-image: url('{{ asset($banner->image) }}');">
                     <div class="container">
                         <div class="row">
                             <div class="col-lg-9">

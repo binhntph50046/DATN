@@ -9,6 +9,7 @@ use App\Models\VariantAttributeType;
 use App\Models\Category;
 use App\Models\VariantAttributeValue;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class VariantAttributeTypeController
 {
@@ -155,9 +156,19 @@ class VariantAttributeTypeController
     public function update(UpdateAttributeTypeRequest $request, VariantAttributeType $attributeType)
     {
         try {
+            DB::beginTransaction();
+            
             // Update attribute type details
             $data = $request->only(['name', 'status', 'category_ids']);
             $attributeType->update($data);
+
+            // Get existing value IDs that should be kept
+            $existingValueIds = $request->input('existing_values', []);
+            
+            // Delete values that are not in the existing_values array
+            VariantAttributeValue::where('attribute_type_id', $attributeType->id)
+                ->whereNotIn('id', $existingValueIds)
+                ->delete();
 
             // Handle attribute values updates
             if ($request->has('values')) {
@@ -173,10 +184,17 @@ class VariantAttributeTypeController
                             $currentHexColor = $request->values[$index]['hex_color'] ?? null;
                             $valueId = $request->values[$index]['id'] ?? null;
                             
+                            // Skip validation if hex_color is disabled
+                            if (!isset($request->values[$index]['hex_color']) || 
+                                $request->values[$index]['hex_color'] === '') {
+                                $currentHexColor = null;
+                            }
+                            
                             // Check for duplicates within submitted values
                             $duplicateCount = collect($request->values)->filter(function ($item) use ($value, $currentHexColor) {
+                                $itemHexColor = isset($item['hex_color']) && $item['hex_color'] !== '' ? $item['hex_color'] : null;
                                 return strtolower($item['value']) === strtolower($value) 
-                                    && ($item['hex_color'] ?? null) === $currentHexColor;
+                                    && $itemHexColor === $currentHexColor;
                             })->count();
                             
                             if ($duplicateCount > 1) {
@@ -194,8 +212,8 @@ class VariantAttributeTypeController
                                                 $q->whereJsonContains('hex', $currentHexColor);
                                             } else {
                                                 $q->whereNull('hex')
-                                          ->orWhere('hex', '[]')
-                                          ->orWhere('hex', '[""]');
+                                                  ->orWhere('hex', '[]')
+                                                  ->orWhere('hex', '[""]');
                                             }
                                         });
                                 })
@@ -211,13 +229,17 @@ class VariantAttributeTypeController
 
                 // Process each value
                 foreach ($validated['values'] as $valueData) {
+                    $hexColor = isset($valueData['hex_color']) && $valueData['hex_color'] !== '' 
+                        ? array_map('trim', explode(',', $valueData['hex_color'])) 
+                        : [];
+
                     if (isset($valueData['id'])) {
                         // Update existing value
                         $attributeValue = VariantAttributeValue::find($valueData['id']);
                         if ($attributeValue) {
                             $attributeValue->update([
                                 'value' => array_map('trim', explode(',', $valueData['value'])),
-                                'hex' => !empty($valueData['hex_color']) ? array_map('trim', explode(',', $valueData['hex_color'])) : [],
+                                'hex' => $hexColor,
                             ]);
                         }
                     } else {
@@ -225,25 +247,17 @@ class VariantAttributeTypeController
                         VariantAttributeValue::create([
                             'attribute_type_id' => $attributeType->id,
                             'value' => array_map('trim', explode(',', $valueData['value'])),
-                            'hex' => !empty($valueData['hex_color']) ? array_map('trim', explode(',', $valueData['hex_color'])) : [],
+                            'hex' => $hexColor,
                             'status' => 'active'
                         ]);
                     }
                 }
-
-                // Handle deletions if any values were removed
-                if ($request->has('deleted_values')) {
-                    $deletedValues = array_filter(explode(',', $request->deleted_values));
-                    if (!empty($deletedValues)) {
-                        VariantAttributeValue::whereIn('id', $deletedValues)
-                            ->where('attribute_type_id', $attributeType->id)
-                            ->delete();
-                    }
-                }
             }
 
+            DB::commit();
             return redirect()->route('admin.attributes.index')->with('success', 'Attribute type and values updated successfully.');
         } catch (\Exception $e) {
+            DB::rollBack();
             return redirect()->back()->with('error', 'Error updating attribute type: ' . $e->getMessage())->withInput();
         }
     }

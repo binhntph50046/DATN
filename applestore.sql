@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Máy chủ: localhost
--- Thời gian đã tạo: Th6 03, 2025 lúc 09:49 AM
+-- Thời gian đã tạo: Th6 06, 2025 lúc 09:38 PM
 -- Phiên bản máy phục vụ: 5.7.43-log
 -- Phiên bản PHP: 8.3.15
 
@@ -98,7 +98,7 @@ CREATE TABLE `cache` (
 --
 
 INSERT INTO `cache` (`key`, `value`, `expiration`) VALUES
-('laravel_cache_spatie.permission.cache', 'a:3:{s:5:\"alias\";a:4:{s:1:\"a\";s:2:\"id\";s:1:\"b\";s:4:\"name\";s:1:\"c\";s:10:\"guard_name\";s:1:\"r\";s:5:\"roles\";}s:11:\"permissions\";a:37:{i:0;a:4:{s:1:\"a\";i:1;s:1:\"b\";s:15:\"view categories\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:1;a:4:{s:1:\"a\";i:2;s:1:\"b\";s:17:\"create categories\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:2;a:4:{s:1:\"a\";i:3;s:1:\"b\";s:15:\"edit categories\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:3;a:4:{s:1:\"a\";i:4;s:1:\"b\";s:17:\"delete categories\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:4;a:4:{s:1:\"a\";i:5;s:1:\"b\";s:12:\"view banners\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:5;a:4:{s:1:\"a\";i:6;s:1:\"b\";s:14:\"create banners\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:6;a:4:{s:1:\"a\";i:7;s:1:\"b\";s:12:\"edit banners\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:7;a:4:{s:1:\"a\";i:8;s:1:\"b\";s:14:\"delete banners\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:8;a:4:{s:1:\"a\";i:9;s:1:\"b\";s:13:\"view products\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:9;a:4:{s:1:\"a\";i:10;s:1:\"b\";s:15:\"create products\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:10;a:4:{s:1:\"a\";i:11;s:1:\"b\";s:13:\"edit products\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:11;a:4:{s:1:\"a\";i:12;s:1:\"b\";s:15:\"delete products\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:12;a:4:{s:1:\"a\";i:13;s:1:\"b\";s:11:\"view orders\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:13;a:4:{s:1:\"a\";i:14;s:1:\"b\";s:13:\"create orders\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:14;a:4:{s:1:\"a\";i:15;s:1:\"b\";s:11:\"edit orders\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:15;a:4:{s:1:\"a\";i:16;s:1:\"b\";s:13:\"delete orders\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:16;a:4:{s:1:\"a\";i:17;s:1:\"b\";s:10:\"view users\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:17;a:4:{s:1:\"a\";i:18;s:1:\"b\";s:12:\"create users\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:18;a:4:{s:1:\"a\";i:19;s:1:\"b\";s:10:\"edit users\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:19;a:4:{s:1:\"a\";i:20;s:1:\"b\";s:12:\"delete users\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:20;a:4:{s:1:\"a\";i:21;s:1:\"b\";s:10:\"view blogs\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:21;a:4:{s:1:\"a\";i:22;s:1:\"b\";s:12:\"create blogs\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:22;a:4:{s:1:\"a\";i:23;s:1:\"b\";s:10:\"edit blogs\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:23;a:4:{s:1:\"a\";i:24;s:1:\"b\";s:12:\"delete blogs\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:24;a:4:{s:1:\"a\";i:25;s:1:\"b\";s:15:\"view attributes\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:25;a:4:{s:1:\"a\";i:26;s:1:\"b\";s:17:\"create attributes\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:26;a:4:{s:1:\"a\";i:27;s:1:\"b\";s:15:\"edit attributes\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:27;a:4:{s:1:\"a\";i:28;s:1:\"b\";s:17:\"delete attributes\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:28;a:4:{s:1:\"a\";i:29;s:1:\"b\";s:14:\"view dashboard\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:29;a:4:{s:1:\"a\";i:30;s:1:\"b\";s:7:\"addrole\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:30;a:4:{s:1:\"a\";i:31;s:1:\"b\";s:28:\"view category specifications\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:31;a:4:{s:1:\"a\";i:32;s:1:\"b\";s:24:\"view category attributes\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:32;a:4:{s:1:\"a\";i:33;s:1:\"b\";s:19:\"view specifications\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:33;a:4:{s:1:\"a\";i:34;s:1:\"b\";s:20:\"trash specifications\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:34;a:4:{s:1:\"a\";i:35;s:1:\"b\";s:22:\"restore specifications\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:35;a:4:{s:1:\"a\";i:36;s:1:\"b\";s:21:\"delete specifications\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:36;a:4:{s:1:\"a\";i:37;s:1:\"b\";s:13:\"view vouchers\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}}s:5:\"roles\";a:2:{i:0;a:3:{s:1:\"a\";i:1;s:1:\"b\";s:5:\"admin\";s:1:\"c\";s:3:\"web\";}i:1;a:3:{s:1:\"a\";i:2;s:1:\"b\";s:5:\"staff\";s:1:\"c\";s:3:\"web\";}}}', 1748966395);
+('laravel_cache_spatie.permission.cache', 'a:3:{s:5:\"alias\";a:4:{s:1:\"a\";s:2:\"id\";s:1:\"b\";s:4:\"name\";s:1:\"c\";s:10:\"guard_name\";s:1:\"r\";s:5:\"roles\";}s:11:\"permissions\";a:37:{i:0;a:4:{s:1:\"a\";i:1;s:1:\"b\";s:15:\"view categories\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:1;a:4:{s:1:\"a\";i:2;s:1:\"b\";s:17:\"create categories\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:2;a:4:{s:1:\"a\";i:3;s:1:\"b\";s:15:\"edit categories\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:3;a:4:{s:1:\"a\";i:4;s:1:\"b\";s:17:\"delete categories\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:4;a:4:{s:1:\"a\";i:5;s:1:\"b\";s:12:\"view banners\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:5;a:4:{s:1:\"a\";i:6;s:1:\"b\";s:14:\"create banners\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:6;a:4:{s:1:\"a\";i:7;s:1:\"b\";s:12:\"edit banners\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:7;a:4:{s:1:\"a\";i:8;s:1:\"b\";s:14:\"delete banners\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:8;a:4:{s:1:\"a\";i:9;s:1:\"b\";s:13:\"view products\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:9;a:4:{s:1:\"a\";i:10;s:1:\"b\";s:15:\"create products\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:10;a:4:{s:1:\"a\";i:11;s:1:\"b\";s:13:\"edit products\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:11;a:4:{s:1:\"a\";i:12;s:1:\"b\";s:15:\"delete products\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:12;a:4:{s:1:\"a\";i:13;s:1:\"b\";s:11:\"view orders\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:13;a:4:{s:1:\"a\";i:14;s:1:\"b\";s:13:\"create orders\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:14;a:4:{s:1:\"a\";i:15;s:1:\"b\";s:11:\"edit orders\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:15;a:4:{s:1:\"a\";i:16;s:1:\"b\";s:13:\"delete orders\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:16;a:4:{s:1:\"a\";i:17;s:1:\"b\";s:10:\"view users\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:17;a:4:{s:1:\"a\";i:18;s:1:\"b\";s:12:\"create users\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:18;a:4:{s:1:\"a\";i:19;s:1:\"b\";s:10:\"edit users\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:19;a:4:{s:1:\"a\";i:20;s:1:\"b\";s:12:\"delete users\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:20;a:4:{s:1:\"a\";i:21;s:1:\"b\";s:10:\"view blogs\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:21;a:4:{s:1:\"a\";i:22;s:1:\"b\";s:12:\"create blogs\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:22;a:4:{s:1:\"a\";i:23;s:1:\"b\";s:10:\"edit blogs\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:23;a:4:{s:1:\"a\";i:24;s:1:\"b\";s:12:\"delete blogs\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:24;a:4:{s:1:\"a\";i:25;s:1:\"b\";s:15:\"view attributes\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:25;a:4:{s:1:\"a\";i:26;s:1:\"b\";s:17:\"create attributes\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:26;a:4:{s:1:\"a\";i:27;s:1:\"b\";s:15:\"edit attributes\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:27;a:4:{s:1:\"a\";i:28;s:1:\"b\";s:17:\"delete attributes\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:28;a:4:{s:1:\"a\";i:29;s:1:\"b\";s:14:\"view dashboard\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:29;a:4:{s:1:\"a\";i:30;s:1:\"b\";s:7:\"addrole\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:30;a:4:{s:1:\"a\";i:31;s:1:\"b\";s:28:\"view category specifications\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:31;a:4:{s:1:\"a\";i:32;s:1:\"b\";s:24:\"view category attributes\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:32;a:4:{s:1:\"a\";i:33;s:1:\"b\";s:19:\"view specifications\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:33;a:4:{s:1:\"a\";i:34;s:1:\"b\";s:20:\"trash specifications\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:34;a:4:{s:1:\"a\";i:35;s:1:\"b\";s:22:\"restore specifications\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:35;a:4:{s:1:\"a\";i:36;s:1:\"b\";s:21:\"delete specifications\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:36;a:4:{s:1:\"a\";i:37;s:1:\"b\";s:13:\"view vouchers\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}}s:5:\"roles\";a:2:{i:0;a:3:{s:1:\"a\";i:1;s:1:\"b\";s:5:\"admin\";s:1:\"c\";s:3:\"web\";}i:1;a:3:{s:1:\"a\";i:2;s:1:\"b\";s:5:\"staff\";s:1:\"c\";s:3:\"web\";}}}', 1749231178);
 
 -- --------------------------------------------------------
 
@@ -146,16 +146,6 @@ CREATE TABLE `cart_items` (
   `quantity` int(11) NOT NULL DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
---
--- Đang đổ dữ liệu cho bảng `cart_items`
---
-
-INSERT INTO `cart_items` (`id`, `cart_id`, `product_id`, `variant_id`, `quantity`) VALUES
-(1, 1, 71, 91, 2),
-(3, 2, 71, 91, 27),
-(6, 2, 71, 92, 9),
-(9, 1, 73, 97, 10);
-
 -- --------------------------------------------------------
 
 --
@@ -202,7 +192,8 @@ INSERT INTO `categories` (`id`, `name`, `slug`, `parent_id`, `order`, `status`, 
 (19, 'iphone13', 'iphone13', 1, 0, 'active', 1, NULL, '2025-05-19 14:43:35', '2025-05-19 14:43:35', NULL),
 (20, 'Kim Hồng Phong', 'kim-hong-phong', 2, 3, 'active', 1, NULL, '2025-05-26 09:53:01', '2025-05-26 09:53:01', NULL),
 (22, 'Kim Hồng', 'kim-hong', 2, 3, 'active', 1, NULL, '2025-05-26 09:53:46', '2025-05-26 09:53:46', NULL),
-(23, 'Banh đây1', 'banh-day1', NULL, 6, 'active', 1, 'uploads/categories/1748615849_banh.JPG', '2025-05-30 21:37:29', '2025-05-30 21:43:23', NULL);
+(23, 'Banh đây1', 'banh-day1', NULL, 6, 'active', 1, 'uploads/categories/1748615849_banh.JPG', '2025-05-30 21:37:29', '2025-05-30 21:43:23', NULL),
+(24, 'macbook', 'macbook', NULL, 7, 'active', 1, 'uploads/categories/1748959505_Họp 2-6-2025.jpg', '2025-06-03 21:05:05', '2025-06-03 21:05:05', NULL);
 
 -- --------------------------------------------------------
 
@@ -317,6 +308,32 @@ CREATE TABLE `flash_sale_items` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Cấu trúc bảng cho bảng `invoices`
+--
+
+CREATE TABLE `invoices` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `order_id` bigint(20) UNSIGNED NOT NULL,
+  `invoice_code` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `total` decimal(15,2) NOT NULL,
+  `issued_by` bigint(20) UNSIGNED DEFAULT NULL,
+  `issued_at` timestamp NULL DEFAULT NULL,
+  `file_path` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Đang đổ dữ liệu cho bảng `invoices`
+--
+
+INSERT INTO `invoices` (`id`, `order_id`, `invoice_code`, `total`, `issued_by`, `issued_at`, `file_path`, `created_at`, `updated_at`) VALUES
+(1, 51, 'INV000051', 19999.98, 1, '2025-06-06 00:43:01', NULL, '2025-06-06 00:43:01', '2025-06-06 00:43:01'),
+(2, 50, 'INV000050', 3111.00, 1, '2025-06-06 02:30:00', NULL, '2025-06-06 02:30:00', '2025-06-06 02:30:00');
 
 -- --------------------------------------------------------
 
@@ -481,7 +498,9 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (129, '2025_05_29_202039_add_provider_columns_to_users_table', 70),
 (130, '2024_03_20_add_deleted_at_to_product_reviews', 71),
 (131, '2025_05_30_212052_add_image_to_categories_table', 72),
-(132, '2025_06_02_162806_create_password_reset_tokens_table', 73);
+(132, '2025_06_02_162806_create_password_reset_tokens_table', 73),
+(133, '2024_01_01_000001_create_invoices_table', 74),
+(134, '2024_03_15_000000_create_resend_invoice_requests_table', 75);
 
 -- --------------------------------------------------------
 
@@ -563,7 +582,8 @@ CREATE TABLE `orders` (
 --
 
 INSERT INTO `orders` (`id`, `user_id`, `subtotal`, `discount`, `shipping_fee`, `total_price`, `shipping_address`, `shipping_name`, `shipping_phone`, `shipping_email`, `payment_method`, `payment_status`, `shipping_method_id`, `status`, `is_paid`, `notes`, `cancel_reason`, `created_at`, `updated_at`, `deleted_at`) VALUES
-(50, 1, 3111.00, 0.00, 0.00, 3111.00, 'Nam từ liêm hà nội', 'Đại học', '0968791306', 'daicvph50503@gmail.com', 'cod', 'pending', NULL, 'preparing', 0, 'aaaa', NULL, '2025-06-03 00:49:34', '2025-06-03 02:09:15', NULL);
+(50, 42, 3111.00, 0.00, 0.00, 3111.00, 'Nam từ liêm hà nội', 'Đại học', '0968791306', 'daicvph50503@gmail.com', 'cod', 'pending', NULL, 'completed', 0, 'aaaa', NULL, '2025-06-03 00:49:34', '2025-06-06 02:03:49', NULL),
+(51, 1, 19999.98, 0.00, 0.00, 19999.98, 'Hanoi', 'đại chu', '0123456789', 'admin@gmail.com', 'cod', 'pending', NULL, 'completed', 0, NULL, NULL, '2025-06-04 01:27:09', '2025-06-05 21:08:15', NULL);
 
 -- --------------------------------------------------------
 
@@ -601,13 +621,6 @@ CREATE TABLE `order_items` (
   `deleted_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
---
--- Đang đổ dữ liệu cho bảng `order_items`
---
-
-INSERT INTO `order_items` (`id`, `order_id`, `product_id`, `product_variant_id`, `quantity`, `price`, `total`, `created_at`, `updated_at`, `deleted_at`) VALUES
-(44, 50, 73, 97, 1, 3111.00, 3111.00, '2025-06-03 00:49:34', '2025-06-03 00:49:34', NULL);
-
 -- --------------------------------------------------------
 
 --
@@ -620,6 +633,13 @@ CREATE TABLE `password_reset_tokens` (
   `token` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Đang đổ dữ liệu cho bảng `password_reset_tokens`
+--
+
+INSERT INTO `password_reset_tokens` (`id`, `email`, `token`, `created_at`) VALUES
+(3, 'anh@gmail.com', 'twCHSilj0Onla0y4UHNeoLK8L5sUs5PIjmHWmychuhnflFTq7WOSkTE0D73m_1749048937_anh@gmail.com', '2025-06-04 21:55:37');
 
 -- --------------------------------------------------------
 
@@ -705,10 +725,9 @@ CREATE TABLE `products` (
 --
 
 INSERT INTO `products` (`id`, `name`, `slug`, `description`, `content`, `category_id`, `warranty_months`, `is_featured`, `status`, `views`, `created_at`, `updated_at`, `deleted_at`) VALUES
-(71, 'iPhone 15 Pro Max', 'iphone-15-pro-max', 'Đây là iphone 15 Pro Max', '<p>Đ&acirc;y l&agrave; iphone 15 Pro Max</p>', 1, 12, 0, 'active', 491, '2025-05-23 08:19:10', '2025-06-03 00:24:58', NULL),
-(72, 'Kim Hồng Phong', 'kim-hong-phong', '123', '<p>123</p>', 2, 12, 0, 'active', 9, '2025-05-25 05:15:53', '2025-05-26 23:01:53', '2025-05-26 23:01:53'),
-(73, 'AirPods Pro (2nd Gen) USB-C', 'airpods-pro-2nd-gen-usb-c', 'aaaaaaaaaaa', '<p>aaaaaaaaaa</p>', 5, 12, 1, 'active', 135, '2025-05-26 04:54:15', '2025-06-03 00:48:54', NULL),
-(74, 'iphone 13 ProMax', 'iphone-13-promax', 'Sản phẩm mới nhất của chúng tôi hiện nay', '<p>Khuyến m&atilde;i trị gi&aacute; 500.000₫<small>Gi&aacute; v&agrave; khuyến m&atilde;i c&oacute; thể kết th&uacute;c sớm hơn dự kiến</small></p>\r\n\r\n<p>&nbsp;<strong>Phiếu mua h&agrave;ng AirPods, Apple Watch, Macbook trị gi&aacute; 500,000đ</strong></p>\r\n\r\n<p>&nbsp;<strong>Phiếu mua h&agrave;ng &aacute;p dụng mua Sạc dự ph&ograve;ng (trừ h&atilde;ng AVA+, Hydrus), đồng hồ th&ocirc;ng minh (trừ Apple), Tai nghe v&agrave; Loa bluetooth (h&atilde;ng JBL, Marshall,Harmar Kardon ,Sony) trị gi&aacute; 100.000đ</strong></p>\r\n\r\n<p><strong>+73.580</strong>&nbsp;điểm t&iacute;ch lũy Qu&agrave; Tặng VIP</p>\r\n\r\n<ul>\r\n	<li>Giao h&agrave;ng nhanh ch&oacute;ng (tuỳ khu vực)</li>\r\n	<li>Mỗi số điện thoại chỉ mua 3 sản phẩm trong 1 th&aacute;ng</li>\r\n	<li>Gi&aacute; v&agrave; khuyến m&atilde;i c&oacute; thể kết th&uacute;c sớm</li>\r\n</ul>', 1, 12, 0, 'active', 5, '2025-05-26 23:19:44', '2025-05-26 23:32:51', '2025-05-26 23:32:51');
+(92, 'mac', 'mac', 'aaaa', '<p>aaaa</p>', 2, 12, 1, 'active', 0, '2025-06-06 19:48:59', '2025-06-06 19:48:59', NULL),
+(93, 'iPhone 15 Pro Max', 'iphone-15-pro-max', 'iPhone 15 Pro Max', '<p>iPhone 15 Pro Max&nbsp;</p>', 1, 12, 1, 'active', 0, '2025-06-06 20:12:21', '2025-06-06 20:12:21', NULL),
+(94, 'iPhone 15 Pro Max  test', 'iphone-15-pro-max-test', 'iPhone 15 Pro Max  test', '<p>iPhone 15 Pro Max &nbsp;test</p>', 1, 12, 0, 'active', 0, '2025-06-06 20:33:43', '2025-06-06 20:33:43', NULL);
 
 -- --------------------------------------------------------
 
@@ -747,13 +766,12 @@ CREATE TABLE `product_specifications` (
 --
 
 INSERT INTO `product_specifications` (`id`, `product_id`, `specification_id`, `value`, `created_at`, `updated_at`, `deleted_at`) VALUES
-(135, 72, 4, 'đen', '2025-05-26 04:48:39', '2025-05-26 04:48:39', NULL),
-(136, 72, 6, '16gb', '2025-05-26 04:48:39', '2025-05-26 04:48:39', NULL),
-(138, 74, 5, 'Dung lượng', '2025-05-26 23:30:09', '2025-05-26 23:30:09', NULL),
-(139, 74, 6, 'Ram', '2025-05-26 23:30:09', '2025-05-26 23:30:09', NULL),
-(152, 71, 5, '128GB,256GB,...', '2025-05-31 01:05:48', '2025-05-31 01:05:48', NULL),
-(153, 71, 6, '8GB', '2025-05-31 01:05:48', '2025-05-31 01:05:48', NULL),
-(155, 73, 4, 'White', '2025-05-31 01:38:50', '2025-05-31 01:38:50', NULL);
+(186, 92, 4, '128GB', '2025-06-06 19:48:59', '2025-06-06 19:48:59', NULL),
+(187, 92, 6, '8GB', '2025-06-06 19:48:59', '2025-06-06 19:48:59', NULL),
+(188, 93, 5, '128GB', '2025-06-06 20:12:21', '2025-06-06 20:12:21', NULL),
+(189, 93, 6, '8GB', '2025-06-06 20:12:21', '2025-06-06 20:12:21', NULL),
+(190, 94, 5, '128GB', '2025-06-06 20:33:43', '2025-06-06 20:33:43', NULL),
+(191, 94, 6, '8GB', '2025-06-06 20:33:43', '2025-06-06 20:33:43', NULL);
 
 -- --------------------------------------------------------
 
@@ -784,13 +802,42 @@ CREATE TABLE `product_variants` (
 --
 
 INSERT INTO `product_variants` (`id`, `product_id`, `sku`, `name`, `slug`, `discount_price`, `stock`, `status`, `is_default`, `created_at`, `updated_at`, `deleted_at`, `images`, `purchase_price`, `selling_price`) VALUES
-(91, 71, 'SP-77834', 'iPhone 15 Pro Max - White - 128GB', 'iphone-15-pro-max-white-128gb', NULL, 313, 'active', 1, '2025-05-25 03:28:46', '2025-06-03 00:26:25', NULL, '\"[\\\"uploads\\\\/products\\\\/1748628263_0_a2.jpg\\\"]\"', 89333.00, 85333.00),
-(92, 71, 'SP-74708', 'iPhone 15 Pro Max - Black - 128GB', 'iphone-15-pro-max-black-128gb', NULL, 549, 'active', 0, '2025-05-25 03:28:46', '2025-05-31 01:05:48', NULL, '\"[\\\"uploads\\\\/products\\\\/1748628263_1_a3.png\\\"]\"', 10000.00, 9999.99),
-(95, 72, 'SP-72278', 'Kim Hồng Phong - 128GB', 'kim-hong-phong-128gb', NULL, 111, 'active', 1, '2025-05-26 04:41:42', '2025-05-26 04:48:39', '2025-05-26 04:48:39', '\"[\\\"uploads\\\\/products\\\\/1748234502_0_banner 3.jpg\\\"]\"', 111.00, 111.00),
-(96, 72, 'SP-04187', 'Kim Hồng Phong - White', 'kim-hong-phong-white', NULL, 222, 'active', 1, '2025-05-26 04:48:39', '2025-05-26 04:48:39', NULL, '\"[\\\"uploads\\\\/products\\\\/1748234919_0_me.jpg\\\"]\"', 222.00, 222.00),
-(97, 73, 'SP-00731', 'AirPods Pro (2nd Gen) USB-C - White', 'airpods-pro-2nd-gen-usb-c-white', NULL, 87, 'active', 1, '2025-05-26 04:54:15', '2025-06-03 00:49:34', NULL, '\"[\\\"uploads\\\\/products\\\\/1748235255_0_airpods-4-thumb-1-650x650.png\\\"]\"', 3111.00, 3111.00),
-(98, 74, 'SP-00741', 'iphone 13 ProMax - Red - Xanh', 'iphone-13-promax-red-xanh', NULL, 12, 'active', 1, '2025-05-26 23:19:44', '2025-05-26 23:19:44', NULL, '\"[\\\"uploads\\\\/products\\\\/1748276384_0_a2.jpg\\\",\\\"uploads\\\\/products\\\\/1748276384_0_a5.jpg\\\"]\"', 99999.00, 89999.00),
-(99, 74, 'SP-36789', 'iphone 13 ProMax - Balck - Dung lượng', 'iphone-13-promax-balck-dung-luong', NULL, 12, 'active', 1, '2025-05-26 23:30:09', '2025-05-26 23:30:09', NULL, '\"[\\\"uploads\\\\/products\\\\/1748277009_0_a2.jpg\\\"]\"', 78999.00, 65999.00);
+(114, 92, 'SP-96398', 'mac - ', 'mac', NULL, 111, 'active', 1, '2025-06-06 19:48:59', '2025-06-06 19:48:59', NULL, '\"[\\\"uploads\\\\/products\\\\/1749214139_0_iphone-15-pro-max-gold-1-2-650x650.png\\\"]\"', 111.00, 111.00),
+(115, 92, 'SP-06790', 'mac - ', 'mac-1', NULL, 111, 'active', 0, '2025-06-06 19:48:59', '2025-06-06 19:48:59', NULL, '\"[\\\"uploads\\\\/products\\\\/1749214139_1_iphone-15-pro-max-blue-1-2-650x650.png\\\"]\"', 111.00, 111.00),
+(116, 93, 'SP-52922', 'iPhone 15 Pro Max  - White - 128GB', 'iphone-15-pro-max-white-128gb', NULL, 111, 'active', 1, '2025-06-06 20:12:21', '2025-06-06 20:12:21', NULL, '\"[\\\"uploads\\\\/products\\\\/1749215541_0_iphone-15-pro-max-gold-1-2-650x650.png\\\"]\"', 111.00, 111.00),
+(117, 93, 'SP-22756', 'iPhone 15 Pro Max  - Red - 128GB', 'iphone-15-pro-max-red-128gb', NULL, 222, 'active', 0, '2025-06-06 20:12:22', '2025-06-06 20:12:22', NULL, '\"[\\\"uploads\\\\/products\\\\/1749215542_1_iphone-15-pro-max-gold-1-2-650x650.png\\\"]\"', 222.00, 222.00),
+(118, 94, 'SP-11952', 'iPhone 15 Pro Max  test - ', 'iphone-15-pro-max-test', NULL, 666, 'active', 1, '2025-06-06 20:33:43', '2025-06-06 20:33:43', NULL, '\"[\\\"uploads\\\\/products\\\\/1749216823_0_aaaaaaaaaa.jpeg\\\"]\"', 666.00, 666.00),
+(119, 94, 'SP-17842', 'iPhone 15 Pro Max  test - ', 'iphone-15-pro-max-test-1', NULL, 777, 'active', 0, '2025-06-06 20:33:43', '2025-06-06 20:33:43', NULL, '\"[\\\"uploads\\\\/products\\\\/1749216823_1_aaaaaaaaaa.jpeg\\\"]\"', 777.00, 777.00);
+
+-- --------------------------------------------------------
+
+--
+-- Cấu trúc bảng cho bảng `resend_invoice_requests`
+--
+
+CREATE TABLE `resend_invoice_requests` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `order_id` bigint(20) UNSIGNED NOT NULL,
+  `user_id` bigint(20) UNSIGNED NOT NULL,
+  `status` enum('pending','approved','rejected') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'pending',
+  `admin_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `approved_at` timestamp NULL DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Đang đổ dữ liệu cho bảng `resend_invoice_requests`
+--
+
+INSERT INTO `resend_invoice_requests` (`id`, `order_id`, `user_id`, `status`, `admin_id`, `approved_at`, `created_at`, `updated_at`) VALUES
+(1, 50, 1, 'approved', 1, '2025-06-06 01:44:49', '2025-06-06 01:42:46', '2025-06-06 01:44:49'),
+(2, 51, 1, 'approved', 1, '2025-06-06 02:11:48', '2025-06-06 02:10:02', '2025-06-06 02:11:48'),
+(3, 50, 1, 'approved', 1, '2025-06-06 02:37:20', '2025-06-06 02:32:08', '2025-06-06 02:37:20'),
+(4, 50, 1, 'approved', 1, '2025-06-06 02:39:43', '2025-06-06 02:38:41', '2025-06-06 02:39:43'),
+(5, 50, 1, 'approved', 1, '2025-06-06 02:46:17', '2025-06-06 02:44:58', '2025-06-06 02:46:17'),
+(6, 50, 1, 'pending', NULL, NULL, '2025-06-06 02:45:55', '2025-06-06 02:45:55'),
+(7, 50, 42, 'approved', 1, '2025-06-06 14:14:02', '2025-06-06 14:12:54', '2025-06-06 14:14:02');
 
 -- --------------------------------------------------------
 
@@ -901,9 +948,7 @@ CREATE TABLE `sessions` (
 --
 
 INSERT INTO `sessions` (`id`, `user_id`, `ip_address`, `user_agent`, `payload`, `last_activity`) VALUES
-('iE2unqHoCnwKLORzLOKmktlqh4cfd9iPYkMbmLmN', 1, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36', 'YTo1OntzOjY6Il90b2tlbiI7czo0MDoieVN1OFQ4ek5HVjZRRkcwVk1UaEVOb0c4aVozSHFucWJJWEgwUWJUaSI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6NDQ6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9vcmRlcj9zdGF0dXM9cHJlcGFyaW5nIjt9czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czozOiJ1cmwiO2E6MDp7fXM6NTA6ImxvZ2luX3dlYl81OWJhMzZhZGRjMmIyZjk0MDE1ODBmMDE0YzdmNThlYTRlMzA5ODlkIjtpOjE7fQ==', 1748891377),
-('RkXMNSeUWKbHcPdBOldXREiowrGQaAAQl3VJWC1h', NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoiaEVoc05WUzVVVUlOc1J5SlVsQTYzbnFpTWxvNmV6Rlo3ZVpOQzJzWCI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6MjE6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMCI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fX0=', 1748914882),
-('Wi9tQ1zgvm8YigJZmXLZwnmDhzF0NFVwJcXGBuEk', NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36', 'YTo0OntzOjY6Il90b2tlbiI7czo0MDoiYzBCdDBuTTZsaUlPNmE5V21EVlVMQkw1Wjh4cXMxMzJFMnJDSnRzRCI7czozOiJ1cmwiO2E6MTp7czo4OiJpbnRlbmRlZCI7czoyNzoiaHR0cDovLzEyNy4wLjAuMTo4MDAwL2FkbWluIjt9czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6Mzk6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9vcmRlci90cmFja2luZy8zMCI7fX0=', 1748885014);
+('0seYU05lOPQ3ecGmrZq4HOQs7wAQ16WQTeodS9V5', 1, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36', 'YTo1OntzOjY6Il90b2tlbiI7czo0MDoiSk12WHVkSnQ4V1AxbHVFbkhOYzdxMHgxbTVoSHBYREl5bjQ2S053RCI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6NDM6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9hZG1pbi9wcm9kdWN0cy9jcmVhdGUiO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX1zOjM6InVybCI7YTowOnt9czo1MDoibG9naW5fd2ViXzU5YmEzNmFkZGMyYjJmOTQwMTU4MGYwMTRjN2Y1OGVhNGUzMDk4OWQiO2k6MTt9', 1749217009);
 
 -- --------------------------------------------------------
 
@@ -1084,7 +1129,7 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `name`, `email`, `email_verified_at`, `password`, `provider`, `provider_id`, `phone`, `address`, `avatar`, `dob`, `gender`, `is_verified`, `last_login`, `status`, `remember_token`, `created_at`, `updated_at`, `deleted_at`) VALUES
-(1, 'Admin ', 'admin@gmail.com', NULL, '$2y$12$si7gRydbJe6uPDz/0pxqDuipwDwT9Q/2pVpf0HpS6k/lt5z70Uhtu', NULL, NULL, '0123456789', 'Hanoi', NULL, NULL, 'other', 0, '2025-06-03 00:23:10', 'active', 'pGwOh9W0h38dLUFj0FDEdgyraYu2M2MfZ7D81PQk5NYrXoWKBB6rsIVaxpNb', '2025-05-16 15:31:25', '2025-06-03 00:23:10', NULL),
+(1, 'Admin ', 'admin@gmail.com', NULL, '$2y$12$si7gRydbJe6uPDz/0pxqDuipwDwT9Q/2pVpf0HpS6k/lt5z70Uhtu', NULL, NULL, '0123456789', 'Hanoi', NULL, NULL, 'other', 0, '2025-06-06 19:37:52', 'active', 'HOq5NXlHRykUbfY5b8zuimNBcLnzSRqkmKiGt68UITMxFHm0AiFPeNr3gxeu', '2025-05-16 15:31:25', '2025-06-06 19:37:52', NULL),
 (2, 'Staff ', 'staffp@gmail.com', NULL, '$2y$12$de5HWZYmyu9wLPmTzHmyJOjVt1J1uxTaBtWCyQQgZj/kIpNR7At3a', NULL, NULL, '0987654321', 'Hanoi', NULL, NULL, 'other', 0, NULL, 'active', NULL, '2025-05-15 12:40:59', '2025-05-15 12:40:59', NULL),
 (19, 'Staff User', 'staffp@example.com', NULL, '$2y$12$WHrqm55gWHco5y8WkiNczeLnELUpkpEj3eJC3tOAxHV2QUp1o0DJm', NULL, NULL, '0987654321', 'Hanoi', NULL, NULL, 'other', 0, NULL, 'active', NULL, '2025-05-23 14:48:11', '2025-05-23 14:48:11', NULL),
 (20, 'Normal User', 'userp@example.com', NULL, '$12$si7gRydbJe6uPDz/0pxqDuipwDwT9Q/2pVpf0HpS6k/lt5z70Uhtu', NULL, NULL, '1234567890', 'Hanoi', NULL, NULL, 'other', 0, NULL, 'active', NULL, '2025-05-23 14:48:12', '2025-05-23 14:48:12', NULL),
@@ -1098,8 +1143,8 @@ INSERT INTO `users` (`id`, `name`, `email`, `email_verified_at`, `password`, `pr
 (39, 'banh dayy yeu em', 'banhday11@example.com', NULL, '$2y$12$KB.guIki4Wfdev8M1iOk5uvJceBBjtcJAArv30/jtVTLD9cwtPl8e', NULL, NULL, '0368706552', 'Số nhà 71, phố tiền phong, phường tiên cát', NULL, '2025-05-07', 'female', 0, NULL, 'active', NULL, '2025-05-25 23:20:54', '2025-05-25 23:20:54', NULL),
 (40, 'bui quang dong', 'dongbui@gmail.com', NULL, '$2y$12$lENUgnn9oOJWPfSrQSrguucx9hzpikO7.IjgSduonsxBi/.T1jMjy', NULL, NULL, '0368706552', 'Số nhà 71, phố tiền phong, phường tiên cát', NULL, '2025-06-06', 'male', 0, NULL, 'active', NULL, '2025-05-26 08:45:25', '2025-05-26 08:45:25', NULL),
 (41, 'Kim Hong Phong Dai', 'daicv@gmail.com', NULL, '$2y$12$JcBJQvn.Cffa3B/ohBz2v..4mW4hmeKceF9cYV3qtj55ZKy6.2WX6', NULL, NULL, '0368706552', 'Số nhà 71, phố tiền phong, phường tiên cát', NULL, '2025-05-21', 'male', 0, '2025-05-26 22:08:16', 'active', 'JHGQYfCLgyB1gD0ebHR1CSEclBpoAoJoKl9sxjHt9jFMkq3ENc4lU0cN8bHi', '2025-05-26 22:07:41', '2025-05-31 20:55:29', NULL),
-(42, 'đại học coder', 'daichuvan05@gmail.com', NULL, '$2y$12$zabvva8SdzabLKbOkbzvKOxczOwxUaExwGePOUB3mjF7wlyA3B/V2', NULL, NULL, '0968791308', 'Vọng Giang', NULL, '2025-05-05', 'male', 0, '2025-05-29 20:46:14', 'inactive', NULL, '2025-05-28 14:57:13', '2025-05-31 21:33:50', NULL),
-(43, 'Cường', 'test@gmail.com', NULL, '$2y$12$3n6LLncP6oIAforDGEkCKO5YEp/mhdvHQwK4UU2thehOUNRGmzBha', NULL, NULL, '09876543', 'Hà Nội', NULL, '2025-05-28', 'male', 0, '2025-06-02 23:41:29', 'active', NULL, '2025-05-28 22:46:16', '2025-06-02 23:41:29', NULL),
+(42, 'đại học coder', 'daichuvan05@gmail.com', NULL, '$2y$12$zabvva8SdzabLKbOkbzvKOxczOwxUaExwGePOUB3mjF7wlyA3B/V2', NULL, NULL, '0968791308', 'Vọng Giang', NULL, '2025-05-05', 'male', 0, '2025-06-06 14:04:30', 'inactive', NULL, '2025-05-28 14:57:13', '2025-06-06 14:04:30', NULL),
+(43, 'Cường', 'test@gmail.com', NULL, '$2y$12$3n6LLncP6oIAforDGEkCKO5YEp/mhdvHQwK4UU2thehOUNRGmzBha', NULL, NULL, '09876543', 'Hà Nội', NULL, '2025-05-28', 'male', 0, '2025-06-04 12:48:27', 'active', NULL, '2025-05-28 22:46:16', '2025-06-04 12:48:27', NULL),
 (44, 'banhdayyy', 'anh@gmail.com', NULL, '$2y$12$iL89MO6m8aJ6ytcW/gmKo.DM.6KpdA44E.QCUI.ZTtZ.u0iGCxNW2', NULL, NULL, '0368706552', 'asdsadas', NULL, '2025-05-15', 'male', 0, '2025-05-31 22:09:59', 'active', 'tR6P0OXUsCQtwboq9YCyaCdVdT2exORi6s27GcphWL6lhOk395FRM0vc8KCH', '2025-05-31 22:07:02', '2025-05-31 22:09:59', NULL),
 (45, 'Thanh Bình Nguyễn', 'nguyenthanhbinh05082005@gmail.com', '2025-06-01 09:28:50', '$2y$12$Q0KzVz4F/HD5o609kbqZi.phhyITvFuXSEMqtOPFUpetszd6G0pkO', 'google', '102989406420602569869', NULL, NULL, 'https://lh3.googleusercontent.com/a/ACg8ocJ_1MC1lN0WwDtNb4x5D2AWjmSLm1k-R0V7TX3BrL80CWKlpw=s96-c', NULL, 'other', 0, NULL, 'active', NULL, '2025-06-01 09:28:50', '2025-06-01 09:28:50', NULL),
 (52, 'banh dayy', 'banhday1234@gmail.com', NULL, '$2y$12$7WnXBp6SLBYwdJgmWWFG3eBlA/JskA4gLWGJjwAjBsvb2WI0NyatC', NULL, NULL, NULL, 'dfsdfadfas', NULL, '2025-05-28', 'female', 0, '2025-06-01 23:02:58', 'active', NULL, '2025-06-01 23:01:51', '2025-06-01 23:02:58', NULL),
@@ -1164,9 +1209,8 @@ CREATE TABLE `variant_attribute_types` (
 --
 
 INSERT INTO `variant_attribute_types` (`id`, `name`, `category_ids`, `type`, `is_required`, `status`, `created_at`, `updated_at`, `deleted_at`) VALUES
-(3, 'color', '[\"1\", \"2\", \"3\", \"4\", \"5\"]', 'text', 0, 'active', '2025-05-17 09:03:49', '2025-05-23 07:32:05', NULL),
-(4, 'Storage', '[\"1\", \"2\", \"3\"]', 'text', 0, 'active', '2025-05-17 09:07:11', '2025-05-17 10:53:38', NULL),
-(5, 'Screen', '[\"2\", \"3\"]', 'text', 0, 'active', '2025-05-22 02:45:47', '2025-05-22 03:02:24', NULL);
+(52, 'Color', '[\"1\", \"2\", \"3\", \"4\", \"5\"]', 'text', 0, 'active', '2025-06-03 21:13:19', '2025-06-04 08:16:03', NULL),
+(59, 'Storage', '[\"1\", \"2\"]', 'text', 0, 'active', '2025-06-04 20:44:27', '2025-06-06 20:09:26', NULL);
 
 -- --------------------------------------------------------
 
@@ -1190,16 +1234,16 @@ CREATE TABLE `variant_attribute_values` (
 --
 
 INSERT INTO `variant_attribute_values` (`id`, `attribute_type_id`, `value`, `hex`, `status`, `created_at`, `updated_at`, `deleted_at`) VALUES
-(43, 3, '[\"White\"]', '[\"#FFFFFF\"]', 'active', '2025-05-25 03:28:46', '2025-05-25 03:28:46', NULL),
-(44, 4, '[\"128GB\"]', '[]', 'active', '2025-05-25 03:28:46', '2025-05-25 03:28:46', NULL),
-(45, 3, '[\"Black\"]', '[\"#000000\"]', 'active', '2025-05-25 03:28:46', '2025-05-25 03:28:46', NULL),
-(46, 4, '[\"128GB\"]', '[]', 'active', '2025-05-25 03:28:46', '2025-05-25 03:28:46', NULL),
-(49, 3, '[\"White\"]', '[\"#FFFFFF\"]', 'active', '2025-05-26 04:48:39', '2025-05-26 04:48:39', NULL),
-(50, 3, '[\"White\"]', '[\"#FFFFFF\"]', 'active', '2025-05-26 04:54:15', '2025-05-26 04:54:15', NULL),
-(51, 3, '[\"Red\"]', '[\"#FF0000\"]', 'active', '2025-05-26 23:19:44', '2025-05-26 23:19:44', NULL),
-(52, 4, '[\"Xanh\"]', '[\"#0000FF\"]', 'active', '2025-05-26 23:19:44', '2025-05-26 23:19:44', NULL),
-(53, 3, '[\"Balck\"]', '[\"#222222\"]', 'active', '2025-05-26 23:30:09', '2025-05-26 23:30:09', NULL),
-(54, 4, '[\"Dung lượng\"]', '[\"#FF0000\"]', 'active', '2025-05-26 23:30:09', '2025-05-26 23:30:09', NULL);
+(123, 52, '[\"Black\"]', '[\"#000000\"]', 'active', '2025-06-04 20:04:01', '2025-06-04 21:14:01', '2025-06-04 21:14:01'),
+(124, 52, '[\"White\"]', '[\"#ffffff\"]', 'active', '2025-06-04 20:04:24', '2025-06-04 21:16:22', '2025-06-04 21:16:22'),
+(129, 59, '[\"128GB\"]', '[]', 'active', '2025-06-04 21:13:04', '2025-06-04 21:15:56', NULL),
+(130, 59, '[\"256GB\"]', '[]', 'active', '2025-06-04 21:13:04', '2025-06-04 21:13:04', NULL),
+(131, 52, '[\"Red\"]', '[\"#ff0000\"]', 'active', '2025-06-04 21:14:51', '2025-06-04 21:17:38', '2025-06-04 21:17:38'),
+(132, 52, '[\"White\"]', '[\"#ffffff\"]', 'active', '2025-06-04 21:16:43', '2025-06-04 21:29:22', '2025-06-04 21:29:22'),
+(133, 52, '[\"Black\"]', '[\"#000000\"]', 'active', '2025-06-04 21:28:41', '2025-06-04 21:30:09', '2025-06-04 21:30:09'),
+(134, 52, '[\"Red\"]', '[\"#ff0000\"]', 'active', '2025-06-04 21:29:22', '2025-06-04 21:30:49', '2025-06-04 21:30:49'),
+(135, 52, '[\"White\"]', '[\"#ffffff\"]', 'active', '2025-06-04 21:30:09', '2025-06-04 21:30:09', NULL),
+(136, 52, '[\"Red\"]', '[\"#ff0000\"]', 'active', '2025-06-04 21:30:49', '2025-06-04 21:30:49', NULL);
 
 -- --------------------------------------------------------
 
@@ -1220,16 +1264,14 @@ CREATE TABLE `variant_combinations` (
 --
 
 INSERT INTO `variant_combinations` (`id`, `variant_id`, `attribute_value_id`, `created_at`, `updated_at`) VALUES
-(118, 91, 43, '2025-05-25 03:28:46', '2025-05-25 03:28:46'),
-(119, 91, 44, '2025-05-25 03:28:46', '2025-05-25 03:28:46'),
-(120, 92, 45, '2025-05-25 03:28:46', '2025-05-25 03:28:46'),
-(121, 92, 46, '2025-05-25 03:28:46', '2025-05-25 03:28:46'),
-(124, 96, 49, '2025-05-26 04:48:39', '2025-05-26 04:48:39'),
-(125, 97, 50, '2025-05-26 04:54:15', '2025-05-26 04:54:15'),
-(126, 98, 51, '2025-05-26 23:19:44', '2025-05-26 23:19:44'),
-(127, 98, 52, '2025-05-26 23:19:44', '2025-05-26 23:19:44'),
-(128, 99, 53, '2025-05-26 23:30:09', '2025-05-26 23:30:09'),
-(129, 99, 54, '2025-05-26 23:30:09', '2025-05-26 23:30:09');
+(142, 114, 129, '2025-06-06 19:48:59', '2025-06-06 19:48:59'),
+(143, 115, 129, '2025-06-06 19:48:59', '2025-06-06 19:48:59'),
+(144, 116, 135, '2025-06-06 20:12:22', '2025-06-06 20:12:22'),
+(145, 116, 129, '2025-06-06 20:12:22', '2025-06-06 20:12:22'),
+(146, 117, 136, '2025-06-06 20:12:22', '2025-06-06 20:12:22'),
+(147, 117, 129, '2025-06-06 20:12:22', '2025-06-06 20:12:22'),
+(148, 118, 130, '2025-06-06 20:33:43', '2025-06-06 20:33:43'),
+(149, 119, 130, '2025-06-06 20:33:44', '2025-06-06 20:33:44');
 
 -- --------------------------------------------------------
 
@@ -1277,14 +1319,6 @@ CREATE TABLE `wishlists` (
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Đang đổ dữ liệu cho bảng `wishlists`
---
-
-INSERT INTO `wishlists` (`id`, `user_id`, `product_id`, `created_at`, `updated_at`) VALUES
-(15, 1, 71, '2025-06-02 22:41:58', '2025-06-02 22:41:58'),
-(18, 1, 73, '2025-06-02 23:48:57', '2025-06-02 23:48:57');
 
 --
 -- Chỉ mục cho các bảng đã đổ
@@ -1373,6 +1407,14 @@ ALTER TABLE `flash_sale_items`
   ADD PRIMARY KEY (`id`),
   ADD KEY `flash_sale_items_flash_sale_id_foreign` (`flash_sale_id`),
   ADD KEY `flash_sale_items_product_variant_id_foreign` (`product_variant_id`);
+
+--
+-- Chỉ mục cho bảng `invoices`
+--
+ALTER TABLE `invoices`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `invoices_invoice_code_unique` (`invoice_code`),
+  ADD KEY `invoices_order_id_foreign` (`order_id`);
 
 --
 -- Chỉ mục cho bảng `jobs`
@@ -1480,6 +1522,14 @@ ALTER TABLE `product_variants`
   ADD UNIQUE KEY `product_variants_slug_unique` (`slug`),
   ADD UNIQUE KEY `product_variants_sku_unique` (`sku`),
   ADD KEY `product_variants_product_id_foreign` (`product_id`);
+
+--
+-- Chỉ mục cho bảng `resend_invoice_requests`
+--
+ALTER TABLE `resend_invoice_requests`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `resend_invoice_requests_order_id_foreign` (`order_id`),
+  ADD KEY `resend_invoice_requests_user_id_foreign` (`user_id`);
 
 --
 -- Chỉ mục cho bảng `roles`
@@ -1642,13 +1692,13 @@ ALTER TABLE `carts`
 -- AUTO_INCREMENT cho bảng `cart_items`
 --
 ALTER TABLE `cart_items`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
 -- AUTO_INCREMENT cho bảng `categories`
 --
 ALTER TABLE `categories`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=24;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
 
 --
 -- AUTO_INCREMENT cho bảng `contacts`
@@ -1681,22 +1731,28 @@ ALTER TABLE `flash_sale_items`
   MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
+-- AUTO_INCREMENT cho bảng `invoices`
+--
+ALTER TABLE `invoices`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
 -- AUTO_INCREMENT cho bảng `jobs`
 --
 ALTER TABLE `jobs`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=97;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=109;
 
 --
 -- AUTO_INCREMENT cho bảng `migrations`
 --
 ALTER TABLE `migrations`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=133;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=135;
 
 --
 -- AUTO_INCREMENT cho bảng `orders`
 --
 ALTER TABLE `orders`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=51;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=52;
 
 --
 -- AUTO_INCREMENT cho bảng `order_details`
@@ -1708,13 +1764,13 @@ ALTER TABLE `order_details`
 -- AUTO_INCREMENT cho bảng `order_items`
 --
 ALTER TABLE `order_items`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=45;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=46;
 
 --
 -- AUTO_INCREMENT cho bảng `password_reset_tokens`
 --
 ALTER TABLE `password_reset_tokens`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT cho bảng `permissions`
@@ -1726,7 +1782,7 @@ ALTER TABLE `permissions`
 -- AUTO_INCREMENT cho bảng `products`
 --
 ALTER TABLE `products`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=75;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=95;
 
 --
 -- AUTO_INCREMENT cho bảng `product_reviews`
@@ -1738,13 +1794,19 @@ ALTER TABLE `product_reviews`
 -- AUTO_INCREMENT cho bảng `product_specifications`
 --
 ALTER TABLE `product_specifications`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=156;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=192;
 
 --
 -- AUTO_INCREMENT cho bảng `product_variants`
 --
 ALTER TABLE `product_variants`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=100;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=120;
+
+--
+-- AUTO_INCREMENT cho bảng `resend_invoice_requests`
+--
+ALTER TABLE `resend_invoice_requests`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT cho bảng `roles`
@@ -1810,19 +1872,19 @@ ALTER TABLE `user_vouchers`
 -- AUTO_INCREMENT cho bảng `variant_attribute_types`
 --
 ALTER TABLE `variant_attribute_types`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=63;
 
 --
 -- AUTO_INCREMENT cho bảng `variant_attribute_values`
 --
 ALTER TABLE `variant_attribute_values`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=55;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=137;
 
 --
 -- AUTO_INCREMENT cho bảng `variant_combinations`
 --
 ALTER TABLE `variant_combinations`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=130;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=150;
 
 --
 -- AUTO_INCREMENT cho bảng `vouchers`
@@ -1834,7 +1896,7 @@ ALTER TABLE `vouchers`
 -- AUTO_INCREMENT cho bảng `wishlists`
 --
 ALTER TABLE `wishlists`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=56;
 
 --
 -- Các ràng buộc cho các bảng đã đổ
@@ -1873,6 +1935,12 @@ ALTER TABLE `categories`
 ALTER TABLE `flash_sale_items`
   ADD CONSTRAINT `flash_sale_items_flash_sale_id_foreign` FOREIGN KEY (`flash_sale_id`) REFERENCES `flash_sales` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `flash_sale_items_product_variant_id_foreign` FOREIGN KEY (`product_variant_id`) REFERENCES `product_variants` (`id`) ON DELETE CASCADE;
+
+--
+-- Các ràng buộc cho bảng `invoices`
+--
+ALTER TABLE `invoices`
+  ADD CONSTRAINT `invoices_order_id_foreign` FOREIGN KEY (`order_id`) REFERENCES `orders` (`id`) ON DELETE CASCADE;
 
 --
 -- Các ràng buộc cho bảng `model_has_permissions`
@@ -1933,6 +2001,13 @@ ALTER TABLE `product_specifications`
 --
 ALTER TABLE `product_variants`
   ADD CONSTRAINT `product_variants_product_id_foreign` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`) ON DELETE CASCADE;
+
+--
+-- Các ràng buộc cho bảng `resend_invoice_requests`
+--
+ALTER TABLE `resend_invoice_requests`
+  ADD CONSTRAINT `resend_invoice_requests_order_id_foreign` FOREIGN KEY (`order_id`) REFERENCES `orders` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `resend_invoice_requests_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
 
 --
 -- Các ràng buộc cho bảng `role_has_permissions`

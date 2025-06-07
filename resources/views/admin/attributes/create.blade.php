@@ -361,7 +361,7 @@
                         <div class="col-md-5">
                             <div class="mb-3">
                                 <label class="form-label">Value</label>
-                                <input type="text" class="form-control value-input" required placeholder="Enter attribute value">
+                                <input type="text" class="form-control value-input" placeholder="Enter attribute value">
                             </div>
                         </div>
                         <div class="col-md-5">

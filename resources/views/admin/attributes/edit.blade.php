@@ -255,7 +255,7 @@
 
         // Handle Add Value Button
         $('#addValue').click(function() {
-            const index = $('.value-row').length;
+            const index = Date.now(); // Use timestamp as unique index
             addValueRow(index);
         });
 
@@ -273,28 +273,34 @@
             valueRow.remove();
             
             if ($('.value-row').length === 0) {
-                addValueRow(0);
+                const index = Date.now();
+                addValueRow(index);
             }
         });
 
         // Handle Has Hex Color checkbox change
         $(document).on('change', '.has-hex-color', function() {
             const colorPickerContainer = $(this).closest('.color-section').find('.color-picker-container');
+            const colorInput = colorPickerContainer.find('.hex-color-input');
+            
             if ($(this).is(':checked')) {
                 colorPickerContainer.fadeIn(200);
+                colorInput.prop('disabled', false);
+                if (!colorInput.val()) {
+                    colorInput.val('#000000'); // Set default color when checked
+                    colorPickerContainer.find('.color-preview').css('background-color', '#000000');
+                }
             } else {
                 colorPickerContainer.fadeOut(200);
-                const input = colorPickerContainer.find('.hex-color-input');
-                input.val('');
-                input.closest('.color-preview').css('background-color', '#000000');
+                colorInput.prop('disabled', true);
+                colorInput.val(''); // Clear the value when unchecked
             }
         });
 
-        // Update color preview and hex value when color changes
+        // Update color preview when color changes
         $(document).on('input change', '.hex-color-input', function() {
             const hexValue = $(this).val();
             $(this).closest('.color-preview').css('background-color', hexValue);
-            $(this).closest('.color-picker-container').find('.hex-value').text(hexValue);
         });
 
         // Function to add value row
@@ -322,7 +328,6 @@
                                         <div class="color-preview" style="background-color: #000000;">
                                             <input type="color" class="hex-color-input" name="values[${index}][hex_color]" value="#000000">
                                         </div>
-                                        <span class="hex-value">#000000</span>
                                     </div>
                                 </div>
                             </div>
@@ -342,14 +347,29 @@
         }
 
         // Form submission
-        $('#editAttributeForm').on('submit', function() {
-            // Remove hex_color field if checkbox is unchecked
+        $('#editAttributeForm').on('submit', function(e) {
+            e.preventDefault();
+            
+            // Disable hex_color inputs for unchecked checkboxes
             $('.has-hex-color').each(function() {
+                const colorInput = $(this).closest('.value-row').find('.hex-color-input');
                 if (!$(this).is(':checked')) {
-                    $(this).closest('.value-row').find('.hex-color-input').remove();
+                    colorInput.prop('disabled', true);
+                    colorInput.val('');
+                } else {
+                    colorInput.prop('disabled', false);
                 }
             });
-            return true;
+
+            // Add a hidden input to track existing values that should be kept
+            $('.value-row').each(function() {
+                const valueId = $(this).data('value-id');
+                if (valueId) {
+                    $(this).append(`<input type="hidden" name="existing_values[]" value="${valueId}">`);
+                }
+            });
+
+            this.submit();
         });
     });
 </script>

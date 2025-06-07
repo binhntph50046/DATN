@@ -374,7 +374,7 @@
                                                                 value="{{ $attr['attribute_type_id'] }}">
                                                             <input type="hidden"
                                                                 name="variants[{{ $index }}][attributes][{{ $attrIdx }}][value]"
-                                                                value="{{ $attr['value'] }}">
+                                                                value="{{ $attr['value'] ?? '' }}">
                                                             <input type="hidden"
                                                                 name="variants[{{ $index }}][attributes][{{ $attrIdx }}][hex]"
                                                                 value="{{ $attr['hex'] ?? '' }}">

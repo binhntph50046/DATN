@@ -62,10 +62,10 @@
                                             @if ($banner->image)
                                                 @if ($banner->link)
                                                     <a href="{{ $banner->link }}" target="_blank">
-                                                        <img src="{{ asset('storage/' . $banner->image) }}" alt="Banner Image" width="120">
+                                                        <img src="{{ asset($banner->image) }}" alt="Banner Image" width="120">
                                                     </a>
                                                 @else
-                                                    <img src="{{ asset('storage/' . $banner->image) }}" alt="Banner Image" width="120">
+                                                    <img src="{{ asset($banner->image) }}" alt="Banner Image" width="120">
                                                 @endif
                                             @endif
                                         </td>

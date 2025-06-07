@@ -46,9 +46,7 @@
                                         <td>{{ $invoice->issued_at ? $invoice->issued_at->format('d/m/Y H:i') : '' }}</td>
                                         <td>
                                             <a href="{{ route('admin.invoices.show', $invoice->id) }}" class="btn btn-primary btn-sm">Xem</a>
-                                            <a href="{{ route('admin.invoices.export-pdf', $invoice->id) }}" class="btn btn-danger" target="_blank">
-                                                <i class="fas fa-file-pdf"></i> Xuất PDF
-                                            </a>
+                                           
                                         </td>
                                     </tr>
                                     @endforeach

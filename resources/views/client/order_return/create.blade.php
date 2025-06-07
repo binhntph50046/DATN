@@ -12,7 +12,7 @@
             </ul>
         </div>
     @endif
-    <form action="{{ route('order-returns.store', $order->id) }}" method="POST" enctype="multipart/form-data">
+    <form action="{{ route('order.returns.store', $order->id) }}" method="POST" enctype="multipart/form-data">
         @csrf
         <div class="mb-3">
             <label class="form-label">Chọn sản phẩm muốn hoàn:</label>

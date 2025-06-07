@@ -29,7 +29,7 @@
 
     @yield('content')
 
-    {{-- @include('client.partials.footer') --}}
+    @include('client.partials.footer')
 
     <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
@@ -37,7 +37,8 @@
     <script src="{{ asset('js/bootstrap.bundle.min.js') }}"></script>
     <script src="{{ asset('js/tiny-slider.js') }}"></script>
     <script src="{{ asset('js/custom.js') }}"></script>
-    @vite('resources/js/app.js')
+    @vite(['resources/js/app.js'])
+    @yield('scripts')
  
    
 </body>

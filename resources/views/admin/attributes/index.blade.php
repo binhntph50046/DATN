@@ -8,6 +8,35 @@
         background-color: #fff;
         padding: 16px;
     }
+    .category-list {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+    .category-item {
+        font-weight: 500;
+        color: #2196F3;
+        padding: 4px 0;
+        border-bottom: 1px solid #e9ecef;
+    }
+    .category-item:last-child {
+        border-bottom: none;
+    }
+    .attribute-value {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 4px 8px;
+        background: #f8f9fa;
+        border-radius: 4px;
+        margin-bottom: 4px;
+    }
+    .color-preview {
+        width: 20px;
+        height: 20px;
+        border-radius: 4px;
+        border: 1px solid #dee2e6;
+    }
 </style>
 
 @section('content')
@@ -61,15 +90,16 @@
                         @if ($attributeTypes->isEmpty())
                             <p>No attribute types found.</p>
                         @else
-                        <div class="table custom-shadow ">
+                        <div class="table custom-shadow">
                             <table class="table table-hover table-borderless">
                                 <thead>
                                     <tr>
                                         <th>ID</th>
                                         <th>Name</th>
                                         <th>Categories</th>
+                                        <th>Values</th>
+                                        <th>Colors</th>
                                         <th>Status</th>
-                                        <th>Created At</th>
                                         <th>Actions</th>
                                     </tr>
                                 </thead>
@@ -79,17 +109,50 @@
                                             <td>{{ $attributeTypes->firstItem() + $index }}</td>
                                             <td>{{ $attributeType->name }}</td>
                                             <td>
-                                                @if($attributeType->category_ids && is_array($attributeType->category_ids))
-                                                    @foreach($attributeType->category_ids as $categoryId)
-                                                        @php
-                                                            $category = $categories->firstWhere('id', $categoryId);
-                                                        @endphp
-                                                        @if($category)
-                                                            <span class="badge bg-info me-1">{{ $category->name }}</span>
-                                                        @endif
-                                                    @endforeach
+                                                <div class="category-list">
+                                                    @if($attributeType->category_ids && is_array($attributeType->category_ids))
+                                                        @foreach($attributeType->category_ids as $categoryId)
+                                                            @php
+                                                                $category = $categories->firstWhere('id', $categoryId);
+                                                            @endphp
+                                                            @if($category)
+                                                                <div class="category-item">{{ $category->name }}</div>
+                                                            @endif
+                                                        @endforeach
+                                                    @else
+                                                        <span class="text-muted">No categories</span>
+                                                    @endif
+                                                </div>
+                                            </td>
+                                            <td>
+                                                @if($attributeType->attributeValues->isNotEmpty())
+                                                    <div class="d-flex flex-column gap-1">
+                                                        @foreach($attributeType->attributeValues as $value)
+                                                            <div class="attribute-value">
+                                                                {{ is_array($value->value) ? implode(', ', $value->value) : $value->value }}
+                                                            </div>
+                                                        @endforeach
+                                                    </div>
                                                 @else
-                                                    <span class="text-muted">No categories</span>
+                                                    <span class="text-muted">No values</span>
+                                                @endif
+                                            </td>
+                                            <td>
+                                                @if($attributeType->attributeValues->isNotEmpty())
+                                                    <div class="d-flex flex-column gap-1">
+                                                        @foreach($attributeType->attributeValues as $value)
+                                                            <div class="attribute-value">
+                                                                @if(!empty($value->hex) && $value->hex[0] !== '')
+                                                                    <div class="color-preview" style="background-color: {{ $value->hex[0] }}"></div>
+                                                                    <span class="small">{{ $value->hex[0] }}</span>
+                                                                @else
+                                                                    <span class="text-muted">No color</span>
+                                                                @endif
+                                                            </div>
+                                                        @endforeach
+                                                    </div>
+                                                @else
+                                                    <span class="text-muted">No colors</span>
                                                 @endif
                                             </td>
                                             <td>
@@ -97,7 +160,6 @@
                                                     {{ ucfirst($attributeType->status) }}
                                                 </span>
                                             </td>
-                                            <td>{{ $attributeType->created_at->format('d/m/Y H:i') }}</td>
                                             <td>
                                                 <a href="{{ route('admin.attributes.edit', $attributeType) }}" class="btn btn-sm btn-warning">Edit</a>
                                                 <form action="{{ route('admin.attributes.destroy', $attributeType) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this attribute type?');">

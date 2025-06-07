@@ -67,7 +67,14 @@ class OrderReturnController
         // Xử lý upload ảnh nếu có
         $imagePath = null;
         if ($request->hasFile('image')) {
-            $imagePath = $request->file('image')->store('returns', 'public');
+            $image = $request->file('image');
+            $imageName = time() . '_' . $image->getClientOriginalName();
+            $uploadPath = public_path('uploads/returns');
+            if (!file_exists($uploadPath)) {
+                mkdir($uploadPath, 0755, true);
+            }
+            $image->move($uploadPath, $imageName);
+            $imagePath = 'uploads/returns/' . $imageName;
         }
 
         // Tạo yêu cầu hoàn hàng mới

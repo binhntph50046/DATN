@@ -98,6 +98,7 @@
                                 <thead>
                                     <tr>
                                         <th>ID</th>
+                                        <th>Image</th>
                                         <th>Name</th>
                                         <th>Slug</th>
                                         <th>Type</th>
@@ -122,6 +123,13 @@
                                             foreach ($categories as $category) {
                                                 echo '<tr>';
                                                 echo '<td>' . $index++ . '</td>';
+                                                echo '<td>';
+                                                if ($category->image) {
+                                                    echo '<img src="' . asset($category->image) . '" alt="' . $category->name . '" class="img-thumbnail" style="max-height: 80px;">';
+                                                } else {
+                                                    echo '<span class="text-muted">No image</span>';
+                                                }
+                                                echo '</td>';
                                                 echo '<td>' . $prefix . ($category->parent_id ? '└─ ' : '') . $category->name . '</td>';
                                                 echo '<td>' . $category->slug . '</td>';
                                                 echo '<td>' . ($category->type == 1 ? 'Product Category' : 'Post Category') . '</td>';

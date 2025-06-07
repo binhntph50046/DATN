@@ -26,6 +26,7 @@ class Order extends Model
         'payment_status',
         'shipping_method_id',
         'status',
+        
         'is_paid',
         'notes',
         'cancel_reason',

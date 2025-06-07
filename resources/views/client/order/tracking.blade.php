@@ -52,15 +52,8 @@
     <h4>Tổng tiền: <span class="text-danger">{{ number_format($order->total_price) }} VNĐ</span></h4>
     
     <div class="mt-4">
-        {{-- <a href="{{ route('order.invoice', $order->id) }}" class="btn btn-primary" target="_blank">
-            <i class="fas fa-print"></i> In hóa đơn
-        </a> --}}
-        <form action="{{ route('order.request-resend-invoice', $order->id) }}" method="POST" class="d-inline">
-            @csrf
-            <button type="submit" class="btn btn-info">
-                <i class="fas fa-envelope"></i> Gửi lại hóa đơn qua email
-            </button>
-        </form>
+       
+       
         <a href="{{ route('shop') }}" class="btn btn-outline-secondary">
             <i class="fas fa-arrow-left"></i> Tiếp tục mua sắm
         </a>
@@ -80,9 +73,13 @@
     @endif
 </div>
 
+@endsection
+
+@section('scripts')
 <script>
     setTimeout(() => {
         let orderId = {{ $order->id }};
+        console.log('Echo at tracking:', window.Echo);
         window.Echo.channel('orderStatus.' + orderId)
             .listen('.OrderStatusUpdated', (e) => {
                 console.log('Đã nhận event:', e);

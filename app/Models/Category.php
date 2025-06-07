@@ -16,6 +16,7 @@ class Category extends Model
         'order',
         'status',
         'type',
+        'image',
         'deleted_at'
     ];
 
@@ -44,5 +45,10 @@ class Category extends Model
     {
         return $this->belongsToMany(VariantAttributeType::class, 'category_attribute_types')
             ->withTimestamps();
+    }
+
+    public function products()
+    {
+        return $this->hasMany(Product::class);
     }
 }

@@ -38,7 +38,7 @@ use App\Models\Order;
     }
     public function broadcastAs(): string
     {
-        return 'OrderStatusUpdated';
+        return 'OrderStatusUpdated' ;
     }
 
     /**

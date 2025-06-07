@@ -4,7 +4,9 @@ namespace App\Http\Controllers\client;
 
 use App\Models\Banner;
 use App\Models\Product;
+use App\Models\Wishlist;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 
 class HomeController
 {
@@ -35,11 +37,20 @@ class HomeController
             ->orderBy('created_at', 'desc')
             ->take(3)
             ->get();
+
+        // Lấy ID sản phẩm trong wishlist của người dùng
+        $wishlistProductIds = [];
+        if (Auth::check()) {
+            $wishlistProductIds = Wishlist::where('user_id', Auth::id())
+                ->pluck('product_id')
+                ->toArray();
+        }
             
         return view('client.index', [
             'banners' => $banners,
             'mostViewedProducts' => $mostViewedProducts,
-            'latestProducts' => $latestProducts
+            'latestProducts' => $latestProducts,
+            'wishlistProductIds' => $wishlistProductIds
         ]);
     }
 

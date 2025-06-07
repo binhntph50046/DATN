@@ -54,12 +54,31 @@ class BannerController
         $banner->link = $request->link;
         $banner->description = $request->description;
 
+        // // Xử lý upload ảnh
+        // if ($request->hasFile('image')) {
+        //     // Lưu ảnh vào thư mục 'banners' trong storage
+        //     $imagePath = $request->file('image')->store('banners', 'public');
+        //     $banner->image = $imagePath;
+        // }
+
         // Xử lý upload ảnh
         if ($request->hasFile('image')) {
-            // Lưu ảnh vào thư mục 'banners' trong storage
-            $imagePath = $request->file('image')->store('banners', 'public');
-            $banner->image = $imagePath;
+            $image = $request->file('image');
+            $imageName = uniqid() . '.' . $image->getClientOriginalExtension(); // tạo tên ảnh duy nhất
+            $uploadPath = public_path('uploads/banners');
+
+            // Tạo thư mục nếu chưa có
+            if (!file_exists($uploadPath)) {
+                mkdir($uploadPath, 0755, true);
+            }
+
+            // Di chuyển ảnh vào thư mục public/uploads/banners
+            $image->move($uploadPath, $imageName);
+
+            // Lưu đường dẫn tương đối vào DB (để dùng với asset())
+            $banner->image = 'uploads/banners/' . $imageName;
         }
+
 
         // Lưu banner vào cơ sở dữ liệu
         $banner->save();
@@ -105,13 +124,24 @@ class BannerController
 
         if ($request->hasFile('image')) {
             // Xoá ảnh cũ nếu cần
-            if ($banner->image && Storage::disk('public')->exists($banner->image)) {
-                Storage::disk('public')->delete($banner->image);
+            if ($banner->image && file_exists(public_path($banner->image))) {
+                unlink(public_path($banner->image));
             }
 
-            $imagePath = $request->file('image')->store('banners', 'public');
-            $banner->image = $imagePath;
+            $image = $request->file('image');
+            $imageName = uniqid() . '.' . $image->getClientOriginalExtension(); // Tạo tên ảnh duy nhất
+            $uploadPath = public_path('uploads/banners');
+
+            // Tạo thư mục nếu chưa tồn tại
+            if (!file_exists($uploadPath)) {
+                mkdir($uploadPath, 0755, true);
+            }
+
+            $image->move($uploadPath, $imageName); // Di chuyển ảnh đến thư mục public/uploads/banners
+
+            $banner->image = 'uploads/banners/' . $imageName; // Lưu đường dẫn tương đối
         }
+
 
         $banner->save();
 

@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Order;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Models\ResendInvoiceRequest;
+    use App\Models\ResendInvoiceRequest;
 
 class OrderController 
 {
@@ -44,14 +44,5 @@ class OrderController
         return redirect()->back()->with('success', 'Đã hủy đơn hàng thành công!');
     }
 
-    public function requestResendInvoice($id)
-    {
-        $order = Order::findOrFail($id);
-        ResendInvoiceRequest::create([
-            'order_id' => $order->id,
-            'user_id' => Auth::id(),
-            'status' => 'pending',
-        ]);
-        return redirect()->back()->with('success', 'Yêu cầu gửi lại hóa đơn đã được gửi, chờ admin duyệt.');
-    }
+   
 } 

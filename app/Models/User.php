@@ -26,6 +26,8 @@ class User extends Authenticatable
         'email',
         'email_verified_at',
         'password',
+        'provider',
+        'provider_id',
         'phone',
         'address',
         'avatar',
@@ -74,9 +76,9 @@ class User extends Authenticatable
         // return $this->hasOne(Cart::class);
     }
 
-    public function wishlist()
+    public function wishlists()
     {
-        // return $this->hasOne(Wishlist::class);
+        return $this->belongsToMany(Product::class, 'wishlists', 'user_id', 'product_id');
     }
 
     public function reviews()

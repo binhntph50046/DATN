@@ -11,33 +11,43 @@
     }
 
     .pc-content {
-        padding-top: 180px; /* Tăng khoảng cách trên */
+        padding-top: 180px;
+        /* Tăng khoảng cách trên */
     }
 
     .card-body {
-        padding: 30px; /* Tăng padding trong card */
+        padding: 30px;
+        /* Tăng padding trong card */
     }
 
     .form-label {
-        font-size: 1.1rem; /* Tăng kích thước font của label */
+        font-size: 1.1rem;
+        /* Tăng kích thước font của label */
     }
 
-    .form-control, .form-select, .form-check-input {
-        font-size: 1.1rem; /* Tăng kích thước font của input, select, checkbox */
-        padding: 10px; /* Tăng padding trong các form element */
+    .form-control,
+    .form-select,
+    .form-check-input {
+        font-size: 1.1rem;
+        /* Tăng kích thước font của input, select, checkbox */
+        padding: 10px;
+        /* Tăng padding trong các form element */
     }
 
     .card-header h5 {
-        font-size: 1.25rem; /* Tăng kích thước font tiêu đề card */
+        font-size: 1.25rem;
+        /* Tăng kích thước font tiêu đề card */
     }
 
     .btn-primary {
-        padding: 10px 20px; /* Tăng kích thước nút */
+        padding: 10px 20px;
+        /* Tăng kích thước nút */
         font-size: 1.1rem;
     }
 
     .invalid-feedback {
-        font-size: 0.9rem; /* Giảm kích thước font của lỗi */
+        font-size: 0.9rem;
+        /* Giảm kích thước font của lỗi */
     }
 </style>
 
@@ -129,11 +139,28 @@
                                                 <option value="active" {{ old('status') == 'active' ? 'selected' : '' }}>
                                                     Active
                                                 </option>
-                                                <option value="inactive" {{ old('status') == 'inactive' ? 'selected' : '' }}>
+                                                <option value="inactive"
+                                                    {{ old('status') == 'inactive' ? 'selected' : '' }}>
                                                     Inactive
                                                 </option>
                                             </select>
                                             @error('status')
+                                                <div class="invalid-feedback">{{ $message }}</div>
+                                            @enderror
+                                        </div>
+                                        <div class="form-group mb-3">
+                                            <label for="author" class="form-label">Author</label>
+                                            <select name="author_id" id="author_id"
+                                                class="form-select @error('author_id') is-invalid @enderror">
+                                                <option value="">Select Author</option>
+                                                @foreach ($authors as $author)
+                                                    <option value="{{ $author->id }}"
+                                                        {{ old('author_id') == $author->id ? 'selected' : '' }}>
+                                                        {{ $author->name }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                            @error('author')
                                                 <div class="invalid-feedback">{{ $message }}</div>
                                             @enderror
                                         </div>

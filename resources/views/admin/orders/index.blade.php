@@ -93,9 +93,11 @@
                                     @foreach($orders as $order)
                                     <tr>
                                         <td>{{ $order->id }}</td>
-                                        <td>
-                                            {{ $order->shipping_name }}<br>
-                                            <small>{{ $order->shipping_email }}</small>
+                                        <td style="max-width: 220px; overflow-x: auto; white-space: nowrap; display: block;">
+                                            <div><strong>{{ $order->shipping_name }}</strong></div>
+                                            <div><small>{{ $order->shipping_email }}</small></div>
+                                            <div><small>{{ $order->shipping_phone }}</small></div>
+                                            <div style="max-width: 200px; overflow-x: auto; white-space: nowrap;"><small>{{ $order->shipping_address }}</small></div>
                                         </td>
                                         <td>{{ number_format($order->total_price) }} VNĐ</td>
                                         <td>
@@ -116,14 +118,7 @@
                                                 @php
                                                     $invoice = \App\Models\Invoice::where('order_id', $order->id)->first();
                                                 @endphp
-                                                @if(!$invoice)
-                                                    <form action="{{ route('admin.orders.export-invoice', $order->id) }}" method="POST" class="d-inline">
-                                                        @csrf
-                                                        <button type="submit" class="btn btn-success btn-sm rounded-3" title="Xuất hóa đơn">
-                                                            <i class="fas fa-file-invoice"></i>
-                                                        </button>
-                                                    </form>
-                                                @else
+                                                @if($invoice)
                                                     <a href="{{ route('admin.invoices.show', $invoice->id) }}" class="btn btn-success btn-sm rounded-3" title="Xem hóa đơn">
                                                         <i class="fas fa-file-invoice"></i>
                                                     </a>
@@ -150,4 +145,13 @@
         <!-- [ Main Content ] end -->
     </div>
 </div>
+<style>
+    td[style*='overflow-x: auto']::-webkit-scrollbar {
+        height: 6px;
+    }
+    td[style*='overflow-x: auto']::-webkit-scrollbar-thumb {
+        background: #e9ecef;
+        border-radius: 3px;
+    }
+</style>
 @endsection

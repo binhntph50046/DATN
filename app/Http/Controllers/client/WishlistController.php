@@ -7,31 +7,56 @@ use App\Models\Product;
 use App\Models\Wishlist;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class WishlistController 
 {
     public function index()
     {
-        $wishlists = Auth::user()->wishlists()->with('product')->get();
-        return view('client.wishlist.index', compact('wishlists'));
+        $products = Auth::user()->wishlists()->with('variants')->get();
+        return view('client.wishlist.index', ['wishlists' => $products]);
     }
 
-    public function add(Product $product)
+    public function toggle($productId)
     {
         $user = Auth::user();
-        if (!$user->wishlists()->where('product_id', $product->id)->exists()) {
-            Wishlist::create([
-                'user_id' => $user->id,
-                'product_id' => $product->id,
-            ]);
-            return redirect()->back()->with('success', 'Đã thêm vào danh sách yêu thích!');
+        if (!$user) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Vui lòng đăng nhập để quản lý danh sách yêu thích!',
+                'type' => 'danger'
+            ], 401);
         }
-        return redirect()->back()->with('info', 'Sản phẩm đã có trong danh sách yêu thích!');
-    }
 
-    public function remove(Product $product)
-    {
-        Auth::user()->wishlists()->where('product_id', $product->id)->delete();
-        return redirect()->back()->with('success', 'Đã xóa sản phẩm khỏi danh sách yêu thích!');
+        $product = Product::find($productId);
+        if (!$product) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Sản phẩm không tồn tại!',
+                'type' => 'danger'
+            ], 404);
+        }
+
+        $isInWishlist = $user->wishlists()->where('product_id', $productId)->exists();
+
+        if ($isInWishlist) {
+            // Xóa khỏi wishlist
+            $user->wishlists()->detach($productId);
+            return response()->json([
+                'status' => true,
+                'message' => 'Đã xóa sản phẩm "' . $product->name . '" khỏi danh sách yêu thích!',
+                'type' => 'success',
+                'in_wishlist' => false
+            ]);
+        } else {
+            // Thêm vào wishlist
+            $user->wishlists()->attach($productId);
+            return response()->json([
+                'status' => true,
+                'message' => 'Đã thêm sản phẩm "' . $product->name . '" vào danh sách yêu thích!',
+                'type' => 'success',
+                'in_wishlist' => true
+            ]);
+        }
     }
 }

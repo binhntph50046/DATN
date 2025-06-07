@@ -77,9 +77,8 @@ Route::get('/payment/vnpay/return', [PaymentController::class, 'vnPayReturn'])->
 
 // Wishlist Routes (Authenticated)
 Route::middleware(['auth'])->group(function () {
+    Route::post('wishlist/toggle/{product}', [WishlistController::class, 'toggle'])->name('wishlist.toggle');
     Route::get('/wishlist', [WishlistController::class, 'index'])->name('wishlist.index');
-    Route::post('/wishlist/add/{product}', [WishlistController::class, 'add'])->name('wishlist.add');
-    Route::delete('/wishlist/remove/{product}', [WishlistController::class, 'remove'])->name('wishlist.remove');
 });
 
 // Subscribe Route

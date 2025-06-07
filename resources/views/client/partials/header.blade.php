@@ -1,6 +1,6 @@
 <style>
     .header-main {
-        background: #11192b;
+        background: #111827;
         padding: 0;
         width: 100%;
         z-index: 1050;
@@ -38,6 +38,7 @@
         font-weight: bold;
         letter-spacing: 1px;
         line-height: 1;
+        text-decoration: none;
         margin-right: 6px;
     }
     .header-logo-byfpt {
@@ -67,7 +68,7 @@
         white-space: nowrap;
     }
     .menu-btn, .cart-btn {
-        background: #353d4e;
+        background: #111827;
         border-radius: 999px;
         color: #bfc6d1;
         font-size: 1rem;
@@ -87,7 +88,7 @@
     }
     .menu-btn:hover, .menu-btn:focus, .cart-btn:hover {
         background: #00e0ff;
-        color: #11192b;
+        color: #111827;
     }
     .menu-btn i, .cart-btn i {
         font-size: 1.1rem;
@@ -172,7 +173,7 @@
         flex: 1 1 0%;
         display: flex;
         align-items: center;
-        background: #353d4e;
+        background: #e1e4ea;
         border-radius: 999px;
         margin: 0 24px;
         max-width: 900px;
@@ -197,7 +198,7 @@
         font-weight: 400;
     }
     .search-icon {
-        background: #353d4e;
+        background: #111827;
         border-radius: 50%;
         width: 40px;
         height: 40px;
@@ -214,7 +215,7 @@
     }
     .search-icon:hover {
         background: #00e0ff;
-        color: #11192b;
+        color: #111827;
     }
     .header-keywords {
         display: flex;
@@ -247,7 +248,7 @@
         .search-bar { min-width: 0; }
     }
     .profile-btn {
-        background: #353d4e;
+        background: #111827;
         border-radius: 50%;
         color: #bfc6d1;
         width: 44px;
@@ -265,7 +266,7 @@
     }
     .profile-btn:hover, .profile-btn:focus {
         background: #00e0ff;
-        color: #11192b;
+        color: #111827;
     }
     .profile-dropdown {
         display: none;
@@ -305,7 +306,7 @@
     }
     .profile-dropdown .profile-name {
         font-weight: bold;
-        color: #11192b;
+        color: #111827;
         padding: 10px 20px 5px 20px;
         font-size: 1.05rem;
         text-align: center;
@@ -314,14 +315,19 @@
         border-top: 1px solid #f0f0f0;
         margin: 5px 0;
     }
+    .header-main a {
+        text-decoration: none !important;
+    }
 </style>
 <div class="header-main">
     <div class="container header-flex">
         <div class="header-logo">
+         <a href="{{route('home')}}">
             <span class="header-logo-text">AppleStore</span>
-            <span class="header-logo-byfpt">by <span class="fpt-f">F</span><span class="fpt-p">P</span><span class="fpt-t">T</span></span>
             <img src="{{asset('/images/logo/apple-removebg-preview.png')}}" alt="Apple Logo" class="apple-logo">
             <span class="authorised-reseller">Authorised<br>Reseller</span>
+         </a>
+            <span class="header-logo-byfpt">by <span class="fpt-f">F</span><span class="fpt-p">P</span><span class="fpt-t">T</span></span>
         </div>
         <div style="position:relative;">
             <button class="menu-btn" tabindex="0"><i class="fas fa-bars"></i> Danh mục</button>

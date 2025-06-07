@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\OrderItem;
+use App\Models\OrderReturn;
 
 class Order extends Model
 {
@@ -51,7 +52,12 @@ class Order extends Model
 
     public function items()
     {
-        return $this->hasMany(OrderItem::class, 'order_id');
+        return $this->hasMany(OrderItem::class);
+    }
+
+    public function returns()
+    {
+        return $this->hasMany(OrderReturn::class);
     }
 
     // Scopes
@@ -90,6 +96,8 @@ class Order extends Model
             'shipping' => 'Đang giao hàng',
             'completed' => 'Đã hoàn thành',
             'cancelled' => 'Đã hủy',
+            'returned' => 'Đã hoàn đơn',
+            'partially_returned' => 'Hoàn một phần',
         ];
         return $statuses[$this->status] ?? $this->status;
     }

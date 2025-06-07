@@ -29,7 +29,7 @@
 
     @yield('content')
 
-    @include('client.partials.footer')
+    {{-- @include('client.partials.footer') --}}
 
     <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>

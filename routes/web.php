@@ -15,6 +15,7 @@ use App\Http\Controllers\admin\SpecificationController;
 use App\Http\Controllers\admin\VoucherController;
 use App\Http\Controllers\admin\AdminContactController;
 use App\Http\Controllers\Admin\InvoiceController;
+use App\Http\Controllers\Admin\OrderReturnController;
 use App\Http\Controllers\auth\AuthController;
 use App\Http\Controllers\client\PaymentController;
 // Client 
@@ -28,6 +29,7 @@ use App\Http\Controllers\client\ContactController;
 use App\Http\Controllers\client\OrderController as ClientOrderController;
 use App\Http\Controllers\client\ProductController as ClientProductController;
 use App\Http\Controllers\admin\ResendInvoiceRequestController;
+use App\Http\Controllers\Client\OrderReturnController as ClientOrderReturnController;
 
 // Client 
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -187,4 +189,18 @@ Route::get('/order/resend-invoice/{order}', [CheckoutController::class, 'resendI
 
 Route::prefix('order')->name('order.')->group(function () {
     Route::post('{id}/request-resend-invoice', [ClientOrderController::class, 'requestResendInvoice'])->name('request-resend-invoice');
+});
+
+// Route cho khách gửi yêu cầu hoàn hàng
+Route::middleware(['auth'])->group(function () {
+    Route::get('order/{order}/return', [ClientOrderReturnController::class, 'create'])->name('order-returns.create');
+    Route::post('order/{order}/return', [ClientOrderReturnController::class, 'store'])->name('order-returns.store');
+});
+
+// Route cho admin quản lý hoàn hàng
+Route::prefix('admin')->name('admin.')->group(function () {
+    Route::get('order-returns', [OrderReturnController::class, 'index'])->name('order-returns.index');
+    Route::get('order-returns/{id}', [OrderReturnController::class, 'show'])->name('order-returns.show');
+    Route::post('order-returns/{id}/approve', [OrderReturnController::class, 'approve'])->name('order-returns.approve');
+    Route::post('order-returns/{id}/reject', [OrderReturnController::class, 'reject'])->name('order-returns.reject');
 });

@@ -38,6 +38,7 @@ class OrderController extends Controller
     {
         $order = Order::findOrFail($id);
        // Nếu đơn đã bị huỷ hoặc đã hoàn thành thì không cho cập nhật nữa
+
     if (in_array($order->status, ['cancelled', 'completed'])) {
         if ($request->ajax() || $request->wantsJson()) {
             return response()->json([
@@ -52,7 +53,7 @@ class OrderController extends Controller
         $status = [
             "pending" => ["confirmed", "cancelled"],
             "confirmed" => ["preparing", "cancelled"],
-            "preparing" => ["shipping"],
+            "preparing" => ["shipping","cancelled"],
             "shipping" => ["completed"],
             "completed" => [],
             "cancelled" => []

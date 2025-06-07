@@ -112,20 +112,22 @@
                                             <a href="{{ route('admin.orders.show', $order->id) }}" class="btn btn-primary btn-sm rounded-3 me-2">
                                                 <i class="ti ti-eye"></i> 
                                             </a>
-                                            @php
-                                                $invoice = \App\Models\Invoice::where('order_id', $order->id)->first();
-                                            @endphp
-                                            @if(!$invoice)
-                                                <form action="{{ route('admin.orders.export-invoice', $order->id) }}" method="POST" class="d-inline">
-                                                    @csrf
-                                                    <button type="submit" class="btn btn-success btn-sm rounded-3" title="Xuất hóa đơn">
+                                            @if($order->status == 'completed')
+                                                @php
+                                                    $invoice = \App\Models\Invoice::where('order_id', $order->id)->first();
+                                                @endphp
+                                                @if(!$invoice)
+                                                    <form action="{{ route('admin.orders.export-invoice', $order->id) }}" method="POST" class="d-inline">
+                                                        @csrf
+                                                        <button type="submit" class="btn btn-success btn-sm rounded-3" title="Xuất hóa đơn">
+                                                            <i class="fas fa-file-invoice"></i>
+                                                        </button>
+                                                    </form>
+                                                @else
+                                                    <a href="{{ route('admin.invoices.show', $invoice->id) }}" class="btn btn-success btn-sm rounded-3" title="Xem hóa đơn">
                                                         <i class="fas fa-file-invoice"></i>
-                                                    </button>
-                                                </form>
-                                            @else
-                                                <a href="{{ route('admin.invoices.show', $invoice->id) }}" class="btn btn-success btn-sm rounded-3" title="Xem hóa đơn">
-                                                    <i class="fas fa-file-invoice"></i>
-                                                </a>
+                                                    </a>
+                                                @endif
                                             @endif
                                             {{-- <form action="{{ route('admin.orders.destroy', $order->id) }}" method="POST" class="d-inline">
                                                 @csrf

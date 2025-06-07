@@ -114,6 +114,12 @@
                         <span class="pc-mtext">Yêu cầu gửi lại hóa đơn</span>
                     </a>
                 </li>
+                <li class="pc-item">
+                    <a href="{{ route('admin.order-returns.index') }}" class="pc-link">
+                        <span class="pc-micon"><i class="ti ti-file-invoice"></i></span>
+                        <span class="pc-mtext">Yêu cầu hoàn hàng</span>
+                    </a>
+                </li>
 
                 <li class="pc-item pc-caption">
                     <label>Other</label>

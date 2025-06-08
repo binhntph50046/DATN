@@ -34,7 +34,10 @@
             color: #fff;
         }
 
-        .category-btn {
+        <li class="nav-item position-relative"><a class="nav-link" href="{{ route('cart') }}"><i class="fas fa-shopping-cart fa-lg" style="color: #f0f0f0;"></i>@if ($cartCount > 0)
+            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger text-white shadow-sm" style="font-size: 0.75rem;">{{ $cartCount }} </span>
+        @endif
+        </a></li></ul>.category-btn {
             border-radius: 2rem;
             background: #232b3b;
             border: none;
@@ -128,7 +131,8 @@
         }
 
         .user-logged-in-btn .fas {
-            margin-right: 8px; /* Space between icon and name */
+            margin-right: 8px;
+            /* Space between icon and name */
         }
 
         .user-name-text {
@@ -253,8 +257,8 @@
                         <i class="fas fa-user text-white"></i>
                     </a>
                 @else
-                    <a class="d-flex align-items-center dropdown-toggle user-logged-in-btn"
-                        href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <a class="d-flex align-items-center dropdown-toggle user-logged-in-btn" href="#" id="userDropdown"
+                        role="button" data-bs-toggle="dropdown" aria-expanded="false">
                         <i class="fas fa-user text-white"></i>
                         <span class="user-name-text">{{ Str::limit(auth()->user()->name, 12, '...') }}</span>
                     </a>
@@ -269,7 +273,8 @@
                         <li>
                             <form action="{{ route('logout') }}" method="POST" class="m-0">
                                 @csrf
-                                <button type="submit" class="dropdown-item text-white w-100 text-start border-0 bg-transparent">Logout</button>
+                                <button type="submit"
+                                    class="dropdown-item text-white w-100 text-start border-0 bg-transparent">Logout</button>
                             </form>
                         </li>
                     @endguest

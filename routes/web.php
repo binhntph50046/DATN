@@ -71,7 +71,13 @@ Route::get('/contact', [ContactController::class, 'index'])->name('contact');
 Route::post('/contact', [ContactController::class, 'store'])->name('contact.store');
 
 // Cart & Checkout Routes
+Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
+Route::put('/cart/update/{cartItemId}', [CartController::class, 'update'])->name('cart.update');
+Route::post('/cart/update-quantity', [CartController::class, 'updateQuantity'])->name('cart.updateQuantity');
+Route::delete('/cart/remove/{id}', [CartController::class, 'remove'])->name('cart.remove');
+Route::delete('/cart/clear', [CartController::class, 'clear'])->name('cart.clear');
 Route::get('/cart', [CartController::class, 'index'])->name('cart');
+
 Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout');
 Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
 Route::get('/checkout/vnpay/callback', [CheckoutController::class, 'vnpayCallback'])->name('checkout.vnpay.callback');
@@ -107,6 +113,31 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('order-returns/{id}', [AdminOrderReturnController::class, 'show'])->name('order-returns.show');
     Route::post('order-returns/{id}/approve', [AdminOrderReturnController::class, 'approve'])->name('order-returns.approve');
     Route::post('order-returns/{id}/reject', [AdminOrderReturnController::class, 'reject'])->name('order-returns.reject');
+});
+
+// Route cho admin quản lý hoàn hàng
+Route::prefix('admin')->name('admin.')->group(function () {
+    Route::get('order-returns', [OrderReturnController::class, 'index'])->name('order-returns.index');
+    Route::get('order-returns/{id}', [OrderReturnController::class, 'show'])->name('order-returns.show');
+    Route::post('order-returns/{id}/approve', [OrderReturnController::class, 'approve'])->name('order-returns.approve');
+    Route::post('order-returns/{id}/reject', [OrderReturnController::class, 'reject'])->name('order-returns.reject');
+});
+
+// Route cho khách gửi yêu cầu hoàn hàng
+Route::middleware(['auth'])->group(function () {
+    Route::get('order/{order}/return', [ClientOrderReturnController::class, 'create'])->name('order-returns.create');
+    Route::post('order/{order}/return', [ClientOrderReturnController::class, 'store'])->name('order-returns.store');
+});
+
+// Theo dõi đơn hàng sau khi đặt hàng
+Route::get('/order', [ClientOrderController::class, 'index'])->name('order.index');
+Route::post('/order/cancel/{order}', [ClientOrderController::class, 'cancel'])->name('order.cancel');
+Route::get('/order/tracking/{order}', [CheckoutController::class, 'tracking'])->name('order.tracking');
+Route::get('/order/invoice/{order}', [CheckoutController::class, 'invoice'])->name('order.invoice');
+Route::get('/order/resend-invoice/{order}', [CheckoutController::class, 'resendInvoice'])->name('order.resend-invoice');
+
+Route::prefix('order')->name('order.')->group(function () {
+    Route::post('{id}/request-resend-invoice', [ClientOrderController::class, 'requestResendInvoice'])->name('request-resend-invoice');
 });
 
 /*

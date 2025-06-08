@@ -1211,6 +1211,7 @@
             color: inherit;
             border-radius: 8px;
             transition: all 0.3s ease;
+            width: 95%;
         }
 
         .product-item:hover {

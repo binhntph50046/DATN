@@ -43,7 +43,18 @@ class GoogleController
 
             Auth::login($user);
 
-            return redirect()->route('home');
+            $user->last_login = now();
+            $user->save();
+
+            $user->assignRole('user');
+            $hasAccess = $user->roles()->whereIn('name', ['admin', 'staff'])->exists();
+
+            if ($hasAccess) {
+                return redirect('/admin');
+            } else {
+                return redirect('/');
+            }            
+
         } catch (\Exception $e) {
             return redirect()->route('login')->with('error', 'Đăng nhập Google thất bại: ' . $e->getMessage());
         }

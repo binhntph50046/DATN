@@ -34,6 +34,11 @@ Route::get('/about', [AboutController::class, 'index'])->name('about');
 Route::get('/blog', [ClientBlogController::class, 'index'])->name('blog');
 Route::get('/blog/{slug}', [ClientBlogController::class, 'show'])->name('blog.show');
 Route::get('/contact', [ContactController::class, 'index'])->name('contact');
+Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
+Route::put('/cart/update/{cartItemId}', [CartController::class, 'update'])->name('cart.update');
+Route::post('/cart/update-quantity', [CartController::class, 'updateQuantity'])->name('cart.updateQuantity');
+Route::delete('/cart/remove/{id}', [CartController::class, 'remove'])->name('cart.remove');
+Route::delete('/cart/clear', [CartController::class, 'clear'])->name('cart.clear');
 Route::get('/cart', [CartController::class, 'index'])->name('cart');
 Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout');
 Route::post('/increment-view/{id}', [HomeController::class, 'incrementView'])->name('increment.view');
@@ -151,10 +156,10 @@ Route::prefix('admin')->middleware(['auth', 'role:admin|staff'])->name('admin.')
     // Voucher Routes
     Route::resource('vouchers', VoucherController::class)->middleware('permission:view vouchers');
 
-     //Contact Admin
+    //Contact Admin
     Route::prefix('contacts')->name('contacts.')->group(function () {
         Route::get('/', [AdminContactController::class, 'index'])->name('index');
-        Route::get('/{contact}', [AdminContactController::class, 'show'])->name('show'); 
-        Route::delete('/{contact}', [AdminContactController::class, 'destroy'])->name('delete');   
+        Route::get('/{contact}', [AdminContactController::class, 'show'])->name('show');
+        Route::delete('/{contact}', [AdminContactController::class, 'destroy'])->name('delete');
     });
 });

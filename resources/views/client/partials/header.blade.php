@@ -56,9 +56,21 @@
                      </ul>
                  </li>
 
-                 <li>
-                     <a class="nav-link" href="{{ route('cart') }}"><i class="fas fa-cart-shopping"></i></a>
+                 <li class="nav-item position-relative">
+                     <a class="nav-link" href="{{ route('cart') }}">
+                         <i class="fas fa-shopping-cart fa-lg" style="color: #f0f0f0;"></i>
+
+                         @if ($cartCount > 0)
+                             <span
+                                 class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger text-white shadow-sm"
+                                 style="font-size: 0.75rem;">
+                                 {{ $cartCount }}
+                             </span>
+                         @endif
+                     </a>
                  </li>
+
+
              </ul>
 
          </div>

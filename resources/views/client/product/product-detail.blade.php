@@ -1,9 +1,23 @@
 @extends('client.layouts.app')
 
 @section('content')
+
     <!-- Start Product Detail Section -->
     <div class="untree_co-section product-section">
+
         <div class="container">
+            <!-- Hiển thị thông báo -->
+            @if (session('success'))
+                <div class="alert alert-success">
+                    {{ session('success') }}
+                </div>
+            @endif
+
+            @if (session('error'))
+                <div class="alert alert-danger">
+                    {{ session('error') }}
+                </div>
+            @endif
             <div class="row">
                 <!-- Product Images -->
                 <div class="col-lg-6 mb-5">
@@ -181,9 +195,16 @@
                             <button class="btn btn-primary" id="buyNowBtn">
                                 <i class="fas fa-bolt me-2"></i>Buy Now
                             </button>
-                            <button class="btn btn-outline-primary" id="addToCartBtn">
-                                <i class="fas fa-cart-plus me-2"></i>Add to Cart
-                            </button>
+                            <form action="{{ route('cart.add') }}" method="POST" style="display: inline;"
+                                id="addToCartForm">
+                                @csrf
+                                <input type="hidden" name="product_id" value="{{ $product->id }}">
+                                <input type="hidden" name="variant_id" id="selectedVariantId" value="">
+                                <input type="hidden" name="quantity" id="cartQuantity" value="1">
+                                <button type="submit" class="btn btn-outline-primary" id="addToCartBtn">
+                                    <i class="fas fa-cart-plus me-2"></i>Add to Cart
+                                </button>
+                            </form>
                         </div>
                     </div>
                 </div>
@@ -191,7 +212,7 @@
             <!-- Tabs Section (bên dưới chi tiết sản phẩm) -->
             <div class="container mt-5">
                 <div class="d-flex justify-content-center mb-4" style="gap: 18px;">
-                    <button class="tab-btn-custom" id="tab-desc-btn" onclick="showTab('desc')">Mô tả</button>
+                    <button class="tab-btn-custom active" id="tab-desc-btn" onclick="showTab('desc')">Mô tả</button>
                     <button class="tab-btn-custom" id="tab-spec-btn" onclick="showTab('spec')">Thông số kỹ thuật</button>
                     <button class="tab-btn-custom" id="tab-review-btn" onclick="showTab('review')">Đánh giá sản
                         phẩm</button>
@@ -407,8 +428,29 @@
         .table th.bg-light {
             background: #f8f9fa !important;
         }
-    </style>
 
+        .alert {
+            position: relative;
+            padding: 0.75rem 1.25rem;
+            margin-bottom: 1rem;
+            border: 1px solid transparent;
+            border-radius: 0.375rem;
+            z-index: 1050;
+        }
+
+        .alert-success {
+            color: #0f5132;
+            background-color: #d1e7dd;
+            border-color: #badbcc;
+        }
+
+        .alert-danger {
+            color: #842029;
+            background-color: #f8d7da;
+            border-color: #f5c2c7;
+        }
+    </style>
+    {{-- 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // Quantity controls
@@ -420,13 +462,32 @@
                 const currentValue = parseInt(quantityInput.value);
                 if (currentValue > 1) {
                     quantityInput.value = currentValue - 1;
+                    document.getElementById('cartQuantity').value = quantityInput.value;
                 }
             });
 
             plusBtn.addEventListener('click', () => {
                 const currentValue = parseInt(quantityInput.value);
                 quantityInput.value = currentValue + 1;
+                document.getElementById('cartQuantity').value = quantityInput.value;
             });
+
+            // Khởi tạo selectedValues và selectedVariants với biến thể mặc định
+            let selectedValues = {};
+            let selectedVariants = {};
+            @if ($defaultVariant)
+                @foreach ($defaultVariant->combinations as $comb)
+                    @php
+                        $typeName = $comb->attributeValue->attributeType->name ?? '';
+                        $value = is_array($comb->attributeValue->value) ? $comb->attributeValue->value[0] : json_decode($comb->attributeValue->value, true)[0] ?? '';
+                    @endphp
+                    selectedValues["{{ $typeName }}"] = "{{ addslashes($value) }}";
+                    selectedVariants["{{ $typeName }}"] = {{ $defaultVariant->id }};
+                @endforeach
+                // Cập nhật variant_id mặc định
+                document.getElementById('selectedVariantId').value =
+                    {{ $defaultVariant->id ?? ($product->variants->first()->id ?? '') }};
+            @endif
         });
 
         // Lưu thông tin variantId -> ảnh, giá
@@ -444,79 +505,81 @@
             @php
                 $attrValues = [];
                 foreach ($variant->combinations as $comb) {
-                    $attrValues[] = $comb->attributeValue->value[0] ?? (is_array($comb->attributeValue->value) ? $comb->attributeValue->value[0] : json_decode($comb->attributeValue->value, true)[0]);
+                    $value = is_array($comb->attributeValue->value) ? $comb->attributeValue->value[0] : json_decode($comb->attributeValue->value, true)[0] ?? '';
+                    $attrValues[] = $value;
                 }
                 $key = implode('|', $attrValues);
             @endphp
             attributeToVariant["{{ $key }}"] = {{ $variant->id }};
         @endforeach
 
-        let selectedVariants = {};
-        let selectedValues = {};
         let requiredTypes = [];
         document.querySelectorAll('.variant-group').forEach(function(group) {
             const label = group.querySelector('label.form-label');
             if (label) {
-                // Lấy tên thuộc tính từ label
                 let typeName = label.textContent.split(':')[0].trim();
                 requiredTypes.push(typeName);
             }
         });
 
-        function selectVariant(variantId, value, typeName, el) {
-            // Remove active class from all swatches of this attribute type
-            document.querySelectorAll('.color-option[data-attr-type="' + typeName + '"], .storage-btn[data-attr-type="' +
-                typeName + '"]').forEach(opt => opt.classList.remove('active'));
-            // Add active to current
-            el.classList.add('active');
-            // Update label nếu có
-            const labelSpan = document.getElementById('selected-' + typeName + '-value');
-            if (labelSpan) labelSpan.textContent = value;
-            // Lưu lựa chọn
-            selectedVariants[typeName] = variantId;
-            selectedValues[typeName] = value;
+        function selectVariant(variantId, value, typeName, element) {
+            // Xóa trạng thái active khỏi các phần tử khác
+            let options = document.querySelectorAll(`[data-attr-type="${typeName}"]`);
+            options.forEach(opt => opt.classList.remove('active'));
 
-            // Tìm variant id đúng với tất cả thuộc tính đã chọn
-            let key = requiredTypes.map(type => selectedValues[type] || '').join('|');
-            let matchedVariantId = attributeToVariant[key];
+            // Thêm trạng thái active cho phần tử được chọn
+            element.classList.add('active');
 
-            // Cập nhật ảnh và giá nếu tìm được variant id hợp lệ
-            if (matchedVariantId && variantData[matchedVariantId]) {
-                if (variantData[matchedVariantId].images.length > 0) {
-                    document.getElementById('mainProductImage').src = '{{ asset('') }}' + variantData[matchedVariantId]
-                        .images[0];
-                    updateThumbnails(variantData[matchedVariantId].images);
-                }
-                document.getElementById('productPrice').textContent = variantData[matchedVariantId].price.toLocaleString(
-                    'vi-VN') + ' VNĐ';
+            // Cập nhật giá trị variant_id vào form
+            document.getElementById('selectedVariantId').value = variantId;
+
+            // Cập nhật nhãn hiển thị (nếu có)
+            let label = document.getElementById(`selected-${typeName}-value`);
+            if (label) {
+                label.textContent = value;
             }
         }
 
+
+
         function getSelectedVariantId() {
-            let key = requiredTypes.map(type => selectedValues[type] || '').join('|');
-            return attributeToVariant[key] || null;
+            let missingTypes = [];
+            let key = requiredTypes.map(type => {
+                if (!selectedValues[type]) {
+                    missingTypes.push(type);
+                    return '';
+                }
+                return selectedValues[type];
+            }).join('|');
+
+            if (missingTypes.length > 0) {
+                alert('Vui lòng chọn các thuộc tính sau: ' + missingTypes.join(', '));
+                return null;
+            }
+
+            const variantId = attributeToVariant[key] || null;
+            if (!variantId) {
+                alert('Không tìm thấy biến thể phù hợp với lựa chọn của bạn!');
+            }
+            return variantId;
         }
 
         document.getElementById('addToCartBtn').addEventListener('click', function(e) {
             const variantId = getSelectedVariantId();
             if (!variantId) {
-                alert('Vui lòng chọn đầy đủ thuộc tính sản phẩm trước khi thêm vào giỏ hàng!');
                 e.preventDefault();
                 return false;
             }
-            // Thực hiện logic thêm vào giỏ hàng với variantId
-            // ...
+            document.getElementById('selectedVariantId').value = variantId;
         });
 
         document.getElementById('buyNowBtn').addEventListener('click', function(e) {
             const variantId = getSelectedVariantId();
             if (!variantId) {
-                alert('Vui lòng chọn đầy đủ thuộc tính sản phẩm trước khi đặt hàng!');
                 e.preventDefault();
                 return false;
             }
-            // Thực hiện logic đặt hàng với variantId
-            // ...
+            // Thêm logic chuyển hướng đến trang thanh toán nếu cần
         });
 
         function changeMainImage(src) {
@@ -530,7 +593,7 @@
                 const div = document.createElement('div');
                 div.className = 'col-3';
                 div.innerHTML =
-                    `<img src=\"{{ asset('') }}${img}\" class=\"img-fluid thumbnail\" alt=\"Thumbnail\" onclick=\"changeMainImage(this.src)\">`;
+                    `<img src="{{ asset('') }}${img}" class="img-fluid thumbnail" alt="Thumbnail" onclick="changeMainImage(this.src)">`;
                 container.appendChild(div);
             });
         }
@@ -550,9 +613,247 @@
             document.getElementById('tab-' + tab).style.display = 'block';
             document.getElementById('tab-' + tab + '-btn').classList.add('active');
         }
-        // Mặc định tab đầu tiên active
+    </script> --}}
+
+    <script>
         document.addEventListener('DOMContentLoaded', function() {
-            showTab('desc');
+            // Quantity controls
+            const quantityInput = document.getElementById('quantity');
+            const minusBtn = document.querySelector('.quantity-btn.minus');
+            const plusBtn = document.querySelector('.quantity-btn.plus');
+
+            minusBtn.addEventListener('click', () => {
+                const currentValue = parseInt(quantityInput.value);
+                if (currentValue > 1) {
+                    quantityInput.value = currentValue - 1;
+                    document.getElementById('cartQuantity').value = quantityInput.value;
+                }
+            });
+
+            plusBtn.addEventListener('click', () => {
+                const currentValue = parseInt(quantityInput.value);
+                quantityInput.value = currentValue + 1;
+                document.getElementById('cartQuantity').value = quantityInput.value;
+            });
+
+            // Khởi tạo selectedValues và selectedVariants với biến thể mặc định
+            selectedValues = {};
+            selectedVariants = {};
+            @if ($defaultVariant)
+                @foreach ($defaultVariant->combinations as $comb)
+                    @php
+                        $typeName = $comb->attributeValue->attributeType->name ?? '';
+                        $value = is_array($comb->attributeValue->value) ? $comb->attributeValue->value[0] : json_decode($comb->attributeValue->value, true)[0] ?? '';
+                    @endphp
+                    selectedValues["{{ $typeName }}"] = "{{ addslashes($value) }}";
+                    selectedVariants["{{ $typeName }}"] = {{ $defaultVariant->id }};
+                @endforeach
+                // Cập nhật variant_id mặc định
+                document.getElementById('selectedVariantId').value =
+                    {{ $defaultVariant->id ?? ($product->variants->first()->id ?? '') }};
+            @endif
         });
+
+        // Lưu thông tin variantId -> ảnh, giá
+        let variantData = {};
+        @foreach ($product->variants as $variant)
+            variantData[{{ $variant->id }}] = {
+                images: {!! json_encode(json_decode($variant->images, true) ?? []) !!},
+                price: {{ $variant->selling_price }}
+            };
+        @endforeach
+
+        // Mapping: key là chuỗi các value thuộc tính, value là variantId
+        let attributeToVariant = {};
+        @foreach ($product->variants as $variant)
+            @php
+                $attrValues = [];
+                foreach ($variant->combinations as $comb) {
+                    $value = is_array($comb->attributeValue->value) ? $comb->attributeValue->value[0] : json_decode($comb->attributeValue->value, true)[0] ?? '';
+                    $attrValues[] = $value;
+                }
+                $key = implode('|', $attrValues);
+            @endphp
+            attributeToVariant["{{ $key }}"] = {{ $variant->id }};
+        @endforeach
+
+        let requiredTypes = [];
+        document.querySelectorAll('.variant-group').forEach(function(group) {
+            const label = group.querySelector('label.form-label');
+            if (label) {
+                let typeName = label.textContent.split(':')[0].trim();
+                requiredTypes.push(typeName);
+            }
+        });
+
+        // Khởi tạo selectedValues và selectedVariants
+        let selectedValues = {};
+        let selectedVariants = {};
+
+        function selectVariant(variantId, value, typeName, element) {
+            // Xóa trạng thái active khỏi các phần tử khác - SỬA LỖI SELECTOR
+            let options = document.querySelectorAll(`[data-attr-type="${typeName}"]`);
+            options.forEach(opt => opt.classList.remove('active'));
+
+            // Thêm trạng thái active cho phần tử được chọn
+            element.classList.add('active');
+
+            // Cập nhật selected values
+            selectedValues[typeName] = value;
+            selectedVariants[typeName] = variantId;
+
+            // Cập nhật giá trị variant_id vào form
+            document.getElementById('selectedVariantId').value = variantId;
+
+            // Cập nhật nhãn hiển thị (nếu có) - SỬA LỖI SELECTOR
+            let label = document.getElementById(`selected-${typeName}-value`);
+            if (label) {
+                label.textContent = value;
+            }
+
+            // Cập nhật hình ảnh và giá nếu có dữ liệu variant
+            if (variantData[variantId]) {
+                const data = variantData[variantId];
+
+                // Cập nhật giá
+                const priceElement = document.getElementById('productPrice');
+                if (priceElement && data.price) {
+                    priceElement.textContent = new Intl.NumberFormat('vi-VN').format(data.price) + ' VNĐ';
+                }
+
+                // Cập nhật ảnh chính nếu có
+                if (data.images && data.images.length > 0) {
+                    const mainImage = document.getElementById('mainProductImage');
+                    if (mainImage) {
+                        mainImage.src = `{{ asset('') }}${data.images[0]}`;
+                    }
+                    // Cập nhật thumbnails
+                    updateThumbnails(data.images);
+                }
+            }
+        }
+
+        function getSelectedVariantId() {
+            let missingTypes = [];
+            let key = requiredTypes.map(type => {
+                if (!selectedValues[type]) {
+                    missingTypes.push(type);
+                    return '';
+                }
+                return selectedValues[type];
+            }).join('|');
+
+            if (missingTypes.length > 0) {
+                alert('Vui lòng chọn các thuộc tính sau: ' + missingTypes.join(', '));
+                return null;
+            }
+
+            const variantId = attributeToVariant[key] || null;
+            if (!variantId) {
+                alert('Không tìm thấy biến thể phù hợp với lựa chọn của bạn!');
+                return null;
+            }
+            return variantId;
+        }
+
+        // Sửa lại event listener cho form submit
+        document.getElementById('addToCartForm').addEventListener('submit', function(e) {
+            const selectedVariantId = document.getElementById('selectedVariantId').value;
+
+            // Kiểm tra nếu có variants nhưng chưa chọn
+            if (requiredTypes.length > 0 && !selectedVariantId) {
+                e.preventDefault();
+                alert('Vui lòng chọn đầy đủ các thuộc tính sản phẩm');
+                return false;
+            }
+
+            // Nếu validation pass, cho phép form submit và hiển thị loading
+            const submitBtn = this.querySelector('button[type="submit"]');
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Đang thêm...';
+
+                // Reset button after 3 seconds in case of error
+                setTimeout(() => {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = '<i class="fas fa-cart-plus me-2"></i>Add to Cart';
+                }, 3000);
+            }
+        });
+
+        // Sửa lại event listener cho nút Buy Now
+        document.getElementById('buyNowBtn').addEventListener('click', function(e) {
+            const variantId = getSelectedVariantId();
+            if (!variantId) {
+                e.preventDefault();
+                return false;
+            }
+            // Thêm logic chuyển hướng đến trang thanh toán nếu cần
+            console.log('Buy now with variant:', variantId);
+        });
+
+        function changeMainImage(src) {
+            document.getElementById('mainProductImage').src = src;
+        }
+
+        function updateThumbnails(images) {
+            const container = document.getElementById('thumbnailsRow');
+            container.innerHTML = '';
+            images.forEach(img => {
+                const div = document.createElement('div');
+                div.className = 'col-3';
+                div.innerHTML =
+                    `<img src="{{ asset('') }}${img}" class="img-fluid thumbnail" alt="Thumbnail" onclick="changeMainImage(this.src)">`;
+                container.appendChild(div);
+            });
+        }
+
+        // Khi vào trang, hiển thị tất cả ảnh nhỏ
+        window.addEventListener('DOMContentLoaded', function() {
+            updateThumbnails(@json($allImages));
+        });
+
+        function showTab(tab) {
+            // Ẩn tất cả tab content
+            document.getElementById('tab-desc').style.display = 'none';
+            document.getElementById('tab-spec').style.display = 'none';
+            document.getElementById('tab-review').style.display = 'none';
+
+            // Xóa class active khỏi tất cả tab buttons
+            document.getElementById('tab-desc-btn').classList.remove('active');
+            document.getElementById('tab-spec-btn').classList.remove('active');
+            document.getElementById('tab-review-btn').classList.remove('active');
+
+            // Hiển thị tab được chọn
+            document.getElementById('tab-' + tab).style.display = 'block';
+            document.getElementById('tab-' + tab + '-btn').classList.add('active');
+        }
+
+        // Debug - kiểm tra session messages
+        @if (session('success'))
+            console.log('Success message:', '{{ session('success') }}');
+            // Có thể thêm auto-hide alert sau 5 giây
+            setTimeout(() => {
+                const successAlert = document.querySelector('.alert-success');
+                if (successAlert) {
+                    successAlert.style.transition = 'opacity 0.5s';
+                    successAlert.style.opacity = '0';
+                    setTimeout(() => successAlert.remove(), 500);
+                }
+            }, 5000);
+        @endif
+
+        @if (session('error'))
+            console.log('Error message:', '{{ session('error') }}');
+            // Có thể thêm auto-hide alert sau 7 giây
+            setTimeout(() => {
+                const errorAlert = document.querySelector('.alert-danger');
+                if (errorAlert) {
+                    errorAlert.style.transition = 'opacity 0.5s';
+                    errorAlert.style.opacity = '0';
+                    setTimeout(() => errorAlert.remove(), 500);
+                }
+            }, 7000);
+        @endif
     </script>
 @endsection

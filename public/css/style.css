@@ -459,12 +459,12 @@ a.more {
 
 .feature .icon:before {
   content: "";
-  width: 33px;
-  height: 33px;
+  width: 52px;
+  height: 52px;
   position: absolute;
   background: rgba(59, 93, 80, 0.2);
   border-radius: 50%;
-  right: -8px;
+  right: -3px;
   bottom: 0;
 }
 
@@ -2209,6 +2209,7 @@ textarea {
   position: relative;
   height: 600px;
   overflow: hidden;
+  margin-top: 120px;
 }
 
 #heroCarousel .carousel-item {
@@ -2273,7 +2274,7 @@ textarea {
   padding: 9rem 0;
   position: relative;
   overflow: hidden;
-  margin-top: 84px;
+  margin-top: 120px;
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;

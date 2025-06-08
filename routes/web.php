@@ -23,7 +23,8 @@ use App\Http\Controllers\admin\FaqController;
 use App\Http\Controllers\auth\AuthController;
 use App\Http\Controllers\auth\FacebookController;
 use App\Http\Controllers\auth\GoogleController;
-
+use App\Http\Controllers\auth\ForgotPasswordController;
+use App\Http\Controllers\auth\ResetPasswordController;
 // Client 
 use App\Http\Controllers\client\HomeController;
 use App\Http\Controllers\client\ShopController;
@@ -127,6 +128,10 @@ Route::post('/register', [AuthController::class, 'register']);
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+Route::get('/forgot-password', [ForgotPasswordController::class, 'showLinkRequestForm'])->name('password.request');
+Route::post('/forgot-password', [ForgotPasswordController::class, 'sendResetLinkEmail'])->name('password.email');
+Route::get('/reset-password/{token}', [ResetPasswordController::class, 'showResetForm'])->name('password.reset');
+Route::post('/reset-password', [ResetPasswordController::class, 'reset'])->name('password.update');
 
 // Social Login Routes
 Route::get('/auth/google', [GoogleController::class, 'redirectToGoogle'])->name('auth.google.redirect');

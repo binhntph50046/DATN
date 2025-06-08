@@ -22,7 +22,7 @@
                 </li>
 
                 <!-- Quản lý sản phẩm -->
-                <li class="pc-item pc-hasmenu">
+                <li class="pc-item pc-hasmenu" data-pc-parent="multiple">
                     <a class="pc-link">
                         <span class="pc-micon"><i class="ti ti-package"></i></span>
                         <span class="pc-mtext">Quản lý sản phẩm</span>
@@ -57,7 +57,7 @@
                 </li>
 
                 <!-- Quản lý đơn hàng -->
-                <li class="pc-item pc-hasmenu">
+                <li class="pc-item pc-hasmenu" data-pc-parent="multiple">
                     <a class="pc-link">
                         <span class="pc-micon"><i class="ti ti-shopping-cart"></i></span>
                         <span class="pc-mtext">Quản lý đơn hàng</span>
@@ -86,7 +86,7 @@
                 </li>
 
                 <!-- Quản lý nội dung -->
-                <li class="pc-item pc-hasmenu">
+                <li class="pc-item pc-hasmenu" data-pc-parent="multiple">
                     <a class="pc-link">
                         <span class="pc-micon"><i class="ti ti-news"></i></span>
                         <span class="pc-mtext">Quản lý nội dung</span>
@@ -115,7 +115,7 @@
                 </li>
 
                 <!-- Quản lý người dùng -->
-                <li class="pc-item pc-hasmenu">
+                <li class="pc-item pc-hasmenu" data-pc-parent="multiple">
                     <a class="pc-link">
                         <span class="pc-micon"><i class="ti ti-users"></i></span>
                         <span class="pc-mtext">Quản lý người dùng</span>
@@ -150,7 +150,7 @@
                 </li>
 
                 <!-- Giao diện -->
-                <li class="pc-item pc-hasmenu">
+                <li class="pc-item pc-hasmenu" data-pc-parent="multiple">
                     <a class="pc-link">
                         <span class="pc-micon"><i class="ti ti-palette"></i></span>
                         <span class="pc-mtext">Giao diện</span>

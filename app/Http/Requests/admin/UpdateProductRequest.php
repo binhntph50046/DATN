@@ -43,7 +43,7 @@ class UpdateProductRequest extends FormRequest
             'views' => ['nullable', 'integer', 'min:0'],
             'specifications' => ['nullable', 'array'],
             'specifications.*.specification_id' => ['required', 'exists:specifications,id'],
-            'specifications.*.value' => ['string', 'max:255'],
+            'specifications.*.value' => ['required', 'string', 'max:255'],
             'attributes' => ['required', 'array', 'min:1'],
             'attributes.*.attribute_type_id' => [
                 function ($attribute, $value, $fail) {

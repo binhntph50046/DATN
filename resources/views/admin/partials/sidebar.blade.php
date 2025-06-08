@@ -89,6 +89,33 @@
                 <li class="pc-item pc-hasmenu" data-pc-parent="multiple">
                     <a class="pc-link">
                         <span class="pc-micon"><i class="ti ti-news"></i></span>
+                        <span class="pc-mtext">Flash Sale</span>
+                    </a>
+                </li>
+                <li class="pc-item">
+                    <a href="{{ route('admin.contacts.index') }}" class="pc-link">
+                        <span class="pc-micon"><i class="ti ti-message"></i></span>
+                        <span class="pc-mtext">Contacts</span>
+                    </a>
+                </li>
+                <li class="pc-item">
+                    <a href="{{ route('admin.invoices.index') }}" class="pc-link">
+                        <span class="pc-micon"><i class="ti ti-file-invoice"></i></span>
+                        <span class="pc-mtext">Hóa đơn</span>
+                    </a>
+                </li>
+               
+                <li class="pc-item">
+                    <a href="{{ route('admin.order-returns.index') }}" class="pc-link">
+                        <span class="pc-micon"><i class="ti ti-file-invoice"></i></span>
+                        <span class="pc-mtext">Yêu cầu hoàn hàng</span>
+                    </a>
+                    
+                </li>
+                <li class="pc-item">
+                    <a href="{{ route('admin.subscribers.index') }}" class="pc-link">
+                        <span class="pc-micon"><i class="ti ti-mail"></i></span>
+                        <span class="pc-mtext">Subscribers Email</span>
                         <span class="pc-mtext">Quản lý nội dung</span>
                         <span class="pc-arrow"><i data-feather="chevron-right"></i></span>
                     </a>

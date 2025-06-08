@@ -459,12 +459,12 @@ a.more {
 
 .feature .icon:before {
   content: "";
-  width: 33px;
-  height: 33px;
+  width: 52px;
+  height: 52px;
   position: absolute;
   background: rgba(59, 93, 80, 0.2);
   border-radius: 50%;
-  right: -8px;
+  right: -3px;
   bottom: 0;
 }
 
@@ -862,7 +862,7 @@ a.more {
 
 .footer-section {
   padding: 80px 0;
-  background: #ffffff;
+  background: #090d14;
 }
 
 .footer-section .relative {
@@ -871,14 +871,14 @@ a.more {
 
 .footer-section a {
   text-decoration: none;
-  color: #2f2f2f;
+  color: #ffffff;
   -webkit-transition: .3s all ease;
   -o-transition: .3s all ease;
   transition: .3s all ease;
 }
 
 .footer-section a:hover {
-  color: rgba(47, 47, 47, 0.5);
+  color: rgba(255, 255, 255, 0.5);
 }
 
 .footer-section .subscription-form {
@@ -898,7 +898,7 @@ a.more {
 .footer-section .subscription-form h3 {
   font-size: 18px;
   font-weight: 500;
-  color: #3b5d50;
+  color: #ffffff;
 }
 
 .footer-section .subscription-form .form-control {
@@ -912,7 +912,7 @@ a.more {
   outline: none;
   -webkit-box-shadow: none;
   box-shadow: none;
-  border-color: #3b5d50;
+  border-color: #dfdfdf;
   -webkit-box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.2);
   box-shadow: 0 1px 4px 0 rgba(0, 0, 0, 0.2);
 }
@@ -966,10 +966,10 @@ a.more {
   font-size: 32px;
   font-weight: 500;
   text-decoration: none;
-  color: #3b5d50;
+  color: #ffffff;
 }
 
-.footer-section .custom-social li {
+/* .footer-section .custom-social li {
   margin: 2px;
   display: inline-block;
 }
@@ -981,13 +981,24 @@ a.more {
   line-height: 40px;
   display: inline-block;
   background: #dce5e4;
-  color: #3b5d50;
+  color: #ffffff;
   border-radius: 50%;
 }
 
 .footer-section .custom-social li a:hover {
   background: #3b5d50;
   color: #ffffff;
+} */
+
+.custom-social img {
+  width: 32px;
+  height: 32px;
+  margin-right: 10px;
+  transition: transform 0.3s ease;
+}
+
+.custom-social img:hover {
+  transform: scale(1.1);
 }
 
 .footer-section .border-top {
@@ -2198,6 +2209,7 @@ textarea {
   position: relative;
   height: 600px;
   overflow: hidden;
+  margin-top: 120px;
 }
 
 #heroCarousel .carousel-item {
@@ -2262,7 +2274,7 @@ textarea {
   padding: 9rem 0;
   position: relative;
   overflow: hidden;
-  margin-top: 84px;
+  margin-top: 120px;
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;

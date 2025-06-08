@@ -30,9 +30,10 @@ class FacebookController
                     'provider' => 'facebook',
                     'provider_id' => $fbUser->getId(),
                     'email_verified_at' => now(),
-                    'avatar' => $fbUser->getAvatar(), 
+                    'avatar' => $fbUser->getAvatar(),
                 ]
             );
+            
             if (!$user->provider || !$user->provider_id) {
                 $user->update([
                     'provider' => 'facebook',
@@ -42,7 +43,18 @@ class FacebookController
 
             Auth::login($user);
 
-            return redirect('home');
+            $user->last_login = now();
+            $user->save();
+
+            $user->assignRole('user');
+            $hasAccess = $user->roles()->whereIn('name', ['admin', 'staff'])->exists();
+
+            if ($hasAccess) {
+                return redirect('/admin');
+            } else {
+                return redirect('/');
+            }            
+
         } catch (\Exception $e) {
             return redirect()->route('login')->with('error', 'Đăng nhập Facebook thất bại: ' . $e->getMessage());
         }

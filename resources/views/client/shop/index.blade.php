@@ -27,65 +27,140 @@
     <div class="untree_co-section product-section">
         <div class="container">
             <!-- Flash Sale Section -->
-            <div class="row mb-5" data-aos="fade-up" style="background: rgb(211, 211, 211);border-radius: 10px">
-                <div class="col-12">
-                    <div class="section-header d-flex justify-content-between align-items-center">
-                        <div class="flash-sale-image col-5">
-                            <img src="https://cdnv2.tgdd.vn/webmwg/2024/tz/images/icon-fs.png" alt="Flash Sale"
-                                class="img-fluid">
+            @if ($flashSaleItems->count() && $flashSaleTimeRange)
+                @php
+                    $startTime = $flashSaleTimeRange['start_time'];
+                    $endTime = $flashSaleTimeRange['end_time'];
+                @endphp
+
+                <!-- Flash Sale Section -->
+                {{-- <div class="row mb-5" data-aos="fade-up" style="background: rgb(211, 211, 211);border-radius: 10px">
+                    <div class="col-12">
+                        <div class="section-header d-flex justify-content-between align-items-center flex-wrap">
+                            <div class="flash-sale-image col-md-4 col-sm-12 mb-2">
+                                <img src="https://cdnv2.tgdd.vn/webmwg/2024/tz/images/icon-fs.png" alt="Flash Sale"
+                                    class="img-fluid">
+                            </div>
+
+                            <div class="countdown-timer col-md-2 col-sm-6 mb-2">
+                                <h5 class="time">KẾT THÚC TRONG:</h5>
+                                <h3 id="countdown">00:00:00</h3>
+                            </div>
+
+                            <div class="ongoing-time col-md-3 col-sm-6 mb-2">
+                                <h5 class="time">Đang diễn ra:</h5>
+                                <h4 style="white-space: nowrap;">
+                                    {{ $startTime->format('d/m/Y H:i') }} - {{ $endTime->format('d/m/Y H:i') }}
+                                </h4>
+                            </div> --}}
+                <div class="row mb-5" data-aos="fade-up" style="background: rgb(211, 211, 211);border-radius: 10px">
+                    <div class="col-12">
+                        <div class="row section-header align-items-center">
+
+                            <div class="flash-sale-image col-md-4 col-sm-12 mb-2">
+                                <img src="https://cdnv2.tgdd.vn/webmwg/2024/tz/images/icon-fs.png" alt="Flash Sale"
+                                    class="img-fluid">
+                            </div>
+
+                            <div class="countdown-timer col-md-3 col-sm-6 mb-2">
+                                <h5 class="time">KẾT THÚC TRONG:</h5>
+                                <h4 id="countdown" style="white-space: nowrap;">00:00:00</h3>
+                            </div>
+
+                            <div class="ongoing-time col-md-3 col-sm-6 mb-2">
+                                <h5 class="time">ĐANG DIỄN RA:</h5>
+                                <h4 style="white-space: nowrap;">
+                                    {{ $startTime->format('d/m/Y H:i') }} - {{ $endTime->format('d/m/Y H:i') }}
+                                </h4>
+                            </div>
+
+
+                            {{-- <div class="extra-info col-md-2 col-sm-6 mb-2">
+                                <h5 class="time">Ngày:</h5>
+                                <h4>{{ $startTime->format('d/m/Y') }}</h4>
+                            </div> --}}
                         </div>
-                        <div class="countdown-timer col-2 d-flex flex-wrap">
-                            <h5 class="time">KẾT THÚC TRONG:</h5>
-                            <h3>00:00:00</h3>
-                        </div>
-                        <div class="ongoing-time col-2">
-                            <h5 class="time">Đang diễn ra:</h5>
-                            <h4>08:00 - 23:59</h4>
-                        </div>
-                        <div class="extra-info col-2">
-                            <h5 class="time">Ngày mai:</h5>
-                            <h4>08:00 - 23:59</h4>
+
+                        <div class="col-12">
+                            <div class="product-slider flash-sale-slider">
+                                @foreach ($flashSaleItems as $item)
+                                    <div class="product-item product-carousel" data-aos="fade-up" data-aos-delay="100">
+                                        <a href="{{ route('product.detail', ['slug' => $item->product_slug]) }}">
+                                            <div class="product-thumbnail">
+                                                <img src="{{ asset($item->first_image) }}" class="img-fluid"
+                                                    alt="{{ $item->variant_name }}">
+                                                <div class="discount-badge">
+                                                    @if ($item->discount_type == 'percent')
+                                                        -{{ $item->discount }}%
+                                                    @else
+                                                        -{{ number_format($item->discount, 0) }}đ
+                                                    @endif
+                                                </div>
+                                            </div>
+                                            <h3 class="product-title">{{ $item->variant_name }}</h3>
+                                            <h6>Count: {{ $item->count }}</h5>
+                                            <div class="product-price-and-rating">
+                                                <div class="price-wrapper">
+                                                    @php
+                                                        $original = $item->selling_price;
+                                                        $discount =
+                                                            $item->discount_type === 'percent'
+                                                                ? $original * (1 - $item->discount / 100)
+                                                                : $original - $item->discount;
+                                                    @endphp
+                                                    <strong
+                                                        class="product-price">{{ number_format($discount, 0) }}$</strong>
+                                                    <span
+                                                        class="old-price"><del>{{ number_format($original, 0) }}$</del></span>
+                                                </div>
+                                                <div class="product-rating">
+                                                    <i class="fas fa-star"></i><i class="fas fa-star"></i>
+                                                    <i class="fas fa-star"></i><i class="fas fa-star"></i>
+                                                    <i class="fas fa-star"></i><span>(4.9)</span>
+                                                </div>
+                                            </div>
+                                            <div class="product-icons">
+                                                <span class="icon-add-to-cart"><i class="fas fa-cart-plus"></i></span>
+                                                <span class="icon-heart"><i class="fas fa-heart"></i></span>
+                                                <span class="icon-quick-view"><i class="fas fa-eye"></i></span>
+                                            </div>
+                                        </a>
+                                    </div>
+                                @endforeach
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="col-12">
-                    <div class="product-slider flash-sale-slider">
-                        <!-- Flash Sale Products -->
-                        @for ($i = 0; $i < 8; $i++)
-                            <div class="product-item product-carousel" data-aos="fade-up" data-aos-delay="100">
-                                <a href="product-detail.html">
-                                    <div class="product-thumbnail">
-                                        <img src="https://cdn.tgdd.vn/Products/Images/9118/328721/s16/apple-tv-4k-wifi-64gb-thumb-650x650.png"
-                                            class="img-fluid" alt="Product">
-                                        <div class="discount-badge">-20%</div>
-                                    </div>
-                                    <h3 class="product-title">Product Name</h3>
-                                    <div class="product-price-and-rating">
-                                        <div class="price-wrapper">
-                                            <strong class="product-price">$50.00</strong>
-                                            <span class="old-price"><del>$60.00</del></span>
-                                        </div>
-                                        <div class="product-rating">
-                                            <i class="fas fa-star"></i>
-                                            <i class="fas fa-star"></i>
-                                            <i class="fas fa-star"></i>
-                                            <i class="fas fa-star"></i>
-                                            <i class="fas fa-star"></i>
-                                            <span>(4.9)</span>
-                                        </div>
-                                    </div>
-                                    <div class="product-icons">
-                                        <span class="icon-add-to-cart"><i class="fas fa-cart-plus"></i></span>
-                                        <span class="icon-heart"><i class="fas fa-heart"></i></span>
-                                        <span class="icon-quick-view"><i class="fas fa-eye"></i></span>
-                                    </div>
-                                </a>
-                            </div>
-                        @endfor
-                    </div>
-                </div>
-            </div>
+                <!-- Countdown Script -->
+                <script>
+                    const endTime = new Date("{{ $endTime->toIso8601String() }}").getTime();
+                    const countdownElement = document.getElementById('countdown');
+
+                    const countdownInterval = setInterval(() => {
+                        const now = new Date().getTime();
+                        const distance = endTime - now;
+
+                        if (distance < 0) {
+                            clearInterval(countdownInterval);
+                            countdownElement.innerHTML = "Đã kết thúc";
+                            return;
+                        }
+
+                        const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                        const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+                        countdownElement.innerHTML =
+                            (days > 0 ? days + ' ngày ' : '') +
+                            String(hours).padStart(2, '0') + ':' +
+                            String(minutes).padStart(2, '0') + ':' +
+                            String(seconds).padStart(2, '0');
+                    }, 1000);
+                </script>
+            @endif
+
 
             {{-- để danh mục ở đây 6 cái nhé  --}}
             <div>

@@ -91,6 +91,31 @@ Route::get('/order/tracking/{order}', [CheckoutController::class, 'tracking'])->
 Route::get('/order/invoice/{order}', [CheckoutController::class, 'invoice'])->name('order.invoice');
 Route::get('/order/resend-invoice/{order}', [CheckoutController::class, 'resendInvoice'])->name('order.resend-invoice');
 
+// Route cho admin quản lý hoàn hàng
+Route::prefix('admin')->name('admin.')->group(function () {
+    Route::get('order-returns', [OrderReturnController::class, 'index'])->name('order-returns.index');
+    Route::get('order-returns/{id}', [OrderReturnController::class, 'show'])->name('order-returns.show');
+    Route::post('order-returns/{id}/approve', [OrderReturnController::class, 'approve'])->name('order-returns.approve');
+    Route::post('order-returns/{id}/reject', [OrderReturnController::class, 'reject'])->name('order-returns.reject');
+});
+
+// Route cho khách gửi yêu cầu hoàn hàng
+Route::middleware(['auth'])->group(function () {
+    Route::get('order/{order}/return', [ClientOrderReturnController::class, 'create'])->name('order-returns.create');
+    Route::post('order/{order}/return', [ClientOrderReturnController::class, 'store'])->name('order-returns.store');
+});
+
+// Theo dõi đơn hàng sau khi đặt hàng
+Route::get('/order', [ClientOrderController::class, 'index'])->name('order.index');
+Route::post('/order/cancel/{order}', [ClientOrderController::class, 'cancel'])->name('order.cancel');
+Route::get('/order/tracking/{order}', [CheckoutController::class, 'tracking'])->name('order.tracking');
+Route::get('/order/invoice/{order}', [CheckoutController::class, 'invoice'])->name('order.invoice');
+Route::get('/order/resend-invoice/{order}', [CheckoutController::class, 'resendInvoice'])->name('order.resend-invoice');
+
+Route::prefix('order')->name('order.')->group(function () {
+    Route::post('{id}/request-resend-invoice', [ClientOrderController::class, 'requestResendInvoice'])->name('request-resend-invoice');
+});
+
 /*
 |--------------------------------------------------------------------------
 | Authentication Routes
@@ -279,4 +304,13 @@ Route::prefix('admin')
             Route::post('/{faq}/restore', [FaqController::class, 'restore'])->name('restore');
             Route::delete('/{faq}/forceDelete', [FaqController::class, 'forceDelete'])->name('forceDelete');
         });
+
+        // Resend Invoice Requests trong admin
+        Route::get('resend-invoice-requests', [ResendInvoiceRequestController::class, 'index'])->name('resend-invoice-requests.index');
+        Route::post('resend-invoice-requests/{id}/approve', [ResendInvoiceRequestController::class, 'approve'])->name('resend-invoice-requests.approve');
+        Route::post('resend-invoice-requests/{id}/reject', [ResendInvoiceRequestController::class, 'reject'])->name('resend-invoice-requests.reject');
+
+        //Invoice Routes
+        Route::resource('invoices', InvoiceController::class);
+        Route::get('invoices/{invoice}/pdf', [InvoiceController::class, 'exportPdf'])->name('invoices.export-pdf');
     });

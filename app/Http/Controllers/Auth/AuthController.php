@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Auth;
+namespace App\Http\Controllers\auth;
 
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -43,12 +43,6 @@ class AuthController
         ]);
 
         $user->assignRole('user');
-        
-        // DB::table('model_has_roles')->insert([
-        //     'role_id' => 3,
-        //     'model_type' => User::class,
-        //     'model_id' => $user->id
-        // ]);
 
         return redirect('/login')->with('success', 'Register successfully!');
     }

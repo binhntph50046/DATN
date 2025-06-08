@@ -45,26 +45,25 @@ class ProductController
 
             $productData = [
                 'name' => $request->name,
-                'slug' => Str::slug($request->name),
+                'slug' => Str::slug($request->name) . '-' . time(),
                 'category_id' => $request->category_id,
                 'warranty_months' => $request->warranty_months ?? 12,
                 'description' => $request->description,
                 'content' => $request->content,
                 'is_featured' => $request->has('is_featured') ? 1 : 0,
                 'status' => 'active',
-                'views' => 0, // Set default views to 0
+                'views' => 0,
             ];
 
             $product = Product::create($productData);
 
-            // Save specifications
-            if ($request->has('specifications')) {
+            // Save specifications if any
+            if ($request->has('specifications') && is_array($request->specifications)) {
                 foreach ($request->specifications as $spec) {
-                    if (!empty($spec['value']) && !empty($spec['specification_id'])) {
-                        ProductSpecification::create([
-                            'product_id' => $product->id,
+                    if (!empty($spec['value'])) {
+                        $product->specifications()->create([
                             'specification_id' => $spec['specification_id'],
-                            'value' => $spec['value'],
+                            'value' => $spec['value']
                         ]);
                     }
                 }
@@ -75,80 +74,20 @@ class ProductController
             $attributes = $request->input('attributes', []);
             if (!empty($attributes)) {
                 foreach ($attributes as $index => $attribute) {
-                    if (!empty($attribute['attribute_type_id']) && !empty($attribute['value'])) {
-                        $validAttributes[] = $attribute;
+                    if (!empty($attribute['attribute_type_id']) && !empty($attribute['selected_values'])) {
+                        $validAttributes[] = [
+                            'attribute_type_id' => $attribute['attribute_type_id'],
+                            'selected_values' => $attribute['selected_values']
+                        ];
                     }
                 }
             }
             if (empty($validAttributes)) {
-                throw new \Exception('At least one attribute is required to create variants.');
+                throw new \Exception('At least one attribute with values is required to create variants.');
             }
 
-            // Create variants
-            if ($request->has('variants') && !empty($request->variants)) {
-                // If variants are created from form
-                foreach ($request->variants as $index => $variant) {
-                    if (empty($variant['name'])) {
-                        continue;
-                    }
-
-                    $sku = 'SP-' . str_pad($product->id . ($index + 1), 5, '0', STR_PAD_LEFT);
-
-                    // Handle image upload
-                    $imagePaths = [];
-                    if ($request->hasFile("variants.{$index}.images")) {
-                        $destinationPath = public_path('uploads/products');
-                        if (!file_exists($destinationPath)) {
-                            mkdir($destinationPath, 0777, true);
-                        }
-                        foreach ($request->file("variants.{$index}.images") as $image) {
-                            if ($image->isValid()) {
-                                $filename = time() . '_' . $index . '_' . $image->getClientOriginalName();
-                                $image->move($destinationPath, $filename);
-                                $path = 'uploads/products/' . $filename;
-                                $imagePaths[] = $path;
-                            }
-                        }
-                    }
-
-                    $productVariant = ProductVariant::create([
-                        'product_id' => $product->id,
-                        'name' => $variant['name'],
-                        'slug' => Str::slug($variant['name']),
-                        'sku' => $sku,
-                        'stock' => $variant['stock'] ?? 0,
-                        'purchase_price' => $variant['purchase_price'] ?? 0,
-                        'selling_price' => $variant['selling_price'] ?? 0,
-                        'images' => json_encode($imagePaths),
-                        'is_default' => isset($variant['is_default']) && $variant['is_default'] ? 1 : 0,
-                    ]);
-
-                    // Save variant attributes
-                    if (isset($variant['attributes']) && is_array($variant['attributes'])) {
-                        foreach ($variant['attributes'] as $attr) {
-                            if (!empty($attr['attribute_type_id']) && !empty($attr['value'])) {
-                                $attrValue = VariantAttributeValue::firstOrCreate(
-                                    [
-                                        'attribute_type_id' => $attr['attribute_type_id'],
-                                        'value' => array_map('trim', explode(',', $attr['value'])),
-                                    ],
-                                    [
-                                        'hex' => isset($attr['hex']) ? array_map('trim', explode(',', $attr['hex'])) : [],
-                                        'status' => 'active',
-                                    ]
-                                );
-                                VariantCombination::create([
-                                    'variant_id' => $productVariant->id,
-                                    'attribute_value_id' => $attrValue->id,
-                                ]);
-                            }
-                        }
-                    }
-                }
-            } else {
-                // Create variants automatically from attributes
-                $this->createVariantsFromAttributes($product, $validAttributes, $request);
-            }
+            // Create variants automatically from attributes
+            $this->createVariantsFromAttributes($product, $validAttributes, $request);
 
             // Ensure at least one default variant
             $this->ensureDefaultVariant($product);
@@ -159,7 +98,6 @@ class ProductController
             DB::rollBack();
             Log::error('Error creating product: ' . $e->getMessage());
             Log::error('Stack trace: ' . $e->getTraceAsString());
-
             return back()->withInput()->withErrors(['error' => 'An error occurred: ' . $e->getMessage()]);
         }
     }
@@ -303,21 +241,14 @@ class ProductController
                         // Create combinations for new variant
                         if (isset($variantData['attributes']) && is_array($variantData['attributes'])) {
                             foreach ($variantData['attributes'] as $attr) {
-                                if (!empty($attr['attribute_type_id']) && !empty($attr['value'])) {
-                                    $attrValue = VariantAttributeValue::firstOrCreate(
-                                        [
-                                            'attribute_type_id' => $attr['attribute_type_id'],
-                                            'value' => array_map('trim', explode(',', $attr['value'])),
-                                        ],
-                                        [
-                                            'hex' => isset($attr['hex']) ? array_map('trim', explode(',', $attr['hex'])) : [],
-                                            'status' => 'active',
-                                        ]
-                                    );
-                                    VariantCombination::create([
-                                        'variant_id' => $variant->id,
-                                        'attribute_value_id' => $attrValue->id,
-                                    ]);
+                                if (!empty($attr['attribute_type_id']) && !empty($attr['selected_values'])) {
+                                    foreach ($attr['selected_values'] as $valueId) {
+                                        // Create link between variant and attribute value
+                                        VariantCombination::create([
+                                            'variant_id' => $variant->id,
+                                            'attribute_value_id' => $valueId,
+                                        ]);
+                                    }
                                 }
                             }
                         }
@@ -327,28 +258,17 @@ class ProductController
                             // Only delete and recreate combinations if attributes have changed
                             $hasAttributeChanges = false;
                             if (isset($variantData['attributes']) && is_array($variantData['attributes'])) {
-                                $currentCombinations = $variant->combinations()->with('attributeValue')->get();
-                                $newAttributes = collect($variantData['attributes'])->map(function($attr) {
-                                    return [
-                                        'attribute_type_id' => $attr['attribute_type_id'],
-                                        'value' => array_map('trim', explode(',', $attr['value'])),
-                                        'hex' => isset($attr['hex']) ? array_map('trim', explode(',', $attr['hex'])) : [],
-                                    ];
+                                $currentCombinations = $variant->combinations()->pluck('attribute_value_id')->toArray();
+                                $newValueIds = collect($variantData['attributes'])->flatMap(function($attr) {
+                                    return $attr['selected_values'] ?? [];
                                 })->toArray();
 
-                                if (count($currentCombinations) !== count($newAttributes)) {
+                                sort($currentCombinations);
+                                sort($newValueIds);
+
+                                if (count($currentCombinations) !== count($newValueIds) || 
+                                    implode(',', $currentCombinations) !== implode(',', $newValueIds)) {
                                     $hasAttributeChanges = true;
-                                } else {
-                                    foreach ($currentCombinations as $index => $combination) {
-                                        $newAttr = $newAttributes[$index] ?? null;
-                                        if (!$newAttr || 
-                                            $combination->attributeValue->attribute_type_id != $newAttr['attribute_type_id'] ||
-                                            $combination->attributeValue->value != $newAttr['value'] ||
-                                            $combination->attributeValue->hex != $newAttr['hex']) {
-                                            $hasAttributeChanges = true;
-                                            break;
-                                        }
-                                    }
                                 }
                             }
 
@@ -383,21 +303,14 @@ class ProductController
                             // Recreate combinations only if attributes have changed
                             if ($hasAttributeChanges && isset($variantData['attributes']) && is_array($variantData['attributes'])) {
                                 foreach ($variantData['attributes'] as $attr) {
-                                    if (!empty($attr['attribute_type_id']) && !empty($attr['value'])) {
-                                        $attrValue = VariantAttributeValue::firstOrCreate(
-                                            [
-                                                'attribute_type_id' => $attr['attribute_type_id'],
-                                                'value' => array_map('trim', explode(',', $attr['value'])),
-                                            ],
-                                            [
-                                                'hex' => isset($attr['hex']) ? array_map('trim', explode(',', $attr['hex'])) : [],
-                                                'status' => 'active',
-                                            ]
-                                        );
-                                        VariantCombination::create([
-                                            'variant_id' => $variant->id,
-                                            'attribute_value_id' => $attrValue->id,
-                                        ]);
+                                    if (!empty($attr['attribute_type_id']) && !empty($attr['selected_values'])) {
+                                        foreach ($attr['selected_values'] as $valueId) {
+                                            // Create link between variant and attribute value
+                                            VariantCombination::create([
+                                                'variant_id' => $variant->id,
+                                                'attribute_value_id' => $valueId,
+                                            ]);
+                                        }
                                     }
                                 }
                             }
@@ -483,6 +396,9 @@ class ProductController
         // Get variant attributes by category
         $attributeTypes = VariantAttributeType::where('status', 'active')
             ->whereJsonContains('category_ids', (string)$categoryId)
+            ->with(['attributeValues' => function($query) {
+                $query->where('status', 'active');
+            }])
             ->get();
 
         // Load variants with combinations and images
@@ -497,41 +413,24 @@ class ProductController
             foreach ($product->variants as $variant) {
                 foreach ($variant->combinations as $comb) {
                     $typeId = $comb->attributeValue->attribute_type_id;
-                    // Value
-                    $value = $comb->attributeValue->value;
-                    if (is_string($value)) {
-                        $decoded = json_decode($value, true);
-                        $value = is_array($decoded) ? $decoded : [$value];
-                    }
-                    // Hex
-                    $hex = $comb->attributeValue->hex;
-                    if (is_string($hex)) {
-                        $decoded = json_decode($hex, true);
-                        $hex = is_array($decoded) ? $decoded : [$hex];
-                    }
-                    // Gộp value/hex theo typeId
+                    $valueId = $comb->attribute_value_id;
+                    
                     if (!isset($attributeMap[$typeId])) {
-                        $attributeMap[$typeId] = ['value' => [], 'hex' => []];
+                        $attributeMap[$typeId] = ['selected_values' => []];
                     }
-                    foreach ($value as $v) {
-                        if ($v !== '' && !in_array($v, $attributeMap[$typeId]['value'])) {
-                            $attributeMap[$typeId]['value'][] = $v;
-                        }
-                    }
-                    foreach ($hex as $h) {
-                        if ($h !== '' && !in_array($h, $attributeMap[$typeId]['hex'])) {
-                            $attributeMap[$typeId]['hex'][] = $h;
-                        }
+                    
+                    if (!in_array($valueId, $attributeMap[$typeId]['selected_values'])) {
+                        $attributeMap[$typeId]['selected_values'][] = $valueId;
                     }
                 }
             }
-            // Đưa về dạng mảng cho view
+            
+            // Convert to array format for view
             foreach ($attributeMap as $typeId => $data) {
                 $attributeValues[] = [
                     'attribute_type_id' => $typeId,
-                    'value' => $data['value'],
-                    'hex' => $data['hex'],
-                    ];
+                    'selected_values' => $data['selected_values']
+                ];
             }
         }
 
@@ -544,6 +443,32 @@ class ProductController
         ));
     }
 
+    public function getAttributeValues($attributeTypeId)
+    {
+        $values = \App\Models\VariantAttributeValue::where('attribute_type_id', $attributeTypeId)
+            ->where('status', 'active')
+            ->get()
+            ->map(function($value) {
+                // Đảm bảo trả về đúng cấu trúc mà view đang mong đợi
+                $displayValue = is_array($value->value) ? implode(', ', $value->value) : $value->value;
+                $hexValue = is_array($value->hex) && !empty($value->hex) ? implode(', ', $value->hex) : $value->hex;
+                
+                return [
+                    'id' => $value->id,
+                    'value' => $displayValue,
+                    'hex' => $hexValue,
+                    'attribute_type_id' => $value->attribute_type_id
+                ];
+            });
+
+        Log::info('Attribute values being returned:', [
+            'attribute_type_id' => $attributeTypeId,
+            'values' => $values->toArray()
+        ]);
+        
+        return response()->json($values);
+    }
+
     private function generateUniqueSku($productId)
     {
         do {
@@ -554,92 +479,155 @@ class ProductController
         return $sku;
     }
 
-    private function createVariantsFromAttributes($product, $attributes, $request)
-    {
-        // Create all combinations from attributes
-        $attributeValueIds = [];
-        foreach ($attributes as $attribute) {
-            $values = array_map('trim', explode(',', $attribute['value']));
-            $hexes = !empty($attribute['hex']) ? array_map('trim', explode(',', $attribute['hex'])) : [];
-
-            while (count($hexes) < count($values)) {
-                $hexes[] = null;
-            }
-
-            $attrValues = [];
-            foreach ($values as $i => $value) {
-                if (!empty($value)) {
-                    $attrValue = VariantAttributeValue::firstOrCreate(
-                        [
-                            'attribute_type_id' => $attribute['attribute_type_id'],
-                            'value' => array_map('trim', explode(',', $value)),
-                        ],
-                        [
-                            'hex' => $hexes[$i] ?? null,
-                            'status' => 'active',
-                        ]
-                    );
-                    $attrValues[] = $attrValue;
-                }
-            }
-            $attributeValueIds[] = $attrValues;
-        }
-
-        // Create combinations
-        $combinations = $this->generateCombinations($attributeValueIds);
-
-        foreach ($combinations as $index => $combination) {
-            $variantName = $product->name . ' - ' . implode(' - ', array_map(function ($attr) {
-                return $attr->value;
-            }, $combination));
-
-            $sku = $this->generateUniqueSku($product->id);
-
-            $productVariant = ProductVariant::create([
-                'product_id' => $product->id,
-                'name' => $variantName,
-                'slug' => Str::slug($variantName),
-                'sku' => $sku,
-                'stock' => 0,
-                'purchase_price' => 0,
-                'selling_price' => 0,
-                'images' => json_encode([]),
-                'is_default' => $index === 0 ? 1 : 0,
-            ]);
-
-            // Save attribute combinations
-            foreach ($combination as $attrValue) {
-                VariantCombination::create([
-                    'variant_id' => $productVariant->id,
-                    'attribute_value_id' => $attrValue->id,
-                ]);
-            }
-        }
-    }
-
-    private function generateCombinations($arrays)
+    private function generateCombinations($arrays) 
     {
         if (empty($arrays)) {
             return [];
         }
 
-        if (count($arrays) === 1) {
-            return array_map(function ($item) {
-                return [$item];
-            }, $arrays[0]);
-        }
+        // Bắt đầu với mảng đầu tiên
+        $result = array_map(function($item) {
+            return [$item];
+        }, $arrays[0]);
 
-        $result = [];
-        $first = array_shift($arrays);
-        $remainingCombinations = $this->generateCombinations($arrays);
-
-        foreach ($first as $item) {
-            foreach ($remainingCombinations as $combination) {
-                $result[] = array_merge([$item], $combination);
+        // Lặp qua các mảng còn lại để tạo tổ hợp
+        for ($i = 1; $i < count($arrays); $i++) {
+            $temp = [];
+            foreach ($result as $existing) {
+                foreach ($arrays[$i] as $item) {
+                    $temp[] = array_merge($existing, [$item]);
+                }
             }
+            $result = $temp;
         }
-
+        
         return $result;
+    }
+
+    private function createVariantsFromAttributes($product, $attributes, $request)
+    {
+        try {
+            Log::info('Starting createVariantsFromAttributes with data:', [
+                'product_id' => $product->id,
+                'attributes' => $attributes
+            ]);
+
+            if (!is_array($attributes)) {
+                throw new \Exception('Attributes must be an array');
+            }
+
+            $attributeValueIds = [];
+            foreach ($attributes as $attribute) {
+                if (!isset($attribute['attribute_type_id']) || empty($attribute['selected_values'])) {
+                    continue;
+                }
+
+                $selectedValues = is_array($attribute['selected_values']) ? 
+                    $attribute['selected_values'] : 
+                    [$attribute['selected_values']];
+
+                $attrValues = VariantAttributeValue::select('id', 'value', 'attribute_type_id')
+                    ->whereIn('id', $selectedValues)
+                    ->where('attribute_type_id', $attribute['attribute_type_id'])
+                    ->get();
+
+                if ($attrValues->isNotEmpty()) {
+                    $values = [];
+                    foreach ($attrValues as $value) {
+                        // Decode JSON value if it's a JSON string
+                        $displayValue = $value->value;
+                        if (is_string($displayValue) && json_decode($displayValue) !== null) {
+                            $displayValue = json_decode($displayValue, true);
+                        }
+                        
+                        // Convert array to string if necessary
+                        if (is_array($displayValue)) {
+                            $displayValue = implode(', ', $displayValue);
+                        }
+
+                        $values[] = [
+                            'id' => $value->id,
+                            'attribute_type_id' => $value->attribute_type_id,
+                            'display_value' => $displayValue
+                        ];
+                    }
+                    if (!empty($values)) {
+                        $attributeValueIds[] = $values;
+                    }
+                }
+            }
+
+            $combinations = $this->generateCombinations($attributeValueIds);
+            
+            Log::info('Generated combinations:', ['combinations' => $combinations]);
+
+            foreach ($combinations as $index => $combination) {
+                $variantAttributeValues = [];
+                $attributeIds = [];
+                
+                foreach ($combination as $attrValue) {
+                    if (isset($attrValue['display_value'])) {
+                        $variantAttributeValues[] = $attrValue['display_value'];
+                    }
+                    if (isset($attrValue['id'])) {
+                        $attributeIds[] = $attrValue['id'];
+                    }
+                }
+
+                $variantName = $product->name;
+                if (!empty($variantAttributeValues)) {
+                    $variantName .= ' - ' . implode(' - ', $variantAttributeValues);
+                }
+
+                $slug = Str::slug($variantName) . '-' . time() . '-' . $index;
+                $sku = $this->generateUniqueSku($product->id);
+                
+                $imagePaths = [];
+                if (isset($request->variants[$index]) && $request->hasFile("variants.{$index}.images")) {
+                    $destinationPath = public_path('uploads/products');
+                    if (!file_exists($destinationPath)) {
+                        mkdir($destinationPath, 0777, true);
+                    }
+                    foreach ($request->file("variants.{$index}.images") as $image) {
+                        if ($image->isValid()) {
+                            $filename = time() . '_' . $index . '_' . $image->getClientOriginalName();
+                            $image->move($destinationPath, $filename);
+                            $path = 'uploads/products/' . $filename;
+                            $imagePaths[] = $path;
+                        }
+                    }
+                }
+
+                $variantData = $request->variants[$index] ?? [];
+                
+                $productVariant = ProductVariant::create([
+                    'product_id' => $product->id,
+                    'name' => $variantName,
+                    'slug' => $slug,
+                    'sku' => $sku,
+                    'stock' => $variantData['stock'] ?? 0,
+                    'purchase_price' => $variantData['purchase_price'] ?? 0,
+                    'selling_price' => $variantData['selling_price'] ?? 0,
+                    'images' => json_encode($imagePaths),
+                    'is_default' => isset($variantData['is_default']) && $variantData['is_default'] ? 1 : ($index === 0 ? 1 : 0),
+                ]);
+
+                foreach ($attributeIds as $attributeId) {
+                    VariantCombination::create([
+                        'variant_id' => $productVariant->id,
+                        'attribute_value_id' => $attributeId
+                    ]);
+                }
+            }
+
+        } catch (\Exception $e) {
+            Log::error('Error in createVariantsFromAttributes: ' . $e->getMessage());
+            Log::error('Full error details:', [
+                'attributes' => $attributes,
+                'trace' => $e->getTraceAsString()
+            ]);
+            throw $e;
+        }
     }
 
     private function ensureDefaultVariant($product)

@@ -11,7 +11,7 @@ use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 use App\Models\Order;
 
-class OrderStatusUpdated implements ShouldBroadcast
+    class OrderStatusUpdated implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
@@ -33,8 +33,12 @@ class OrderStatusUpdated implements ShouldBroadcast
     public function broadcastOn(): array
     {
         return [
-            new Channel('order-status.' . $this->order->id),
+            new Channel('orderStatus.' . $this->order->id),
         ];
+    }
+    public function broadcastAs(): string
+    {
+        return 'OrderStatusUpdated' ;
     }
 
     /**

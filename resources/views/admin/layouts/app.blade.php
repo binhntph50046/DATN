@@ -32,6 +32,7 @@
     <!-- [Template CSS Files] -->
     <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}" id="main-style-link">
     <link rel="stylesheet" href="{{ asset('assets/css/style-preset.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/custom-sidebar.css') }}">
 
 </head>
 <!-- [Head] end -->
@@ -74,6 +75,7 @@
     <script src="{{ asset('assets/js/fonts/custom-font.js') }}"></script>
     <script src="{{ asset('assets/js/pcoded.js') }}"></script>
     <script src="{{ asset('assets/js/plugins/feather.min.js') }}"></script>
+    <script src="{{ asset('assets/js/custom-sidebar.js') }}"></script>
 
     @stack('scripts')
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ckeditor/4.9.2/ckeditor.js"

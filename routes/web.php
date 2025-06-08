@@ -126,8 +126,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
 // Route cho khách gửi yêu cầu hoàn hàng
 Route::middleware(['auth'])->group(function () {
-    Route::get('order/{order}/return', [ClientOrderReturnController::class, 'create'])->name('order-returns.create');
-    Route::post('order/{order}/return', [ClientOrderReturnController::class, 'store'])->name('order-returns.store');
+    Route::get('order/{order}/return', [ClientOrderReturnController::class, 'create'])->name('order.returns.create');
+    Route::post('order/{order}/return', [ClientOrderReturnController::class, 'store'])->name('order.returns.store');
 });
 
 // Theo dõi đơn hàng sau khi đặt hàng

@@ -34,13 +34,6 @@
             color: #fff;
         }
 
-        .category-btn {
-            border-radius: 2rem;
-            background: #232b3b;
-            border: none;
-            padding: 11px 15px;
-        }
-
         .category-btn-text {
             font-weight: 600;
             color: #ffffff;
@@ -128,7 +121,8 @@
         }
 
         .user-logged-in-btn .fas {
-            margin-right: 8px; /* Space between icon and name */
+            margin-right: 8px;
+            /* Space between icon and name */
         }
 
         .user-name-text {
@@ -253,8 +247,8 @@
                         <i class="fas fa-user text-white"></i>
                     </a>
                 @else
-                    <a class="d-flex align-items-center dropdown-toggle user-logged-in-btn"
-                        href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <a class="d-flex align-items-center dropdown-toggle user-logged-in-btn" href="#" id="userDropdown"
+                        role="button" data-bs-toggle="dropdown" aria-expanded="false">
                         <i class="fas fa-user text-white"></i>
                         <span class="user-name-text">{{ Str::limit(auth()->user()->name, 12, '...') }}</span>
                     </a>
@@ -269,7 +263,8 @@
                         <li>
                             <form action="{{ route('logout') }}" method="POST" class="m-0">
                                 @csrf
-                                <button type="submit" class="dropdown-item text-white w-100 text-start border-0 bg-transparent">Logout</button>
+                                <button type="submit"
+                                    class="dropdown-item text-white w-100 text-start border-0 bg-transparent">Logout</button>
                             </form>
                         </li>
                     @endguest

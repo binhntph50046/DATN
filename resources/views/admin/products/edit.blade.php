@@ -173,146 +173,95 @@
                                         </div>
                                     </div>
                                 </div>
-                                <!-- Category Specifications -->
-                                <div class="mb-3">
-                                    <label class="form-label">Technical Specifications</label>
+                                <!-- Technical Specifications -->
+                                <div class="mb-3" id="specifications-section" style="display: {{ $product->category_id ? 'block' : 'none' }}">
+                                    <label class="form-label">Thông số kỹ thuật</label>
                                     <div id="categorySpecifications">
-                                        @if (!empty($specificationsData) && count($specificationsData) > 0)
-                                            <div id="specifications-wrapper">
-                                                @for ($i = 0; $i < count($specificationsData); $i += 2)
-                                                    <div class="row mb-2 spec-row">
-                                                        <div class="col-md-6">
-                                                            @php $spec = $specificationsData[$i]; @endphp
-                                                            <div class="mb-3">
-                                                                <label class="form-label">{{ $spec['name'] }} <span class="text-danger">*</span></label>
-                                                                <input type="hidden" name="specifications[{{ $i }}][specification_id]" value="{{ $spec['id'] }}">
-                                                                @php
-                                                                    $oldValue = old('specifications.' . $i . '.value');
-                                                                    $inputValue = ($oldValue !== null && $oldValue !== '') ? $oldValue : $spec['value'];
-                                                                @endphp
-                                                                <input type="text" class="form-control" name="specifications[{{ $i }}][value]" value="{{ $inputValue }}" required>
-                                                            </div>
-                                                        </div>
-                                                        @if (isset($specificationsData[$i + 1]))
-                                                            <div class="col-md-6">
-                                                                @php $spec = $specificationsData[$i + 1]; @endphp
-                                                                <div class="mb-3">
-                                                                    <label class="form-label">{{ $spec['name'] }} <span class="text-danger">*</span></label>
-                                                                    <input type="hidden" name="specifications[{{ $i + 1 }}][specification_id]" value="{{ $spec['id'] }}">
-                                                                    @php
-                                                                        $oldValue = old('specifications.' . ($i + 1) . '.value');
-                                                                        $inputValue = ($oldValue !== null && $oldValue !== '') ? $oldValue : $spec['value'];
-                                                                    @endphp
-                                                                    <input type="text" class="form-control" name="specifications[{{ $i + 1 }}][value]" value="{{ $inputValue }}" required>
-                                                                </div>
-                                                            </div>
-                                                        @endif
-                                                    </div>
-                                                @endfor
-                                            </div>
-                                        @else
-                                            <p class="text-muted">No specifications found for this category.</p>
+                                        @if(!$product->category_id)
+                                            <p class="text-muted">Vui lòng chọn danh mục để hiển thị thông số kỹ thuật.</p>
                                         @endif
                                     </div>
                                 </div>
                                 <!-- Variant Attributes -->
-                                <div class="mb-3">
-                                    <label class="form-label">Variant Attributes <span class="text-danger">*</span></label>
+                                <div class="mb-3" id="variant-attributes-section" style="display: {{ $product->category_id ? 'block' : 'none' }}">
+                                    <label class="form-label">Thuộc tính biến thể <span
+                                            class="text-danger">*</span></label>
                                     <div id="variant-attributes">
                                         <div id="attributes-wrapper">
                                             <div class="row mb-2 attribute-row">
                                                 <div class="col-md-6">
                                                     <div class="mb-3">
-                                                        <label class="form-label">Attribute 1 <span class="text-danger">*</span></label>
-                                                        <select class="form-select attribute-type" name="attributes[0][attribute_type_id]" id="attribute_type_0" required>
-                                                            <option value="">-- Select Attribute --</option>
+                                                        <label class="form-label">Thuộc tính 1 <span
+                                                                class="text-danger">*</span></label>
+                                                        <select class="form-select attribute-type"
+                                                            name="attributes[0][attribute_type_id]" id="attribute_type_0"
+                                                            required {{ !$product->category_id ? 'disabled' : '' }}>
+                                                            <option value="">-- Chọn thuộc tính --</option>
                                                             @foreach ($attributeTypes as $type)
-                                                                <option value="{{ $type->id }}" {{ old('attributes.0.attribute_type_id', $attributeValues[0]['attribute_type_id'] ?? '') == $type->id ? 'selected' : '' }}>{{ $type->name }}</option>
+                                                                <option value="{{ $type->id }}"
+                                                                    {{ old('attributes.0.attribute_type_id', isset($attributeValues[0]) ? $attributeValues[0]['attribute_type_id'] : '') == $type->id ? 'selected' : '' }}>
+                                                                    {{ $type->name }}
+                                                                </option>
                                                             @endforeach
                                                         </select>
-                                                        <div class="error-message" id="error-type-0">Please select an attribute type.</div>
+                                                        <div class="error-message" id="error-type-0">Vui lòng chọn loại thuộc tính.</div>
                                                     </div>
                                                     <div class="mb-3">
-                                                        <label class="form-label">Values <span class="text-danger">*</span></label>
-                                                        @php
-                                                            // Xử lý value và hex cho thuộc tính 1
-                                                            $valueArr0 = $attributeValues[0]['value'] ?? [];
-                                                            if (is_string($valueArr0)) {
-                                                                $decoded = json_decode($valueArr0, true);
-                                                                $valueArr0 = is_array($decoded) ? $decoded : [$valueArr0];
-                                                            }
-                                                            $valueStr0 = implode(', ', $valueArr0);
-                                                            $hexArr0 = $attributeValues[0]['hex'] ?? [];
-                                                            if (is_string($hexArr0)) {
-                                                                $decoded = json_decode($hexArr0, true);
-                                                                $hexArr0 = is_array($decoded) ? $decoded : [$hexArr0];
-                                                            }
-                                                            $hexStr0 = implode(', ', $hexArr0);
-                                                        @endphp
-                                                        <input type="text" class="form-control attribute-values" name="attributes[0][value]" id="values_0" placeholder="Values (e.g., Red, Blue)" value="{{ old('attributes.0.value', $valueStr0) }}" required>
-                                                        <div class="error-message" id="error-values-0">Please enter valid values.</div>
-                                                    </div>
-                                                    <div class="mb-3">
-                                                        <label class="form-label">Color Code (if any)</label>
-                                                        @php
-                                                            // Xử lý value và hex cho thuộc tính 1
-                                                            $valueArr0 = $attributeValues[0]['value'] ?? [];
-                                                            if (is_string($valueArr0)) {
-                                                                $decoded = json_decode($valueArr0, true);
-                                                                $valueArr0 = is_array($decoded) ? $decoded : [$valueArr0];
-                                                            }
-                                                            $valueStr0 = implode(', ', $valueArr0);
-                                                            $hexArr0 = $attributeValues[0]['hex'] ?? [];
-                                                            if (is_string($hexArr0)) {
-                                                                $decoded = json_decode($hexArr0, true);
-                                                                $hexArr0 = is_array($decoded) ? $decoded : [$hexArr0];
-                                                            }
-                                                            $hexStr0 = implode(', ', $hexArr0);
-                                                        @endphp
-                                                        <input type="text" class="form-control attribute-hex" name="attributes[0][hex]" id="hex_0" placeholder="#000000" value="{{ old('attributes.0.hex', $hexStr0) }}">
-                                                        <div class="error-message" id="error-hex-0">Invalid color code.</div>
+                                                        <label class="form-label">Giá trị <span class="text-danger">*</span></label>
+                                                        <select class="form-select attribute-values" name="attributes[0][selected_values][]" id="values_0" multiple required>
+                                                            @if(isset($attributeTypes) && isset($attributeValues[0]['attribute_type_id']))
+                                                                @php
+                                                                    $type = $attributeTypes->firstWhere('id', $attributeValues[0]['attribute_type_id']);
+                                                                @endphp
+                                                                @if($type && $type->attributeValues)
+                                                                    @foreach($type->attributeValues->where('status', 'active') as $value)
+                                                                        <option value="{{ $value->id }}" 
+                                                                            {{ in_array($value->id, old('attributes.0.selected_values', $attributeValues[0]['selected_values'] ?? [])) ? 'selected' : '' }}
+                                                                            data-hex="{{ is_array($value->hex) ? implode(',', $value->hex) : $value->hex }}">
+                                                                            {{ is_array($value->value) ? implode(', ', $value->value) : $value->value }}
+                                                                        </option>
+                                                                    @endforeach
+                                                                @endif
+                                                            @endif
+                                                        </select>
+                                                        <div class="error-message" id="error-values-0">Vui lòng chọn ít nhất một giá trị.</div>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-6">
                                                     <div class="mb-3">
-                                                        <label class="form-label">Attribute 2</label>
+                                                        <label class="form-label">Thuộc tính 2</label>
                                                         <select class="form-select attribute-type" name="attributes[1][attribute_type_id]" id="attribute_type_1">
-                                                            <option value="">-- Select Attribute --</option>
+                                                            <option value="">-- Chọn thuộc tính --</option>
                                                             @foreach ($attributeTypes as $type)
                                                                 <option value="{{ $type->id }}" {{ old('attributes.1.attribute_type_id', $attributeValues[1]['attribute_type_id'] ?? '') == $type->id ? 'selected' : '' }}>{{ $type->name }}</option>
                                                             @endforeach
                                                         </select>
-                                                        <div class="error-message" id="error-type-1">Please select an attribute type.</div>
+                                                        <div class="error-message" id="error-type-1">Vui lòng chọn loại thuộc tính.</div>
                                                     </div>
                                                     <div class="mb-3">
-                                                        <label class="form-label">Values</label>
-                                                        @php
-                                                            // Xử lý value và hex cho thuộc tính 2
-                                                            $valueArr1 = $attributeValues[1]['value'] ?? [];
-                                                            if (is_string($valueArr1)) {
-                                                                $decoded = json_decode($valueArr1, true);
-                                                                $valueArr1 = is_array($decoded) ? $decoded : [$valueArr1];
-                                                            }
-                                                            $valueStr1 = implode(', ', $valueArr1);
-                                                            $hexArr1 = $attributeValues[1]['hex'] ?? [];
-                                                            if (is_string($hexArr1)) {
-                                                                $decoded = json_decode($hexArr1, true);
-                                                                $hexArr1 = is_array($decoded) ? $decoded : [$hexArr1];
-                                                            }
-                                                            $hexStr1 = implode(', ', $hexArr1);
-                                                        @endphp
-                                                        <input type="text" class="form-control attribute-values" name="attributes[1][value]" id="values_1" placeholder="Values (e.g., Red, Blue)" value="{{ old('attributes.1.value', $valueStr1) }}">
-                                                        <div class="error-message" id="error-values-1">Please enter valid values.</div>
-                                                    </div>
-                                                    <div class="mb-3">
-                                                        <label class="form-label">Color Code (if any)</label>
-                                                        <input type="text" class="form-control attribute-hex" name="attributes[1][hex]" id="hex_1" placeholder="#000000" value="{{ old('attributes.1.hex', $hexStr1) }}">
-                                                        <div class="error-message" id="error-hex-1">Invalid color code.</div>
+                                                        <label class="form-label">Giá trị</label>
+                                                        <select class="form-select attribute-values" name="attributes[1][selected_values][]" id="values_1" multiple>
+                                                            @if(isset($attributeTypes) && isset($attributeValues[1]['attribute_type_id']))
+                                                                @php
+                                                                    $type = $attributeTypes->firstWhere('id', $attributeValues[1]['attribute_type_id']);
+                                                                @endphp
+                                                                @if($type && $type->attributeValues)
+                                                                    @foreach($type->attributeValues->where('status', 'active') as $value)
+                                                                        <option value="{{ $value->id }}" 
+                                                                            {{ in_array($value->id, old('attributes.1.selected_values', $attributeValues[1]['selected_values'] ?? [])) ? 'selected' : '' }}
+                                                                            data-hex="{{ is_array($value->hex) ? implode(',', $value->hex) : $value->hex }}">
+                                                                            {{ is_array($value->value) ? implode(', ', $value->value) : $value->value }}
+                                                                        </option>
+                                                                    @endforeach
+                                                                @endif
+                                                            @endif
+                                                        </select>
+                                                        <div class="error-message" id="error-values-1">Vui lòng chọn ít nhất một giá trị.</div>
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="error-message" id="error-min-attributes">At least one valid attribute is required.</div>
-                                            <div class="error-message" id="error-duplicate">Cannot select the same attribute type.</div>
+                                            <div class="error-message" id="error-min-attributes">Vui lòng chọn ít nhất một thuộc tính với giá trị hợp lệ.</div>
+                                            <div class="error-message" id="error-duplicate">Không được chọn trùng loại thuộc tính.</div>
                                         </div>
                                     </div>
                                 </div>
@@ -454,6 +403,49 @@
                     });
                 });
             }
+
+            // Khởi tạo Select2 cho các select box
+            $('.attribute-values').select2({
+                width: '100%',
+                placeholder: 'Chọn giá trị',
+                allowClear: true
+            });
+
+            // Xử lý khi thay đổi attribute type
+            $('.attribute-type').on('change', function() {
+                const index = $(this).attr('id').replace('attribute_type_', '');
+                const valueSelect = $(`#values_${index}`);
+                const attributeTypeId = $(this).val();
+
+                if (attributeTypeId) {
+                    // Load attribute values cho select box
+                    fetch(`/admin/attributes/${attributeTypeId}/values`)
+                        .then(response => response.json())
+                        .then(data => {
+                            valueSelect.empty().trigger('change');
+                            
+                            // Thêm các options mới
+                            data.forEach(item => {
+                                const value = Array.isArray(item.value) ? item.value.join(', ') : item.value;
+                                const hex = Array.isArray(item.hex) ? item.hex.join(',') : item.hex || '';
+                                
+                                const option = new Option(value, item.id, false, false);
+                                $(option).attr('data-hex', hex);
+                                valueSelect.append(option);
+                            });
+                            
+                            valueSelect.trigger('change');
+                        });
+                } else {
+                    // Xóa tất cả options nếu không chọn attribute type
+                    valueSelect.empty().trigger('change');
+                }
+            });
+
+            // Xử lý khi thay đổi giá trị
+            $('.attribute-values').on('change', function() {
+                validateAllAttributes();
+            });
 
             // Thêm sự kiện change cho các select box thuộc tính
             document.querySelectorAll('.attribute-type').forEach((select, idx) => {
@@ -684,6 +676,12 @@
                 valueInputs.forEach(i => i.disabled = false);
                 hexInputs.forEach(i => i.disabled = false);
 
+                // Show sections
+                const variantAttributesSection = document.getElementById('variant-attributes-section');
+                const specificationsSection = document.getElementById('specifications-section');
+                variantAttributesSection.style.display = 'block';
+                specificationsSection.style.display = 'block';
+
                 // Fetch Specifications
                 fetch(`/admin/categories/${categoryId}/specifications`)
                     .then(response => response.json())
@@ -835,10 +833,17 @@
                         }, 0);
                     });
             } else {
+                // Hide sections
+                const variantAttributesSection = document.getElementById('variant-attributes-section');
+                const specificationsSection = document.getElementById('specifications-section');
+                variantAttributesSection.style.display = 'none';
+                specificationsSection.style.display = 'none';
+
                 // Clear specifications section
                 const specContainer = document.getElementById('categorySpecifications');
-                specContainer.innerHTML = '<p class="text-muted">Select a category to display specifications.</p>';
+                specContainer.innerHTML = '<p class="text-muted">Vui lòng chọn danh mục để hiển thị thông số kỹ thuật.</p>';
 
+                // Reset and disable other inputs
                 selects.forEach(s => {
                     s.disabled = true;
                     s.selectedIndex = 0;

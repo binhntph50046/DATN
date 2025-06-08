@@ -373,8 +373,7 @@
                                                                     <i class="far fa-star"></i>
                                                                 @endif
                                                             @endfor
-                                                            <span>({{ number_format($product->views) }} lượt
-                                                                xem)</span>
+                                                            <span>({{ number_format($product->views) }} lượt xem)</span>
                                                         </div>
                                                     </div>
                                                     <div class="product-icons">
@@ -852,7 +851,7 @@
                 selectedVariant.combinations.forEach(comb => {
                     const typeName = comb.attribute_value.attribute_type.name.trim();
                     const matchedType = quickViewRequiredTypes.find(t => t.toLowerCase() === typeName
-                        .toLowerCase()) || typeName;
+                    .toLowerCase()) || typeName;
                     let value = comb.attribute_value.value;
                     if (typeof value === 'string') {
                         try {
@@ -1028,85 +1027,196 @@
         }
 
         #quickViewModal .color-option {
-            width: 45px;
-            height: 45px;
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
             cursor: pointer;
-            border: 2px solid #fff;
-            box-shadow: 0 0 0 1px #ddd;
-            transition: all 0.2s ease;
+            border: 2px solid #ddd;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        #quickViewModal .color-option:not([data-hex]) {
+            border-radius: 4px;
+            background-color: #f8f9fa;
             position: relative;
         }
 
+        #quickViewModal .color-option:not([data-hex])::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 20px;
+            height: 20px;
+            background-color: #fff;
+            border: 1px solid #ddd;
+        }
+
         #quickViewModal .color-option.active {
-            border-color: #fff;
-            box-shadow: 0 0 0 2px #0071e3;
+            border-color: #007bff !important;
+            box-shadow: 0 0 0 2px #007bff33;
+            position: relative;
         }
 
         #quickViewModal .color-option:hover {
-            transform: scale(1.1);
-        }
-
-        #quickViewModal .variant-options {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 25px;
+            transform: scale(1.08);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
+            z-index: 2;
         }
 
         #quickViewModal .variant-btn {
-            padding: 10px 20px;
+            padding: 8px 16px;
+            margin-right: 10px;
             border: 1px solid #ddd;
             background: #fff;
-            border-radius: 8px;
+            border-radius: 4px;
             cursor: pointer;
-            transition: all 0.2s ease;
-            font-size: 14px;
-            color: #333;
+            transition: all 0.3s ease;
         }
 
         #quickViewModal .variant-btn.active {
-            border-color: #0071e3;
-            background: #0071e3;
-            color: #fff;
+            background: #fff !important;
+            color: #000 !important;
+            border: 2px solid #007bff !important;
+            box-shadow: 0 0 0 2px #007bff33;
         }
 
         #quickViewModal .variant-btn:hover {
-            border-color: #0071e3;
+            border-color: #007bff;
         }
 
         #quickViewModal .quantity-control {
             display: flex;
             align-items: center;
-            gap: 12px;
-            margin: 25px 0;
+            max-width: 150px;
         }
 
         #quickViewModal .quantity-btn {
-            width: 40px;
-            height: 40px;
+            padding: 8px 12px;
             border: 1px solid #ddd;
             background: #fff;
-            border-radius: 8px;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
             display: flex;
             align-items: center;
             justify-content: center;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            font-size: 18px;
         }
 
-        #quickViewModal .quantity-btn:hover {
-            border-color: #0071e3;
-            color: #0071e3;
-        }
-
-        #quickViewModal #quickViewQuantity {
+        #quickViewModal .quantity-control input {
+            text-align: center;
+            border-left: none;
+            border-right: none;
+            border-radius: 0;
             width: 70px;
             height: 40px;
-            text-align: center;
-            border: 1px solid #ddd;
+        }
+
+        #quickViewModal .product-gallery {
+            background: #fff;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        #quickViewModal .main-image {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        #quickViewModal .main-image img {
+            width: 100%;
+            height: auto;
+            object-fit: contain;
             border-radius: 8px;
-            font-size: 16px;
+        }
+
+        #quickViewModal .image-nav-btn {
+            width: 48px;
+            height: 48px;
+            background: rgba(0,0,0,0.18);
+            border: none;
+            border-radius: 50%;
+            color: #fff;
+            font-size: 2rem;
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 3;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+        }
+
+        #quickViewModal .image-nav-btn:hover {
+            background: rgba(0,0,0,0.35);
+        }
+
+        #quickViewModal #quickViewPrevImageBtn { left: 12px; }
+        #quickViewModal #quickViewNextImageBtn { right: 12px; }
+
+        #quickViewModal .thumbnail-slider {
+            position: relative;
+            padding: 0 48px;
+        }
+
+        #quickViewModal #quickViewThumbPrevBtn,
+        #quickViewModal #quickViewThumbNextBtn {
+            width: 36px;
+            height: 36px;
+            background: rgba(0,0,0,0.18);
+            border: none;
+            border-radius: 50%;
+            color: #fff;
+            font-size: 1.3rem;
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 2;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+        }
+
+        #quickViewModal #quickViewThumbPrevBtn:hover,
+        #quickViewModal #quickViewThumbNextBtn:hover {
+            background: rgba(0,0,0,0.35);
+        }
+
+        #quickViewModal #quickViewThumbnailsRow {
+            margin: 0 48px;
+            overflow-x: auto;
+            flex-wrap: nowrap !important;
+            white-space: nowrap;
+            scroll-behavior: smooth;
+        }
+
+        #quickViewModal #quickViewThumbnailsRow .col-3 {
+            flex: 0 0 auto;
+            width: 80px;
+            max-width: 80px;
+            padding: 0 4px;
+        }
+
+        #quickViewModal #quickViewThumbnailsRow img.thumbnail {
+            border-radius: 8px;
+            border: 2px solid transparent;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        #quickViewModal #quickViewThumbnailsRow img.thumbnail.active {
+            border-color: #007bff;
+        }
+
+        #quickViewModal #quickViewThumbnailsRow img.thumbnail:hover {
+            border-color: #000;
         }
 
         #quickViewModal .product-actions {
@@ -1150,6 +1260,10 @@
             background: rgba(71, 98, 79, 0.04);
         }
 
+        #quickViewModal .variant-options {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
         #quickViewModal .buy-now-btn i,
         #quickViewModal .add-to-cart-btn i {
             font-size: 18px;

@@ -3,7 +3,7 @@
         <div class="m-header">
             <a href="{{ route('admin.dashboard') }}" class="b-brand text-primary">
                 <!-- ========   Change your logo from here   ============ -->
-                <img src="{{asset('/images/logo/Apple_Store.png')}}" class="img-fluid logo-lg" alt="logo">
+                <img src="{{ asset('/images/logo/Apple_Store.png') }}" class="img-fluid logo-lg" alt="logo">
             </a>
         </div>
         <div class="navbar-content">
@@ -68,6 +68,19 @@
                             <a href="{{ route('admin.orders.index') }}" class="pc-link">
                                 <span class="pc-micon"><i class="ti ti-shopping-cart"></i></span>
                                 <span class="pc-mtext">Đơn hàng</span>
+                            </a>
+                        </li>
+                        <li class="pc-item">
+                            <a href="{{ route('admin.invoices.index') }}" class="pc-link">
+                                <span class="pc-micon"><i class="ti ti-file-invoice"></i></span>
+                                <span class="pc-mtext">Hóa đơn</span>
+                            </a>
+                        </li>
+
+                        <li class="pc-item">
+                            <a href="{{ route('admin.order-returns.index') }}" class="pc-link">
+                                <span class="pc-micon"><i class="ti ti-file-invoice"></i></span>
+                                <span class="pc-mtext">Yêu cầu hoàn hàng</span>
                             </a>
                         </li>
                         <li class="pc-item">

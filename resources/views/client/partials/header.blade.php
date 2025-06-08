@@ -267,10 +267,9 @@
                         <li><a class="dropdown-item text-white" href="#">Profile</a></li>
                         <li><a class="dropdown-item text-white" href="#">Order History</a></li>
                         <li>
-                            <form action="{{ route('logout') }}" method="POST" class="dropdown-item m-0 p-0">
+                            <form action="{{ route('logout') }}" method="POST" class="m-0">
                                 @csrf
-                                <button type="submit"
-                                    class="btn btn-link dropdown-item text-start text-white">Logout</button>
+                                <button type="submit" class="dropdown-item text-white w-100 text-start border-0 bg-transparent">Logout</button>
                             </form>
                         </li>
                     @endguest

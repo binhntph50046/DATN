@@ -18,7 +18,10 @@ use App\Http\Controllers\admin\FlashSaleController;
 use App\Http\Controllers\admin\FlashSaleItemController;
 use App\Http\Controllers\admin\SubcriberController;
 use App\Http\Controllers\admin\FaqController;
-
+use App\Http\Controllers\Admin\InvoiceController;
+use App\Http\Controllers\client\OrderReturnController as ClientOrderReturnController;
+use App\Http\Controllers\Admin\OrderReturnController as AdminOrderReturnController;
+use App\Http\Controllers\Admin\ResendInvoiceRequestController;
 // Auth
 use App\Http\Controllers\auth\AuthController;
 use App\Http\Controllers\auth\FacebookController;
@@ -41,6 +44,7 @@ use App\Http\Controllers\client\ChatBotController;
 
 use App\Http\Controllers\client\ProductController as ClientProductController;
 use App\Http\Controllers\client\WishlistController;
+use App\Models\Invoice;
 
 /*
 |--------------------------------------------------------------------------
@@ -85,12 +89,25 @@ Route::middleware(['auth'])->group(function () {
 // Subscribe Route
 Route::post('/subscribe', [\App\Http\Controllers\client\SubscribeController::class, 'store'])->name('subscribe.store');
 
-// Order Tracking Routes
-Route::get('/order', [ClientOrderController::class, 'index'])->name('order.index');
-Route::post('/order/cancel/{order}', [ClientOrderController::class, 'cancel'])->name('order.cancel');
-Route::get('/order/tracking/{order}', [CheckoutController::class, 'tracking'])->name('order.tracking');
-Route::get('/order/invoice/{order}', [CheckoutController::class, 'invoice'])->name('order.invoice');
-Route::get('/order/resend-invoice/{order}', [CheckoutController::class, 'resendInvoice'])->name('order.resend-invoice');
+// Order Routes (Client)
+Route::prefix('order')->name('order.')->middleware(['auth'])->group(function () {
+    Route::get('/', [ClientOrderController::class, 'index'])->name('index'); // Danh sách đơn hàng
+    Route::get('/tracking/{order}', [CheckoutController::class, 'tracking'])->name('tracking'); // Theo dõi đơn hàng
+    Route::post('/cancel/{order}', [ClientOrderController::class, 'cancel'])->name('cancel'); // Hủy đơn hàng
+    Route::get('/invoice/{order}', [CheckoutController::class, 'invoice'])->name('invoice'); // Xem hóa đơn
+    Route::get('/resend-invoice/{order}', [CheckoutController::class, 'resendInvoice'])->name('resend-invoice'); // Gửi lại hóa đơn (GET)
+    Route::post('/{id}/request-resend-invoice', [ClientOrderController::class, 'requestResendInvoice'])->name('request-resend-invoice'); // Yêu cầu gửi lại hóa đơn
+    Route::get('/{order}/return', [ClientOrderReturnController::class, 'create'])->name('returns.create'); // Yêu cầu hoàn hàng (form)
+    Route::post('/{order}/return', [ClientOrderReturnController::class, 'store'])->name('returns.store'); // Gửi yêu cầu hoàn hàng
+});
+
+// Route cho admin quản lý hoàn hàng
+Route::prefix('admin')->name('admin.')->group(function () {
+    Route::get('order-returns', [AdminOrderReturnController::class, 'index'])->name('order-returns.index');
+    Route::get('order-returns/{id}', [AdminOrderReturnController::class, 'show'])->name('order-returns.show');
+    Route::post('order-returns/{id}/approve', [AdminOrderReturnController::class, 'approve'])->name('order-returns.approve');
+    Route::post('order-returns/{id}/reject', [AdminOrderReturnController::class, 'reject'])->name('order-returns.reject');
+});
 
 /*
 |--------------------------------------------------------------------------
@@ -239,9 +256,10 @@ Route::prefix('admin')
             Route::get('/{order}', [OrderController::class, 'show'])->name('show');
             Route::put('/{order}/status', [OrderController::class, 'updateStatus'])->middleware('permission:edit orders')->name('updateStatus');
             Route::delete('/{order}', [OrderController::class, 'destroy'])->middleware('permission:delete orders')->name('destroy');
-            Route::get('/trash', [OrderController::class, 'trash'])->name('trash');
-            Route::post('/trash/restore/bulk', [OrderController::class, 'bulkRestore'])->middleware('permission:edit orders')->name('restore.bulk');
-            Route::post('/trash/force-delete/bulk', [OrderController::class, 'bulkForceDelete'])->middleware('permission:delete orders')->name('forceDelete.bulk');
+          // Route::get('/trash', [OrderController::class, 'trash'])->name('trash');
+            // Route::post('/trash/restore/bulk', [OrderController::class, 'bulkRestore'])->middleware('permission:edit orders')->name('restore.bulk');
+            // Route::post('/trash/force-delete/bulk', [OrderController::class, 'bulkForceDelete'])->middleware('permission:delete orders')->name('forceDelete.bulk');
+            Route::get('/{order}/export-invoice', [OrderController::class, 'exportInvoice'])->name('export-invoice');
         });
 
         // Role Management
@@ -284,4 +302,13 @@ Route::prefix('admin')
             Route::post('/{faq}/restore', [FaqController::class, 'restore'])->name('restore');
             Route::delete('/{faq}/forceDelete', [FaqController::class, 'forceDelete'])->name('forceDelete');
         });
+
+        // Resend Invoice Requests trong admin
+        Route::get('resend-invoice-requests', [ResendInvoiceRequestController::class, 'index'])->name('resend-invoice-requests.index');
+        Route::post('resend-invoice-requests/{id}/approve', [ResendInvoiceRequestController::class, 'approve'])->name('resend-invoice-requests.approve');
+        Route::post('resend-invoice-requests/{id}/reject', [ResendInvoiceRequestController::class, 'reject'])->name('resend-invoice-requests.reject');
+
+        //Invoice Routes
+        Route::resource('invoices', InvoiceController::class);
+        Route::get('invoices/{invoice}/pdf', [InvoiceController::class, 'exportPdf'])->name('invoices.export-pdf');
     });

@@ -6,16 +6,20 @@ use App\Http\Controllers\Controller;
 use App\Models\Order;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+    use App\Models\ResendInvoiceRequest;
 
 class OrderController 
 {
-    public function index()
+    public function index(Request $request)
     {
-        $orders = Order::where('user_id', Auth::id())
-            ->with(['items.product', 'items.variant'])
-            ->latest()
-            ->paginate(5);
-            
+        $query = Order::where('user_id', Auth::id());
+
+        if ($request->has('status') && $request->status != null) {
+            $query->where('status', $request->status);
+        }
+
+        $orders = $query->orderBy('created_at', 'desc')->paginate(10);
+
         return view('client.order.index', compact('orders'));
     }
 
@@ -39,4 +43,6 @@ class OrderController
         
         return redirect()->back()->with('success', 'Đã hủy đơn hàng thành công!');
     }
+
+   
 } 

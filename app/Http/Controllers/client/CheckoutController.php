@@ -174,4 +174,51 @@ class CheckoutController
         $order = Order::with(['items.product', 'items.variant'])->findOrFail($orderId);
         return view('client.order.invoice', compact('order'));
     }
+
+    public function qrCheckout(Request $request)
+    {
+        // Validate dữ liệu đầu vào (giống như trong vnPay)
+        $request->validate([
+            'variant_id' => 'required|exists:product_variants,id',
+            'quantity' => 'required|integer|min:1',
+            'c_fname' => 'required|string|max:255',
+            'c_lname' => 'required|string|max:255',
+            'c_email_address' => 'required|email|max:255',
+            'c_phone' => 'required|string|max:20',
+            'c_address' => 'required|string|max:255',
+        ]);
+
+        // Lấy thông tin variant, tính toán giá, tạo order, order item, trừ kho... (giống như trong PaymentController@vnPay)
+        // Ví dụ:
+        $variant = \App\Models\ProductVariant::with('product')->findOrFail($request->variant_id);
+        $price = $variant->selling_price;
+        $quantity = $request->quantity;
+        $subtotal = $price * $quantity;
+        $order = \App\Models\Order::create([
+            'user_id' => Auth::id(),
+            'subtotal' => $subtotal,
+            'total_price' => $subtotal,
+            'shipping_address' => $request->c_address,
+            'shipping_name' => $request->c_fname . ' ' . $request->c_lname,
+            'shipping_phone' => $request->c_phone,
+            'shipping_email' => $request->c_email_address,
+            'payment_method' => 'vnpay_qr',
+            'payment_status' => 'pending',
+            'status' => 'pending',
+            'is_paid' => 0,
+            'notes' => $request->c_order_notes,
+        ]);
+        \App\Models\OrderItem::create([
+            'order_id' => $order->id,
+            'product_id' => $variant->product->id,
+            'product_variant_id' => $variant->id,
+            'quantity' => $quantity,
+            'price' => $price,
+            'total' => $subtotal,
+        ]);
+        $variant->decrement('stock', $quantity);
+
+        // Redirect sang trang QR
+        return redirect()->route('vnpay.qr', $order->id);
+    }
 }

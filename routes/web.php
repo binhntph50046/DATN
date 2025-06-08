@@ -1,50 +1,51 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
+use App\Models\Invoice;
 // Admin
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\admin\FaqController;
+use App\Http\Controllers\auth\AuthController;
 use App\Http\Controllers\admin\BlogController;
+use App\Http\Controllers\admin\RoleController;
 use App\Http\Controllers\admin\UserController;
 use App\Http\Controllers\admin\OrderController;
-use App\Http\Controllers\admin\BannerController;
-use App\Http\Controllers\admin\ProductController;
-use App\Http\Controllers\admin\CategoryController;
-use App\Http\Controllers\admin\DashboardController;
-use App\Http\Controllers\admin\VariantAttributeTypeController;
-use App\Http\Controllers\admin\RoleController;
-use App\Http\Controllers\admin\SpecificationController;
-use App\Http\Controllers\admin\VoucherController;
-use App\Http\Controllers\admin\AdminContactController;
-use App\Http\Controllers\admin\FlashSaleController;
-use App\Http\Controllers\admin\FlashSaleItemController;
-use App\Http\Controllers\admin\SubcriberController;
-use App\Http\Controllers\admin\FaqController;
-use App\Http\Controllers\Admin\InvoiceController;
-use App\Http\Controllers\client\OrderReturnController as ClientOrderReturnController;
-use App\Http\Controllers\Admin\OrderReturnController as AdminOrderReturnController;
-use App\Http\Controllers\Admin\ResendInvoiceRequestController;
-// Auth
-use App\Http\Controllers\auth\AuthController;
-use App\Http\Controllers\auth\FacebookController;
 use App\Http\Controllers\auth\GoogleController;
-use App\Http\Controllers\auth\ForgotPasswordController;
-use App\Http\Controllers\auth\ResetPasswordController;
-// Client 
+use App\Http\Controllers\client\CartController;
 use App\Http\Controllers\client\HomeController;
 use App\Http\Controllers\client\ShopController;
+use App\Http\Controllers\admin\BannerController;
 use App\Http\Controllers\client\AboutController;
-use App\Http\Controllers\client\BlogController as ClientBlogController;
-use App\Http\Controllers\client\CartController;
-use App\Http\Controllers\client\CheckoutController;
+use App\Http\Controllers\Admin\InvoiceController;
+use App\Http\Controllers\admin\ProductController;
+use App\Http\Controllers\admin\VoucherController;
+use App\Http\Controllers\auth\FacebookController;
+use App\Http\Controllers\admin\CategoryController;
+use App\Http\Controllers\client\ChatBotController;
 use App\Http\Controllers\client\ContactController;
+// Auth
 use App\Http\Controllers\client\PaymentController;
+use App\Http\Controllers\admin\DashboardController;
+use App\Http\Controllers\admin\FlashSaleController;
+use App\Http\Controllers\admin\SubcriberController;
+use App\Http\Controllers\client\CheckoutController;
+// Client 
+use App\Http\Controllers\client\WishlistController;
+use App\Http\Controllers\Admin\OrderReturnController;
+use App\Http\Controllers\admin\AdminContactController;
+use App\Http\Controllers\auth\ResetPasswordController;
+use App\Http\Controllers\admin\FlashSaleItemController;
+use App\Http\Controllers\admin\SpecificationController;
+use App\Http\Controllers\auth\ForgotPasswordController;
+use App\Http\Controllers\Admin\ResendInvoiceRequestController;
 
+
+use App\Http\Controllers\admin\VariantAttributeTypeController;
+use App\Http\Controllers\client\BlogController as ClientBlogController;
 
 use App\Http\Controllers\client\OrderController as ClientOrderController;
-use App\Http\Controllers\client\ChatBotController;
-
 use App\Http\Controllers\client\ProductController as ClientProductController;
-use App\Http\Controllers\client\WishlistController;
-use App\Models\Invoice;
+use App\Http\Controllers\Admin\OrderReturnController as AdminOrderReturnController;
+use App\Http\Controllers\client\OrderReturnController as ClientOrderReturnController;
 
 /*
 |--------------------------------------------------------------------------
@@ -125,8 +126,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
 // Route cho khách gửi yêu cầu hoàn hàng
 Route::middleware(['auth'])->group(function () {
-    Route::get('order/{order}/return', [ClientOrderReturnController::class, 'create'])->name('order-returns.create');
-    Route::post('order/{order}/return', [ClientOrderReturnController::class, 'store'])->name('order-returns.store');
+    Route::get('order/{order}/return', [ClientOrderReturnController::class, 'create'])->name('order.returns.create');
+    Route::post('order/{order}/return', [ClientOrderReturnController::class, 'store'])->name('order.returns.store');
 });
 
 // Theo dõi đơn hàng sau khi đặt hàng

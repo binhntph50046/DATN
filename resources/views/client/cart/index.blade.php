@@ -1,4 +1,5 @@
 @extends('client.layouts.app')
+@section('title', 'Cửa hàng - Apple Store')
 
 @section('content')
     <div class="untree_co-section before-footer-section">

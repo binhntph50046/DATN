@@ -34,15 +34,6 @@
             color: #fff;
         }
 
-        <li class="nav-item position-relative"><a class="nav-link" href="{{ route('cart') }}"><i class="fas fa-shopping-cart fa-lg" style="color: #f0f0f0;"></i>@if ($cartCount > 0)
-            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger text-white shadow-sm" style="font-size: 0.75rem;">{{ $cartCount }} </span>
-        @endif
-        </a></li></ul>.category-btn {
-            border-radius: 2rem;
-            background: #232b3b;
-            border: none;
-            padding: 11px 15px;
-        }
 
         .category-btn-text {
             font-weight: 600;
@@ -193,11 +184,11 @@
         </div>
         <!-- Danh mục -->
         <div class="dropdown">
-            <button class="btn d-flex align-items-center ms-4 me-3 category-btn" type="button" id="categoryDropdown"
+            <button class="btn d-flex align-items-center ms-4 me-3 category-btn" style="background: #232b3b" type="button" id="categoryDropdown"
                 data-bs-toggle="dropdown" aria-expanded="false">
                 <i class="fas fa-bars me-2 text-white"></i> <span class="category-btn-text">Danh mục</span>
             </button>
-            <ul class="dropdown-menu dropdown-menu-bg" style="margin-left: 19px" aria-labelledby="categoryDropdown">
+            <ul class="dropdown-menu dropdown-menu-bg" style="margin-left: 5px" aria-labelledby="categoryDropdown">
                 <li><a class="dropdown-item text-white" href="#"><i class="fa-brands fa-apple"></i> iPhone</a>
                 </li>
                 <li><a class="dropdown-item text-white" href="#"><i class="fa-solid fa-laptop"></i> Mac</a></li>
@@ -224,19 +215,19 @@
             <div class="mt-1 search-suggestions">
                 <ul class="custom-navbar-nav navbar-nav ms-auto mb-md-0">
                     <li class="nav-item {{ Route::currentRouteName() == 'home' ? 'active' : '' }}">
-                        <a class="nav-link" href="{{ route('home') }}">Home</a>
+                        <a class="nav-link" href="{{ route('home') }}">Trang chủ</a>
                     </li>
                     <li class="nav-item {{ Route::currentRouteName() == 'shop' ? 'active' : '' }}">
-                        <a class="nav-link" href="{{ route('shop') }}">Shop</a>
+                        <a class="nav-link" href="{{ route('shop') }}">Cửa hàng</a>
                     </li>
                     <li class="nav-item {{ Route::currentRouteName() == 'about' ? 'active' : '' }}">
-                        <a class="nav-link" href="{{ route('about') }}">About us</a>
+                        <a class="nav-link" href="{{ route('about') }}">Giới thiệu</a>
                     </li>
                     <li class="nav-item {{ Route::currentRouteName() == 'blog' ? 'active' : '' }}">
-                        <a class="nav-link" href="{{ route('blog') }}">Blog</a>
+                        <a class="nav-link" href="{{ route('blog') }}">Bài viết</a>
                     </li>
                     <li class="nav-item {{ Route::currentRouteName() == 'contact' ? 'active' : '' }}">
-                        <a class="nav-link" href="{{ route('contact') }}">Contact us</a>
+                        <a class="nav-link" href="{{ route('contact') }}">Liên hệ</a>
                     </li>
                 </ul>
             </div>
@@ -265,16 +256,16 @@
                 @endguest
                 <ul class="dropdown-menu dropdown-menu-bg" aria-labelledby="userDropdown">
                     @guest
-                        <li><a class="dropdown-item text-white" href="{{ route('register') }}">Register</a></li>
-                        <li><a class="dropdown-item text-white" href="{{ route('login') }}">Login</a></li>
+                        <li><a class="dropdown-item text-white" href="{{ route('register') }}">Đăng kí</a></li>
+                        <li><a class="dropdown-item text-white" href="{{ route('login') }}">Đăng nhập</a></li>
                     @else
-                        <li><a class="dropdown-item text-white" href="#">Profile</a></li>
-                        <li><a class="dropdown-item text-white" href="{{ route('order.index') }}">Order History</a></li>
+                        <li><a class="dropdown-item text-white" href="#">Trang cá nhân</a></li>
+                        <li><a class="dropdown-item text-white" href="{{ route('order.index') }}">Lịch sử đơn hàng</a></li>
                         <li>
                             <form action="{{ route('logout') }}" method="POST" class="m-0">
                                 @csrf
                                 <button type="submit"
-                                    class="dropdown-item text-white w-100 text-start border-0 bg-transparent">Logout</button>
+                                    class="dropdown-item text-white w-100 text-start border-0 bg-transparent">Đăng xuất</button>
                             </form>
                         </li>
                     @endguest

@@ -1,5 +1,4 @@
 @extends('client.layouts.app')
-
 @section('title', 'Danh sách yêu thích - Apple Store')
 
 @section('content')

@@ -1,4 +1,5 @@
 @extends('client.layouts.app')
+@section('title', 'Đơn hàng - Apple Store')
 
 @section('content')
 <div class="order-management">

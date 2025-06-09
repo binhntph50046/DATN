@@ -24,16 +24,13 @@
 <body>
 
     @include('client.partials.header')
-
     @yield('content')
-
+    @include('client.partials.chat')
     @include('client.partials.footer')
-
 
     <script src="{{ asset('js/bootstrap.bundle.min.js') }}"></script>
     <script src="{{ asset('js/tiny-slider.js') }}"></script>
     <script src="{{ asset('js/custom.js') }}"></script>
-
 </body>
 
 </html>

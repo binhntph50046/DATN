@@ -26,7 +26,8 @@ use App\Http\Controllers\client\BlogController as ClientBlogController;
 use App\Http\Controllers\client\CartController;
 use App\Http\Controllers\client\CheckoutController;
 use App\Http\Controllers\client\ContactController;
-use App\Http\Controllers\client\ChatBotController;
+use App\Http\Controllers\client\SubscribeController;
+use App\Http\Controllers\client\DialogflowController;
 use App\Http\Controllers\client\ProductController as ClientProductController;
 
 // Client 
@@ -44,10 +45,12 @@ Route::post('/increment-view/{id}', [HomeController::class, 'incrementView'])->n
 Route::get('/contact', [ContactController::class, 'index'])->name('contact');
 Route::post('/contact', [ContactController::class, 'store'])->name('contact.store');
 
-//Subcribe
-Route::post('/subscribe', [\App\Http\Controllers\client\SubscribeController::class, 'store'])->name('subscribe.store');
+//Subcribe Client
+Route::post('/subscribe', [SubscribeController::class, 'store'])->name('subscribe.store');
 
-//Chatbot
+//Dialogflow
+Route::get('/dialogflow/webhook', [DialogflowController::class, 'handle']);
+Route::post('/dialogflow/webhook', [DialogflowController::class, 'handle']);
 
 // Authentication routes
 Route::get('/register', [AuthController::class, 'showRegisterForm'])->name('register');

@@ -28,6 +28,47 @@
         display: none;
     }
 
+    /* Select2 Custom Styles */
+    .select2-container--default .select2-selection--multiple {
+        border: 1px solid #ced4da;
+        border-radius: 0.25rem;
+        min-height: 38px;
+    }
+
+    .select2-container--default.select2-container--focus .select2-selection--multiple {
+        border-color: #80bdff;
+        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    }
+
+    .select2-container--default .select2-selection--multiple .select2-selection__choice {
+        background-color: #e9ecef;
+        border: 1px solid #ced4da;
+        border-radius: 0.25rem;
+        padding: 2px 8px;
+        margin: 3px;
+    }
+
+    .select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
+        color: #6c757d;
+        margin-right: 5px;
+    }
+
+    .select2-container--default .select2-selection--multiple .select2-selection__choice__remove:hover {
+        color: #343a40;
+    }
+
+    .select2-container--default .select2-search--inline .select2-search__field {
+        margin-top: 3px;
+    }
+
+    .select2-container .select2-selection--multiple {
+        min-height: 38px;
+    }
+
+    .select2-container .select2-search--inline .select2-search__field {
+        margin-top: 7px;
+    }
+
     .selected-value-tag {
         display: inline-flex;
         align-items: center;
@@ -290,22 +331,19 @@
                                                     </div>
                                                     <div class="mb-3">
                                                         <label class="form-label">Giá trị</label>
-                                                        <div class="selected-values-display-0 form-control" style="min-height: 38px;">
+                                                        <select class="form-select attribute-values"
+                                                            name="attributes[0][selected_values][]" id="values_0"
+                                                            multiple>
+                                                            <option value="">-- Chọn giá trị --</option>
                                                             @if(isset($attributeValues[0]) && !empty($attributeValues[0]['selected_values']))
                                                                 @foreach($attributeTypes->first(function($type) use ($attributeValues) { return $type->id == $attributeValues[0]['attribute_type_id']; })->attributeValues as $value)
-                                                                    @if(in_array($value->id, $attributeValues[0]['selected_values']))
-                                                                        <div class="selected-value-tag" data-value="{{ $value->id }}">
-                                                                            @if($value->hex)
-                                                                                <span class="color-preview" style="background-color: {{ is_array($value->hex) ? $value->hex[0] : $value->hex }}"></span>
-                                                                            @endif
-                                                                            <span>{{ is_array($value->value) ? implode(', ', $value->value) : $value->value }}</span>
-                                                                            <span class="remove-value" onclick="removeValue(0, {{ $value->id }})">×</span>
-                                                                        </div>
-                                                                    @endif
+                                                                    <option value="{{ $value->id }}" 
+                                                                        {{ in_array($value->id, $attributeValues[0]['selected_values']) ? 'selected' : '' }}>
+                                                                        {{ is_array($value->value) ? implode(', ', $value->value) : $value->value }}
+                                                                    </option>
                                                                 @endforeach
                                                             @endif
-                                                        </div>
-                                                        <div class="attribute-values-dropdown-0 dropdown-menu w-100" style="display: none;"></div>
+                                                        </select>
                                                         <div class="error-message" id="error-values-0">Vui lòng chọn ít nhất một giá trị.</div>
                                                     </div>
                                                 </div>
@@ -326,22 +364,19 @@
                                                     </div>
                                                     <div class="mb-3">
                                                         <label class="form-label">Giá trị</label>
-                                                        <div class="selected-values-display-1 form-control" style="min-height: 38px;">
+                                                        <select class="form-select attribute-values"
+                                                            name="attributes[1][selected_values][]" id="values_1"
+                                                            multiple>
+                                                            <option value="">-- Chọn giá trị --</option>
                                                             @if(isset($attributeValues[1]) && !empty($attributeValues[1]['selected_values']))
                                                                 @foreach($attributeTypes->first(function($type) use ($attributeValues) { return $type->id == $attributeValues[1]['attribute_type_id']; })->attributeValues as $value)
-                                                                    @if(in_array($value->id, $attributeValues[1]['selected_values']))
-                                                                        <div class="selected-value-tag" data-value="{{ $value->id }}">
-                                                                            @if($value->hex)
-                                                                                <span class="color-preview" style="background-color: {{ is_array($value->hex) ? $value->hex[0] : $value->hex }}"></span>
-                                                                            @endif
-                                                                            <span>{{ is_array($value->value) ? implode(', ', $value->value) : $value->value }}</span>
-                                                                            <span class="remove-value" onclick="removeValue(1, {{ $value->id }})">×</span>
-                                                                        </div>
-                                                                    @endif
+                                                                    <option value="{{ $value->id }}" 
+                                                                        {{ in_array($value->id, $attributeValues[1]['selected_values']) ? 'selected' : '' }}>
+                                                                        {{ is_array($value->value) ? implode(', ', $value->value) : $value->value }}
+                                                                    </option>
                                                                 @endforeach
                                                             @endif
-                                                        </div>
-                                                        <div class="attribute-values-dropdown-1 dropdown-menu w-100" style="display: none;"></div>
+                                                        </select>
                                                         <div class="error-message" id="error-values-1">Vui lòng chọn ít nhất một giá trị.</div>
                                                     </div>
                                                 </div>
@@ -458,163 +493,63 @@
         let askedValueOrHex = false;
 
         document.addEventListener('DOMContentLoaded', function() {
-        // Khởi tạo Select2 cho các select box thuộc tính
-        $('.attribute-type').select2({
-            width: '100%',
-            placeholder: 'Chọn thuộc tính',
-            allowClear: true
-        });
-
-        // Xử lý khi thay đổi loại thuộc tính
-        $('.attribute-type').on('change', function() {
-            const index = $(this).attr('id').replace('attribute_type_', '');
-            const display = $(`.selected-values-display-${index}`);
-            const dropdown = $(`.attribute-values-dropdown-${index}`);
-            const attributeTypeId = $(this).val();
-
-            // Reset và disable display nếu không chọn thuộc tính
-            if (!attributeTypeId) {
-                display.css({
-                    'pointer-events': 'none',
-                    'background': '#e9ecef'
-                }).empty();
-                dropdown.empty();
-                return;
-            }
-
-            // Enable display khi đã chọn thuộc tính
-            display.css({
-                'pointer-events': '',
-                'background': ''
+            // Khởi tạo Select2 cho các select box thuộc tính
+            $('.attribute-type, .attribute-values').select2({
+                width: '100%',
+                placeholder: 'Chọn thuộc tính',
+                allowClear: true
             });
 
-            // Fetch giá trị thuộc tính
-            fetch(`/admin/attributes/${attributeTypeId}/values`)
-                .then(response => response.json())
-                .then(data => {
-                    // Cập nhật dropdown
-                    dropdown.empty();
-                    
-                    data.forEach(value => {
-                        const displayValue = Array.isArray(value.value) ? value.value.join(', ') : value.value;
-                        const hexColor = Array.isArray(value.hex) ? value.hex.join(',') : value.hex;
-                        
-                        const item = $('<div>', {
-                            class: 'dropdown-item attribute-value-option',
-                            css: { cursor: 'pointer' },
-                            click: function() {
-                                toggleValue(index, value.id, displayValue, hexColor);
-                            }
-                        });
+            // Xử lý khi thay đổi loại thuộc tính
+            $('.attribute-type').on('change', function() {
+                const index = $(this).attr('id').replace('attribute_type_', '');
+                const valueSelect = $(`#values_${index}`);
+                const attributeTypeId = $(this).val();
 
-                        if (hexColor) {
-                            item.append($('<span>', {
-                                class: 'color-preview',
-                                css: { 'background-color': hexColor }
-                            }));
-                        }
-                        
-                        item.append(document.createTextNode(displayValue));
-                        dropdown.append(item);
-                    });
-                });
-        });
-
-        // Xử lý click vào display để show/hide dropdown
-        $('.selected-values-display-0, .selected-values-display-1').on('click', function() {
-            if ($(this).css('pointer-events') === 'none') return;
-            
-            const index = $(this).hasClass('selected-values-display-0') ? 0 : 1;
-            const dropdown = $(`.attribute-values-dropdown-${index}`);
-            dropdown.toggle();
-        });
-
-        // Đóng dropdown khi click ra ngoài
-        $(document).on('click', function(e) {
-            if (!$(e.target).closest('.selected-values-display-0, .attribute-values-dropdown-0').length) {
-                $('.attribute-values-dropdown-0').hide();
-            }
-            if (!$(e.target).closest('.selected-values-display-1, .attribute-values-dropdown-1').length) {
-                $('.attribute-values-dropdown-1').hide();
-            }
-        });
-
-        // Hàm toggle giá trị
-        window.toggleValue = function(index, valueId, valueText, hexColor) {
-            const display = $(`.selected-values-display-${index}`);
-            const existingTag = display.find(`[data-value="${valueId}"]`);
-            
-            if (existingTag.length) {
-                // Xóa giá trị nếu đã tồn tại
-                existingTag.remove();
-            } else {
-                // Thêm giá trị mới
-                const tag = $('<div>', {
-                    class: 'selected-value-tag',
-                    'data-value': valueId
-                });
-
-                if (hexColor) {
-                    tag.append($('<span>', {
-                        class: 'color-preview',
-                        css: { 'background-color': hexColor }
-                    }));
+                // Reset và disable select nếu không chọn thuộc tính
+                if (!attributeTypeId) {
+                    valueSelect.prop('disabled', true).empty().append('<option value="">-- Chọn giá trị --</option>');
+                    valueSelect.trigger('change');
+                    return;
                 }
 
-                tag.append($('<span>').text(valueText));
-                tag.append($('<span>', {
-                    class: 'remove-value',
-                    html: '×',
-                    click: function(e) {
-                        e.stopPropagation();
-                        removeValue(index, valueId);
-                    }
-                }));
+                // Enable select khi đã chọn thuộc tính
+                valueSelect.prop('disabled', false);
 
-                display.append(tag);
-            }
+                // Fetch giá trị thuộc tính
+                fetch(`/admin/attributes/${attributeTypeId}/values`)
+                    .then(response => response.json())
+                    .then(data => {
+                        valueSelect.empty().append('<option value="">-- Chọn giá trị --</option>');
+                        
+                        data.forEach(value => {
+                            const displayValue = Array.isArray(value.value) ? value.value.join(', ') : value.value;
+                            const option = new Option(displayValue, value.id);
+                            valueSelect.append(option);
+                        });
 
-            // Cập nhật hidden input để lưu giá trị
-            updateHiddenInput(index);
-        };
-
-        // Hàm xóa giá trị
-        window.removeValue = function(index, valueId) {
-            $(`.selected-values-display-${index}`).find(`[data-value="${valueId}"]`).remove();
-            updateHiddenInput(index);
-        };
-
-        // Hàm cập nhật hidden input
-        function updateHiddenInput(index) {
-            const values = [];
-            $(`.selected-values-display-${index} .selected-value-tag`).each(function() {
-                values.push($(this).data('value'));
+                        valueSelect.trigger('change');
+                    });
             });
-            
-            // Tạo hoặc cập nhật hidden input
-            let hiddenInput = $(`input[name="attributes[${index}][selected_values][]"]`);
-            if (!hiddenInput.length) {
-                hiddenInput = $('<input>', {
-                    type: 'hidden',
-                    name: `attributes[${index}][selected_values][]`
-                });
-                $(`.selected-values-display-${index}`).after(hiddenInput);
-            }
-            hiddenInput.val(values.join(','));
-        }
 
-        // Khởi tạo ban đầu nếu có giá trị
-        $('.attribute-type').each(function() {
-            if ($(this).val()) {
-                $(this).trigger('change');
-            }
-        });
+            // Xử lý khi thay đổi giá trị
+            $('.attribute-values').on('change', function() {
+                const index = $(this).attr('id').replace('values_', '');
+                validateAttributeValues(index);
+            });
 
-        const categorySelect = document.getElementById('category_id');
-        if (categorySelect) {
-            categorySelect.setAttribute('data-old-category', categorySelect.value);
-        }
-        restoreImagesFromTemp(); // Khôi phục ảnh tạm thời nếu có
+            // Khởi tạo ban đầu nếu có giá trị
+            $('.attribute-type').each(function() {
+                if ($(this).val()) {
+                    $(this).trigger('change');
+                }
+            });
+
+            const categorySelect = document.getElementById('category_id');
+            if (categorySelect) {
+                categorySelect.setAttribute('data-old-category', categorySelect.value);
+            }
+            restoreImagesFromTemp(); // Khôi phục ảnh tạm thời nếu có
 
             // Lưu lại phần thuộc tính của từng biến thể khi load trang
             const variantsContainer = document.getElementById('variantsContainer');
@@ -649,158 +584,6 @@
                     });
                 });
             }
-
-            // Khởi tạo Select2 cho các select box thuộc tính
-            $('.attribute-type').select2({
-                width: '100%',
-                placeholder: 'Chọn thuộc tính',
-                allowClear: true
-            });
-
-            // Xử lý khi thay đổi loại thuộc tính
-            $('.attribute-type').on('change', function() {
-                const index = $(this).attr('id').replace('attribute_type_', '');
-                const display = $(`.selected-values-display-${index}`);
-                const dropdown = $(`.attribute-values-dropdown-${index}`);
-                const attributeTypeId = $(this).val();
-
-                // Reset và disable display nếu không chọn thuộc tính
-                if (!attributeTypeId) {
-                    display.css({
-                        'pointer-events': 'none',
-                        'background': '#e9ecef'
-                    }).empty();
-                    dropdown.empty();
-                    return;
-                }
-
-                // Enable display khi đã chọn thuộc tính
-                display.css({
-                    'pointer-events': '',
-                    'background': ''
-                });
-
-                // Fetch giá trị thuộc tính
-                fetch(`/admin/attributes/${attributeTypeId}/values`)
-                    .then(response => response.json())
-                    .then(data => {
-                        // Cập nhật dropdown
-                        dropdown.empty();
-                        
-                        data.forEach(value => {
-                            const displayValue = Array.isArray(value.value) ? value.value.join(', ') : value.value;
-                            const hexColor = Array.isArray(value.hex) ? value.hex.join(',') : value.hex;
-                            
-                            const item = $('<div>', {
-                                class: 'dropdown-item attribute-value-option',
-                                css: { cursor: 'pointer' },
-                                click: function() {
-                                    toggleValue(index, value.id, displayValue, hexColor);
-                                }
-                            });
-
-                            if (hexColor) {
-                                item.append($('<span>', {
-                                    class: 'color-preview',
-                                    css: { 'background-color': hexColor }
-                                }));
-                            }
-                            
-                            item.append(document.createTextNode(displayValue));
-                            dropdown.append(item);
-                        });
-                    });
-            });
-
-            // Xử lý click vào display để show/hide dropdown
-            $('.selected-values-display-0, .selected-values-display-1').on('click', function() {
-                if ($(this).css('pointer-events') === 'none') return;
-                
-                const index = $(this).hasClass('selected-values-display-0') ? 0 : 1;
-                const dropdown = $(`.attribute-values-dropdown-${index}`);
-                dropdown.toggle();
-            });
-
-            // Đóng dropdown khi click ra ngoài
-            $(document).on('click', function(e) {
-                if (!$(e.target).closest('.selected-values-display-0, .attribute-values-dropdown-0').length) {
-                    $('.attribute-values-dropdown-0').hide();
-                }
-                if (!$(e.target).closest('.selected-values-display-1, .attribute-values-dropdown-1').length) {
-                    $('.attribute-values-dropdown-1').hide();
-                }
-            });
-
-            // Hàm toggle giá trị
-            window.toggleValue = function(index, valueId, valueText, hexColor) {
-                const display = $(`.selected-values-display-${index}`);
-                const existingTag = display.find(`[data-value="${valueId}"]`);
-                
-                if (existingTag.length) {
-                    // Xóa giá trị nếu đã tồn tại
-                    existingTag.remove();
-                } else {
-                    // Thêm giá trị mới
-                    const tag = $('<div>', {
-                        class: 'selected-value-tag',
-                        'data-value': valueId
-                    });
-
-                    if (hexColor) {
-                        tag.append($('<span>', {
-                            class: 'color-preview',
-                            css: { 'background-color': hexColor }
-                        }));
-                    }
-
-                    tag.append($('<span>').text(valueText));
-                    tag.append($('<span>', {
-                        class: 'remove-value',
-                        html: '×',
-                        click: function(e) {
-                            e.stopPropagation();
-                            removeValue(index, valueId);
-                        }
-                    }));
-
-                    display.append(tag);
-                }
-
-                // Cập nhật hidden input để lưu giá trị
-                updateHiddenInput(index);
-            };
-
-            // Hàm xóa giá trị
-            window.removeValue = function(index, valueId) {
-                $(`.selected-values-display-${index}`).find(`[data-value="${valueId}"]`).remove();
-                updateHiddenInput(index);
-            };
-
-            // Hàm cập nhật hidden input
-            function updateHiddenInput(index) {
-                const values = [];
-                $(`.selected-values-display-${index} .selected-value-tag`).each(function() {
-                    values.push($(this).data('value'));
-                });
-                
-                // Tạo hoặc cập nhật hidden input
-                let hiddenInput = $(`input[name="attributes[${index}][selected_values][]"]`);
-                if (!hiddenInput.length) {
-                    hiddenInput = $('<input>', {
-                        type: 'hidden',
-                        name: `attributes[${index}][selected_values][]`
-                    });
-                    $(`.selected-values-display-${index}`).after(hiddenInput);
-                }
-                hiddenInput.val(values.join(','));
-            }
-
-            // Khởi tạo ban đầu nếu có giá trị
-            $('.attribute-type').each(function() {
-                if ($(this).val()) {
-                    $(this).trigger('change');
-                }
-            });
         });
 
         // Thay đổi danh mục

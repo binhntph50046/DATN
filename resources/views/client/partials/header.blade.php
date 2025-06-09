@@ -34,8 +34,6 @@
             color: #fff;
         }
 
- 
-
         .category-btn-text {
             font-weight: 600;
             color: #ffffff;
@@ -260,7 +258,7 @@
                         <li><a class="dropdown-item text-white" href="{{ route('login') }}">Login</a></li>
                     @else
                         <li><a class="dropdown-item text-white" href="#">Profile</a></li>
-                        <li><a class="dropdown-item text-white" href="#">Order History</a></li>
+                        <li><a class="dropdown-item text-white" href="{{ route('order.index') }}">Order History</a></li>
                         <li>
                             <form action="{{ route('logout') }}" method="POST" class="m-0">
                                 @csrf

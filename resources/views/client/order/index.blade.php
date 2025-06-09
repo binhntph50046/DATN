@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="order-management">
-    <div class="container-fluid px-4 py-5">
+    <div class="container px-4 py-5">
         <!-- Header Section with Gradient Background -->
         <div class="header-section mb-5">
             <div class="row align-items-center">

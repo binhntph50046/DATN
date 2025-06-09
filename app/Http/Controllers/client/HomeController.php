@@ -23,7 +23,7 @@ class HomeController
                 $query->orderByDesc('is_default');
             }])
             ->orderBy('views', 'desc')
-            ->take(9) // Lấy 9 sản phẩm (3 hàng)
+            ->take(3) // Lấy 3 sản phẩm (1 hàng)
             ->get()
             ->chunk(3); // Chia thành các nhóm 3 sản phẩm
 

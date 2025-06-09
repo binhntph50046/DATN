@@ -20,8 +20,8 @@ use App\Http\Controllers\admin\SubcriberController;
 use App\Http\Controllers\admin\FaqController;
 use App\Http\Controllers\Admin\InvoiceController;
 use App\Http\Controllers\client\OrderReturnController as ClientOrderReturnController;
-use App\Http\Controllers\Admin\OrderReturnController as AdminOrderReturnController;
-use App\Http\Controllers\Admin\ResendInvoiceRequestController;
+use App\Http\Controllers\admin\OrderReturnController as AdminOrderReturnController;
+use App\Http\Controllers\admin\ResendInvoiceRequestController;
 // Auth
 use App\Http\Controllers\auth\AuthController;
 use App\Http\Controllers\auth\FacebookController;
@@ -100,7 +100,7 @@ Route::prefix('order')->name('order.')->middleware(['auth'])->group(function () 
     Route::get('/', [ClientOrderController::class, 'index'])->name('index'); // Danh sách đơn hàng
     Route::get('/tracking/{order}', [CheckoutController::class, 'tracking'])->name('tracking'); // Theo dõi đơn hàng
     Route::post('/cancel/{order}', [ClientOrderController::class, 'cancel'])->name('cancel'); // Hủy đơn hàng
-    Route::get('/invoice/{order}', [CheckoutController::class, 'invoice'])->name('invoice'); // Xem hóa đơn
+   
     Route::get('/resend-invoice/{order}', [CheckoutController::class, 'resendInvoice'])->name('resend-invoice'); // Gửi lại hóa đơn (GET)
     Route::post('/{id}/request-resend-invoice', [ClientOrderController::class, 'requestResendInvoice'])->name('request-resend-invoice'); // Yêu cầu gửi lại hóa đơn
     Route::get('/{order}/return', [ClientOrderReturnController::class, 'create'])->name('returns.create'); // Yêu cầu hoàn hàng (form)
@@ -113,20 +113,6 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('order-returns/{id}', [AdminOrderReturnController::class, 'show'])->name('order-returns.show');
     Route::post('order-returns/{id}/approve', [AdminOrderReturnController::class, 'approve'])->name('order-returns.approve');
     Route::post('order-returns/{id}/reject', [AdminOrderReturnController::class, 'reject'])->name('order-returns.reject');
-});
-
-// Route cho admin quản lý hoàn hàng
-Route::prefix('admin')->name('admin.')->group(function () {
-    Route::get('order-returns', [OrderReturnController::class, 'index'])->name('order-returns.index');
-    Route::get('order-returns/{id}', [OrderReturnController::class, 'show'])->name('order-returns.show');
-    Route::post('order-returns/{id}/approve', [OrderReturnController::class, 'approve'])->name('order-returns.approve');
-    Route::post('order-returns/{id}/reject', [OrderReturnController::class, 'reject'])->name('order-returns.reject');
-});
-
-// Route cho khách gửi yêu cầu hoàn hàng
-Route::middleware(['auth'])->group(function () {
-    Route::get('order/{order}/return', [ClientOrderReturnController::class, 'create'])->name('order-returns.create');
-    Route::post('order/{order}/return', [ClientOrderReturnController::class, 'store'])->name('order-returns.store');
 });
 
 // Theo dõi đơn hàng sau khi đặt hàng

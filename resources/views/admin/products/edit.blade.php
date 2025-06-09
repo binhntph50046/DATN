@@ -27,9 +27,113 @@
         font-size: 0.9em;
         display: none;
     }
+
+    /* Select2 Custom Styles */
+    .select2-container--default .select2-selection--multiple {
+        border: 1px solid #ced4da;
+        border-radius: 0.25rem;
+        min-height: 38px;
+    }
+
+    .select2-container--default.select2-container--focus .select2-selection--multiple {
+        border-color: #80bdff;
+        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    }
+
+    .select2-container--default .select2-selection--multiple .select2-selection__choice {
+        background-color: #e9ecef;
+        border: 1px solid #ced4da;
+        border-radius: 0.25rem;
+        padding: 2px 8px;
+        margin: 3px;
+    }
+
+    .select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
+        color: #6c757d;
+        margin-right: 5px;
+    }
+
+    .select2-container--default .select2-selection--multiple .select2-selection__choice__remove:hover {
+        color: #343a40;
+    }
+
+    .select2-container--default .select2-search--inline .select2-search__field {
+        margin-top: 3px;
+    }
+
+    .select2-container .select2-selection--multiple {
+        min-height: 38px;
+    }
+
+    .select2-container .select2-search--inline .select2-search__field {
+        margin-top: 7px;
+    }
+
+    .selected-value-tag {
+        display: inline-flex;
+        align-items: center;
+        padding: 2px 8px;
+        background: #f0f0f0;
+        border-radius: 4px;
+        margin: 2px;
+        font-size: 14px;
+    }
+
+    .selected-value-tag .color-preview {
+        width: 15px;
+        height: 15px;
+        margin-right: 5px;
+        border: 1px solid #ddd;
+        display: inline-block;
+        vertical-align: middle;
+    }
+
+    .selected-value-tag .remove-value {
+        margin-left: 5px;
+        cursor: pointer;
+        color: #999;
+        font-size: 12px;
+    }
+
+    .selected-value-tag .remove-value:hover {
+        color: #666;
+    }
+
+    .attribute-values-dropdown-0,
+    .attribute-values-dropdown-1 {
+        max-height: 200px;
+        overflow-y: auto;
+    }
+
+    .attribute-value-option {
+        display: flex;
+        align-items: center;
+        padding: 8px 12px;
+    }
+
+    .attribute-value-option:hover {
+        background-color: #f8f9fa;
+    }
+
+    .attribute-value-option .color-preview {
+        width: 15px;
+        height: 15px;
+        margin-right: 8px;
+        border: 1px solid #ddd;
+    }
+
+    .selected-values-display-0,
+    .selected-values-display-1 {
+        cursor: pointer;
+    }
 </style>
 
 @section('content')
+    <!-- Add Select2 CSS at the top of the file -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
     <div class="pc-container">
         <div class="pc-content">
             <div class="page-header">
@@ -37,12 +141,12 @@
                     <div class="row align-items-center">
                         <div class="col-md-12">
                             <div class="page-header-title">
-                                <h5 class="m-b-10">Edit Product</h5>
+                                <h5 class="m-b-10">Chỉnh sửa sản phẩm</h5>
                             </div>
                             <ul class="breadcrumb">
-                                <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Home</a></li>
-                                <li class="breadcrumb-item"><a href="{{ route('admin.products.index') }}">Products</a></li>
-                                <li class="breadcrumb-item" aria-current="page">Edit</li>
+                                <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Trang chủ</a></li>
+                                <li class="breadcrumb-item"><a href="{{ route('admin.products.index') }}">Sản phẩm</a></li>
+                                <li class="breadcrumb-item" aria-current="page">Chỉnh sửa</li>
                             </ul>
                         </div>
                     </div>
@@ -53,12 +157,12 @@
                 <div class="col-12">
                     <div class="card custom-shadow">
                         <div class="card-header">
-                            <h5>Edit Product</h5>
+                            <h5>Chỉnh sửa sản phẩm</h5>
                         </div>
                         <div class="card-body">
                             @if ($errors->any())
                                 <div class="alert alert-danger">
-                                    <h6><strong>Errors occurred:</strong></h6>
+                                    <h6><strong>Đã xảy ra lỗi:</strong></h6>
                                     <ul class="mb-2">
                                         @foreach ($errors->all() as $error)
                                             <li>{{ $error }}</li>
@@ -69,7 +173,7 @@
 
                             @if ($errors->any())
                                 <div class="alert alert-warning">
-                                    <strong>Note:</strong> You need to reselect images for newly added variants because browsers cannot automatically retain file selections after errors.
+                                    <strong>Lưu ý:</strong> Bạn cần chọn lại hình ảnh cho các biến thể mới thêm vì trình duyệt không thể tự động giữ lại các lựa chọn file sau khi có lỗi.
                                 </div>
                             @endif
 
@@ -80,7 +184,7 @@
                                 <div class="row">
                                     <div class="col-md-12">
                                         <div class="mb-3">
-                                            <label for="name" class="form-label">Product Name <span
+                                            <label for="name" class="form-label">Tên sản phẩm <span
                                                     class="text-danger">*</span></label>
                                             <input type="text" class="form-control @error('name') is-invalid @enderror"
                                                 id="name" name="name" value="{{ old('name', $product->name) }}"
@@ -94,11 +198,11 @@
                                 <div class="row">
                                     <div class="col-md-6">
                                         <div class="mb-3">
-                                            <label for="category_id" class="form-label">Category <span
+                                            <label for="category_id" class="form-label">Danh mục <span
                                                     class="text-danger">*</span></label>
                                             <select class="form-select @error('category_id') is-invalid @enderror"
                                                 id="category_id" name="category_id" required>
-                                                <option value="">Select Category</option>
+                                                <option value="">Chọn danh mục</option>
                                                 @foreach ($categories as $category)
                                                     <option value="{{ $category->id }}"
                                                         {{ old('category_id', $product->category_id) == $category->id ? 'selected' : '' }}>
@@ -112,7 +216,7 @@
                                     </div>
                                     <div class="col-md-6">
                                         <div class="mb-3">
-                                            <label for="warranty_months" class="form-label">Warranty Months <span
+                                            <label for="warranty_months" class="form-label">Thời gian bảo hành (tháng) <span
                                                     class="text-danger">*</span></label>
                                             <input type="number"
                                                 class="form-control @error('warranty_months') is-invalid @enderror"
@@ -128,7 +232,7 @@
                                 <div class="row">
                                     <div class="col-md-12">
                                         <div class="mb-3">
-                                            <label for="description" class="form-label">Short Description</label>
+                                            <label for="description" class="form-label">Mô tả ngắn</label>
                                             <textarea class="form-control @error('description') is-invalid @enderror" id="description" name="description"
                                                 rows="3">{{ old('description', $product->description) }}</textarea>
                                             @error('description')
@@ -140,7 +244,7 @@
                                 <div class="row">
                                     <div class="col-md-12">
                                         <div class="mb-3">
-                                            <label for="content" class="form-label">Detailed Description</label>
+                                            <label for="content" class="form-label">Mô tả chi tiết</label>
                                             <textarea class="snettech-editor form-control @error('content') is-invalid @enderror" id="content" name="content">{{ old('content', $product->content) }}</textarea>
                                             @error('content')
                                                 <div class="invalid-feedback">{{ $message }}</div>
@@ -151,21 +255,21 @@
                                 <div class="row">
                                     <div class="col-md-6">
                                         <div class="mb-3">
-                                            <label class="form-label">Featured Product</label>
+                                            <label class="form-label">Sản phẩm nổi bật</label>
                                             <div class="form-check form-switch">
                                                 <input class="form-check-input" type="checkbox" id="is_featured"
                                                     name="is_featured" value="1"
                                                     {{ old('is_featured', $product->is_featured) ? 'checked' : '' }}>
-                                                <label class="form-check-label" for="is_featured">Set as Featured</label>
+                                                <label class="form-check-label" for="is_featured">Đặt làm nổi bật</label>
                                             </div>
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="mb-3">
-                                            <label for="status" class="form-label">Product Status <span class="text-danger">*</span></label>
+                                            <label for="status" class="form-label">Trạng thái <span class="text-danger">*</span></label>
                                             <select class="form-select @error('status') is-invalid @enderror" id="status" name="status" required>
-                                                <option value="active" {{ old('status', $product->status) == 'active' ? 'selected' : '' }}>Active</option>
-                                                <option value="inactive" {{ old('status', $product->status) == 'inactive' ? 'selected' : '' }}>Inactive</option>
+                                                <option value="active" {{ old('status', $product->status) == 'active' ? 'selected' : '' }}>Hoạt động</option>
+                                                <option value="inactive" {{ old('status', $product->status) == 'inactive' ? 'selected' : '' }}>Không hoạt động</option>
                                             </select>
                                             @error('status')
                                                 <div class="invalid-feedback">{{ $message }}</div>
@@ -173,179 +277,145 @@
                                         </div>
                                     </div>
                                 </div>
-                                <!-- Category Specifications -->
-                                <div class="mb-3">
-                                    <label class="form-label">Technical Specifications</label>
+                                <!-- Technical Specifications -->
+                                <div class="mb-3" id="specifications-section" style="display: {{ $product->category_id ? 'block' : 'none' }}">
+                                    <label class="form-label">Thông số kỹ thuật</label>
                                     <div id="categorySpecifications">
-                                        @if (!empty($specificationsData) && count($specificationsData) > 0)
+                                        @if(!$product->category_id)
+                                            <p class="text-muted">Vui lòng chọn danh mục để hiển thị thông số kỹ thuật.</p>
+                                        @else
                                             <div id="specifications-wrapper">
-                                                @for ($i = 0; $i < count($specificationsData); $i += 2)
-                                                    <div class="row mb-2 spec-row">
+                                                @foreach($specificationsData as $index => $spec)
+                                                    @if($index % 2 == 0)
+                                                        <div class="row mb-2 spec-row" {!! $index >= 6 ? 'style="display: none;"' : '' !!}>
+                                                    @endif
                                                         <div class="col-md-6">
-                                                            @php $spec = $specificationsData[$i]; @endphp
                                                             <div class="mb-3">
-                                                                <label class="form-label">{{ $spec['name'] }} <span class="text-danger">*</span></label>
-                                                                <input type="hidden" name="specifications[{{ $i }}][specification_id]" value="{{ $spec['id'] }}">
-                                                                @php
-                                                                    $oldValue = old('specifications.' . $i . '.value');
-                                                                    $inputValue = ($oldValue !== null && $oldValue !== '') ? $oldValue : $spec['value'];
-                                                                @endphp
-                                                                <input type="text" class="form-control" name="specifications[{{ $i }}][value]" value="{{ $inputValue }}" required>
+                                                                <label class="form-label">{{ $spec['name'] }} <span class="text-danger"></span></label>
+                                                                <input type="hidden" name="specifications[{{ $index }}][specification_id]" value="{{ $spec['id'] }}">
+                                                                <input type="text" class="form-control" name="specifications[{{ $index }}][value]" value="{{ old('specifications.'.$index.'.value', $spec['value']) }}" required>
                                                             </div>
                                                         </div>
-                                                        @if (isset($specificationsData[$i + 1]))
-                                                            <div class="col-md-6">
-                                                                @php $spec = $specificationsData[$i + 1]; @endphp
-                                                                <div class="mb-3">
-                                                                    <label class="form-label">{{ $spec['name'] }} <span class="text-danger">*</span></label>
-                                                                    <input type="hidden" name="specifications[{{ $i + 1 }}][specification_id]" value="{{ $spec['id'] }}">
-                                                                    @php
-                                                                        $oldValue = old('specifications.' . ($i + 1) . '.value');
-                                                                        $inputValue = ($oldValue !== null && $oldValue !== '') ? $oldValue : $spec['value'];
-                                                                    @endphp
-                                                                    <input type="text" class="form-control" name="specifications[{{ $i + 1 }}][value]" value="{{ $inputValue }}" required>
-                                                                </div>
-                                                            </div>
-                                                        @endif
-                                                    </div>
-                                                @endfor
+                                                    @if($index % 2 == 1 || $loop->last)
+                                                        </div>
+                                                    @endif
+                                                @endforeach
                                             </div>
-                                        @else
-                                            <p class="text-muted">No specifications found for this category.</p>
+                                            @if(count($specificationsData) > 6)
+                                                <button type="button" class="btn btn-link p-0" onclick="showMoreSpecs(this)">Xem thêm</button>
+                                            @endif
                                         @endif
                                     </div>
                                 </div>
                                 <!-- Variant Attributes -->
-                                <div class="mb-3">
-                                    <label class="form-label">Variant Attributes <span class="text-danger">*</span></label>
+                                <div class="mb-3" id="variant-attributes-section" style="display: {{ $product->category_id ? 'block' : 'none' }}">
+                                    <label class="form-label">Thuộc tính biến thể <span
+                                            class="text-danger">*</span></label>
                                     <div id="variant-attributes">
                                         <div id="attributes-wrapper">
                                             <div class="row mb-2 attribute-row">
                                                 <div class="col-md-6">
                                                     <div class="mb-3">
-                                                        <label class="form-label">Attribute 1 <span class="text-danger">*</span></label>
-                                                        <select class="form-select attribute-type" name="attributes[0][attribute_type_id]" id="attribute_type_0" required>
-                                                            <option value="">-- Select Attribute --</option>
+                                                        <label class="form-label">Thuộc tính 1</label>
+                                                        <select class="form-select attribute-type"
+                                                            name="attributes[0][attribute_type_id]" id="attribute_type_0">
+                                                            <option value="">-- Chọn thuộc tính --</option>
                                                             @foreach ($attributeTypes as $type)
-                                                                <option value="{{ $type->id }}" {{ old('attributes.0.attribute_type_id', $attributeValues[0]['attribute_type_id'] ?? '') == $type->id ? 'selected' : '' }}>{{ $type->name }}</option>
+                                                                <option value="{{ $type->id }}" 
+                                                                    {{ old('attributes.0.attribute_type_id', isset($attributeValues[0]) ? $attributeValues[0]['attribute_type_id'] : '') == $type->id ? 'selected' : '' }}>
+                                                                    {{ $type->name }}
+                                                                </option>
                                                             @endforeach
                                                         </select>
-                                                        <div class="error-message" id="error-type-0">Please select an attribute type.</div>
+                                                        <div class="error-message" id="error-type-0">Vui lòng chọn loại thuộc tính.</div>
                                                     </div>
                                                     <div class="mb-3">
-                                                        <label class="form-label">Values <span class="text-danger">*</span></label>
-                                                        @php
-                                                            // Xử lý value và hex cho thuộc tính 1
-                                                            $valueArr0 = $attributeValues[0]['value'] ?? [];
-                                                            if (is_string($valueArr0)) {
-                                                                $decoded = json_decode($valueArr0, true);
-                                                                $valueArr0 = is_array($decoded) ? $decoded : [$valueArr0];
-                                                            }
-                                                            $valueStr0 = implode(', ', $valueArr0);
-                                                            $hexArr0 = $attributeValues[0]['hex'] ?? [];
-                                                            if (is_string($hexArr0)) {
-                                                                $decoded = json_decode($hexArr0, true);
-                                                                $hexArr0 = is_array($decoded) ? $decoded : [$hexArr0];
-                                                            }
-                                                            $hexStr0 = implode(', ', $hexArr0);
-                                                        @endphp
-                                                        <input type="text" class="form-control attribute-values" name="attributes[0][value]" id="values_0" placeholder="Values (e.g., Red, Blue)" value="{{ old('attributes.0.value', $valueStr0) }}" required>
-                                                        <div class="error-message" id="error-values-0">Please enter valid values.</div>
-                                                    </div>
-                                                    <div class="mb-3">
-                                                        <label class="form-label">Color Code (if any)</label>
-                                                        @php
-                                                            // Xử lý value và hex cho thuộc tính 1
-                                                            $valueArr0 = $attributeValues[0]['value'] ?? [];
-                                                            if (is_string($valueArr0)) {
-                                                                $decoded = json_decode($valueArr0, true);
-                                                                $valueArr0 = is_array($decoded) ? $decoded : [$valueArr0];
-                                                            }
-                                                            $valueStr0 = implode(', ', $valueArr0);
-                                                            $hexArr0 = $attributeValues[0]['hex'] ?? [];
-                                                            if (is_string($hexArr0)) {
-                                                                $decoded = json_decode($hexArr0, true);
-                                                                $hexArr0 = is_array($decoded) ? $decoded : [$hexArr0];
-                                                            }
-                                                            $hexStr0 = implode(', ', $hexArr0);
-                                                        @endphp
-                                                        <input type="text" class="form-control attribute-hex" name="attributes[0][hex]" id="hex_0" placeholder="#000000" value="{{ old('attributes.0.hex', $hexStr0) }}">
-                                                        <div class="error-message" id="error-hex-0">Invalid color code.</div>
+                                                        <label class="form-label">Giá trị</label>
+                                                        <select class="form-select attribute-values"
+                                                            name="attributes[0][selected_values][]" id="values_0"
+                                                            multiple>
+                                                            <option value="">-- Chọn giá trị --</option>
+                                                            @if(isset($attributeValues[0]) && !empty($attributeValues[0]['selected_values']))
+                                                                @foreach($attributeTypes->first(function($type) use ($attributeValues) { return $type->id == $attributeValues[0]['attribute_type_id']; })->attributeValues as $value)
+                                                                    <option value="{{ $value->id }}" 
+                                                                        {{ in_array($value->id, $attributeValues[0]['selected_values']) ? 'selected' : '' }}>
+                                                                        {{ is_array($value->value) ? implode(', ', $value->value) : $value->value }}
+                                                                    </option>
+                                                                @endforeach
+                                                            @endif
+                                                        </select>
+                                                        <div class="error-message" id="error-values-0">Vui lòng chọn ít nhất một giá trị.</div>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-6">
                                                     <div class="mb-3">
-                                                        <label class="form-label">Attribute 2</label>
-                                                        <select class="form-select attribute-type" name="attributes[1][attribute_type_id]" id="attribute_type_1">
-                                                            <option value="">-- Select Attribute --</option>
+                                                        <label class="form-label">Thuộc tính 2</label>
+                                                        <select class="form-select attribute-type"
+                                                            name="attributes[1][attribute_type_id]" id="attribute_type_1">
+                                                            <option value="">-- Chọn thuộc tính --</option>
                                                             @foreach ($attributeTypes as $type)
-                                                                <option value="{{ $type->id }}" {{ old('attributes.1.attribute_type_id', $attributeValues[1]['attribute_type_id'] ?? '') == $type->id ? 'selected' : '' }}>{{ $type->name }}</option>
+                                                                <option value="{{ $type->id }}" 
+                                                                    {{ old('attributes.1.attribute_type_id', isset($attributeValues[1]) ? $attributeValues[1]['attribute_type_id'] : '') == $type->id ? 'selected' : '' }}>
+                                                                    {{ $type->name }}
+                                                                </option>
                                                             @endforeach
                                                         </select>
-                                                        <div class="error-message" id="error-type-1">Please select an attribute type.</div>
+                                                        <div class="error-message" id="error-type-1">Vui lòng chọn loại thuộc tính.</div>
                                                     </div>
                                                     <div class="mb-3">
-                                                        <label class="form-label">Values</label>
-                                                        @php
-                                                            // Xử lý value và hex cho thuộc tính 2
-                                                            $valueArr1 = $attributeValues[1]['value'] ?? [];
-                                                            if (is_string($valueArr1)) {
-                                                                $decoded = json_decode($valueArr1, true);
-                                                                $valueArr1 = is_array($decoded) ? $decoded : [$valueArr1];
-                                                            }
-                                                            $valueStr1 = implode(', ', $valueArr1);
-                                                            $hexArr1 = $attributeValues[1]['hex'] ?? [];
-                                                            if (is_string($hexArr1)) {
-                                                                $decoded = json_decode($hexArr1, true);
-                                                                $hexArr1 = is_array($decoded) ? $decoded : [$hexArr1];
-                                                            }
-                                                            $hexStr1 = implode(', ', $hexArr1);
-                                                        @endphp
-                                                        <input type="text" class="form-control attribute-values" name="attributes[1][value]" id="values_1" placeholder="Values (e.g., Red, Blue)" value="{{ old('attributes.1.value', $valueStr1) }}">
-                                                        <div class="error-message" id="error-values-1">Please enter valid values.</div>
-                                                    </div>
-                                                    <div class="mb-3">
-                                                        <label class="form-label">Color Code (if any)</label>
-                                                        <input type="text" class="form-control attribute-hex" name="attributes[1][hex]" id="hex_1" placeholder="#000000" value="{{ old('attributes.1.hex', $hexStr1) }}">
-                                                        <div class="error-message" id="error-hex-1">Invalid color code.</div>
+                                                        <label class="form-label">Giá trị</label>
+                                                        <select class="form-select attribute-values"
+                                                            name="attributes[1][selected_values][]" id="values_1"
+                                                            multiple>
+                                                            <option value="">-- Chọn giá trị --</option>
+                                                            @if(isset($attributeValues[1]) && !empty($attributeValues[1]['selected_values']))
+                                                                @foreach($attributeTypes->first(function($type) use ($attributeValues) { return $type->id == $attributeValues[1]['attribute_type_id']; })->attributeValues as $value)
+                                                                    <option value="{{ $value->id }}" 
+                                                                        {{ in_array($value->id, $attributeValues[1]['selected_values']) ? 'selected' : '' }}>
+                                                                        {{ is_array($value->value) ? implode(', ', $value->value) : $value->value }}
+                                                                    </option>
+                                                                @endforeach
+                                                            @endif
+                                                        </select>
+                                                        <div class="error-message" id="error-values-1">Vui lòng chọn ít nhất một giá trị.</div>
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div class="error-message" id="error-min-attributes">At least one valid attribute is required.</div>
-                                            <div class="error-message" id="error-duplicate">Cannot select the same attribute type.</div>
                                         </div>
                                     </div>
                                 </div>
+                                <div class="error-message" id="error-duplicate" style="display: none;">Không được phép chọn trùng loại thuộc tính.</div>
+                                <div class="error-message" id="error-min-attributes" style="display: none;">Vui lòng chọn ít nhất một thuộc tính với giá trị hợp lệ.</div>
                                 <!-- Product Variants -->
                                 <div class="mb-3">
-                                    <label class="form-label">Product Variants</label> <br>
-                                    <button type="button" class="btn btn-primary mb-3" id="generate-variants">Regenerate Variants</button>
+                                    <label class="form-label">Biến thể sản phẩm</label> <br>
+                                    <button type="button" class="btn btn-primary mb-3" id="generate-variants">Tạo lại biến thể</button>
                                     <div id="variantsContainer">
                                         @php
                                             $variants = old('variants', $product->variants->toArray());
                                         @endphp
                                         @foreach ($variants as $index => $variant)
                                             <div class="variant-row" data-index="{{ $index }}">
-                                                <h6>Variant {{ $index + 1 }}: {{ $variant['name'] ?? '' }}</h6>
+                                                <h6>Biến thể {{ $index + 1 }}: {{ $variant['name'] ?? '' }}</h6>
                                                 <input type="hidden" name="variants[{{ $index }}][id]" value="{{ $variant['id'] ?? '' }}">
                                                 <input type="hidden" name="variants[{{ $index }}][name]" value="{{ $variant['name'] ?? '' }}">
                                                 <input type="hidden" name="variants[{{ $index }}][slug]" value="{{ $variant['slug'] ?? '' }}">
                                                 <div class="row">
                                                     <div class="col-md-3">
                                                         <div class="mb-3">
-                                                            <label class="form-label">Stock</label>
+                                                            <label class="form-label">Tồn kho</label>
                                                             <input type="number" class="form-control" name="variants[{{ $index }}][stock]" min="0" value="{{ $variant['stock'] ?? 0 }}" required>
                                                         </div>
                                                     </div>
                                                     <div class="col-md-3">
                                                         <div class="mb-3">
-                                                            <label class="form-label">Purchase Price</label>
+                                                            <label class="form-label">Giá nhập</label>
                                                             <input type="number" class="form-control" name="variants[{{ $index }}][purchase_price]" min="0" step="0.01" value="{{ $variant['purchase_price'] ?? 0 }}" required>
                                                         </div>
                                                     </div>
                                                     <div class="col-md-3">
                                                         <div class="mb-3">
-                                                            <label class="form-label">Selling Price</label>
+                                                            <label class="form-label">Giá bán</label>
                                                             <input type="number" class="form-control" name="variants[{{ $index }}][selling_price]" min="0" step="0.01" value="{{ $variant['selling_price'] ?? 0 }}" required>
                                                         </div>
                                                     </div>
@@ -353,7 +423,7 @@
                                                 <div class="row">
                                                     <div class="col-md-6">
                                                         <div class="mb-3">
-                                                            <label class="form-label">Images</label>
+                                                            <label class="form-label">Hình ảnh</label>
                                                             <input type="file" class="form-control variant-images" name="variants[{{ $index }}][images][]" multiple accept="image/*">
                                                             <div id="preview-{{ $index }}" class="preview-images-container mt-2 d-flex flex-wrap gap-2">
                                                                 @if (!empty($variant['images']))
@@ -371,10 +441,10 @@
                                                     </div>
                                                     <div class="col-md-6">
                                                         <div class="mb-3">
-                                                            <label class="form-label">Default Variant</label>
+                                                            <label class="form-label">Biến thể mặc định</label>
                                                             <div class="form-check form-switch">
                                                                 <input class="form-check-input default-variant-toggle" type="checkbox" name="variants[{{ $index }}][is_default]" id="is_default_{{ $index }}" value="1" {{ !empty($variant['is_default']) ? 'checked' : '' }}>
-                                                                <label class="form-check-label" for="is_default_{{ $index }}">Set as Default</label>
+                                                                <label class="form-check-label" for="is_default_{{ $index }}">Đặt làm mặc định</label>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -390,9 +460,10 @@
                                         @endforeach
                                     </div>
                                 </div>
+
                                 <div class="mb-3">
-                                    <button type="submit" class="btn btn-primary">Update Product</button>
-                                    <a href="{{ route('admin.products.index') }}" class="btn btn-secondary">Cancel</a>
+                                    <button type="submit" class="btn btn-primary">Cập nhật sản phẩm</button>
+                                    <a href="{{ route('admin.products.index') }}" class="btn btn-secondary">Hủy</a>
                                 </div>
                             </form>
                         </div>
@@ -402,6 +473,13 @@
         </div>
     </div>
     <script>
+        function showMoreSpecs(btn) {
+            document.querySelectorAll('#specifications-wrapper .spec-row').forEach(row => {
+                row.style.display = '';
+            });
+            btn.style.display = 'none';
+        }
+
         // Truyền dữ liệu old specifications từ Blade sang JavaScript
         const oldSpecifications = @json(old('specifications', []));
         const productSpecifications = @json($product->specifications->pluck('pivot.value', 'id')); // Lấy giá trị theo ID spec
@@ -415,6 +493,58 @@
         let askedValueOrHex = false;
 
         document.addEventListener('DOMContentLoaded', function() {
+            // Khởi tạo Select2 cho các select box thuộc tính
+            $('.attribute-type, .attribute-values').select2({
+                width: '100%',
+                placeholder: 'Chọn thuộc tính',
+                allowClear: true
+            });
+
+            // Xử lý khi thay đổi loại thuộc tính
+            $('.attribute-type').on('change', function() {
+                const index = $(this).attr('id').replace('attribute_type_', '');
+                const valueSelect = $(`#values_${index}`);
+                const attributeTypeId = $(this).val();
+
+                // Reset và disable select nếu không chọn thuộc tính
+                if (!attributeTypeId) {
+                    valueSelect.prop('disabled', true).empty().append('<option value="">-- Chọn giá trị --</option>');
+                    valueSelect.trigger('change');
+                    return;
+                }
+
+                // Enable select khi đã chọn thuộc tính
+                valueSelect.prop('disabled', false);
+
+                // Fetch giá trị thuộc tính
+                fetch(`/admin/attributes/${attributeTypeId}/values`)
+                    .then(response => response.json())
+                    .then(data => {
+                        valueSelect.empty().append('<option value="">-- Chọn giá trị --</option>');
+                        
+                        data.forEach(value => {
+                            const displayValue = Array.isArray(value.value) ? value.value.join(', ') : value.value;
+                            const option = new Option(displayValue, value.id);
+                            valueSelect.append(option);
+                        });
+
+                        valueSelect.trigger('change');
+                    });
+            });
+
+            // Xử lý khi thay đổi giá trị
+            $('.attribute-values').on('change', function() {
+                const index = $(this).attr('id').replace('values_', '');
+                validateAttributeValues(index);
+            });
+
+            // Khởi tạo ban đầu nếu có giá trị
+            $('.attribute-type').each(function() {
+                if ($(this).val()) {
+                    $(this).trigger('change');
+                }
+            });
+
             const categorySelect = document.getElementById('category_id');
             if (categorySelect) {
                 categorySelect.setAttribute('data-old-category', categorySelect.value);
@@ -454,50 +584,6 @@
                     });
                 });
             }
-
-            // Thêm sự kiện change cho các select box thuộc tính
-            document.querySelectorAll('.attribute-type').forEach((select, idx) => {
-                // Lưu giá trị ban đầu
-                select.setAttribute('data-old-value', select.value);
-
-                // Thêm sự kiện change
-                select.addEventListener('change', function() {
-                    const oldValue = this.getAttribute('data-old-value');
-                    const newValue = this.value;
-
-                    // Nếu giá trị không thay đổi hoặc đang xóa giá trị (chọn option rỗng) thì không cần xác nhận
-                    if (oldValue === newValue || (!oldValue && !newValue)) {
-                        this.setAttribute('data-old-value', newValue);
-                        return;
-                    }
-
-                    // Hiển thị dialog xác nhận
-                    if (confirm('Thay đổi thuộc tính sẽ xóa toàn bộ giá trị thuộc tính, mã màu và biến thể. Bạn có chắc chắn?')) {
-                        askedAttribute = true;
-                        markAllVariantImagesForDelete();
-                        markAllAttributesForDelete();
-                        // Xóa giá trị, mã màu (reset input)
-                        if (document.getElementById(`values_${idx}`)) document.getElementById(`values_${idx}`).value = '';
-                        if (document.getElementById(`hex_${idx}`)) document.getElementById(`hex_${idx}`).value = '';
-                        this.setAttribute('data-old-value', newValue);
-                    } else {
-                        // Nếu người dùng không đồng ý, khôi phục lại giá trị cũ
-                        this.value = oldValue;
-                        return;
-                    }
-
-                    validateAttributeType(idx);
-                });
-            });
-
-            // Thêm sự kiện cho nút xóa ảnh
-            document.querySelectorAll('.remove-image').forEach(button => {
-                button.addEventListener('click', function() {
-                    const imagePath = this.dataset.image;
-                    const variantIndex = this.dataset.variant;
-                    markImageForDelete(imagePath, variantIndex);
-                });
-            });
         });
 
         // Thay đổi danh mục
@@ -684,6 +770,12 @@
                 valueInputs.forEach(i => i.disabled = false);
                 hexInputs.forEach(i => i.disabled = false);
 
+                // Show sections
+                const variantAttributesSection = document.getElementById('variant-attributes-section');
+                const specificationsSection = document.getElementById('specifications-section');
+                variantAttributesSection.style.display = 'block';
+                specificationsSection.style.display = 'block';
+
                 // Fetch Specifications
                 fetch(`/admin/categories/${categoryId}/specifications`)
                     .then(response => response.json())
@@ -835,10 +927,17 @@
                         }, 0);
                     });
             } else {
+                // Hide sections
+                const variantAttributesSection = document.getElementById('variant-attributes-section');
+                const specificationsSection = document.getElementById('specifications-section');
+                variantAttributesSection.style.display = 'none';
+                specificationsSection.style.display = 'none';
+
                 // Clear specifications section
                 const specContainer = document.getElementById('categorySpecifications');
-                specContainer.innerHTML = '<p class="text-muted">Select a category to display specifications.</p>';
+                specContainer.innerHTML = '<p class="text-muted">Vui lòng chọn danh mục để hiển thị thông số kỹ thuật.</p>';
 
+                // Reset and disable other inputs
                 selects.forEach(s => {
                     s.disabled = true;
                     s.selectedIndex = 0;
@@ -1062,26 +1161,26 @@
                 }
                 const variantHtml = `
                     <div class="variant-row" data-index="${index}">
-                        <h6>Variant ${index + 1}: ${combo.name}</h6>
+                        <h6>Biến thể ${index + 1}: ${combo.name}</h6>
                         <input type="hidden" name="variants[${index}][name]" value="${combo.name}">
                         <input type="hidden" name="variants[${index}][slug]" value="${combo.name.toLowerCase().replace(/\s+/g, '-')}">
                         ${attributesInputs}
                         <div class="row">
                             <div class="col-md-3">
                                 <div class="mb-3">
-                                    <label class="form-label">Stock</label>
+                                    <label class="form-label">Tồn kho</label>
                                     <input type="number" class="form-control" name="variants[${index}][stock]" min="0">
                                 </div>
                             </div>
                             <div class="col-md-3">
                                 <div class="mb-3">
-                                    <label class="form-label">Purchase Price</label>
+                                    <label class="form-label">Giá nhập</label>
                                     <input type="number" class="form-control" name="variants[${index}][purchase_price]" min="0" step="0.01">
                                 </div>
                             </div>
                             <div class="col-md-3">
                                 <div class="mb-3">
-                                    <label class="form-label">Selling Price</label>
+                                    <label class="form-label">Giá bán</label>
                                     <input type="number" class="form-control" name="variants[${index}][selling_price]" min="0" step="0.01">
                                 </div>
                             </div>
@@ -1089,17 +1188,17 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="mb-3">
-                                    <label class="form-label">Images</label>
+                                    <label class="form-label">Hình ảnh</label>
                                     <input type="file" class="form-control variant-images" name="variants[${index}][images][]" multiple accept="image/*">
                                     <div id="preview-${index}" class="preview-images-container mt-2 d-flex flex-wrap gap-2"></div>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="mb-3">
-                                    <label class="form-label">Default Variant</label>
+                                    <label class="form-label">Biến thể mặc định</label>
                                     <div class="form-check form-switch">
                                         <input class="form-check-input default-variant-toggle" type="checkbox" name="variants[${index}][is_default]" id="is_default_${index}" value="1" ${index === 0 ? 'checked' : ''}>
-                                        <label class="form-check-label" for="is_default_${index}">Set as Default</label>
+                                        <label class="form-check-label" for="is_default_${index}">Đặt làm mặc định</label>
                                     </div>
                                 </div>
                             </div>

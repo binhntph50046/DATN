@@ -48,33 +48,21 @@ class UpdateProductRequest extends FormRequest
             'attributes.*.attribute_type_id' => [
                 function ($attribute, $value, $fail) {
                     $index = (int) filter_var($attribute, FILTER_SANITIZE_NUMBER_INT);
-                    $values = request()->input("attributes.{$index}.value");
+                    $selectedValues = request()->input("attributes.{$index}.selected_values");
                     if ($index === 0 && empty($value)) {
                         $fail('Please select attribute type.');
                     }
-                    if ($index === 0 && empty($values)) {
-                        $fail('Please enter attribute value.');
+                    if ($index === 0 && empty($selectedValues)) {
+                        $fail('Please select at least one attribute value.');
                     }
                     // Attribute 2 is only required if attribute type is selected
-                    if ($index === 1 && $value && empty($values)) {
-                        $fail('Please enter attribute value.');
+                    if ($index === 1 && $value && empty($selectedValues)) {
+                        $fail('Please select at least one attribute value.');
                     }
                 }
             ],
-            'attributes.*.value' => [
-                function ($attribute, $value, $fail) {
-                    $index = (int) filter_var($attribute, FILTER_SANITIZE_NUMBER_INT);
-                    $type = request()->input("attributes.{$index}.attribute_type_id");
-                    if ($index === 0 && empty($value)) {
-                        $fail('Please enter attribute value.');
-                    }
-                    // Attribute 2 is only required if attribute type is selected
-                    if ($index === 1 && $type && empty($value)) {
-                        $fail('Please enter attribute value.');
-                    }
-                }
-            ],
-            'attributes.*.hex' => ['nullable', 'string'],
+            'attributes.*.selected_values' => ['required_with:attributes.*.attribute_type_id', 'array'],
+            'attributes.*.selected_values.*' => ['exists:variant_attribute_values,id'],
             'variants' => [
                 'required',
                 'array',
@@ -174,7 +162,8 @@ class UpdateProductRequest extends FormRequest
             'specifications.*.value.max' => 'Specification value cannot exceed 255 characters.',
             'attributes.required' => 'At least one attribute is required to create variants.',
             'attributes.min' => 'At least one attribute is required to create variants.',
-            'attributes.*.hex.regex' => 'Invalid hex color code (e.g.: #FFFFFF).',
+            'attributes.*.selected_values.required_with' => 'Please select at least one value for each attribute type.',
+            'attributes.*.selected_values.*.exists' => 'Invalid attribute value selected.',
             'variants.required' => 'At least one variant is required.',
             'variants.min' => 'At least one variant is required.',
             'variants.*.name.required' => 'Please enter variant name.',
@@ -201,7 +190,7 @@ class UpdateProductRequest extends FormRequest
             // Check at least one attribute has complete information
             $validAttributes = 0;
             foreach ($attributes as $key => $attribute) {
-                if (!empty($attribute['attribute_type_id']) && !empty($attribute['value'])) {
+                if (!empty($attribute['attribute_type_id']) && !empty($attribute['selected_values'])) {
                     $validAttributes++;
                 }
             }
@@ -211,34 +200,23 @@ class UpdateProductRequest extends FormRequest
             // Check second attribute if exists
             if (isset($attributes[1])) {
                 $attr1 = $attributes[1];
-                // If attribute_type_id exists, value must exist
-                if (!empty($attr1['attribute_type_id']) && empty($attr1['value'])) {
-                    $validator->errors()->add('attributes.1.value', 'Attribute 2 value is required when attribute type is selected.');
+                // If attribute_type_id exists, selected_values must exist
+                if (!empty($attr1['attribute_type_id']) && empty($attr1['selected_values'])) {
+                    $validator->errors()->add('attributes.1.selected_values', 'Please select at least one value for attribute 2.');
                 }
-                // If value exists, attribute_type_id must exist
-                if (!empty($attr1['value']) && empty($attr1['attribute_type_id'])) {
-                    $validator->errors()->add('attributes.1.attribute_type_id', 'Attribute 2 type is required when value is provided.');
+                // If selected_values exists, attribute_type_id must exist
+                if (!empty($attr1['selected_values']) && empty($attr1['attribute_type_id'])) {
+                    $validator->errors()->add('attributes.1.attribute_type_id', 'Attribute 2 type is required when values are selected.');
                 }
             }
             // Check first attribute if exists
             if (isset($attributes[0])) {
                 $attr0 = $attributes[0];
-                if (!empty($attr0['attribute_type_id']) && empty($attr0['value'])) {
-                    $validator->errors()->add('attributes.0.value', 'Attribute 1 value is required when attribute type is selected.');
+                if (!empty($attr0['attribute_type_id']) && empty($attr0['selected_values'])) {
+                    $validator->errors()->add('attributes.0.selected_values', 'Please select at least one value for attribute 1.');
                 }
-                if (!empty($attr0['value']) && empty($attr0['attribute_type_id'])) {
-                    $validator->errors()->add('attributes.0.attribute_type_id', 'Attribute 1 type is required when value is provided.');
-                }
-            }
-            // Custom validate hex for each attribute (allow multiple hex codes separated by commas)
-            foreach ([0, 1] as $idx) {
-                if (!empty($attributes[$idx]['hex'])) {
-                    $hexes = array_map('trim', explode(',', $attributes[$idx]['hex']));
-                    foreach ($hexes as $hex) {
-                        if ($hex !== '' && !preg_match('/^#[0-9A-Fa-f]{6}$/', $hex)) {
-                            $validator->errors()->add("attributes.$idx.hex", "Invalid hex color code for attribute " . ($idx+1) . ": $hex");
-                        }
-                    }
+                if (!empty($attr0['selected_values']) && empty($attr0['attribute_type_id'])) {
+                    $validator->errors()->add('attributes.0.attribute_type_id', 'Attribute 1 type is required when values are selected.');
                 }
             }
         });
@@ -251,19 +229,10 @@ class UpdateProductRequest extends FormRequest
         
         // Clean empty attributes
         foreach ($attributes as $key => $attribute) {
-            if (empty($attribute['attribute_type_id']) && empty($attribute['value'])) {
+            if (empty($attribute['attribute_type_id']) && empty($attribute['selected_values'])) {
                 // If both are empty, set to null
                 $attributes[$key]['attribute_type_id'] = null;
-                $attributes[$key]['value'] = null;
-                $attributes[$key]['hex'] = null;
-            } else {
-                // Ensure value is string
-                if (isset($attribute['value'])) {
-                    $attributes[$key]['value'] = (string) $attribute['value'];
-                }
-                if (isset($attribute['hex'])) {
-                    $attributes[$key]['hex'] = (string) $attribute['hex'];
-                }
+                $attributes[$key]['selected_values'] = null;
             }
         }
         

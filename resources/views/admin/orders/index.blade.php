@@ -16,6 +16,7 @@
                             <li class="breadcrumb-item" aria-current="page">Orders</li>
                         </ul>
                     </div>
+                    
                 </div>
             </div>
         </div>
@@ -52,7 +53,7 @@
                                 </div>
                                 <div class="col-md-3 d-flex gap-2 align-items-stretch">
                                     <button type="submit" class="btn btn-primary btn-sm rounded-3 w-100">Lọc</button>
-                                    <a href="{{ route('admin.orders.index') }}" class="btn btn-secondary align-items-center btn-sm rounded-3 w-100">Reset</a>
+                                    <a href="{{ route('admin.orders.index') }}" class="btn btn-secondary d-flex justify-content-center align-items-center btn-sm rounded-3 w-100">Reset</a>
                                 </div>
                                 
                             </form>
@@ -65,6 +66,15 @@
                         @if(session('success'))
                             <div class="alert alert-success">
                                 {{ session('success') }}
+                            </div>
+                        @endif
+                        @if($errors->any())
+                            <div class="alert alert-danger">
+                                <ul class="mb-0">
+                                    @foreach($errors->all() as $error)
+                                        <li>{{ $error }}</li>
+                                    @endforeach
+                                </ul>
                             </div>
                         @endif
                         <div class="table-responsive">
@@ -83,9 +93,11 @@
                                     @foreach($orders as $order)
                                     <tr>
                                         <td>{{ $order->id }}</td>
-                                        <td>
-                                            {{ $order->shipping_name }}<br>
-                                            <small>{{ $order->shipping_email }}</small>
+                                        <td style="max-width: 220px; overflow-x: auto; white-space: nowrap; display: block;">
+                                            <div><strong>{{ $order->shipping_name }}</strong></div>
+                                            <div><small>{{ $order->shipping_email }}</small></div>
+                                            <div><small>{{ $order->shipping_phone }}</small></div>
+                                            <div style="max-width: 200px; overflow-x: auto; white-space: nowrap;"><small>{{ $order->shipping_address }}</small></div>
                                         </td>
                                         <td>{{ number_format($order->total_price) }} VNĐ</td>
                                         <td>
@@ -100,8 +112,18 @@
                                         </td>
                                         <td class="text-center">
                                             <a href="{{ route('admin.orders.show', $order->id) }}" class="btn btn-primary btn-sm rounded-3 me-2">
-                                                <i class="ti ti-eye"></i> View
+                                                <i class="ti ti-eye"></i> 
                                             </a>
+                                            @if($order->status == 'completed')
+                                                @php
+                                                    $invoice = \App\Models\Invoice::where('order_id', $order->id)->first();
+                                                @endphp
+                                                @if($invoice)
+                                                    <a href="{{ route('admin.invoices.show', $invoice->id) }}" class="btn btn-success btn-sm rounded-3" title="Xem hóa đơn">
+                                                        <i class="fas fa-file-invoice"></i>
+                                                    </a>
+                                                @endif
+                                            @endif
                                             {{-- <form action="{{ route('admin.orders.destroy', $order->id) }}" method="POST" class="d-inline">
                                                 @csrf
                                                 @method('DELETE')
@@ -123,4 +145,13 @@
         <!-- [ Main Content ] end -->
     </div>
 </div>
+<style>
+    td[style*='overflow-x: auto']::-webkit-scrollbar {
+        height: 6px;
+    }
+    td[style*='overflow-x: auto']::-webkit-scrollbar-thumb {
+        background: #e9ecef;
+        border-radius: 3px;
+    }
+</style>
 @endsection

@@ -112,6 +112,21 @@
             </div>
         @endif
 
+
+        @if(session('warning'))
+            <div class="alert alert-warning alert-modern alert-dismissible fade show" role="alert">
+                <div class="alert-icon">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <div class="alert-content">
+                    <strong>Lưu ý!</strong>
+                    <div class="mb-0">{!! session('warning') !!}</div>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        @endif
+
+
         <!-- Modern Orders Table -->
         <div class="table-responsive">
             <table class="table table-modern">
@@ -352,6 +367,20 @@
 
 .table-modern tbody tr {
     transition: all 0.3s ease;
+
+}
+
+.table-modern tbody tr:hover {
+    background: #f8f9fa;
+}
+
+.table-modern td {
+    padding: 1rem;
+    vertical-align: middle;
+    border-bottom: 1px solid #e9ecef;
+}
+
+
 }
 
 .table-modern tbody tr:hover {
@@ -469,6 +498,7 @@
         margin-bottom: 1rem;
         border: 1px solid #e9ecef;
         border-radius: 10px;
+
     }
     
     .table-modern td {
@@ -490,6 +520,27 @@
         color: #495057;
     }
     
+    }
+    
+    .table-modern td {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.75rem 1rem;
+        border: none;
+        border-bottom: 1px solid #e9ecef;
+    }
+    
+    .table-modern td:last-child {
+        border-bottom: none;
+    }
+    
+    .table-modern td::before {
+        content: attr(data-label);
+        font-weight: 600;
+        color: #495057;
+    }
+
     .order-actions {
         justify-content: flex-end;
     }
@@ -516,6 +567,89 @@
         padding: 0.5rem 0.75rem;
         font-size: 0.9rem;
     }
+
+}
+
+/* Alert Styling */
+.alert-modern {
+    border: none;
+    border-radius: 15px;
+    padding: 1.25rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    animation: slideIn 0.5s ease-out;
+}
+
+.alert-modern .alert-icon {
+    font-size: 1.5rem;
+    flex-shrink: 0;
+}
+
+.alert-modern .alert-content {
+    flex-grow: 1;
+}
+
+.alert-modern .alert-content strong {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-size: 1.1rem;
+}
+
+.alert-modern .btn-close {
+    padding: 1rem;
+    margin: -1rem -1rem -1rem 0;
+    opacity: 0.5;
+    transition: opacity 0.3s ease;
+}
+
+.alert-modern .btn-close:hover {
+    opacity: 1;
+}
+
+.alert-success {
+    background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+    color: #155724;
+}
+
+.alert-danger {
+    background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+    color: #721c24;
+}
+
+.alert-warning {
+    background: linear-gradient(135deg, #fff3cd 0%, #ffeeba 100%);
+    color: #856404;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateY(-20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideOut {
+    from {
+        transform: translateY(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateY(-20px);
+        opacity: 0;
+    }
+
+
+}
+
+.alert-hide {
+    animation: slideOut 0.5s ease-out forwards;
 }
 </style>
 
@@ -625,6 +759,37 @@ document.addEventListener('DOMContentLoaded', function() {
                         };
                         statusBadge.className = `status-badge status-${statusClassMap[e.status] || 'secondary'}`;
                         statusBadge.innerHTML = `<i class="fas ${statusIconMap[e.status] || 'fa-circle'}"></i> ${e.status_text}`;
+
+                    }
+
+                    // Cập nhật lại nút chức năng
+                    renderOrderActions(orderId, e.status, card.getAttribute('data-created-at'));
+
+                    // Nếu đơn hàng bị hủy hoặc hoàn trả, reload trang để cập nhật danh sách
+                    if (e.status === 'cancelled' || e.status === 'returned' || e.status === 'partially_returned') {
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 1000);
+                    }
+                }
+            });
+    });
+},200);
+
+// Auto hide alerts after 5 seconds
+const alerts = document.querySelectorAll('.alert-modern');
+alerts.forEach(alert => {
+    setTimeout(() => {
+        alert.classList.add('alert-hide');
+        setTimeout(() => {
+            alert.remove();
+        }, 500);
+    }, 5000);
+});
+
+});
+
+
                     }
 
                     // Cập nhật lại nút chức năng
@@ -642,6 +807,7 @@ document.addEventListener('DOMContentLoaded', function() {
 },200);
 
 });
+
 
 
 </script>

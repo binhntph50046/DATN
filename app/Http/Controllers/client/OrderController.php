@@ -6,13 +6,19 @@ use App\Http\Controllers\Controller;
 use App\Models\Order;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-    use App\Models\ResendInvoiceRequest;
+use App\Models\ResendInvoiceRequest;
 
 class OrderController 
 {
     public function index(Request $request)
     {
-        $query = Order::where('user_id', Auth::id());
+        if (Auth::check()) {
+            // Người dùng đã đăng nhập
+            $query = Order::where('user_id', Auth::id());
+        } else {
+            // Người dùng chưa đăng nhập
+            return view('client.order.guest_tracking');
+        }
 
         if ($request->has('status') && $request->status != null) {
             $query->where('status', $request->status);
@@ -36,6 +42,11 @@ class OrderController
             return redirect()->back()->with('error', 'Không thể hủy đơn hàng ở trạng thái này!');
         }
 
+        // Nếu đơn hàng đã thanh toán qua VNPay
+        if ($order->payment_method === 'vnpay' && $order->is_paid) {
+            return redirect()->back()->with('warning', 'Đơn hàng đã được thanh toán qua VNPay. Vui lòng liên hệ với chúng tôi qua hotline hoặc email để được hỗ trợ hoàn tiền.');
+        }
+
         $order->update([
             'status' => 'cancelled',
             'cancel_reason' => $request->cancellation_reason
@@ -44,5 +55,21 @@ class OrderController
         return redirect()->back()->with('success', 'Đã hủy đơn hàng thành công!');
     }
 
-   
+    public function guestTracking(Request $request)
+    {
+        $request->validate([
+            'order_id' => 'required',
+            'email' => 'required|email'
+        ]);
+
+        $order = Order::where('id', $request->order_id)
+                     ->where('shipping_email', $request->email)
+                     ->first();
+
+        if (!$order) {
+            return redirect()->back()->with('error', 'Không tìm thấy đơn hàng. Vui lòng kiểm tra lại mã đơn hàng và email.');
+        }
+
+        return view('client.order.tracking', compact('order'));
+    }
 } 

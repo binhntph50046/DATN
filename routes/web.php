@@ -1,52 +1,49 @@
 <?php
 
-use App\Models\Invoice;
-// Admin
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\admin\FaqController;
-use App\Http\Controllers\auth\AuthController;
+// Admin
 use App\Http\Controllers\admin\BlogController;
-use App\Http\Controllers\admin\RoleController;
 use App\Http\Controllers\admin\UserController;
 use App\Http\Controllers\admin\OrderController;
-use App\Http\Controllers\auth\GoogleController;
-use App\Http\Controllers\client\CartController;
-use App\Http\Controllers\client\HomeController;
-use App\Http\Controllers\client\ShopController;
 use App\Http\Controllers\admin\BannerController;
-use App\Http\Controllers\client\AboutController;
-use App\Http\Controllers\Admin\InvoiceController;
 use App\Http\Controllers\admin\ProductController;
-use App\Http\Controllers\admin\VoucherController;
-use App\Http\Controllers\auth\FacebookController;
 use App\Http\Controllers\admin\CategoryController;
-use App\Http\Controllers\client\ChatBotController;
-use App\Http\Controllers\client\ContactController;
-// Auth
-use App\Http\Controllers\client\PaymentController;
 use App\Http\Controllers\admin\DashboardController;
+use App\Http\Controllers\admin\VariantAttributeTypeController;
+use App\Http\Controllers\admin\RoleController;
+use App\Http\Controllers\admin\SpecificationController;
+use App\Http\Controllers\admin\VoucherController;
 use App\Http\Controllers\admin\FlashSaleController;
 use App\Http\Controllers\admin\SubcriberController;
-
-use App\Http\Controllers\client\OrderReturnController as ClientOrderReturnController;
-use App\Http\Controllers\admin\OrderReturnController as AdminOrderReturnController;
-// Auth
-use App\Http\Controllers\auth\ForgotPasswordController;
-use App\Http\Controllers\auth\ResetPasswordController;
-
 use App\Http\Controllers\client\CheckoutController;
 // Client 
 use App\Http\Controllers\client\WishlistController;
 use App\Http\Controllers\Admin\OrderReturnController;
 use App\Http\Controllers\admin\AdminContactController;
 use App\Http\Controllers\admin\FlashSaleItemController;
-use App\Http\Controllers\admin\SpecificationController;
-
-
-use App\Http\Controllers\admin\VariantAttributeTypeController;
-
+use App\Http\Controllers\admin\FaqController;
+use App\Http\Controllers\Admin\InvoiceController;
+use App\Http\Controllers\client\OrderReturnController as ClientOrderReturnController;
+use App\Http\Controllers\admin\OrderReturnController as AdminOrderReturnController;
+use App\Http\Controllers\admin\ResendInvoiceRequestController;
+// Auth
+use App\Http\Controllers\auth\AuthController;
+use App\Http\Controllers\auth\FacebookController;
+use App\Http\Controllers\auth\GoogleController;
+use App\Http\Controllers\auth\ForgotPasswordController;
+use App\Http\Controllers\auth\ResetPasswordController;
+// Client 
+use App\Http\Controllers\client\HomeController;
+use App\Http\Controllers\client\ShopController;
+use App\Http\Controllers\client\AboutController;
+use App\Http\Controllers\client\BlogController as ClientBlogController;
+use App\Http\Controllers\client\CartController;
+use App\Http\Controllers\client\ContactController;
+use App\Http\Controllers\client\PaymentController;
 use App\Http\Controllers\client\OrderController as ClientOrderController;
+use App\Http\Controllers\client\ChatBotController;
 use App\Http\Controllers\client\ProductController as ClientProductController;
+use App\Models\Invoice;
 
 /*
 |--------------------------------------------------------------------------
@@ -75,6 +72,14 @@ Route::post('/contact', [ContactController::class, 'store'])->name('contact.stor
 // Cart & Checkout Routes
 Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
 Route::put('/cart/update/{cartItemId}', [CartController::class, 'update'])->name('cart.update');
+Route::post('/cart/update-quantity', [CartController::class, 'updateQuantity'])->name('cart.updateQuantity');
+Route::delete('/cart/remove/{id}', [CartController::class, 'remove'])->name('cart.remove');
+Route::delete('/cart/clear', [CartController::class, 'clear'])->name('cart.clear');
+Route::get('/cart', [CartController::class, 'index'])->name('cart');
+
+Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout');
+Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
+Route::get('/checkout/vnpay/callback', [CheckoutController::class, 'vnpayCallback'])->name('checkout.vnpay.callback');
 
 // Payment Routes
 Route::post('/payment/vnpay', [PaymentController::class, 'vnPay'])->name('vnpay.payment');
@@ -90,11 +95,14 @@ Route::middleware(['auth'])->group(function () {
 Route::post('/subscribe', [\App\Http\Controllers\client\SubscribeController::class, 'store'])->name('subscribe.store');
 
 // Order Routes (Client)
-Route::prefix('order')->name('order.')->middleware(['auth'])->group(function () {
+Route::prefix('order')->name('order.')->group(function () {
     Route::get('/', [ClientOrderController::class, 'index'])->name('index'); // Danh sách đơn hàng
     Route::get('/tracking/{order}', [CheckoutController::class, 'tracking'])->name('tracking'); // Theo dõi đơn hàng
+
+    Route::get('/guest-tracking', [ClientOrderController::class, 'guestTracking'])->name('guest.tracking'); // Theo dõi đơn hàng cho khách không đăng nhập
+    Route::post('/cancel/{order}', [ClientOrderController::class, 'cancel'])->name('cancel')->middleware('auth'); // Hủy đơn hàng
     Route::post('/cancel/{order}', [ClientOrderController::class, 'cancel'])->name('cancel'); // Hủy đơn hàng
-   
+    Route::get('/invoice/{order}', [CheckoutController::class, 'invoice'])->name('invoice'); // Xem hóa đơn
     Route::get('/resend-invoice/{order}', [CheckoutController::class, 'resendInvoice'])->name('resend-invoice'); // Gửi lại hóa đơn (GET)
     Route::post('/{id}/request-resend-invoice', [ClientOrderController::class, 'requestResendInvoice'])->name('request-resend-invoice'); // Yêu cầu gửi lại hóa đơn
     Route::get('/{order}/return', [ClientOrderReturnController::class, 'create'])->name('returns.create'); // Yêu cầu hoàn hàng (form)
@@ -109,7 +117,6 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::post('order-returns/{id}/reject', [AdminOrderReturnController::class, 'reject'])->name('order-returns.reject');
 });
 
-
 // Route cho admin quản lý hoàn hàng
 Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('order-returns', [OrderReturnController::class, 'index'])->name('order-returns.index');
@@ -123,7 +130,6 @@ Route::middleware(['auth'])->group(function () {
     Route::get('order/{order}/return', [ClientOrderReturnController::class, 'create'])->name('order.returns.create');
     Route::post('order/{order}/return', [ClientOrderReturnController::class, 'store'])->name('order.returns.store');
 });
-
 
 // Theo dõi đơn hàng sau khi đặt hàng
 Route::get('/order', [ClientOrderController::class, 'index'])->name('order.index');
@@ -151,6 +157,7 @@ Route::get('/forgot-password', [ForgotPasswordController::class, 'showLinkReques
 Route::post('/forgot-password', [ForgotPasswordController::class, 'sendResetLinkEmail'])->name('password.email');
 Route::get('/reset-password/{token}', [ResetPasswordController::class, 'showResetForm'])->name('password.reset');
 Route::post('/reset-password', [ResetPasswordController::class, 'reset'])->name('password.update');
+
 // Social Login Routes
 Route::get('/auth/google', [GoogleController::class, 'redirectToGoogle'])->name('auth.google.redirect');
 Route::get('/auth/google/callback', [GoogleController::class, 'handleGoogleCallback']);

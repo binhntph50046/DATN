@@ -15,21 +15,6 @@ use Illuminate\Support\Facades\View;
 class CartController
 {
 
-    public function __construct()
-    {
-        // Kiểm tra người dùng đã đăng nhập chưa
-        if (Auth::check()) {
-            // Đếm số sản phẩm trong giỏ hàng của người dùng hiện tại
-            // $cartCount = Cart::where('user_id', Auth::id())->count();
-            $cart = Cart::where('user_id', Auth::id())->first();
-
-            $cartCount = $cart ? $cart->cartItems()->count() : 0;
-        } else {
-            $cartCount = 0;
-        }
-        // Chia sẻ biến $cartCount với tất cả các view
-        View::share('cartCount', $cartCount);
-    }
     /**
      * Thêm sản phẩm vào giỏ hàng
      */
@@ -40,13 +25,13 @@ class CartController
             return redirect()->route('login')
                 ->with('error', 'Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng');
         }
-
+        
         $request->validate([
             'product_id' => 'required|exists:products,id',
             'variant_id' => 'nullable|exists:product_variants,id',
             'quantity' => 'required|integer|min:1',
         ]);
-
+        // dd($request);
         try {
             DB::transaction(function () use ($request) {
                 $user = Auth::user();
@@ -221,14 +206,12 @@ class CartController
         if (!Auth::check()) {
             return redirect()->route('login');
         }
-
         $user = Auth::user();
         $cart = Cart::with(['items.product', 'items.variant'])
             ->where('user_id', $user->id)
             ->first();
-
         $cartItems = $cart ? $cart->items : collect();
-
+        Log::info('Cart Data:', ['cart' => $cart ? $cart->toArray() : null]);
         return view('client.cart.index', compact('cartItems'));
     }
 

@@ -96,11 +96,11 @@ Route::middleware(['auth'])->group(function () {
 Route::post('/subscribe', [\App\Http\Controllers\client\SubscribeController::class, 'store'])->name('subscribe.store');
 
 // Order Routes (Client)
-Route::prefix('order')->name('order.')->middleware(['auth'])->group(function () {
+Route::prefix('order')->name('order.')->group(function () {
     Route::get('/', [ClientOrderController::class, 'index'])->name('index'); // Danh sách đơn hàng
     Route::get('/tracking/{order}', [CheckoutController::class, 'tracking'])->name('tracking'); // Theo dõi đơn hàng
-    Route::post('/cancel/{order}', [ClientOrderController::class, 'cancel'])->name('cancel'); // Hủy đơn hàng
-   
+    Route::get('/guest-tracking', [ClientOrderController::class, 'guestTracking'])->name('guest.tracking'); // Theo dõi đơn hàng cho khách không đăng nhập
+    Route::post('/cancel/{order}', [ClientOrderController::class, 'cancel'])->name('cancel')->middleware('auth'); // Hủy đơn hàng
     Route::get('/resend-invoice/{order}', [CheckoutController::class, 'resendInvoice'])->name('resend-invoice'); // Gửi lại hóa đơn (GET)
     Route::post('/{id}/request-resend-invoice', [ClientOrderController::class, 'requestResendInvoice'])->name('request-resend-invoice'); // Yêu cầu gửi lại hóa đơn
     Route::get('/{order}/return', [ClientOrderReturnController::class, 'create'])->name('returns.create'); // Yêu cầu hoàn hàng (form)

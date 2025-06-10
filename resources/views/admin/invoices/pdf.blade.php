@@ -24,6 +24,7 @@
                 <th>Biến thể</th>
                 <th>Số lượng</th>
                 <th>Giá</th>
+                <th>Trạng thái</th>
                 <th>Tổng</th>
             </tr>
         </thead>
@@ -35,6 +36,7 @@
                 <td>{{ $item->variant->name ?? '' }}</td>
                 <td>{{ $item->quantity }}</td>
                 <td>{{ number_format($item->price) }}</td>
+                <td>{{ $item->status }}</td>
                 <td>{{ number_format($item->total) }}</td>
             </tr>
             @endforeach

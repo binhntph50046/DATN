@@ -34,8 +34,6 @@
             color: #fff;
         }
 
-      
-
         .category-btn-text {
             font-weight: 600;
             color: #ffffff;

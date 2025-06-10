@@ -34,9 +34,8 @@
 <body>
 
     @include('client.partials.header')
-
     @yield('content')
-
+    @include('client.partials.chat')
     @include('client.partials.footer')
 
     <!-- jQuery -->

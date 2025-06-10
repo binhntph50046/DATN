@@ -10,6 +10,8 @@ use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvid
 use Illuminate\Support\Facades\Gate;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
+use Illuminate\Support\Facades\View;
+use App\View\Composers\CartComposer;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -36,5 +38,8 @@ class AppServiceProvider extends ServiceProvider
     Gate::before(function ($user, $ability) {
         return $user->hasRole('admin') ? true : null;
     });
+
+    // Đăng ký composer cho tất cả view
+        View::composer('*', CartComposer::class);
     }
 }

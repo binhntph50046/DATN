@@ -58,7 +58,8 @@
 
                                             <div class="col-md-4 col-md-4-custom mb-4" data-aos="fade-up"
                                                 data-aos-delay="{{ $loop->iteration * 100 }}">
-                                                <a class="product-item" href="{{ route('product.detail', $wishlist->slug) }}"
+                                                <a class="product-item"
+                                                    href="{{ route('product.detail', $wishlist->slug) }}"
                                                     onclick="incrementView('{{ $wishlist->id }}')">
                                                     <div class="product-thumbnail text-center">
                                                         <img src="{{ $variantImage ?? $defaultImage }}"
@@ -103,7 +104,8 @@
                                                             onclick="event.preventDefault(); showQuickView({{ $wishlist->id }})">
                                                             <i class="fas fa-eye"></i>
                                                         </span>
-                                                        <form action="{{ route('wishlist.toggle', $wishlist) }}" method="POST" style="display: none;"
+                                                        <form action="{{ route('wishlist.toggle', $wishlist) }}"
+                                                            method="POST" style="display: none;"
                                                             id="remove-wishlist-{{ $wishlist->id }}" class="wishlist-form">
                                                             @csrf
                                                         </form>
@@ -156,8 +158,7 @@
                                             <img src="images/product-2.png" class="img-fluid thumbnail" alt="Thumbnail 2">
                                         </div>
                                         <div class="col-3">
-                                            <img src="images/product-3.png" class="img-fluid thumbnail"
-                                                alt="Thumbnail 3">
+                                            <img src="images/product-3.png" class="img-fluid thumbnail" alt="Thumbnail 3">
                                         </div>
                                         <div class="col-3">
                                             <img src="images/product-1.png" class="img-fluid thumbnail"
@@ -338,7 +339,7 @@
 
                 alert(
                     `Added to cart:\nQuantity: ${quantity}\nColor: ${selectedColor}\nStorage: ${selectedStorage}GB`
-                    );
+                );
             });
 
             // Buy now button
@@ -351,36 +352,36 @@
 
                 alert(
                     `Proceeding to checkout:\nQuantity: ${quantity}\nColor: ${selectedColor}\nStorage: ${selectedStorage}GB`
-                    );
+                );
             });
         });
 
         function removeFromWishlist(productId, url) {
             const form = document.getElementById(`remove-wishlist-${productId}`);
             const formData = new FormData(form);
-            
+
             fetch(url, {
-                method: 'POST',
-                body: formData,
-                headers: {
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                    'Accept': 'application/json'
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.status) {
-                    showToast(data.message, data.type);
-                    // Reload trang sau 1 giây để cập nhật UI
-                    setTimeout(() => {
-                        window.location.reload();
-                    }, 1000);
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                showToast('Đã xảy ra lỗi, vui lòng thử lại!', 'danger');
-            });
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Accept': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status) {
+                        showToast(data.message, data.type);
+                        // Reload trang sau 1 giây để cập nhật UI
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 1000);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    showToast('Đã xảy ra lỗi, vui lòng thử lại!', 'danger');
+                });
         }
 
         function showToast(message, type) {
@@ -454,13 +455,13 @@
 
         /* Header cố định */
         .apple-wishlist-header {
-            margin-top: 80px;
+            margin-top: 120px;
             position: fixed;
             top: 0;
             left: 0;
             right: 0;
             background: white;
-            z-index: 1000;
+            z-index: 998;
             padding: 15px 0;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
@@ -487,7 +488,7 @@
         .empty-wishlist {
             text-align: center;
             padding: 50px 20px;
-            margin-top: 20px;
+            margin-top: 62px;
         }
 
         .empty-wishlist i {

@@ -259,7 +259,7 @@
                         <li><a class="dropdown-item text-white" href="{{ route('register') }}">Đăng kí</a></li>
                         <li><a class="dropdown-item text-white" href="{{ route('login') }}">Đăng nhập</a></li>
                     @else
-                        <li><a class="dropdown-item text-white" href="#">Trang cá nhân</a></li>
+                        <li><a class="dropdown-item text-white" href="{{ route('profile.index') }}">Trang cá nhân</a></li>
                         <li><a class="dropdown-item text-white" href="{{ route('order.index') }}">Lịch sử đơn hàng</a></li>
                         <li>
                             <form action="{{ route('logout') }}" method="POST" class="m-0">

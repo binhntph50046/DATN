@@ -43,6 +43,7 @@ use App\Http\Controllers\client\OrderController as ClientOrderController;
 use App\Http\Controllers\client\ChatBotController;
 
 use App\Http\Controllers\client\ProductController as ClientProductController;
+use App\Http\Controllers\client\ProfileController;
 use App\Http\Controllers\client\WishlistController;
 use App\Models\Invoice;
 
@@ -61,6 +62,15 @@ Route::post('/increment-view/{id}', [HomeController::class, 'incrementView'])->n
 // Shop Routes
 Route::get('/shop', [ShopController::class, 'index'])->name('shop');
 Route::get('/about', [AboutController::class, 'index'])->name('about');
+
+// Profile Routes
+Route::prefix('profile')->name('profile.')->group(function () {
+    Route::get('/', [ProfileController::class, 'index'])->name('index');
+    Route::put('/', [ProfileController::class, 'update'])->name('update');
+    Route::get('/password', [ProfileController::class, 'password'])->name('password');
+    Route::put('/password', [ProfileController::class, 'updatePassword'])->name('update-password');
+    Route::get('/orders', [ProfileController::class, 'orders'])->name('orders');
+});
 
 // Blog Routes
 Route::get('/blog', [ClientBlogController::class, 'index'])->name('blog');

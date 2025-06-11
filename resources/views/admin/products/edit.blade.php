@@ -500,6 +500,11 @@
                 allowClear: true
             });
 
+            // Lưu giá trị ban đầu cho các select box giá trị thuộc tính
+            $('.attribute-values').each(function() {
+                $(this).data('previous', $(this).val() || []);
+            });
+
             // Xử lý khi thay đổi loại thuộc tính
             $('.attribute-type').on('change', function() {
                 const index = $(this).attr('id').replace('attribute_type_', '');
@@ -532,9 +537,28 @@
                     });
             });
 
-            // Xử lý khi thay đổi giá trị
-            $('.attribute-values').on('change', function() {
+            // Xử lý khi thay đổi giá trị thuộc tính
+            $('.attribute-values').on('change', function(e) {
                 const index = $(this).attr('id').replace('values_', '');
+                const previousValues = $(this).data('previous') || [];
+                const currentValues = $(this).val() || [];
+                
+                // Nếu giá trị không thay đổi, không cần xử lý
+                if (JSON.stringify(previousValues.sort()) === JSON.stringify(currentValues.sort())) {
+                    return;
+                }
+
+                // Hiển thị dialog xác nhận
+                if (!askedValueOrHex && !confirm('Thay đổi giá trị thuộc tính sẽ xóa toàn bộ biến thể. Bạn có chắc chắn?')) {
+                    // Nếu người dùng không đồng ý, khôi phục lại giá trị cũ
+                    $(this).val(previousValues).trigger('change');
+                    return;
+                }
+
+                // Người dùng đã đồng ý hoặc đã xác nhận trước đó
+                askedValueOrHex = true;
+                markAllVariantImagesForDelete();
+                $(this).data('previous', currentValues);
                 validateAttributeValues(index);
             });
 

@@ -33,7 +33,7 @@ class ProductController
 
     public function create()
     {
-        $categories = Category::where('type', 1)->get();
+        $categories = Category::where('type', 1)->where('status', 'active')->get();
         $attributeTypes = VariantAttributeType::all();
         return view('admin.products.create', compact('categories', 'attributeTypes'));
     }
@@ -373,7 +373,7 @@ class ProductController
 
     public function edit(Product $product)
     {
-        $categories = Category::where('type', 1)->get();
+        $categories = Category::where('type', 1)->where('status', 'active')->get();
         $categoryId = $product->category_id;
 
         // Get specifications belonging to product's category

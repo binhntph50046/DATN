@@ -51,18 +51,18 @@
                             </div>
                             <div id="address-fields">
                                 <div class="form-group row">
-                                    <div class="col-md-6">
+                                    <div class="col-md-12">
                                         <label for="c_fname" class="text-black">Tên <span
                                                 class="text-danger">*</span></label>
                                         <input type="text" class="form-control" id="c_fname" name="c_fname" required
                                             value="{{ old('c_fname', Auth::check() ? explode(' ', Auth::user()->name)[0] : '') }}">
                                     </div>
-                                    <div class="col-md-6">
+                                    {{-- <div class="col-md-6">
                                         <label for="c_lname" class="text-black">Họ <span
                                                 class="text-danger">*</span></label>
                                         <input type="text" class="form-control" id="c_lname" name="c_lname" required
                                             value="{{ old('c_lname', Auth::check() ? explode(' ', Auth::user()->name)[1] ?? '' : '') }}">
-                                    </div>
+                                    </div> --}}
                                 </div>
                                 <div class="form-group row">
                                     <div class="col-md-12">

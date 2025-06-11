@@ -2,24 +2,25 @@
 @section('title', 'Cửa hàng - Apple Store')
 
 @section('content')
+
     <div class="untree_co-section before-footer-section">
         <div class="container">
-
             <div class="row mb-5">
-                <!-- Hiển thị thông báo -->
-                @if (session('success'))
-                    <div class="alert alert-success">
-                        {{ session('success') }}
-                    </div>
-                @endif
-
-                @if (session('error'))
-                    <div class="alert alert-danger">
-                        {{ session('error') }}
-                    </div>
-                @endif
                 <div class="col-md-12">
                     <div class="site-blocks-table">
+                        <br>
+                        <!-- Hiển thị thông báo -->
+                        @if (session('success'))
+                            <div class="alert alert-success">
+                                {{ session('success') }}
+                            </div>
+                        @endif
+
+                        @if (session('error'))
+                            <div class="alert alert-danger">
+                                {{ session('error') }}
+                            </div>
+                        @endif
                         <table class="table">
                             <thead>
                                 <tr>
@@ -64,16 +65,15 @@
                                             </td>
                                             <td class="product-thumbnail">
                                                 @php
-                                                    $imageUrl = '';
-                                                    if ($item->variant && $item->variant->image) {
-                                                        $imageUrl = getFirstImage($item->variant->image);
-                                                    }
-                                                    if (empty($imageUrl) && $item->product->image) {
-                                                        $imageUrl = getFirstImage($item->product->image);
+                                                    $imageUrl = 'images/default-product.png'; // Ảnh mặc định
+                                                    if (!empty($item->variant) && !empty($item->variant->image)) {
+                                                        $imageUrl = $item->variant->image;
+                                                    } elseif (!empty($item->product) && !empty($item->product->image)) {
+                                                        $imageUrl = $item->product->image;
                                                     }
                                                 @endphp
-                                                <img src="{{ $imageUrl ? asset($imageUrl) : asset('images/default-product.png') }}"
-                                                    alt="{{ $item->product->name }}" class="img-fluid"
+                                                <img src="{{ asset($imageUrl) }}"
+                                                    alt="{{ $item->product->name ?? 'Product' }}" class="img-fluid"
                                                     style="max-width: 80px; height: 80px; object-fit: cover;">
                                             </td>
                                             <td class="product-name">
@@ -175,100 +175,6 @@
     </div>
 
     <script>
-        // Xóa có giao diện đẹp hơn
-        document.querySelectorAll('.form-delete').forEach(form => {
-            form.addEventListener('submit', function(e) {
-                e.preventDefault(); // Chặn submit mặc định
-
-                Swal.fire({
-                    title: 'Xác nhận xóa?',
-                    text: "Bạn có chắc chắn muốn xóa sản phẩm này khỏi giỏ hàng?",
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#d33',
-                    cancelButtonColor: '#3085d6',
-                    confirmButtonText: 'Xóa',
-                    cancelButtonText: 'Hủy'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        form.submit(); // Nếu OK thì submit form
-                    }
-                });
-            });
-        });
-        // function changeQuantity(itemId, type) {
-        //     let input = document.getElementById('quantity-' + itemId);
-        //     let currentQuantity = parseInt(input.value) || 0;
-        //     if (type === 'increase') {
-        //         input.value = currentQuantity + 1;
-        //     } else if (type === 'decrease' && currentQuantity > 1) {
-        //         input.value = currentQuantity - 1;
-        //     }
-        //     updateQuantityOnServer(itemId, input.value);
-        // }
-
-        // function updateQuantityOnServer(itemId, quantity) {
-        //     fetch('/cart/update-quantity', {
-        //             method: 'POST',
-        //             headers: {
-        //                 'Content-Type': 'application/json',
-        //                 'X-CSRF-TOKEN': '{{ csrf_token() }}'
-        //             },
-        //             body: JSON.stringify({
-        //                 item_id: itemId,
-        //                 quantity: quantity
-        //             })
-        //         })
-        //         .then(response => response.json())
-        //         .then(data => {
-        //             if (data.success) {
-        //                 updateItemTotal(itemId);
-        //             } else {
-        //                 alert('Có lỗi xảy ra khi cập nhật số lượng.');
-        //             }
-        //         })
-        //         .catch(error => {
-        //             console.error('Error:', error);
-        //             alert('Có lỗi xảy ra khi cập nhật số lượng.');
-        //         });
-        // }
-
-        // function updateItemTotal(itemId) {
-        //     let quantityInput = document.getElementById('quantity-' + itemId);
-        //     let quantity = parseInt(quantityInput.value) || 0;
-        //     let row = quantityInput.closest('tr');
-        //     let priceElement = row.querySelector('.price');
-        //     let price = parseFloat(priceElement.getAttribute('data-price')) || 0;
-        //     let itemTotal = price * quantity;
-        //     let totalElement = document.getElementById('total-' + itemId);
-        //     totalElement.textContent = formatCurrency(itemTotal) + ' VNĐ';
-        //     updateCartTotal();
-        // }
-
-        // function updateCartTotal() {
-        //     let cartSubtotal = 0;
-        //     document.querySelectorAll('input[id^="quantity-"]').forEach(function(input) {
-        //         let itemId = input.getAttribute('data-item-id');
-        //         let quantity = parseInt(input.value) || 0;
-        //         let row = input.closest('tr');
-        //         let priceElement = row.querySelector('.price');
-        //         let price = parseFloat(priceElement.getAttribute('data-price')) || 0;
-        //         cartSubtotal += (price * quantity);
-        //     });
-        //     document.getElementById('cart-subtotal').textContent = formatCurrency(cartSubtotal) + ' VNĐ';
-        //     document.getElementById('cart-total').textContent = formatCurrency(cartSubtotal) + ' VNĐ';
-        // }
-
-        // function formatCurrency(amount) {
-        //     return new Intl.NumberFormat('vi-VN').format(amount);
-        // }
-
-        // document.querySelectorAll('.quantity-amount').forEach(function(input) {
-        //     input.addEventListener('change', function() {
-        //         let itemId = this.getAttribute('data-item-id');
-        //         updateQuantityOnServer(itemId, this.value);
-        //     });
-        // });
         function changeQuantity(itemId, type) {
             let input = document.getElementById('quantity-' + itemId);
             let currentQuantity = parseInt(input.value) || 0;

@@ -273,10 +273,20 @@
             </div>
 
             <!-- Giỏ hàng -->
-            <a class="rounded-circle d-flex align-items-center justify-content-center icon-circle-btn"
+            <a class="rounded-circle d-flex align-items-center justify-content-center icon-circle-btn position-relative"
                 href="{{ route('cart') }}">
                 <i class="fas fa-shopping-cart text-white"></i>
+
+                @if ($cartCount > 0)
+                    <span class="position-absolute start-100 translate-middle badge rounded-pill bg-danger"
+                        style="top: 6px; font-size: 0.75rem; padding: 0.35em 0.5em;">
+                        {{ $cartCount }}
+                    </span>
+                @endif
             </a>
+
+
+
         </div>
     </div>
 </nav>

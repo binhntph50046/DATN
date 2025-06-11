@@ -32,9 +32,8 @@
 <body>
 
     @include('client.partials.header')
-
     @yield('content')
-
+    @include('client.partials.chat')
     @include('client.partials.footer')
 
     <!-- jQuery (tải một lần duy nhất) -->
@@ -59,7 +58,11 @@
         }
     </script>
 
-    <!-- JS riêng từ view -->
+    <script>
+        window.Laravel = {!! json_encode(['csrfToken' => csrf_token()]) !!};
+    </script>
+
+    <!-- Yield cho JS riêng từ các view -->
     @yield('scripts')
 
 </body>

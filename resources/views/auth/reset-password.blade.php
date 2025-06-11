@@ -1,32 +1,13 @@
-@if (session('success'))
-    <div class="alert alert-success" id="success-alert">
-        {{ session('success') }}
-    </div>
-@endif
-@if (session('error'))
-    <div class="alert alert-danger" id="error-alert">
-        {{ session('error') }}
-    </div>
-@endif
-<!DOCTYPE html>
-<html lang="en">
+@extends('auth.layout_auth')
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="shortcut icon" href="/images/iphone.png">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="{{ asset('public_auth/style.css') }}">
-    <title>Reset Password - Apple Store</title>
-</head>
+@section('title', 'Đặt lại mật khẩu - Apple Store')
 
-<body>
+@section('content')
     <div class="container" id="container">
         <form action="{{ route('password.update') }}" method="POST">
             @csrf
-            <h1>Reset Password</h1>
-            <p>Please enter your email and new password below.</p>
+            <h1>Đặt lại mật khẩu</h1>
+            <p>Vui lòng nhập email và mật khẩu mới của bạn bên dưới.</p>
 
             <input type="hidden" name="token" value="{{ $token }}">
 
@@ -49,11 +30,8 @@
             <input class="forgot-password-input form-control" name="password_confirmation" type="password"
                 placeholder="Confirm New Password">
 
-            <button type="submit">Reset Password</button>
-            <a href="{{ route('login') }}" id="back-to-login">Back to Login</a>
+            <button type="submit">Đặt lại mật khẩu</button>
+            <a href="{{ route('login') }}" id="back-to-login">Quay lại đăng nhập</a>
         </form>
     </div>
-    <script src="{{ asset('public_auth/script.js') }}"></script>
-</body>
-
-</html>
+@endsection

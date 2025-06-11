@@ -1,4 +1,6 @@
 @extends('client.layouts.app')
+@section('title', 'Trang chủ - Apple Store')
+
 @section('banner')
     <!-- Start Hero Section -->
     <div id="heroCarousel" class="carousel slide" data-bs-ride="carousel">
@@ -120,96 +122,88 @@
                 <!-- Start Products Column -->
                 <div class="col-lg-8">
                     <div class="product-slider">
-                        @foreach ($mostViewedProducts as $productGroup)
-                            <div class="product-row">
-                                @foreach ($productGroup as $product)
-                                    <div class="col-md-4 mb-4" data-aos="fade-up"
-                                        data-aos-delay="{{ $loop->iteration * 100 }}">
-                                        <a class="product-item" href="{{ route('product.detail', $product->slug) }}"
-                                            onclick="incrementView('{{ $product->id }}')">
-                                            <div class="product-thumbnail text-center">
-                                                @php
-                                                    $defaultImage = asset('uploads/default/default.jpg');
-                                                    $variantImage = null;
-                                                    $defaultVariant = $product->variants->first();
+                        @foreach ($mostViewedProducts as $product)
+                            <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="{{ $loop->iteration * 100 }}">
+                                <a class="product-item" href="{{ route('product.detail', $product->slug) }}"
+                                    onclick="incrementView('{{ $product->id }}')">
+                                    <div class="product-thumbnail text-center">
+                                        @php
+                                            $defaultImage = asset('uploads/default/default.jpg');
+                                            $variantImage = null;
+                                            $defaultVariant = $product->variants->first();
 
-                                                    if ($defaultVariant && $defaultVariant->images) {
-                                                        $images = json_decode($defaultVariant->images, true);
-                                                        if (!empty($images[0])) {
-                                                            $variantImage = asset($images[0]);
-                                                        }
+                                            if ($defaultVariant && $defaultVariant->images) {
+                                                $images = json_decode($defaultVariant->images, true);
+                                                if (!empty($images[0])) {
+                                                    $variantImage = asset($images[0]);
+                                                }
+                                            }
+
+                                            if (!$variantImage) {
+                                                $otherVariant = $product->variants->skip(1)->first();
+                                                if ($otherVariant && $otherVariant->images) {
+                                                    $images = json_decode($otherVariant->images, true);
+                                                    if (!empty($images[0])) {
+                                                        $variantImage = asset($images[0]);
                                                     }
+                                                }
+                                            }
+                                        @endphp
 
-                                                    if (!$variantImage) {
-                                                        $otherVariant = $product->variants->skip(1)->first();
-                                                        if ($otherVariant && $otherVariant->images) {
-                                                            $images = json_decode($otherVariant->images, true);
-                                                            if (!empty($images[0])) {
-                                                                $variantImage = asset($images[0]);
-                                                            }
-                                                        }
-                                                    }
-                                                @endphp
-
-                                                <img src="{{ $variantImage ?? $defaultImage }}" class="img-fluid mx-auto"
-                                                    alt="{{ $product->name }}"
-                                                    style="max-height: 200px; object-fit: contain;">
-                                            </div>
-                                            <h3 class="product-title text-center">{{ $product->name }}</h3>
-                                            <div class="product-price-and-rating text-center">
-                                                @if ($product->variants->isNotEmpty())
-                                                    @php
-                                                        $variant = $product->variants->first();
-                                                    @endphp
-                                                    @if ($variant->discount_price)
-                                                        <strong
-                                                            class="product-price text-decoration-line-through text-muted">{{ number_format($variant->selling_price) }}đ</strong>
-                                                        <strong
-                                                            class="product-price text-danger ms-2">{{ number_format($variant->discount_price) }}đ</strong>
-                                                    @else
-                                                        <strong
-                                                            class="product-price">{{ number_format($variant->selling_price) }}đ</strong>
-                                                    @endif
-                                                @endif
-                                                <div
-                                                    class="product-rating d-flex justify-content-center align-items-center">
-                                                    <i class="fas fa-star"></i>
-                                                    <i class="fas fa-star"></i>
-                                                    <i class="fas fa-star"></i>
-                                                    <i class="fas fa-star"></i>
-                                                    <i class="fas fa-star"></i>
-                                                    <span>({{ number_format($product->views) }} views)</span>
-                                                </div>
-                                            </div>
-                                            <div class="product-icons">
-                                                <span class="icon-add-to-cart"><i class="fas fa-cart-plus"></i></span>
-                                                @auth
-                                                    <form action="{{ route('wishlist.toggle', $product) }}" method="POST"
-                                                        style="display: none;" id="wishlist-form-{{ $product->id }}">
-                                                        @csrf
-                                                        <input type="hidden" name="product_name"
-                                                            value="{{ $product->name }}">
-                                                    </form>
-                                                    <span
-                                                        class="icon-heart icon-add-to-wishlist {{ in_array($product->id, $wishlistProductIds ?? []) ? 'in-wishlist' : '' }}"
-                                                        onclick="event.preventDefault(); toggleWishlist('{{ $product->id }}', '{{ route('wishlist.toggle', $product) }}', this)"
-                                                        title="{{ in_array($product->id, $wishlistProductIds ?? []) ? 'Xóa khỏi yêu thích' : 'Thêm vào yêu thích' }}">
-                                                        <i class="fas fa-heart"></i>
-                                                    </span>
-                                                @else
-                                                    <span class="icon-heart icon-add-to-wishlist"
-                                                        onclick="event.preventDefault(); showLoginPrompt()"
-                                                        title="Đăng nhập để thêm vào yêu thích">
-                                                        <i class="fas fa-heart"></i>
-                                                    </span>
-                                                @endauth
-                                                <span class="icon-quick-view"
-                                                    onclick="event.preventDefault(); showQuickView({{ $product->id }})"><i
-                                                        class="fas fa-eye"></i></span>
-                                            </div>
-                                        </a>
+                                        <img src="{{ $variantImage ?? $defaultImage }}" class="img-fluid mx-auto"
+                                            alt="{{ $product->name }}" style="max-height: 200px; object-fit: contain;">
                                     </div>
-                                @endforeach
+                                    <h3 class="product-title text-center">{{ $product->name }}</h3>
+                                    <div class="product-price-and-rating text-center">
+                                        @if ($product->variants->isNotEmpty())
+                                            @php
+                                                $variant = $product->variants->first();
+                                            @endphp
+                                            @if ($variant->discount_price)
+                                                <strong
+                                                    class="product-price text-decoration-line-through text-muted">{{ number_format($variant->selling_price) }}đ</strong>
+                                                <strong
+                                                    class="product-price text-danger ms-2">{{ number_format($variant->discount_price) }}đ</strong>
+                                            @else
+                                                <strong
+                                                    class="product-price">{{ number_format($variant->selling_price) }}đ</strong>
+                                            @endif
+                                        @endif
+                                        <div class="product-rating d-flex justify-content-center align-items-center">
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <span>({{ number_format($product->views) }} views)</span>
+                                        </div>
+                                    </div>
+                                    <div class="product-icons">
+                                        <span class="icon-add-to-cart"><i class="fas fa-cart-plus"></i></span>
+                                        @auth
+                                            <form action="{{ route('wishlist.toggle', $product) }}" method="POST"
+                                                style="display: none;" id="wishlist-form-{{ $product->id }}">
+                                                @csrf
+                                                <input type="hidden" name="product_name" value="{{ $product->name }}">
+                                            </form>
+                                            <span
+                                                class="icon-heart icon-add-to-wishlist {{ in_array($product->id, $wishlistProductIds ?? []) ? 'in-wishlist' : '' }}"
+                                                onclick="event.preventDefault(); toggleWishlist('{{ $product->id }}', '{{ route('wishlist.toggle', $product) }}', this)"
+                                                title="{{ in_array($product->id, $wishlistProductIds ?? []) ? 'Xóa khỏi yêu thích' : 'Thêm vào yêu thích' }}">
+                                                <i class="fas fa-heart"></i>
+                                            </span>
+                                        @else
+                                            <span class="icon-heart icon-add-to-wishlist"
+                                                onclick="event.preventDefault(); showLoginPrompt()"
+                                                title="Đăng nhập để thêm vào yêu thích">
+                                                <i class="fas fa-heart"></i>
+                                            </span>
+                                        @endauth
+                                        <span class="icon-quick-view"
+                                            onclick="event.preventDefault(); showQuickView({{ $product->id }})"><i
+                                                class="fas fa-eye"></i></span>
+                                    </div>
+                                </a>
                             </div>
                         @endforeach
                     </div>
@@ -221,8 +215,7 @@
                     <div class="popular-content" data-aos="fade-left" data-aos-delay="400">
                         <h2 class="section-title">Most Popular Products</h2>
                         <p class="mb-4">Experience our most sought-after devices that have redefined innovation and
-                            design. These products represent the perfect blend of cutting-edge technology and elegant
-                            craftsmanship, setting new standards in the industry.</p>
+                            design. These products represent the perfect blend of cutting-edge.</p>
 
                         <div class="popular-features">
                             <div class="feature-item">
@@ -269,94 +262,92 @@
                 <!-- Start Latest Products Column -->
                 <div class="col-lg-9">
                     <div class="product-slider">
-                        <div class="product-row">
-                            @foreach ($latestProducts as $product)
-                                <div class="col-md-4 mb-4" data-aos="fade-up"
-                                    data-aos-delay="{{ $loop->iteration * 100 }}">
-                                    <a class="product-item" href="{{ route('product.detail', $product->slug) }}"
-                                        onclick="incrementView('{{ $product->id }}')">
-                                        <div class="product-thumbnail text-center">
-                                            @php
-                                                $defaultImage = asset('Uploads/default/default.jpg');
-                                                $variantImage = null;
-                                                $defaultVariant = $product->variants->first();
+                        @foreach ($latestProducts as $product)
+                            {{-- <div class="product-row"> --}}
+                            <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="{{ $loop->iteration * 100 }}">
+                                <a class="product-item" href="{{ route('product.detail', $product->slug) }}"
+                                    onclick="incrementView('{{ $product->id }}')">
+                                    <div class="product-thumbnail text-center">
+                                        @php
+                                            $defaultImage = asset('Uploads/default/default.jpg');
+                                            $variantImage = null;
+                                            $defaultVariant = $product->variants->first();
 
-                                                if ($defaultVariant && $defaultVariant->images) {
-                                                    $images = json_decode($defaultVariant->images, true);
+                                            if ($defaultVariant && $defaultVariant->images) {
+                                                $images = json_decode($defaultVariant->images, true);
+                                                if (!empty($images[0])) {
+                                                    $variantImage = asset($images[0]);
+                                                }
+                                            }
+
+                                            if (!$variantImage) {
+                                                $otherVariant = $product->variants->skip(1)->first();
+                                                if ($otherVariant && $otherVariant->images) {
+                                                    $images = json_decode($otherVariant->images, true);
                                                     if (!empty($images[0])) {
                                                         $variantImage = asset($images[0]);
                                                     }
                                                 }
+                                            }
+                                        @endphp
 
-                                                if (!$variantImage) {
-                                                    $otherVariant = $product->variants->skip(1)->first();
-                                                    if ($otherVariant && $otherVariant->images) {
-                                                        $images = json_decode($otherVariant->images, true);
-                                                        if (!empty($images[0])) {
-                                                            $variantImage = asset($images[0]);
-                                                        }
-                                                    }
-                                                }
+                                        <img src="{{ $variantImage ?? $defaultImage }}" class="img-fluid mx-auto"
+                                            alt="{{ $product->name }}" style="max-height: 200px; object-fit: contain;">
+                                    </div>
+                                    <h3 class="product-title text-center">{{ $product->name }}</h3>
+                                    <div class="product-price-and-rating text-center">
+                                        @if ($product->variants->isNotEmpty())
+                                            @php
+                                                $variant = $product->variants->first();
                                             @endphp
-
-                                            <img src="{{ $variantImage ?? $defaultImage }}" class="img-fluid mx-auto"
-                                                alt="{{ $product->name }}"
-                                                style="max-height: 200px; object-fit: contain;">
-                                        </div>
-                                        <h3 class="product-title text-center">{{ $product->name }}</h3>
-                                        <div class="product-price-and-rating text-center">
-                                            @if ($product->variants->isNotEmpty())
-                                                @php
-                                                    $variant = $product->variants->first();
-                                                @endphp
-                                                @if ($variant->discount_price)
-                                                    <strong
-                                                        class="product-price text-decoration-line-through text-muted">{{ number_format($variant->selling_price) }}đ</strong>
-                                                    <strong
-                                                        class="product-price text-danger ms-2">{{ number_format($variant->discount_price) }}đ</strong>
-                                                @else
-                                                    <strong
-                                                        class="product-price">{{ number_format($variant->selling_price) }}đ</strong>
-                                                @endif
-                                            @endif
-                                            <div class="product-rating d-flex justify-content-center align-items-center">
-                                                <i class="fas fa-star"></i>
-                                                <i class="fas fa-star"></i>
-                                                <i class="fas fa-star"></i>
-                                                <i class="fas fa-star"></i>
-                                                <i class="fas fa-star"></i>
-                                                <span>({{ number_format($product->views) }} views)</span>
-                                            </div>
-                                        </div>
-                                        <div class="product-icons">
-                                            <span class="icon-add-to-cart"><i class="fas fa-cart-plus"></i></span>
-                                            @auth
-                                                <form action="{{ route('wishlist.toggle', $product) }}" method="POST"
-                                                    style="display: none;" id="wishlist-form-{{ $product->id }}">
-                                                    @csrf
-                                                    <input type="hidden" name="product_name" value="{{ $product->name }}">
-                                                </form>
-                                                <span
-                                                    class="icon-heart icon-add-to-wishlist {{ in_array($product->id, $wishlistProductIds ?? []) ? 'in-wishlist' : '' }}"
-                                                    onclick="event.preventDefault(); toggleWishlist('{{ $product->id }}', '{{ route('wishlist.toggle', $product) }}', this)"
-                                                    title="{{ in_array($product->id, $wishlistProductIds ?? []) ? 'Xóa khỏi yêu thích' : 'Thêm vào yêu thích' }}">
-                                                    <i class="fas fa-heart"></i>
-                                                </span>
+                                            @if ($variant->discount_price)
+                                                <strong
+                                                    class="product-price text-decoration-line-through text-muted">{{ number_format($variant->selling_price) }}đ</strong>
+                                                <strong
+                                                    class="product-price text-danger ms-2">{{ number_format($variant->discount_price) }}đ</strong>
                                             @else
-                                                <span class="icon-heart icon-add-to-wishlist"
-                                                    onclick="event.preventDefault(); showLoginPrompt()"
-                                                    title="Đăng nhập để thêm vào yêu thích">
-                                                    <i class="fas fa-heart"></i>
-                                                </span>
-                                            @endauth
-                                            <span class="icon-quick-view"
-                                                onclick="event.preventDefault(); showQuickView({{ $product->id }})"><i
-                                                    class="fas fa-eye"></i></span>
+                                                <strong
+                                                    class="product-price">{{ number_format($variant->selling_price) }}đ</strong>
+                                            @endif
+                                        @endif
+                                        <div class="product-rating d-flex justify-content-center align-items-center">
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <span>({{ number_format($product->views) }} views)</span>
                                         </div>
-                                    </a>
-                                </div>
-                            @endforeach
-                        </div>
+                                    </div>
+                                    <div class="product-icons">
+                                        <span class="icon-add-to-cart"><i class="fas fa-cart-plus"></i></span>
+                                        @auth
+                                            <form action="{{ route('wishlist.toggle', $product) }}" method="POST"
+                                                style="display: none;" id="wishlist-form-{{ $product->id }}">
+                                                @csrf
+                                                <input type="hidden" name="product_name" value="{{ $product->name }}">
+                                            </form>
+                                            <span
+                                                class="icon-heart icon-add-to-wishlist {{ in_array($product->id, $wishlistProductIds ?? []) ? 'in-wishlist' : '' }}"
+                                                onclick="event.preventDefault(); toggleWishlist('{{ $product->id }}', '{{ route('wishlist.toggle', $product) }}', this)"
+                                                title="{{ in_array($product->id, $wishlistProductIds ?? []) ? 'Xóa khỏi yêu thích' : 'Thêm vào yêu thích' }}">
+                                                <i class="fas fa-heart"></i>
+                                            </span>
+                                        @else
+                                            <span class="icon-heart icon-add-to-wishlist"
+                                                onclick="event.preventDefault(); showLoginPrompt()"
+                                                title="Đăng nhập để thêm vào yêu thích">
+                                                <i class="fas fa-heart"></i>
+                                            </span>
+                                        @endauth
+                                        <span class="icon-quick-view"
+                                            onclick="event.preventDefault(); showQuickView({{ $product->id }})"><i
+                                                class="fas fa-eye"></i></span>
+                                    </div>
+                                </a>
+                            </div>
+                        @endforeach
+                        {{-- </div> --}}
                     </div>
                 </div>
                 <!-- End Latest Products Column -->
@@ -1117,37 +1108,68 @@
         }
 
         // Initialize product slider
-        $(document).ready(function() {
-            $('.product-slider').slick({
-                dots: true,
-                infinite: true,
-                speed: 300,
-                slidesToShow: 1,
-                slidesToScroll: 1,
-                autoplay: true,
-                autoplaySpeed: 3000,
-                arrows: true,
-                responsive: [{
-                        breakpoint: 1024,
-                        settings: {
-                            slidesToShow: 1,
-                            slidesToScroll: 1
-                        }
-                    },
-                    {
-                        breakpoint: 600,
-                        settings: {
-                            slidesToShow: 1,
-                            slidesToScroll: 1
-                        }
-                    }
-                ]
-            });
-        });
+        // $(document).ready(function() {
+        //     $('.product-slider').slick({
+        //         dots: true,
+        //         infinite: true,
+        //         speed: 300,
+        //         slidesToShow: 1,
+        //         slidesToScroll: 1,
+        //         autoplay: true,
+        //         autoplaySpeed: 3000,
+        //         arrows: true,
+        //         responsive: [{
+        //                 breakpoint: 1024,
+        //                 settings: {
+        //                     slidesToShow: 1,
+        //                     slidesToScroll: 1
+        //                 }
+        //             },
+        //             {
+        //                 breakpoint: 600,
+        //                 settings: {
+        //                     slidesToShow: 1,
+        //                     slidesToScroll: 1
+        //                 }
+        //             }
+        //         ]
+        //     });
+        // });
 
         // Initialize latest products slider
+        //     $(document).ready(function() {
+        //         $('.latest-products-slider').slick({
+        //             dots: true,
+        //             infinite: true,
+        //             speed: 300,
+        //             slidesToShow: 3,
+        //             slidesToScroll: 1,
+        //             autoplay: true,
+        //             autoplaySpeed: 3000,
+        //             arrows: true,
+        //             responsive: [{
+        //                     breakpoint: 1024,
+        //                     settings: {
+        //                         slidesToShow: 2,
+        //                         slidesToScroll: 1
+        //                     }
+        //                 },
+        //                 {
+        //                     breakpoint: 600,
+        //                     settings: {
+        //                         slidesToShow: 1,
+        //                         slidesToScroll: 1
+        //                     }
+        //                 }
+        //             ]
+        //         });
+        //     });
+    </script>
+
+@section('scripts')
+    <script>
         $(document).ready(function() {
-            $('.latest-products-slider').slick({
+            $('.product-slider, .latest-products-slider').slick({
                 dots: true,
                 infinite: true,
                 speed: 300,
@@ -1159,7 +1181,7 @@
                 responsive: [{
                         breakpoint: 1024,
                         settings: {
-                            slidesToShow: 2,
+                            slidesToShow: 1,
                             slidesToScroll: 1
                         }
                     },
@@ -1174,167 +1196,175 @@
             });
         });
     </script>
+@endsection
 
-    <style>
-        .product-slider {
-            margin: 0 -15px;
-        }
 
+<style>
+    .product-slider {
+        margin: 0 -15px;
+    }
+
+    .product-row {
+        display: flex !important;
+        flex-wrap: nowrap;
+        /* Giữ cho các phần tử không xuống dòng */
+        justify-content: space-between;
+        white-space: nowrap;
+        /* Ngăn không cho các phần tử con xuống dòng */
+    }
+
+    .product-slider .slick-slide {
+        padding: 0 15px;
+    }
+
+    .product-thumbnail {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 200px;
+        margin-bottom: 15px;
+    }
+
+    .product-thumbnail img {
+        max-width: 100%;
+        height: auto;
+        transition: transform 0.3s ease;
+    }
+
+    .product-item {
+        display: block;
+        text-decoration: none;
+        color: inherit;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+        width: 95%;
+    }
+
+    .product-item:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+    }
+
+    .product-item:hover .product-thumbnail img {
+        transform: scale(1.001);
+        transition: transform 0.2s ease;
+    }
+
+    .product-title {
+        font-size: 1.1rem;
+        margin: 10px 0;
+        color: #333;
+    }
+
+    .product-price-and-rating {
+        margin: 10px 0;
+    }
+
+    .product-icons {
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+        margin-top: 10px;
+    }
+
+    .product-icons span {
+        cursor: pointer;
+        padding: 8px;
+        border-radius: 50%;
+        background: #f8f9fa;
+        transition: all 0.3s ease;
+    }
+
+    .product-icons span:hover {
+        background: #e9ecef;
+        color: #007bff;
+    }
+
+    .product-slider .slick-prev,
+    .product-slider .slick-next {
+        z-index: 1;
+        /* width: 40px;
+        height: 40px;
+        background: #fff;
+        border-radius: 50%;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); */
+    }
+
+    /* button bên trái */
+    .product-slider .slick-prev {
+        left: 20px;
+    }
+
+    .product-slider .slick-next {
+        right: -20px;
+    }
+
+    /* button bên phải */
+    .product-slider .slick-prev:before,
+    .product-slider .slick-next:before {
+        /* font-size: 20px;
+        color: #333; */
+        right: 10px;
+        top: -35px;
+    }
+
+    .product-slider .slick-dots {
+        bottom: -30px;
+    }
+
+    .product-slider .slick-dots li button:before {
+        font-size: 12px;
+    }
+
+    .latest-products-slider {
+        margin: 0 -15px;
+    }
+
+    .latest-products-slider .slick-slide {
+        padding: 0 15px;
+    }
+
+    .latest-products-slider .slick-prev,
+    .latest-products-slider .slick-next {
+        z-index: 1;
+        width: 40px;
+        height: 40px;
+        background: #fff;
+        border-radius: 50%;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .latest-products-slider .slick-prev {
+        left: -20px;
+    }
+
+    .latest-products-slider .slick-next {
+        right: -20px;
+    }
+
+    .latest-products-slider .slick-prev:before,
+    .latest-products-slider .slick-next:before {
+        font-size: 20px;
+        color: #333;
+    }
+
+    .latest-products-slider .slick-dots {
+        bottom: -30px;
+    }
+
+    .latest-products-slider .slick-dots li button:before {
+        font-size: 12px;
+    }
+
+    @media (max-width: 768px) {
         .product-row {
-            display: flex;
-            flex-wrap: wrap;
-            margin: 0 -15px;
-            justify-content: space-between;
-        }
-
-        .product-slider .slick-slide {
-            padding: 0 15px;
-        }
-
-        .product-thumbnail {
-            display: flex;
-            align-items: center;
             justify-content: center;
-            height: 200px;
-            margin-bottom: 15px;
         }
 
-        .product-thumbnail img {
-            max-width: 100%;
-            height: auto;
-            transition: transform 0.3s ease;
+        .col-md-4 {
+            width: 100%;
+            max-width: 300px;
         }
-
-        .product-item {
-            display: block;
-            text-decoration: none;
-            color: inherit;
-            border-radius: 8px;
-            transition: all 0.3s ease;
-            width: 95%;
-        }
-
-        .product-item:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
-        }
-
-        .product-item:hover .product-thumbnail img {
-            transform: scale(1.001);
-            transition: transform 0.2s ease;
-        }
-
-        .product-title {
-            font-size: 1.1rem;
-            margin: 10px 0;
-            color: #333;
-        }
-
-        .product-price-and-rating {
-            margin: 10px 0;
-        }
-
-        .product-icons {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            margin-top: 10px;
-        }
-
-        .product-icons span {
-            cursor: pointer;
-            padding: 8px;
-            border-radius: 50%;
-            background: #f8f9fa;
-            transition: all 0.3s ease;
-        }
-
-        .product-icons span:hover {
-            background: #e9ecef;
-            color: #007bff;
-        }
-
-        .product-slider .slick-prev,
-        .product-slider .slick-next {
-            z-index: 1;
-            width: 40px;
-            height: 40px;
-            background: #fff;
-            border-radius: 50%;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-
-        .product-slider .slick-prev {
-            left: -20px;
-        }
-
-        .product-slider .slick-next {
-            right: -20px;
-        }
-
-        .product-slider .slick-prev:before,
-        .product-slider .slick-next:before {
-            font-size: 20px;
-            color: #333;
-        }
-
-        .product-slider .slick-dots {
-            bottom: -30px;
-        }
-
-        .product-slider .slick-dots li button:before {
-            font-size: 12px;
-        }
-
-        .latest-products-slider {
-            margin: 0 -15px;
-        }
-
-        .latest-products-slider .slick-slide {
-            padding: 0 15px;
-        }
-
-        .latest-products-slider .slick-prev,
-        .latest-products-slider .slick-next {
-            z-index: 1;
-            width: 40px;
-            height: 40px;
-            background: #fff;
-            border-radius: 50%;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-
-        .latest-products-slider .slick-prev {
-            left: -20px;
-        }
-
-        .latest-products-slider .slick-next {
-            right: -20px;
-        }
-
-        .latest-products-slider .slick-prev:before,
-        .latest-products-slider .slick-next:before {
-            font-size: 20px;
-            color: #333;
-        }
-
-        .latest-products-slider .slick-dots {
-            bottom: -30px;
-        }
-
-        .latest-products-slider .slick-dots li button:before {
-            font-size: 12px;
-        }
-
-        @media (max-width: 768px) {
-            .product-row {
-                justify-content: center;
-            }
-
-            .col-md-4 {
-                width: 100%;
-                max-width: 300px;
-            }
-        }
-    </style>
+    }
+</style>
 @endsection

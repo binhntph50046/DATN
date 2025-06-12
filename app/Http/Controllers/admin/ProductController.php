@@ -107,29 +107,63 @@ class ProductController
         try {
             DB::beginTransaction();
 
-            // Handle marked images for deletion
-            if ($request->has('images_to_delete')) {
-                $imagesToDelete = is_array($request->images_to_delete) ? $request->images_to_delete : [];
-                foreach ($imagesToDelete as $imagePath) {
-                    // Xóa ảnh khỏi variant
-                    $variants = $product->variants;
-                    foreach ($variants as $variant) {
-                        $images = json_decode($variant->images, true);
-                        if (is_array($images)) {
-                            $images = array_filter($images, function($img) use ($imagePath) {
-                                return $img !== $imagePath;
-                            });
-                            $variant->images = json_encode(array_values($images));
-                            $variant->save();
+            $oldCategoryId = $product->category_id;
+            $newCategoryId = $request->category_id;
+            $categoryChanged = $request->has('category_changed') && $request->category_changed === 'true';
+
+            // If category has changed, handle deletions
+            if ($categoryChanged && $oldCategoryId !== $newCategoryId) {
+                // Force delete all specifications
+                $product->specifications()->forceDelete();
+
+                // Get all variant IDs (including soft deleted ones)
+                $variantIds = $product->variants()->withTrashed()->pluck('id')->toArray();
+
+                // Force delete all variant combinations
+                VariantCombination::whereIn('variant_id', $variantIds)->forceDelete();
+
+                // Soft delete all variants
+                $product->variants()->delete();
+
+                // Handle image deletion
+                if ($request->has('images_to_delete')) {
+                    $imagesToDelete = is_array($request->images_to_delete) ? $request->images_to_delete : json_decode($request->images_to_delete, true);
+                    if (is_array($imagesToDelete)) {
+                        foreach ($imagesToDelete as $imagePath) {
+                            $fullPath = public_path($imagePath);
+                            if (file_exists($fullPath)) {
+                                @unlink($fullPath);
+                            }
                         }
                     }
+                }
+            } else {
+                // Handle normal image deletion (not category change)
+                if ($request->has('images_to_delete')) {
+                    $imagesToDelete = is_array($request->images_to_delete) ? $request->images_to_delete : json_decode($request->images_to_delete, true);
+                    if (is_array($imagesToDelete)) {
+                        foreach ($imagesToDelete as $imagePath) {
+                            // Xóa ảnh khỏi variant
+                            $variants = $product->variants;
+                            foreach ($variants as $variant) {
+                                $images = json_decode($variant->images, true);
+                                if (is_array($images)) {
+                                    $images = array_filter($images, function($img) use ($imagePath) {
+                                        return $img !== $imagePath;
+                                    });
+                                    $variant->images = json_encode(array_values($images));
+                                    $variant->save();
+                                }
+                            }
 
-                    // Xóa file vật lý nếu không còn variant nào sử dụng
-                    $imageVariantsCount = ProductVariant::where('images', 'like', '%"' . addslashes($imagePath) . '"%')->count();
-                    if ($imageVariantsCount == 0) {
-                        $fullPath = public_path($imagePath);
-                        if (file_exists($fullPath)) {
-                            @unlink($fullPath);
+                            // Xóa file vật lý nếu không còn variant nào sử dụng
+                            $imageVariantsCount = ProductVariant::where('images', 'like', '%"' . addslashes($imagePath) . '"%')->count();
+                            if ($imageVariantsCount == 0) {
+                                $fullPath = public_path($imagePath);
+                                if (file_exists($fullPath)) {
+                                    @unlink($fullPath);
+                                }
+                            }
                         }
                     }
                 }
@@ -153,155 +187,75 @@ class ProductController
             
             $product->update($data);
 
-            // Update variant names if product name changed
-            if ($oldProductName !== $request->name) {
-                foreach ($product->variants as $variant) {
-                    $variantName = $variant->name;
-                    $parts = explode(' - ', $variantName);
-                    array_shift($parts); // Remove old product name
-                    $newVariantName = $request->name . ' - ' . implode(' - ', $parts);
-                    
-                    $variant->update([
-                        'name' => $newVariantName,
-                        'slug' => Str::slug($newVariantName)
-                    ]);
-                }
-            }
-
-            // Handle specifications
-            // Always forceDelete all old specifications
-            $product->specifications()->forceDelete();
-            if ($request->has('specifications')) {
-                foreach ($request->specifications as $spec) {
-                    if (!empty($spec['value']) && !empty($spec['specification_id'])) {
-                        ProductSpecification::create([
-                            'product_id' => $product->id,
-                            'specification_id' => $spec['specification_id'],
-                            'value' => $spec['value'],
-                        ]);
-                    }
-                }
-            }
-
-            // Handle variants
-            if ($request->has('variants')) {
-                $variantsToDelete = is_array($request->variants_to_delete) ? $request->variants_to_delete : [];
-                // Get all old variant ids of the product (including soft deleted)
-                $oldVariantIds = ProductVariant::withTrashed()->where('product_id', $product->id)->pluck('id')->toArray();
-                // Get all old attribute_value_ids of the product
-                $oldAttrValueIds = \App\Models\VariantCombination::whereIn('variant_id', $oldVariantIds)->pluck('attribute_value_id')->toArray();
-
-                // Hard delete marked variants
-                foreach ($variantsToDelete as $variantId) {
-                    $variant = ProductVariant::withTrashed()->find($variantId);
-                    if ($variant) {
-                        $variant->combinations()->forceDelete();
-                        // Delete variant images (only physically delete if no other variants use them)
-                        $images = json_decode($variant->images, true);
-                        if (is_array($images)) {
-                            foreach ($images as $img) {
-                                $imgPath = public_path($img);
-                                $imageVariantsCount = ProductVariant::where('images', 'like', '%"' . addslashes($img) . '"%')
-                                    ->where('id', '!=', $variant->id)
-                                    ->count();
-                                if ($imageVariantsCount == 0 && file_exists($imgPath)) {
-                                    @unlink($imgPath);
-                                }
-                            }
+            // Only process specifications and variants if category hasn't changed
+            if (!$categoryChanged) {
+                // Handle specifications
+                $product->specifications()->forceDelete();
+                if ($request->has('specifications')) {
+                    foreach ($request->specifications as $spec) {
+                        if (!empty($spec['value']) && !empty($spec['specification_id'])) {
+                            ProductSpecification::create([
+                                'product_id' => $product->id,
+                                'specification_id' => $spec['specification_id'],
+                                'value' => $spec['value'],
+                            ]);
                         }
-                        $variant->delete();
                     }
                 }
 
-                // Update or create new variants
-                foreach ($request->variants as $index => $variantData) {
-                    $variantName = $variantData['name'];
-                    if ($oldProductName !== $request->name) {
-                        // Extract attributes from old variant name
-                        $parts = explode(' - ', $variantName);
-                        array_shift($parts); // Remove old product name
-                        // Create new variant name with new product name
-                        $variantName = $request->name . ' - ' . implode(' - ', $parts);
-                    }
-                    $variantSlug = Str::slug($variantName);
+                // Handle variants
+                if ($request->has('variants')) {
+                    $variantsToDelete = is_array($request->variants_to_delete) ? $request->variants_to_delete : json_decode($request->variants_to_delete, true) ?? [];
 
-                    if (empty($variantData['id'])) {
-                        $sku = $this->generateUniqueSku($product->id);
-                        $variant = ProductVariant::create([
-                            'product_id' => $product->id,
-                            'name' => $variantName,
-                            'slug' => $variantSlug,
-                            'sku' => $sku,
-                            'stock' => $variantData['stock'] ?? 0,
-                            'purchase_price' => $variantData['purchase_price'] ?? 0,
-                            'selling_price' => $variantData['selling_price'] ?? 0,
-                            'is_default' => isset($variantData['is_default']) && $variantData['is_default'] ? 1 : 0,
-                        ]);
-
-                        // Create combinations for new variant
-                        if (isset($variantData['attributes']) && is_array($variantData['attributes'])) {
-                            foreach ($variantData['attributes'] as $attr) {
-                                if (!empty($attr['attribute_type_id']) && !empty($attr['selected_values'])) {
-                                    foreach ($attr['selected_values'] as $valueId) {
-                                        // Create link between variant and attribute value
-                                        VariantCombination::create([
-                                            'variant_id' => $variant->id,
-                                            'attribute_value_id' => $valueId,
-                                        ]);
-                                    }
-                                }
-                            }
-                        }
-                    } else {
-                        $variant = ProductVariant::find($variantData['id']);
+                    // Hard delete marked variants
+                    foreach ($variantsToDelete as $variantId) {
+                        $variant = ProductVariant::withTrashed()->find($variantId);
                         if ($variant) {
-                            // Only delete and recreate combinations if attributes have changed
-                            $hasAttributeChanges = false;
-                            if (isset($variantData['attributes']) && is_array($variantData['attributes'])) {
-                                $currentCombinations = $variant->combinations()->pluck('attribute_value_id')->toArray();
-                                $newValueIds = collect($variantData['attributes'])->flatMap(function($attr) {
-                                    return $attr['selected_values'] ?? [];
-                                })->toArray();
-
-                                sort($currentCombinations);
-                                sort($newValueIds);
-
-                                if (count($currentCombinations) !== count($newValueIds) || 
-                                    implode(',', $currentCombinations) !== implode(',', $newValueIds)) {
-                                    $hasAttributeChanges = true;
-                                }
-                            }
-
-                            if ($hasAttributeChanges) {
-                                $variant->combinations()->forceDelete();
-                            }
-
-                            if ($request->hasFile("variants.{$index}.images")) {
-                                $oldImages = json_decode($variant->images, true);
-                                if (is_array($oldImages)) {
-                                    foreach ($oldImages as $img) {
-                                        $imgPath = public_path($img);
-                                        $imageVariantsCount = ProductVariant::where('images', 'like', '%"' . addslashes($img) . '"%')
-                                            ->where('id', '!=', $variant->id)
-                                            ->count();
-                                        if ($imageVariantsCount == 0 && file_exists($imgPath)) {
-                                            @unlink($imgPath);
-                                        }
+                            $variant->combinations()->forceDelete();
+                            // Delete variant images
+                            $images = json_decode($variant->images, true);
+                            if (is_array($images)) {
+                                foreach ($images as $img) {
+                                    $imgPath = public_path($img);
+                                    $imageVariantsCount = ProductVariant::where('images', 'like', '%"' . addslashes($img) . '"%')
+                                        ->where('id', '!=', $variant->id)
+                                        ->count();
+                                    if ($imageVariantsCount == 0 && file_exists($imgPath)) {
+                                        @unlink($imgPath);
                                     }
                                 }
                             }
+                            $variant->forceDelete();
+                        }
+                    }
 
-                            $variant->update([
+                    // Update or create new variants
+                    foreach ($request->variants as $index => $variantData) {
+                        $variantName = $variantData['name'];
+                        if ($oldProductName !== $request->name) {
+                            // Extract attributes from old variant name
+                            $parts = explode(' - ', $variantName);
+                            array_shift($parts); // Remove old product name
+                            // Create new variant name with new product name
+                            $variantName = $request->name . ' - ' . implode(' - ', $parts);
+                        }
+                        $variantSlug = Str::slug($variantName);
+
+                        if (empty($variantData['id'])) {
+                            $sku = $this->generateUniqueSku($product->id);
+                            $variant = ProductVariant::create([
+                                'product_id' => $product->id,
                                 'name' => $variantName,
                                 'slug' => $variantSlug,
+                                'sku' => $sku,
                                 'stock' => $variantData['stock'] ?? 0,
                                 'purchase_price' => $variantData['purchase_price'] ?? 0,
                                 'selling_price' => $variantData['selling_price'] ?? 0,
                                 'is_default' => isset($variantData['is_default']) && $variantData['is_default'] ? 1 : 0,
                             ]);
 
-                            // Recreate combinations only if attributes have changed
-                            if ($hasAttributeChanges && isset($variantData['attributes']) && is_array($variantData['attributes'])) {
+                            // Create combinations for new variant
+                            if (isset($variantData['attributes']) && is_array($variantData['attributes'])) {
                                 foreach ($variantData['attributes'] as $attr) {
                                     if (!empty($attr['attribute_type_id']) && !empty($attr['selected_values'])) {
                                         foreach ($attr['selected_values'] as $valueId) {
@@ -314,52 +268,95 @@ class ProductController
                                     }
                                 }
                             }
-                        }
-                    }
+                        } else {
+                            $variant = ProductVariant::find($variantData['id']);
+                            if ($variant) {
+                                // Only delete and recreate combinations if attributes have changed
+                                $hasAttributeChanges = false;
+                                if (isset($variantData['attributes']) && is_array($variantData['attributes'])) {
+                                    $currentCombinations = $variant->combinations()->pluck('attribute_value_id')->toArray();
+                                    $newValueIds = collect($variantData['attributes'])->flatMap(function($attr) {
+                                        return $attr['selected_values'] ?? [];
+                                    })->toArray();
 
-                    // Handle new image upload
-                    if ($request->hasFile("variants.{$index}.images")) {
-                        $imagePaths = [];
-                        $destinationPath = public_path('uploads/products');
-                        if (!file_exists($destinationPath)) {
-                            mkdir($destinationPath, 0777, true);
-                        }
-                        foreach ($request->file("variants.{$index}.images") as $image) {
-                            if ($image->isValid()) {
-                                $filename = time() . '_' . $index . '_' . $image->getClientOriginalName();
-                                $image->move($destinationPath, $filename);
-                                $path = 'uploads/products/' . $filename;
-                                $imagePaths[] = $path;
+                                    sort($currentCombinations);
+                                    sort($newValueIds);
+
+                                    if (count($currentCombinations) !== count($newValueIds) || 
+                                        implode(',', $currentCombinations) !== implode(',', $newValueIds)) {
+                                        $hasAttributeChanges = true;
+                                    }
+                                }
+
+                                if ($hasAttributeChanges) {
+                                    $variant->combinations()->forceDelete();
+                                }
+
+                                if ($request->hasFile("variants.{$index}.images")) {
+                                    $oldImages = json_decode($variant->images, true);
+                                    if (is_array($oldImages)) {
+                                        foreach ($oldImages as $img) {
+                                            $imgPath = public_path($img);
+                                            $imageVariantsCount = ProductVariant::where('images', 'like', '%"' . addslashes($img) . '"%')
+                                                ->where('id', '!=', $variant->id)
+                                                ->count();
+                                            if ($imageVariantsCount == 0 && file_exists($imgPath)) {
+                                                @unlink($imgPath);
+                                            }
+                                        }
+                                    }
+                                }
+
+                                $variant->update([
+                                    'name' => $variantName,
+                                    'slug' => $variantSlug,
+                                    'stock' => $variantData['stock'] ?? 0,
+                                    'purchase_price' => $variantData['purchase_price'] ?? 0,
+                                    'selling_price' => $variantData['selling_price'] ?? 0,
+                                    'is_default' => isset($variantData['is_default']) && $variantData['is_default'] ? 1 : 0,
+                                ]);
+
+                                // Recreate combinations only if attributes have changed
+                                if ($hasAttributeChanges && isset($variantData['attributes']) && is_array($variantData['attributes'])) {
+                                    foreach ($variantData['attributes'] as $attr) {
+                                        if (!empty($attr['attribute_type_id']) && !empty($attr['selected_values'])) {
+                                            foreach ($attr['selected_values'] as $valueId) {
+                                                // Create link between variant and attribute value
+                                                VariantCombination::create([
+                                                    'variant_id' => $variant->id,
+                                                    'attribute_value_id' => $valueId,
+                                                ]);
+                                            }
+                                        }
+                                    }
+                                }
                             }
                         }
-                        $variant->images = json_encode($imagePaths);
-                        $variant->save();
-                    }
-                }
 
-                // HARD DELETE old attribute_value_ids if no combinations use them
-                foreach ($oldAttrValueIds as $attrValueId) {
-                    $count = \App\Models\VariantCombination::where('attribute_value_id', $attrValueId)->count();
-                    if ($count == 0) {
-                        \App\Models\VariantAttributeValue::withTrashed()->where('id', $attrValueId)->forceDelete();
+                        // Handle new image upload
+                        if ($request->hasFile("variants.{$index}.images")) {
+                            $imagePaths = [];
+                            $destinationPath = public_path('uploads/products');
+                            if (!file_exists($destinationPath)) {
+                                mkdir($destinationPath, 0777, true);
+                            }
+                            foreach ($request->file("variants.{$index}.images") as $image) {
+                                if ($image->isValid()) {
+                                    $filename = time() . '_' . $index . '_' . $image->getClientOriginalName();
+                                    $image->move($destinationPath, $filename);
+                                    $path = 'uploads/products/' . $filename;
+                                    $imagePaths[] = $path;
+                                }
+                            }
+                            $variant->images = json_encode($imagePaths);
+                            $variant->save();
+                        }
                     }
                 }
             }
 
             // Ensure at least one default variant
             $this->ensureDefaultVariant($product);
-
-            // Trong hàm update, sau khi xử lý variants_to_delete và images_to_delete, thêm xử lý attributes_to_delete nếu có
-            if ($request->has('attributes_to_delete')) {
-                $attributesToDelete = is_array($request->attributes_to_delete) ? $request->attributes_to_delete : [];
-                foreach ($attributesToDelete as $attrId) {
-                    // Xóa thật attribute value (nếu không còn combination nào dùng)
-                    $count = \App\Models\VariantCombination::where('attribute_value_id', $attrId)->count();
-                    if ($count == 0) {
-                        \App\Models\VariantAttributeValue::withTrashed()->where('id', $attrId)->forceDelete();
-                    }
-                }
-            }
 
             DB::commit();
             return redirect()->route('admin.products.index')->with('success', 'Product updated successfully!');
@@ -382,14 +379,22 @@ class ProductController
             ->get();
 
         // Get product specification values (by specification_id)
-        $productSpecs = ProductSpecification::where('product_id', $product->id)->get()->keyBy('specification_id');
+        $productSpecs = ProductSpecification::where('product_id', $product->id)
+            ->get()
+            ->keyBy('specification_id');
 
         // Prepare data array for view
         $specificationsData = $specifications->map(function($spec) use ($productSpecs) {
+            $value = '';
+            if (isset($productSpecs[$spec->id])) {
+                $specValue = $productSpecs[$spec->id]->value;
+                $value = is_array($specValue) ? implode(', ', $specValue) : $specValue;
+            }
+            
             return [
                 'id' => $spec->id,
-                'name' => $spec->name,
-                'value' => $productSpecs[$spec->id]->value ?? '',
+                'name' => is_array($spec->name) ? implode(', ', $spec->name) : $spec->name,
+                'value' => $value
             ];
         });
 
@@ -403,10 +408,11 @@ class ProductController
 
         // Load variants with combinations and images
         $product->load(['variants' => function($query) {
-            $query->whereNull('deleted_at')->with(['combinations.attributeValue.attributeType']);
+            $query->whereNull('deleted_at')
+                ->with(['combinations.attributeValue.attributeType']);
         }]);
 
-        // Prepare attributeValues for form (gộp tất cả giá trị của từng attribute_type_id từ tất cả biến thể)
+        // Prepare attributeValues for form
         $attributeValues = [];
         if ($product->variants->isNotEmpty()) {
             $attributeMap = [];
@@ -416,7 +422,10 @@ class ProductController
                     $valueId = $comb->attribute_value_id;
                     
                     if (!isset($attributeMap[$typeId])) {
-                        $attributeMap[$typeId] = ['selected_values' => []];
+                        $attributeMap[$typeId] = [
+                            'attribute_type_id' => $typeId,
+                            'selected_values' => []
+                        ];
                     }
                     
                     if (!in_array($valueId, $attributeMap[$typeId]['selected_values'])) {
@@ -425,14 +434,18 @@ class ProductController
                 }
             }
             
-            // Convert to array format for view
-            foreach ($attributeMap as $typeId => $data) {
-                $attributeValues[] = [
-                    'attribute_type_id' => $typeId,
-                    'selected_values' => $data['selected_values']
-                ];
-            }
+            // Sort by attribute type ID to ensure consistent order
+            ksort($attributeMap);
+            $attributeValues = array_values($attributeMap);
         }
+
+        // Log the prepared data for debugging
+        Log::info('Edit product data:', [
+            'product_id' => $product->id,
+            'specifications' => $specificationsData->toArray(),
+            'attribute_values' => $attributeValues,
+            'attribute_types' => $attributeTypes->toArray()
+        ]);
 
         return view('admin.products.edit', compact(
             'product',
@@ -450,8 +463,21 @@ class ProductController
             ->get()
             ->map(function($value) {
                 // Đảm bảo trả về đúng cấu trúc mà view đang mong đợi
-                $displayValue = is_array($value->value) ? implode(', ', $value->value) : $value->value;
-                $hexValue = is_array($value->hex) && !empty($value->hex) ? implode(', ', $value->hex) : $value->hex;
+                $displayValue = $value->value;
+                if (is_string($displayValue) && json_decode($displayValue) !== null) {
+                    $displayValue = json_decode($displayValue, true);
+                }
+                if (is_array($displayValue)) {
+                    $displayValue = implode(', ', $displayValue);
+                }
+
+                $hexValue = $value->hex;
+                if (is_string($hexValue) && json_decode($hexValue) !== null) {
+                    $hexValue = json_decode($hexValue, true);
+                }
+                if (is_array($hexValue) && !empty($hexValue)) {
+                    $hexValue = implode(', ', $hexValue);
+                }
                 
                 return [
                     'id' => $value->id,

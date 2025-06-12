@@ -493,10 +493,13 @@
                         specificationsWrapper.innerHTML = '<p class="text-muted">Đang tải thông số kỹ thuật cho danh mục mới...</p>';
                     }
 
-                    // Clear attributes and values
+                    // Clear both attribute types and their values
                     document.querySelectorAll('.attribute-type').forEach(select => {
                         select.value = '';
-                        select.dispatchEvent(new Event('change'));
+                        const index = select.id.replace('attribute_type_', '');
+                        const valueSelect = $(`#values_${index}`);
+                        valueSelect.empty().trigger('change');
+                        valueSelect.append(new Option('-- Chọn giá trị --', '', false, false));
                     });
 
                     // Clear variants container
@@ -529,6 +532,7 @@
                 const attributeTypeId = $(this).val();
                 const selectedValues = valueSelect.val(); // Store current selected values
                 const oldAttributeTypeId = $(this).data('old-value');
+                let userConfirmed = false;
 
                 if (attributeTypeId && oldAttributeTypeId && attributeTypeId !== oldAttributeTypeId) {
                     const confirmMessage = 'CẢNH BÁO: Thay đổi loại thuộc tính sẽ:\n\n' +
@@ -540,12 +544,14 @@
 
                     if (!confirm(confirmMessage)) {
                         $(this).val(oldAttributeTypeId).trigger('change');
-                    return;
-                }
+                        return;
+                    }
+                    userConfirmed = true;
                 }
 
                 // Store new value as old value for next change
                 $(this).data('old-value', attributeTypeId);
+                $(this).data('changing', true); // Mark that we're changing attribute type
 
                 if (attributeTypeId) {
                     fetch(`/admin/attributes/${attributeTypeId}/values`)
@@ -564,20 +570,29 @@
                                 valueSelect.append(option);
                             });
 
-                            // Restore previously selected values if they exist in new options
-                            if (selectedValues) {
+                            // Restore previously selected values if not changing attribute type
+                            if (!userConfirmed && selectedValues) {
                                 valueSelect.val(selectedValues).trigger('change');
                             }
+
+                            // Clear variants container if user confirmed attribute type change
+                            if (userConfirmed) {
+                                $('#variantsContainer').empty();
+                            }
+
+                            $(this).data('changing', false); // Reset the changing flag
                         });
-                        } else {
+                } else {
                     valueSelect.empty().trigger('change');
                     valueSelect.append(new Option('-- Chọn giá trị --', '', false, false));
+                    $(this).data('changing', false); // Reset the changing flag
                 }
             });
 
             // Store initial attribute type values when page loads
             $('.attribute-type').each(function() {
                 $(this).data('old-value', $(this).val());
+                $(this).data('changing', false); // Initialize the changing flag
             });
 
             // Handle attribute values change
@@ -588,9 +603,11 @@
                 const newValues = $(this).val() || [];
 
                 // Only show warning if we're changing existing values and there are variants
+                // AND the change wasn't triggered by attribute type change
                 if (attributeTypeId && oldValues.length > 0 && 
                     JSON.stringify(oldValues.sort()) !== JSON.stringify(newValues.sort()) &&
-                    $('#variantsContainer .variant-row').length > 0) {
+                    $('#variantsContainer .variant-row').length > 0 &&
+                    !$(`#attribute_type_${index}`).data('changing')) {
                     
                     const confirmMessage = 'CẢNH BÁO: Thay đổi giá trị thuộc tính sẽ:\n\n' +
                         '1. Xóa tất cả biến thể hiện tại\n' +
@@ -601,8 +618,8 @@
 
                     if (!confirm(confirmMessage)) {
                         $(this).val(oldValues).trigger('change');
-                                    return;
-                                }
+                        return;
+                    }
 
                     // Clear variants container since values changed
                     $('#variantsContainer').empty();

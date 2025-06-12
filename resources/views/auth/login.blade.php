@@ -3,13 +3,19 @@
 @section('title', 'Đăng nhập - Apple Store')
 
 @section('content')
+    <div style="position: absolute; top: 20px; left: 20px;">
+        <a href="{{ url('/') }}" class="text-dark text-decoration-none" title="Về trang chủ">
+            <i class="fa-solid fa-right-from-bracket"></i> Về trang chủ
+        </a>
+    </div>
     <div class="container" id="container">
         <div class="form-container sign-in">
             <form action="{{ route('login') }}" method="POST">
                 @csrf
                 <h1>Đăng nhập</h1>
                 <div class="social-icons">
-                    <a href="{{ route('auth.google.redirect') }}" class="icon"><i class="fa-brands fa-google-plus-g"></i></a>
+                    <a href="{{ route('auth.google.redirect') }}" class="icon"><i
+                            class="fa-brands fa-google-plus-g"></i></a>
                     <a href="{{ route('auth.facebook.redirect') }}" class="icon"><i
                             class="fa-brands fa-facebook-f"></i></a>
                 </div>

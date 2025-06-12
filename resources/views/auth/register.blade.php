@@ -3,6 +3,11 @@
 @section('title', 'Đăng kí - Apple Store')
 
 @section('content')
+    <div style="position: absolute; top: 20px; left: 20px;">
+        <a href="{{ url('/') }}" class="text-dark text-decoration-none" title="Về trang chủ">
+            <i class="fa-solid fa-right-from-bracket"></i> Về trang chủ
+        </a>
+    </div>
     <div class="container active" id="container">
         <div class="form-container sign-up">
             <form action="{{ route('register') }}" method="POST" enctype="multipart/form-data">
@@ -42,8 +47,7 @@
 
                 <div class="row-inputs">
                     <div class="gender-container w-100">
-                        <select name="gender" id="gender"
-                            class="form-control @error('gender') is-invalid @enderror">
+                        <select name="gender" id="gender" class="form-control @error('gender') is-invalid @enderror">
                             <option value="">Chọn giới tính</option>
                             <option value="male" {{ old('gender') == 'male' ? 'selected' : '' }}>Nam</option>
                             <option value="female" {{ old('gender') == 'female' ? 'selected' : '' }}>Nữ</option>

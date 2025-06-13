@@ -261,155 +261,132 @@
                                     </div>
                                 </div>
 
+                                @php
+                                    // Ưu tiên lấy dữ liệu vừa nhập khi validate lỗi
+                                    $variants = old('variants') ?? $product->variants->whereNull('deleted_at')->toArray();
+                                    $attributes = old('attributes') ?? $attributeValues;
+                                @endphp
+
                                 <!-- Variant Attributes -->
-                <div class="mb-3" id="variant-attributes-section">
-                    <label class="form-label">Thuộc Tính Biến Thể <span class="text-danger">*</span></label>
+                                <div class="mb-3" id="variant-attributes-section">
+                                    <label class="form-label">Thuộc Tính Biến Thể <span class="text-danger">*</span></label>
                                     <div id="variant-attributes">
                                         <div id="attributes-wrapper">
-                                            <div class="row mb-2 attribute-row">
-                                                <div class="col-md-6">
-                                                    <div class="mb-3">
-                                        <label class="form-label">Thuộc Tính 1</label>
-                                        <select class="form-select attribute-type" name="attributes[0][attribute_type_id]" id="attribute_type_0">
-                                                            <option value="">-- Chọn thuộc tính --</option>
-                                                            @foreach ($attributeTypes as $type)
-                                                                <option value="{{ $type->id }}" 
-                                                    {{ (old('attributes.0.attribute_type_id') == $type->id || 
-                                                        (isset($attributeValues[0]) && $attributeValues[0]['attribute_type_id'] == $type->id)) ? 'selected' : '' }}>
-                                                                    {{ $type->name }}
-                                                                </option>
-                                                            @endforeach
-                                                        </select>
-                                                    </div>
-                                                    <div class="mb-3">
-                                        <label class="form-label">Giá Trị</label>
-                                        <select class="form-select attribute-values" name="attributes[0][selected_values][]" id="values_0" multiple>
-                                                            <option value="">-- Chọn giá trị --</option>
-                                            @if(isset($attributeValues[0]))
-                                                @foreach($attributeTypes->firstWhere('id', $attributeValues[0]['attribute_type_id'])->attributeValues as $value)
-                                                                    <option value="{{ $value->id }}" 
-                                                        {{ in_array($value->id, $attributeValues[0]['selected_values']) ? 'selected' : '' }}
-                                                        data-hex="{{ is_array($value->hex) ? implode(', ', $value->hex) : $value->hex }}">
+                                            @foreach($attributes as $attrIndex => $attribute)
+                                                <div class="row mb-2 attribute-row">
+                                                    <div class="col-md-6">
+                                                        <div class="mb-3">
+                                                            <label class="form-label">Thuộc Tính {{ $attrIndex + 1 }}</label>
+                                                            <select class="form-select attribute-type" name="attributes[{{ $attrIndex }}][attribute_type_id]" id="attribute_type_{{ $attrIndex }}">
+                                                                <option value="">-- Chọn thuộc tính --</option>
+                                                                @foreach ($attributeTypes as $type)
+                                                                    <option value="{{ $type->id }}" {{ old('attributes.'.$attrIndex.'.attribute_type_id', $attribute['attribute_type_id'] ?? '') == $type->id ? 'selected' : '' }}>
+                                                                        {{ $type->name }}
+                                                                    </option>
+                                                                @endforeach
+                                                            </select>
+                                                        </div>
+                                                        <div class="mb-3">
+                                                            <label class="form-label">Giá Trị</label>
+                                                            <select class="form-select attribute-values" name="attributes[{{ $attrIndex }}][selected_values][]" id="values_{{ $attrIndex }}" multiple>
+                                                                <option value="">-- Chọn giá trị --</option>
+                                                                @php
+                                                                    $selectedValues = old('attributes.'.$attrIndex.'.selected_values', $attribute['selected_values'] ?? []);
+                                                                    if (!is_array($selectedValues)) {
+                                                                        $selectedValues = [$selectedValues];
+                                                                    }
+                                                                    $typeId = old('attributes.'.$attrIndex.'.attribute_type_id', $attribute['attribute_type_id'] ?? null);
+                                                                    $values = $typeId ? $attributeTypes->firstWhere('id', $typeId)?->attributeValues ?? [] : [];
+                                                                @endphp
+                                                                @foreach($values as $value)
+                                                                    <option value="{{ $value->id }}" {{ in_array($value->id, $selectedValues) ? 'selected' : '' }} data-hex="{{ is_array($value->hex) ? implode(', ', $value->hex) : $value->hex }}">
                                                                         {{ is_array($value->value) ? implode(', ', $value->value) : $value->value }}
                                                                     </option>
                                                                 @endforeach
-                                                            @endif
-                                                        </select>
-                                                        <div class="error-message" id="error-values-0">Vui lòng chọn ít nhất một giá trị.</div>
+                                                            </select>
+                                                            <div class="error-message" id="error-values-{{ $attrIndex }}">Vui lòng chọn ít nhất một giá trị.</div>
+                                                        </div>
                                                     </div>
                                                 </div>
-                                                <div class="col-md-6">
-                                                    <div class="mb-3">
-                                        <label class="form-label">Thuộc Tính 2</label>
-                                        <select class="form-select attribute-type" name="attributes[1][attribute_type_id]" id="attribute_type_1">
-                                                            <option value="">-- Chọn thuộc tính --</option>
-                                                            @foreach ($attributeTypes as $type)
-                                                                <option value="{{ $type->id }}" 
-                                                    {{ (old('attributes.1.attribute_type_id') == $type->id || 
-                                                        (isset($attributeValues[1]) && $attributeValues[1]['attribute_type_id'] == $type->id)) ? 'selected' : '' }}>
-                                                                    {{ $type->name }}
-                                                                </option>
-                                                            @endforeach
-                                                        </select>
-                                                    </div>
-                                                    <div class="mb-3">
-                                        <label class="form-label">Giá Trị</label>
-                                        <select class="form-select attribute-values" name="attributes[1][selected_values][]" id="values_1" multiple>
-                                                            <option value="">-- Chọn giá trị --</option>
-                                            @if(isset($attributeValues[1]))
-                                                @foreach($attributeTypes->firstWhere('id', $attributeValues[1]['attribute_type_id'])->attributeValues as $value)
-                                                                    <option value="{{ $value->id }}" 
-                                                        {{ in_array($value->id, $attributeValues[1]['selected_values']) ? 'selected' : '' }}
-                                                        data-hex="{{ is_array($value->hex) ? implode(', ', $value->hex) : $value->hex }}">
-                                                                        {{ is_array($value->value) ? implode(', ', $value->value) : $value->value }}
-                                                                    </option>
-                                                                @endforeach
-                                                            @endif
-                                                        </select>
-                                                        <div class="error-message" id="error-values-1">Vui lòng chọn ít nhất một giá trị.</div>
-                                                    </div>
-                                                </div>
-                                            </div>
+                                            @endforeach
                                         </div>
                                     </div>
-                    <div class="error-message" id="error-duplicate" style="display: none;">Không được chọn trùng loại thuộc tính.</div>
-                                <div class="error-message" id="error-min-attributes" style="display: none;">Vui lòng chọn ít nhất một thuộc tính với giá trị hợp lệ.</div>
-                </div>
+                                    <div class="error-message" id="error-duplicate" style="display: none;">Không được chọn trùng loại thuộc tính.</div>
+                                    <div class="error-message" id="error-min-attributes" style="display: none;">Vui lòng chọn ít nhất một thuộc tính với giá trị hợp lệ.</div>
+                                </div>
 
-                <!-- Generated Variants -->
+                                <!-- Generated Variants -->
                                 <div class="mb-3">
-                    <label class="form-label">Biến Thể Sản Phẩm</label> <br>
-                    <button type="button" class="btn btn-primary mb-3" id="generate-variants">Tạo Biến Thể</button>
+                                    <label class="form-label">Biến Thể Sản Phẩm</label> <br>
+                                    <button type="button" class="btn btn-primary mb-3" id="generate-variants">Tạo Biến Thể</button>
                                     <div id="variantsContainer">
-                        @foreach($product->variants as $index => $variant)
+                                        @foreach($variants as $index => $variant)
                                             <div class="variant-row" data-index="{{ $index }}">
-                                <h6>Biến Thể {{ $index + 1 }}: {{ is_array($variant->name) ? implode(' - ', $variant->name) : $variant->name }}</h6>
-                                <input type="hidden" name="variants[{{ $index }}][id]" value="{{ $variant->id }}">
-                                <input type="hidden" name="variants[{{ $index }}][name]" value="{{ is_array($variant->name) ? implode(' - ', $variant->name) : $variant->name }}">
-                                <input type="hidden" name="variants[{{ $index }}][slug]" value="{{ is_array($variant->slug) ? implode('-', $variant->slug) : $variant->slug }}">
-                                
+                                                <h6>Biến Thể {{ $index + 1 }}: {{ old('variants.'.$index.'.name', $variant['name'] ?? '') }}</h6>
+                                                <input type="hidden" name="variants[{{ $index }}][id]" value="{{ old('variants.'.$index.'.id', $variant['id'] ?? '') }}">
+                                                <input type="hidden" name="variants[{{ $index }}][name]" value="{{ old('variants.'.$index.'.name', $variant['name'] ?? '') }}">
+                                                <input type="hidden" name="variants[{{ $index }}][slug]" value="{{ old('variants.'.$index.'.slug', $variant['slug'] ?? '') }}">
                                                 <div class="row">
                                                     <div class="col-md-3">
                                                         <div class="mb-3">
-                                            <label class="form-label">Tồn Kho</label>
-                                            <input type="number" class="form-control" name="variants[{{ $index }}][stock]" min="0" value="{{ old("variants.{$index}.stock", $variant->stock) }}" required>
+                                                            <label class="form-label">Tồn Kho</label>
+                                                            <input type="number" class="form-control" name="variants[{{ $index }}][stock]" min="0" value="{{ old('variants.'.$index.'.stock', $variant['stock'] ?? '') }}" required>
                                                         </div>
                                                     </div>
                                                     <div class="col-md-3">
                                                         <div class="mb-3">
-                                            <label class="form-label">Giá Nhập</label>
-                                            <input type="number" class="form-control" name="variants[{{ $index }}][purchase_price]" min="0" step="0.01" value="{{ old("variants.{$index}.purchase_price", $variant->purchase_price) }}" required>
+                                                            <label class="form-label">Giá Nhập</label>
+                                                            <input type="number" class="form-control" name="variants[{{ $index }}][purchase_price]" min="0" step="0.01" value="{{ old('variants.'.$index.'.purchase_price', $variant['purchase_price'] ?? '') }}" required>
                                                         </div>
                                                     </div>
                                                     <div class="col-md-3">
                                                         <div class="mb-3">
-                                            <label class="form-label">Giá Bán</label>
-                                            <input type="number" class="form-control" name="variants[{{ $index }}][selling_price]" min="0" step="0.01" value="{{ old("variants.{$index}.selling_price", $variant->selling_price) }}" required>
+                                                            <label class="form-label">Giá Bán</label>
+                                                            <input type="number" class="form-control" name="variants[{{ $index }}][selling_price]" min="0" step="0.01" value="{{ old('variants.'.$index.'.selling_price', $variant['selling_price'] ?? '') }}" required>
                                                         </div>
                                                     </div>
                                                 </div>
                                                 <div class="row">
                                                     <div class="col-md-6">
                                                         <div class="mb-3">
-                                            <label class="form-label">Hình Ảnh</label>
+                                                            <label class="form-label">Hình Ảnh</label>
                                                             <input type="file" class="form-control variant-images" name="variants[{{ $index }}][images][]" multiple accept="image/*">
-                                            <div class="image-preview-container" id="preview-{{ $index }}">
-                                                @if($variant->images)
-                                                    @php
-                                                        $images = json_decode($variant->images, true);
-                                                    @endphp
-                                                    @if(is_array($images))
-                                                        @foreach($images as $image)
-                                                            <div class="image-preview-wrapper">
-                                                                <img src="{{ asset($image) }}" class="image-preview">
-                                                                <button type="button" class="delete-image" data-image="{{ $image }}" data-variant="{{ $variant->id }}">×</button>
-                                                                        </div>
-                                                                    @endforeach
-                                                    @endif
-                                                                @endif
+                                                            <div class="image-preview-container" id="preview-{{ $index }}">
+                                                                @php
+                                                                    $oldImages = old('variants.'.$index.'.images');
+                                                                    // Nếu không có old (tức là lần đầu vào form hoặc không lỗi validate), lấy ảnh từ DB
+                                                                    if (is_null($oldImages) && !empty($variant['images'])) {
+                                                                        $images = is_array($variant['images']) ? $variant['images'] : json_decode($variant['images'], true);
+                                                                        if (is_array($images)) {
+                                                                            foreach ($images as $image) {
+                                                                                echo '<div class="image-preview-wrapper">';
+                                                                                echo '<img src="'.asset($image).'" class="image-preview">';
+                                                                                echo '<button type="button" class="delete-image" data-image="'.$image.'" data-variant="'.($variant['id'] ?? '').'">×</button>';
+                                                                                echo '</div>';
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                @endphp
                                                             </div>
                                                         </div>
                                                     </div>
                                                     <div class="col-md-6">
                                                         <div class="mb-3">
-                                            <label class="form-label">Biến Thể Mặc Định</label>
+                                                            <label class="form-label">Biến Thể Mặc Định</label>
                                                             <div class="form-check form-switch">
-                                                <input class="form-check-input default-variant-toggle" type="checkbox" name="variants[{{ $index }}][is_default]" id="is_default_{{ $index }}" value="1" {{ old("variants.{$index}.is_default", $variant->is_default) ? 'checked' : '' }}>
+                                                                <input class="form-check-input default-variant-toggle" type="checkbox" name="variants[{{ $index }}][is_default]" id="is_default_{{ $index }}" value="1" {{ old('variants.'.$index.'.is_default', $variant['is_default'] ?? false) ? 'checked' : '' }}>
                                                                 <label class="form-check-label" for="is_default_{{ $index }}">Đặt làm mặc định</label>
                                                             </div>
                                                         </div>
                                                     </div>
                                                 </div>
-
-                                <!-- Hidden inputs for variant combinations -->
-                                @foreach($variant->combinations as $combination)
-                                    <input type="hidden" 
-                                        name="variants[{{ $index }}][attributes][{{ $loop->index }}][attribute_type_id]" 
-                                        value="{{ is_array($combination->attributeValue->attribute_type_id) ? $combination->attributeValue->attribute_type_id[0] : $combination->attributeValue->attribute_type_id }}">
-                                    <input type="hidden" 
-                                        name="variants[{{ $index }}][attributes][{{ $loop->index }}][selected_values]" 
-                                        value="{{ is_array($combination->attribute_value_id) ? $combination->attribute_value_id[0] : $combination->attribute_value_id }}">
+                                                {{-- Hidden inputs for variant combinations nếu cần --}}
+                                                @if(isset($variant['attributes']))
+                                                    @foreach($variant['attributes'] as $attrIdx => $attr)
+                                                        <input type="hidden" name="variants[{{ $index }}][attributes][{{ $attrIdx }}][attribute_type_id]" value="{{ $attr['attribute_type_id'] ?? '' }}">
+                                                        <input type="hidden" name="variants[{{ $index }}][attributes][{{ $attrIdx }}][selected_values]" value="{{ is_array($attr['selected_values'] ?? null) ? implode(',', $attr['selected_values']) : ($attr['selected_values'] ?? '') }}">
                                                     @endforeach
+                                                @endif
                                             </div>
                                         @endforeach
                                     </div>
@@ -433,7 +410,7 @@
             // Initialize Select2
             $('.attribute-values').select2({
                 width: '100%',
-                placeholder: 'Select values',
+                placeholder: 'Chọn giá trị',
                 allowClear: true,
                 multiple: true,
                 templateResult: formatAttributeValue,
@@ -534,11 +511,47 @@
                 const oldAttributeTypeId = $(this).data('old-value');
                 let userConfirmed = false;
 
-                if (attributeTypeId && oldAttributeTypeId && attributeTypeId !== oldAttributeTypeId) {
+                // Nếu đang chuyển từ có giá trị sang không có giá trị (bỏ chọn thuộc tính)
+                if (oldAttributeTypeId && !attributeTypeId) {
+                    const confirmMessage = 'CẢNH BÁO: Bỏ chọn thuộc tính sẽ:\n\n' +
+                        '1. Xóa tất cả giá trị đã chọn của thuộc tính này\n' +
+                        '2. Xóa tất cả biến thể hiện tại\n' +
+                        '3. Xóa tất cả hình ảnh của các biến thể\n\n' +
+                        'Những thay đổi này sẽ có hiệu lực sau khi bạn nhấn Cập Nhật Sản Phẩm.\n\n' +
+                        'Bạn có chắc chắn muốn bỏ chọn thuộc tính này?';
+
+                    if (!confirm(confirmMessage)) {
+                        $(this).val(oldAttributeTypeId).trigger('change');
+                        return;
+                    }
+                    userConfirmed = true;
+
+                    // Store variants for deletion
+                    const variantsToDelete = [];
+                    $('#variantsContainer .variant-row input[name$="[id]"]').each(function() {
+                        if (this.value) {
+                            variantsToDelete.push(this.value);
+                        }
+                    });
+                    $('#variants_to_delete').val(JSON.stringify(variantsToDelete));
+
+                    // Store images for deletion
+                    const imagesToDelete = [];
+                    $('#variantsContainer .image-preview-wrapper img').each(function() {
+                        const imgSrc = $(this).attr('src').split('/').slice(-3).join('/');
+                        imagesToDelete.push(imgSrc);
+                    });
+                    $('#images_to_delete').val(JSON.stringify(imagesToDelete));
+
+                    // Clear variants container
+                    $('#variantsContainer').empty();
+                }
+                // Nếu đang thay đổi từ một thuộc tính sang thuộc tính khác
+                else if (attributeTypeId && oldAttributeTypeId && attributeTypeId !== oldAttributeTypeId) {
                     const confirmMessage = 'CẢNH BÁO: Thay đổi loại thuộc tính sẽ:\n\n' +
                         '1. Xóa tất cả giá trị đã chọn của thuộc tính này\n' +
-                        '2. Xóa tất cả biến thể liên quan đến thuộc tính này\n' +
-                        '3. Xóa tất cả hình ảnh của các biến thể bị ảnh hưởng\n\n' +
+                        '2. Xóa tất cả biến thể hiện tại\n' +
+                        '3. Xóa tất cả hình ảnh của các biến thể\n\n' +
                         'Những thay đổi này sẽ có hiệu lực sau khi bạn nhấn Cập Nhật Sản Phẩm.\n\n' +
                         'Bạn có chắc chắn muốn thay đổi loại thuộc tính?';
 
@@ -547,6 +560,26 @@
                         return;
                     }
                     userConfirmed = true;
+
+                    // Store variants for deletion
+                    const variantsToDelete = [];
+                    $('#variantsContainer .variant-row input[name$="[id]"]').each(function() {
+                        if (this.value) {
+                            variantsToDelete.push(this.value);
+                        }
+                    });
+                    $('#variants_to_delete').val(JSON.stringify(variantsToDelete));
+
+                    // Store images for deletion
+                    const imagesToDelete = [];
+                    $('#variantsContainer .image-preview-wrapper img').each(function() {
+                        const imgSrc = $(this).attr('src').split('/').slice(-3).join('/');
+                        imagesToDelete.push(imgSrc);
+                    });
+                    $('#images_to_delete').val(JSON.stringify(imagesToDelete));
+
+                    // Clear variants container
+                    $('#variantsContainer').empty();
                 }
 
                 // Store new value as old value for next change
@@ -573,11 +606,6 @@
                             // Restore previously selected values if not changing attribute type
                             if (!userConfirmed && selectedValues) {
                                 valueSelect.val(selectedValues).trigger('change');
-                            }
-
-                            // Clear variants container if user confirmed attribute type change
-                            if (userConfirmed) {
-                                $('#variantsContainer').empty();
                             }
 
                             $(this).data('changing', false); // Reset the changing flag
@@ -732,25 +760,25 @@
             function generateVariantHtml(index, variantName, variantSlug, combination) {
                 return `
                     <div class="variant-row" data-index="${index}">
-                        <h6>Variant ${index + 1}: ${variantName}</h6>
+                        <h6>Biến Thể ${index + 1}: ${variantName}</h6>
                         <input type="hidden" name="variants[${index}][name]" value="${variantName}">
                         <input type="hidden" name="variants[${index}][slug]" value="${variantSlug}">
                         <div class="row">
                             <div class="col-md-3">
                                 <div class="mb-3">
-                                    <label class="form-label">Stock</label>
+                                    <label class="form-label">Tồn Kho</label>
                                     <input type="number" class="form-control" name="variants[${index}][stock]" min="0" required>
                                 </div>
                             </div>
                             <div class="col-md-3">
                                 <div class="mb-3">
-                                    <label class="form-label">Purchase Price</label>
+                                    <label class="form-label">Giá Nhập</label>
                                     <input type="number" class="form-control" name="variants[${index}][purchase_price]" min="0" step="0.01" required>
                                 </div>
                             </div>
                             <div class="col-md-3">
                                 <div class="mb-3">
-                                    <label class="form-label">Selling Price</label>
+                                    <label class="form-label">Giá Bán</label>
                                     <input type="number" class="form-control" name="variants[${index}][selling_price]" min="0" step="0.01" required>
                                 </div>
                             </div>
@@ -758,17 +786,17 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="mb-3">
-                                    <label class="form-label">Images</label>
+                                    <label class="form-label">Hình Ảnh</label>
                                     <input type="file" class="form-control variant-images" name="variants[${index}][images][]" multiple accept="image/*">
                                     <div id="preview-${index}" class="image-preview-container"></div>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="mb-3">
-                                    <label class="form-label">Default Variant</label>
+                                    <label class="form-label">Biến Thể Mặc Định</label>
                                     <div class="form-check form-switch">
                                         <input class="form-check-input default-variant-toggle" type="checkbox" name="variants[${index}][is_default]" id="is_default_${index}" value="1" ${index === 0 ? 'checked' : ''}>
-                                        <label class="form-check-label" for="is_default_${index}">Set as default</label>
+                                        <label class="form-check-label" for="is_default_${index}">Đặt làm mặc định</label>
                                     </div>
                                 </div>
                             </div>
@@ -943,7 +971,7 @@
                                 html += '</div>';
                                 container.innerHTML = html;
                             } else {
-                                container.innerHTML = '<p class="text-muted">No specifications found for this category.</p>';
+                                container.innerHTML = '<p class="text-muted">Không tìm thấy thông số kỹ thuật cho danh mục này.</p>';
                             }
                         });
 

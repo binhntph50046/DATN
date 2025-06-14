@@ -20,10 +20,10 @@ class OrderController extends Controller
 
         if ($request->filled('search')) {
             $search = $request->search;
-            $query->where(function($q) use ($search) {
+            $query->where(function ($q) use ($search) {
                 $q->where('shipping_name', 'like', "%$search%")
-                  ->orWhere('shipping_email', 'like', "%$search%")
-                  ->orWhere('id', $search);
+                    ->orWhere('shipping_email', 'like', "%$search%")
+                    ->orWhere('id', $search);
             });
         }
 
@@ -63,7 +63,7 @@ class OrderController extends Controller
             "cancelled" => []
         ];
         $new_status = $request->status;
-        if(isset($status[$order->status]) && in_array($new_status, $status[$order->status])) {
+        if (isset($status[$order->status]) && in_array($new_status, $status[$order->status])) {
             $old_status = $order->status;
             $order->update(['status' => $new_status]);
             // Gửi email hóa đơn kèm PDF khi chuyển sang 'confirmed'
@@ -94,9 +94,9 @@ class OrderController extends Controller
             event(new OrderStatusUpdated($order));
             if ($request->ajax() || $request->wantsJson()) {
                 return response()->json(['success' => true, 'status' => $order->status]);
-            }   
+            }
             return redirect()->route('admin.orders.show', $order->id)
-                    ->with('success', 'Cập nhật trạng thái đơn hàng thành công');
+                ->with('success', 'Cập nhật trạng thái đơn hàng thành công');
         }
 
         if ($request->ajax() || $request->wantsJson()) {
@@ -106,5 +106,3 @@ class OrderController extends Controller
             ->with('error', 'Không thể cập nhật trạng thái đơn hàng');
     }
 }
-
-

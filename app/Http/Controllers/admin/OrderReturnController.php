@@ -81,7 +81,6 @@ class OrderReturnController extends Controller
 
         return redirect()->route('admin.order-returns.index')->with('success', 'Đã duyệt yêu cầu hoàn hàng. Đã hoàn lại ' . number_format($refundAmount) . ' VNĐ cho khách.');
     }
-
     /**
      * Từ chối yêu cầu hoàn hàng
      */
@@ -95,4 +94,4 @@ class OrderReturnController extends Controller
         ]);
         return redirect()->route('admin.order-returns.index')->with('success', 'Đã từ chối yêu cầu hoàn hàng.');
     }
-} 
+}

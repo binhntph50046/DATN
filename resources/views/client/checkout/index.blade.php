@@ -1,22 +1,90 @@
 @extends('client.layouts.app')
+@section('title', 'Thanh toán - Apple Store')
 
 @section('content')
 
 <head>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    
+    <style>
+        .checkout-container {
+            margin-top: 40px;
+        }
+         @media (max-width: 768px) {
+            .checkout-container {
+                margin-top: 70px;
+            }
+        }
+        .payment-methods {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+
+        .payment-option {
+            display: flex;
+            align-items: center;
+            background: #fff;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 18px 24px;
+            cursor: pointer;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            position: relative;
+        }
+
+        .payment-option:hover, .payment-option input:checked ~ .custom-radio {
+            border-color: #007bff;
+        }
+
+        .payment-option input[type="radio"] {
+            display: none;
+        }
+
+        .custom-radio {
+            width: 22px;
+            height: 22px;
+            border: 2px solid #bbb;
+            border-radius: 50%;
+            margin-right: 18px;
+            position: relative;
+            background: #fff;
+            transition: border-color 0.2s;
+        }
+
+        .payment-option input[type="radio"]:checked ~ .custom-radio {
+            border-color: #007bff;
+            background: #007bff;
+        }
+
+        .payment-option input[type="radio"]:checked ~ .custom-radio::after {
+            content: '';
+            display: block;
+            width: 10px;
+            height: 10px;
+            background: #fff;
+            border-radius: 50%;
+            position: absolute;
+            top: 5px;
+            left: 5px;
+        }
+
+        .payment-icon {
+            width: 48px;
+            height: 48px;
+            object-fit: contain;
+            margin-right: 18px;
+        }
+
+        .payment-label {
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: #222;
+        }
+    </style>
 </head>
     <div class="untree_co-section">
-        <div class="container">
-            {{-- bật cái này khi checkout chưa dăng nhập (khách vẵng lai) --}}
-            {{-- <div class="row mb-5">
-                <div class="col-md-12">
-                    <div class="border p-4 rounded" role="alert">
-                        Returning customer? <a href="#">Click here</a> to login
-                    </div>
-                </div>
-            </div> --}}
-            {{--  --}}
+        <div class="container checkout-container">
             <div class="row">
                 <div class="col-md-6 mb-5 mb-md-0">
                     <h2 class="h3 mb-3 text-black">Thông tin đơn hàng của bạn</h2>
@@ -34,34 +102,14 @@
                             @csrf
                             <input type="hidden" name="variant_id" value="{{ $variant ? $variant->id : '' }}">
                             <input type="hidden" name="quantity" value="{{ $quantity ?? 1 }}">
-                            <div class="form-group">
-                                <label for="c_country" class="text-black">Quốc gia <span class="text-danger">*</span></label>
-                                <select id="c_country" class="form-control">
-                                    <option value="1">Chọn quốc gia</option>
-                                    <option value="2">Việt Nam</option>
-                                    <option value="3">Lào</option>
-                                    <option value="4">Campuchia</option>
-                                    <option value="5">Thái Lan</option>
-                                    <option value="6">Malaysia</option>
-                                    <option value="7">Nhật Bản</option>
-                                    <option value="8">Hàn Quốc</option>
-                                    <option value="9">Trung Quốc</option>
-                                </select>
-                            </div>
                             <div id="address-fields">
                                 <div class="form-group row">
                                     <div class="col-md-12">
-                                        <label for="c_fname" class="text-black">Tên <span
+                                        <label for="c_fname" class="text-black">Họ và tên <span
                                                 class="text-danger">*</span></label>
                                         <input type="text" class="form-control" id="c_fname" name="c_fname" required
-                                            value="{{ old('c_fname', Auth::check() ? explode(' ', Auth::user()->name)[0] : '') }}">
+                                            value="{{ old('c_fname', Auth::check() ? Auth::user()->name : '') }}">
                                     </div>
-                                    {{-- <div class="col-md-6">
-                                        <label for="c_lname" class="text-black">Họ <span
-                                                class="text-danger">*</span></label>
-                                        <input type="text" class="form-control" id="c_lname" name="c_lname" required
-                                            value="{{ old('c_lname', Auth::check() ? explode(' ', Auth::user()->name)[1] ?? '' : '') }}">
-                                    </div> --}}
                                 </div>
                                 <div class="form-group row">
                                     <div class="col-md-12">
@@ -70,18 +118,6 @@
                                             value="{{ old('c_address', Auth::check() ? Auth::user()->address : '') }}">
                                     </div>
                                 </div>
-                                {{-- <div class="form-group row">
-                                    <div class="col-md-6">
-                                        <label for="c_state_country" class="text-black">Tỉnh / Quốc gia <span
-                                                class="text-danger">*</span></label>
-                                        <input type="text" class="form-control" id="c_state_country" name="c_state_country">
-                                    </div>
-                                    <div class="col-md-6">
-                                            <label for="c_postal_zip" class="text-black">Mã bưu điện <span
-                                                class="text-danger">*</span></label>
-                                        <input type="text" class="form-control" id="c_postal_zip" name="c_postal_zip">
-                                    </div>
-                                </div> --}}
                                 <div class="form-group row mb-5">
                                     <div class="col-md-6">
                                         <label for="c_email_address" class="text-black">Email <span
@@ -105,36 +141,24 @@
                             <div class="form-group mt-4">
                                 <label class="text-black fw-bold mb-2">Phương thức thanh toán <span class="text-danger">*</span></label>
                                 <div class="d-flex flex-column gap-2">
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="radio" name="payment_method" id="pm_cod" value="cod" checked>
-                                        <label class="form-check-label" for="pm_cod">
-                                            <i class="fas fa-box-open me-2"></i> Thanh toán khi nhận hàng (COD)
+                                    <div class="payment-methods">
+                                        <label class="payment-option">
+                                            <input type="radio" name="payment_method" id="pm_cod" value="cod" required>
+                                            <span class="custom-radio"></span>
+                                            <img src="{{ asset('/images/logo/cod.png') }}" alt="COD" class="payment-icon">
+                                            <span class="payment-label">Thanh toán khi nhận hàng (COD)</span>
                                         </label>
-                                    </div>
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="radio" name="payment_method" id="pm_vnpay" value="vnpay">
-                                        <label class="form-check-label" for="pm_vnpay">
-                                            <i class="fas fa-qrcode me-2"></i> Thanh toán qua VNPay
-                                        </label>
-                                    </div>
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="radio" name="payment_method" id="pm_bank" value="bank_transfer">
-                                        <label class="form-check-label" for="pm_bank">
-                                            <i class="fas fa-university me-2"></i> Chuyển khoản ngân hàng
+                                        <label class="payment-option">
+                                            <input type="radio" name="payment_method"  id="pm_vnpay" value="vnpay" required>
+                                            <span class="custom-radio"></span>
+                                            <img src="{{ asset('/images/logo-primary.svg') }}" alt="VNPay" class="payment-icon">
+                                            <span class="payment-label">Thanh toán qua VNPay</span>
                                         </label>
                                     </div>
                                 </div>
+                               
+                            
                             </div>
-
-                            @if(Auth::check())
-                                <div class="form-check mb-3">
-                                    <input class="form-check-input" type="checkbox" id="use_new_address">
-                                    <label class="form-check-label" for="use_new_address">
-                                        Sử dụng địa chỉ giao hàng khác
-                                    </label>
-                                </div>
-                            @endif
-
                             <div class="form-group mt-4">
                                 <button class="btn btn-black btn-lg py-3 btn-block w-100" type="submit" id="checkout-button">
                                     Đặt hàng

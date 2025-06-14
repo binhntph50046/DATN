@@ -5,6 +5,14 @@
 <head>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
+        .checkout-container {
+            margin-top: 40px;
+        }
+         @media (max-width: 768px) {
+            .checkout-container {
+                margin-top: 70px;
+            }
+        }
         .payment-methods {
             display: flex;
             flex-direction: column;
@@ -75,7 +83,7 @@
     </style>
 </head>
     <div class="untree_co-section">
-        <div class="container">
+        <div class="container checkout-container">
             <div class="row">
                 <div class="col-md-6 mb-5 mb-md-0">
                     <h2 class="h3 mb-3 text-black">Thông tin đơn hàng của bạn</h2>
@@ -93,27 +101,13 @@
                             @csrf
                             <input type="hidden" name="variant_id" value="{{ $variant ? $variant->id : '' }}">
                             <input type="hidden" name="quantity" value="{{ $quantity ?? 1 }}">
-                            <div class="form-group">
-                                <label for="c_country" class="text-black">Quốc gia <span class="text-danger">*</span></label>
-                                <select id="c_country" class="form-control">
-                                    <option value="1">Chọn quốc gia</option>
-                                    <option value="2">Việt Nam</option>
-                                    <option value="3">Lào</option>
-                                    <option value="4">Campuchia</option>
-                                    <option value="5">Thái Lan</option>
-                                    <option value="6">Malaysia</option>
-                                    <option value="7">Nhật Bản</option>
-                                    <option value="8">Hàn Quốc</option>
-                                    <option value="9">Trung Quốc</option>
-                                </select>
-                            </div>
                             <div id="address-fields">
                                 <div class="form-group row">
                                     <div class="col-md-12">
-                                        <label for="c_fname" class="text-black">Tên <span
+                                        <label for="c_fname" class="text-black">Họ và tên <span
                                                 class="text-danger">*</span></label>
                                         <input type="text" class="form-control" id="c_fname" name="c_fname" required
-                                            value="{{ old('c_fname', Auth::check() ? explode(' ', Auth::user()->name)[0] : '') }}">
+                                            value="{{ old('c_fname', Auth::check() ? Auth::user()->name : '') }}">
                                     </div>
                                 </div>
                                 <div class="form-group row">

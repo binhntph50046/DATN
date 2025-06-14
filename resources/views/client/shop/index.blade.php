@@ -1312,7 +1312,6 @@
 
         #quickViewModal .selected-value {
             margin-left: 10px;
-            color: #666;
             font-weight: normal;
         }
     </style>

@@ -73,6 +73,8 @@
                                             </option>
                                             <option value="0" {{ !$flashSale->status ? 'selected' : '' }}>Inactive
                                             </option>
+                                            <option value="2" {{ $flashSale->status == 2 ? 'selected' : '' }}>Ended
+                                            </option>
                                         </select>
                                     </div>
                                 </div>
@@ -152,7 +154,16 @@
     @push('scripts')
         <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
         <script>
-            // Không cần các script thêm item, remove item vì đã ẩn
+            document.addEventListener('DOMContentLoaded', function() {
+                const statusSelect = document.querySelector('select[name="status"]');
+
+                statusSelect.addEventListener('change', function() {
+                    if (this.value === '1') {
+                        alert(
+                            "⚠️ Lưu ý: Nếu bạn kích hoạt flash sale này, tất cả flash sale đang hoạt động khác sẽ bị kết thúc tự động.");
+                    }
+                });
+            });
         </script>
     @endpush
 @endsection

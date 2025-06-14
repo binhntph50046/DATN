@@ -45,23 +45,22 @@
                                 <div class="row">
                                     <div class="col-md-6 mb-3">
                                         <label for="name" class="form-label">Flash Sale Name</label>
-                                        <input type="text" class="form-control" id="name" name="name" required>
+                                        <input type="text" class="form-control" id="name" name="name" placeholder="Enter flash sale name" value="{{ old('name') }}">
                                     </div>
 
                                     <div class="col-md-3 mb-3">
                                         <label for="start_time" class="form-label">Start Time</label>
-                                        <input type="datetime-local" class="form-control" id="start_time" name="start_time" required>
+                                        <input type="datetime-local" class="form-control" id="start_time" name="start_time" value="{{ old('start_time') }}">
                                     </div>
 
                                     <div class="col-md-3 mb-3">
                                         <label for="end_time" class="form-label">End Time</label>
-                                        <input type="datetime-local" class="form-control" id="end_time" name="end_time" required>
+                                        <input type="datetime-local" class="form-control" id="end_time" name="end_time" value="{{ old('end_time') }}">
                                     </div>
 
                                     <div class="col-md-12 mb-3">
                                         <label class="form-label">Status</label>
-                                        <select name="status" class="form-select">
-                                            <option value="1" selected>Active</option>
+                                        <select name="status" class="form-select" disabled>
                                             <option value="0">Inactive</option>
                                         </select>
                                     </div>

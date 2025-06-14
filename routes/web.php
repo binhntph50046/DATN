@@ -101,8 +101,6 @@ Route::prefix('order')->name('order.')->group(function () {
     Route::get('/tracking/{order}', [CheckoutController::class, 'tracking'])->name('tracking'); // Theo dõi đơn hàng
     Route::get('/guest-tracking/{order_code?}', [ClientOrderController::class, 'guestTracking'])->name('guest.tracking'); // Theo dõi đơn hàng cho khách không đăng nhập
     Route::post('/cancel/{order}', [ClientOrderController::class, 'cancel'])->name('cancel')->middleware('auth'); // Hủy đơn hàng
-    //Route::get('/resend-invoice/{order}', [CheckoutController::class, 'resendInvoice'])->name('resend-invoice'); // Gửi lại hóa đơn (GET)
-   // Route::post('/{id}/request-resend-invoice', [ClientOrderController::class, 'requestResendInvoice'])->name('request-resend-invoice'); // Yêu cầu gửi lại hóa đơn
     Route::get('/{order}/return', [ClientOrderReturnController::class, 'create'])->name('returns.create'); // Yêu cầu hoàn hàng (form)
     Route::post('/{order}/return', [ClientOrderReturnController::class, 'store'])->name('returns.store'); // Gửi yêu cầu hoàn hàng
 });

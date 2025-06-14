@@ -1,5 +1,4 @@
 @extends('client.layouts.app')
-
 @section('title', 'Danh sách yêu thích - Apple Store')
 
 @section('content')
@@ -9,6 +8,7 @@
     <!-- Thêm AOS -->
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 
     <div class="apple-wishlist-container" style="padding-top: 105px;">
         <header class="apple-wishlist-header">
@@ -59,7 +59,8 @@
 
                                             <div class="col-md-4 col-md-4-custom mb-4" data-aos="fade-up"
                                                 data-aos-delay="{{ $loop->iteration * 100 }}">
-                                                <a class="product-item" href="{{ route('product.detail', $wishlist->slug) }}"
+                                                <a class="product-item"
+                                                    href="{{ route('product.detail', $wishlist->slug) }}"
                                                     onclick="incrementView('{{ $wishlist->id }}')">
                                                     <div class="product-thumbnail text-center">
                                                         <img src="{{ $variantImage ?? $defaultImage }}"
@@ -104,7 +105,8 @@
                                                             onclick="event.preventDefault(); showQuickView({{ $wishlist->id }})">
                                                             <i class="fas fa-eye"></i>
                                                         </span>
-                                                        <form action="{{ route('wishlist.toggle', $wishlist) }}" method="POST" style="display: none;"
+                                                        <form action="{{ route('wishlist.toggle', $wishlist) }}"
+                                                            method="POST" style="display: none;"
                                                             id="remove-wishlist-{{ $wishlist->id }}" class="wishlist-form">
                                                             @csrf
                                                         </form>
@@ -157,8 +159,7 @@
                                             <img src="images/product-2.png" class="img-fluid thumbnail" alt="Thumbnail 2">
                                         </div>
                                         <div class="col-3">
-                                            <img src="images/product-3.png" class="img-fluid thumbnail"
-                                                alt="Thumbnail 3">
+                                            <img src="images/product-3.png" class="img-fluid thumbnail" alt="Thumbnail 3">
                                         </div>
                                         <div class="col-3">
                                             <img src="images/product-1.png" class="img-fluid thumbnail"
@@ -339,7 +340,7 @@
 
                 alert(
                     `Added to cart:\nQuantity: ${quantity}\nColor: ${selectedColor}\nStorage: ${selectedStorage}GB`
-                    );
+                );
             });
 
             // Buy now button
@@ -352,14 +353,33 @@
 
                 alert(
                     `Proceeding to checkout:\nQuantity: ${quantity}\nColor: ${selectedColor}\nStorage: ${selectedStorage}GB`
-                    );
+                );
             });
         });
+
+        function showCustomAlert(message, type = 'success') {
+            const alertId = 'custom-alert-' + Date.now();
+            const icon = type === 'success' ? 'fa-check-circle' : 'fa-times-circle';
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `custom-alert ${type}`;
+            alertDiv.id = alertId;
+            alertDiv.innerHTML = `
+                <div class="icon"><i class="fas ${icon}"></i></div>
+                <div class="content">
+                    <strong>${type.toUpperCase()}</strong>
+                    <p>${message}</p>
+                </div>
+                <div class="close" onclick="this.parentElement.style.display='none';">&times;</div>
+            `;
+            document.body.appendChild(alertDiv);
+            setTimeout(() => {
+                alertDiv.style.display = 'none';
+            }, 3000);
+        }
 
         function removeFromWishlist(productId, url) {
             const form = document.getElementById(`remove-wishlist-${productId}`);
             const formData = new FormData(form);
-            
             fetch(url, {
                 method: 'POST',
                 body: formData,
@@ -371,69 +391,27 @@
             .then(response => response.json())
             .then(data => {
                 if (data.status) {
-                    showToast(data.message, data.type);
-                    // Reload trang sau 1 giây để cập nhật UI
-                    setTimeout(() => {
-                        window.location.reload();
-                    }, 1000);
+                    // Xóa sản phẩm khỏi DOM
+                    const productCard = document.getElementById('remove-wishlist-' + productId)?.closest('.col-md-4, .col-md-4-custom');
+                    if (productCard) productCard.remove();
+                    showCustomAlert(data.message || 'Đã xóa khỏi danh sách yêu thích!', 'success');
+                    // Nếu không còn sản phẩm nào, hiển thị trạng thái trống
+                    if (document.querySelectorAll('.product-row .col-md-4, .product-row .col-md-4-custom').length === 0) {
+                        document.querySelector('.apple-wishlist-main').innerHTML = `
+                            <div class="empty-wishlist">
+                                <i class="bi bi-heart"></i>
+                                <h3>Danh sách trống</h3>
+                                <p>Bạn chưa thêm sản phẩm nào vào wishlist</p>
+                            </div>
+                        `;
+                    }
+                } else {
+                    showCustomAlert(data.message || 'Có lỗi xảy ra!', 'error');
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
-                showToast('Đã xảy ra lỗi, vui lòng thử lại!', 'danger');
-            });
-        }
-
-        function showToast(message, type) {
-            const toastContainer = document.querySelector('.toast-container');
-            if (!toastContainer) {
-                console.error('Toast container not found');
-                return;
-            }
-
-            const toastEl = document.createElement('div');
-            toastEl.className = `toast`;
-            toastEl.setAttribute('role', 'alert');
-            toastEl.setAttribute('aria-live', 'assertive');
-            toastEl.setAttribute('aria-atomic', 'true');
-
-            // Create toast header
-            const toastHeader = document.createElement('div');
-            toastHeader.className = 'toast-header';
-            toastHeader.innerHTML = `
-                <i class="fas ${type === 'success' ? 'fa-check-circle text-success' : 
-                              type === 'danger' ? 'fa-exclamation-circle text-danger' : 
-                              type === 'warning' ? 'fa-info-circle text-warning' : 
-                              'fa-info-circle text-info'} me-2"></i>
-                <strong class="me-auto">${type === 'success' ? 'Thành công' : 
-                               type === 'danger' ? 'Lỗi' : 
-                               type === 'warning' ? 'Thông báo' : 
-                               'Thông tin'}</strong>
-                <small>Vừa xong</small>
-                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
-            `;
-
-            // Create toast body
-            const toastBody = document.createElement('div');
-            toastBody.className = 'toast-body';
-            toastBody.textContent = message;
-
-            // Append header and body to toast
-            toastEl.appendChild(toastHeader);
-            toastEl.appendChild(toastBody);
-
-            // Add toast to container
-            toastContainer.appendChild(toastEl);
-
-            // Initialize and show toast
-            const toast = new bootstrap.Toast(toastEl, {
-                delay: 3000
-            });
-            toast.show();
-
-            // Remove toast after it's hidden
-            toastEl.addEventListener('hidden.bs.toast', () => {
-                toastEl.remove();
+                showCustomAlert('Có lỗi xảy ra khi xóa sản phẩm khỏi wishlist!', 'error');
             });
         }
     </script>
@@ -455,13 +433,13 @@
 
         /* Header cố định */
         .apple-wishlist-header {
-            margin-top: 80px;
+            margin-top: 120px;
             position: fixed;
             top: 0;
             left: 0;
             right: 0;
             background: white;
-            z-index: 1000;
+            z-index: 998;
             padding: 15px 0;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
@@ -488,7 +466,7 @@
         .empty-wishlist {
             text-align: center;
             padding: 50px 20px;
-            margin-top: 20px;
+            margin-top: 62px;
         }
 
         .empty-wishlist i {

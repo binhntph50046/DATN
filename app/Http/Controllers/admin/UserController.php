@@ -19,7 +19,9 @@ class UserController
         $query->where('id', '!=', Auth::id());
 
         // Nếu là staff, chỉ thấy tài khoản có vai trò user
-        if (Auth::user()->hasRole('staff')) {
+        /** @var \App\Models\User $currentUser */
+        $currentUser = Auth::user();
+        if ($currentUser && $currentUser->hasRole('staff')) {
             $query->whereHas('roles', function ($q) {
                 $q->where('name', 'user');
             });
@@ -96,7 +98,9 @@ class UserController
             $validated['avatar'] = 'uploads/users/' . $avatarName;
         }
 
-        User::create($validated);
+        $user = User::create($validated);
+        $user->assignRole('user'); // Gán role mặc định là 'user'
+
         return redirect()->route('admin.users.index')->with('success', 'Tạo tài khoản thành công');
     }
 

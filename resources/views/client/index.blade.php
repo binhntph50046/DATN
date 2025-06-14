@@ -45,7 +45,10 @@
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
 
     <!-- Toast Container -->
-    <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1050;"></div>
+    <!-- (Remove this line and all custom alert code) -->
+
+    <!-- Custom Alert Container -->
+    <!-- (Remove this block) -->
 
     <!-- Start Why Choose Us Section -->
     <div class="why-choose-section" data-aos="fade-up">
@@ -364,136 +367,33 @@
                 <!-- JavaScript for Wishlist -->
                 <script>
                     // Định nghĩa các hàm toàn cục
-                    function showLoginPrompt() {
-                        console.log('Showing login prompt');
-                        showToast('Vui lòng đăng nhập để thêm sản phẩm vào danh sách yêu thích.', 'danger');
-                    }
-
-                    function addToWishlist(productId, url) {
-                        console.log('Adding to wishlist', {
-                            productId,
-                            url
-                        });
-                        const form = document.getElementById(`wishlist-form-${productId}`);
-                        if (!form) {
-                            console.error('Form not found for productId:', productId);
-                            showToast('Lỗi hệ thống, vui lòng thử lại!', 'danger');
-                            return;
-                        }
-
-                        const formData = new FormData(form);
-                        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
-                        if (!csrfToken) {
-                            console.error('CSRF token not found');
-                            showToast('Lỗi hệ thống, vui lòng thử lại!', 'danger');
-                            return;
-                        }
-
-                        fetch(url, {
-                                method: 'POST',
-                                body: formData,
-                                headers: {
-                                    'X-CSRF-TOKEN': csrfToken,
-                                    'Accept': 'application/json'
-                                }
-                            })
-                            .then(response => {
-                                console.log('Response status:', response.status);
-                                console.log('Response headers:', Object.fromEntries(response.headers));
-                                const contentType = response.headers.get('content-type');
-                                if (!contentType || !contentType.includes('application/json')) {
-                                    throw new Error('Invalid JSON response');
-                                }
-                                return response.json().catch(err => {
-                                    throw new Error('Failed to parse JSON: ' + err.message);
-                                });
-                            })
-                            .then(data => {
-                                console.log('Response data:', data);
-                                if (!data.status || !data.message || !data.type) {
-                                    throw new Error('Invalid response format');
-                                }
-                                showToast(data.message, data.type);
-                            })
-                            .catch(error => {
-                                console.error('Error:', error.message || error);
-                                showToast('Đã xảy ra lỗi, vui lòng thử lại! (' + (error.message || 'Unknown error') + ')',
-                                    'danger');
-                            });
-                    }
-
-                    function showToast(message, type) {
-                        console.log('Showing toast:', {
-                            message,
-                            type
-                        });
-                        const toastContainer = document.querySelector('.toast-container');
-                        if (!toastContainer) {
-                            console.error('Toast container not found');
-                            return;
-                        }
-
+                    function showCustomAlert(message, type = 'success') {
+                        const alertId = 'custom-alert-' + Date.now();
+                        const icon = type === 'success' ? 'fa-check-circle' : 'fa-times-circle';
+                        const alertDiv = document.createElement('div');
+                        alertDiv.className = `custom-alert ${type}`;
+                        alertDiv.id = alertId;
+                        alertDiv.innerHTML = `
+                            <div class="icon"><i class="fas ${icon}"></i></div>
+                            <div class="content">
+                                <strong>${type.toUpperCase()}</strong>
+                                <p>${message}</p>
+                            </div>
+                            <div class="close" onclick="this.parentElement.style.display='none';">&times;</div>
+                        `;
+                        document.body.appendChild(alertDiv);
                         setTimeout(() => {
-                            const toastEl = document.createElement('div');
-                            toastEl.className = `toast`;
-                            toastEl.setAttribute('role', 'alert');
-                            toastEl.setAttribute('aria-live', 'assertive');
-                            toastEl.setAttribute('aria-atomic', 'true');
-
-                            // Create toast header
-                            const toastHeader = document.createElement('div');
-                            toastHeader.className = 'toast-header';
-                            toastHeader.innerHTML = `
-                                <i class="fas ${type === 'success' ? 'fa-check-circle text-success' : 
-                                              type === 'danger' ? 'fa-exclamation-circle text-danger' : 
-                                              type === 'warning' ? 'fa-info-circle text-warning' : 
-                                              'fa-info-circle text-info'} me-2"></i>
-                                <strong class="me-auto">${type === 'success' ? 'Thành công' : 
-                                               type === 'danger' ? 'Lỗi' : 
-                                               type === 'warning' ? 'Thông báo' : 
-                                               'Thông tin'}</strong>
-                                <small>Vừa xong</small>
-                                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
-                            `;
-
-                            // Create toast body
-                            const toastBody = document.createElement('div');
-                            toastBody.className = 'toast-body';
-                            toastBody.textContent = message;
-
-                            // Append header and body to toast
-                            toastEl.appendChild(toastHeader);
-                            toastEl.appendChild(toastBody);
-
-                            // Add toast to container
-                            toastContainer.appendChild(toastEl);
-
-                            // Initialize and show toast
-                            const toast = new bootstrap.Toast(toastEl, {
-                                delay: 3000
-                            });
-                            toast.show();
-
-                            // Remove toast after it's hidden
-                            toastEl.addEventListener('hidden.bs.toast', () => {
-                                toastEl.remove();
-                            });
-                        }, 100);
+                            alertDiv.style.display = 'none';
+                        }, 3000);
                     }
 
                     // Function to toggle wishlist status
                     async function toggleWishlist(productId, url, iconElement) {
-                        console.log('Toggling wishlist', {
-                            productId,
-                            url
-                        });
                         const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
                         if (!csrfToken) {
-                            console.error('CSRF token not found');
-                            showToast('Lỗi hệ thống, vui lòng thử lại!', 'danger');
+                            showCustomAlert('Lỗi hệ thống, vui lòng thử lại!', 'error');
                             return;
                         }
-
                         try {
                             const response = await fetch(url, {
                                 method: 'POST',
@@ -502,21 +402,16 @@
                                     'Accept': 'application/json',
                                     'Content-Type': 'application/json'
                                 },
-                                body: JSON.stringify({
-                                    product_id: productId
-                                })
+                                body: JSON.stringify({ product_id: productId })
                             });
-
                             const contentType = response.headers.get('content-type');
                             if (!contentType || !contentType.includes('application/json')) {
                                 throw new Error('Invalid JSON response');
                             }
                             const data = await response.json();
-
                             if (data.status) {
-                                showToast(data.message, data.type);
+                                showCustomAlert(data.message, data.type);
                                 if (data.type === 'success') {
-                                    // Cập nhật trạng thái icon dựa trên response
                                     if (data.in_wishlist) {
                                         iconElement.classList.add('in-wishlist');
                                         iconElement.title = 'Xóa khỏi yêu thích';
@@ -526,92 +421,20 @@
                                     }
                                 }
                             } else {
-                                showToast(data.message || 'Đã xảy ra lỗi, vui lòng thử lại!', data.type || 'danger');
+                                showCustomAlert(data.message || 'Đã xảy ra lỗi, vui lòng thử lại!', 'error');
                             }
                         } catch (error) {
-                            console.error('Error toggling wishlist:', error.message || error);
-                            showToast('Đã xảy ra lỗi: ' + (error.message || 'Unknown error'), 'danger');
+                            showCustomAlert('Đã xảy ra lỗi: ' + (error.message || 'Unknown error'), 'error');
                         }
+                    }
+
+                    function showLoginPrompt() {
+                        showCustomAlert('Vui lòng đăng nhập để thêm sản phẩm vào danh sách yêu thích.', 'error');
                     }
                 </script>
 
                 <!-- CSRF Meta Tag -->
                 <meta name="csrf-token" content="{{ csrf_token() }}">
-
-                <!-- CSS for Toast and Heart Icon -->
-                <style>
-                    /* Toast Custom Style */
-                    .toast-container {
-                        z-index: 1100 !important;
-                        position: fixed !important;
-                        top: 80px !important;
-                        right: 20px !important;
-                    }
-
-                    .toast {
-                        background: white !important;
-                        border: none !important;
-                        border-radius: 8px !important;
-                        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
-                    }
-
-                    .toast-header-custom {
-                        border-bottom: none;
-                        padding: 12px 16px;
-                        background-color: transparent;
-                    }
-
-                    .toast-success {
-                        background: linear-gradient(135deg, #4CAF50, #2E7D32);
-                    }
-
-                    .toast-error {
-                        background: linear-gradient(135deg, #F44336, #C62828);
-                    }
-
-                    .toast-warning {
-                        background: linear-gradient(135deg, #FF9800, #EF6C00);
-                    }
-
-                    .toast-info {
-                        background: linear-gradient(135deg, #2196F3, #1565C0);
-                    }
-
-                    .toast-icon {
-                        font-size: 1.5rem;
-                        margin-right: 10px;
-                    }
-
-                    .toast-progress {
-                        height: 4px;
-                        background: rgba(255, 255, 255, 0.3);
-                        position: absolute;
-                        bottom: 0;
-                        left: 0;
-                        width: 100%;
-                    }
-
-                    .toast-progress-bar {
-                        height: 100%;
-                        background: white;
-                        animation: progressBar 3s linear forwards;
-                    }
-
-                    @keyframes progressBar {
-                        from {
-                            width: 100%;
-                        }
-
-                        to {
-                            width: 0%;
-                        }
-                    }
-
-                    /* Style for heart icon when product is in wishlist */
-                    .icon-heart.in-wishlist i {
-                        color: red;
-                    }
-                </style>
             </div>
         </div>
     </div>
@@ -884,7 +707,6 @@
         document.querySelectorAll('.product-item').forEach(item => {
             item.querySelector('.icon-add-to-cart').addEventListener('click', (e) => {
                 e.preventDefault();
-                showToast('Added to Cart: ' + item.querySelector('.product-title').textContent, 'success');
             });
 
             item.querySelector('.icon-quick-view').addEventListener('click', (e) => {
@@ -965,11 +787,6 @@
                     .color;
                 const selectedStorage = document.querySelector('#quickViewModal .storage-btn.active')
                     .dataset.storage;
-
-                showToast(
-                    `Added to cart: Quantity: ${quantity}, Color: ${selectedColor}, Storage: ${selectedStorage}GB`,
-                    'success'
-                );
             });
 
             // Buy now button
@@ -979,11 +796,6 @@
                     .color;
                 const selectedStorage = document.querySelector('#quickViewModal .storage-btn.active')
                     .dataset.storage;
-
-                showToast(
-                    `Proceeding to checkout: Quantity: ${quantity}, Color: ${selectedColor}, Storage: ${selectedStorage}GB`,
-                    'success'
-                );
             });
         });
     </script>

@@ -261,6 +261,11 @@
                         <li><a class="dropdown-item text-white" href="{{ route('register') }}">Register</a></li>
                         <li><a class="dropdown-item text-white" href="{{ route('login') }}">Login</a></li>
                     @else
+                        @if(Auth::user()->hasRole(['admin', 'staff']))
+                            <li>
+                                <a class="dropdown-item text-white" href="{{ route('admin.dashboard') }}">Admin Dashboard</a>
+                            </li>
+                        @endif
                         <li><a class="dropdown-item text-white" href="#">Profile</a></li>
                         <li><a class="dropdown-item text-white" href="{{ route('order.index') }}">Order History</a></li>
                         <li>

@@ -34,6 +34,7 @@
 <body>
 
     @include('client.partials.header')
+    @include('client.partials.notification')
     @yield('content')
     @include('client.partials.chat')
     @include('client.partials.footer')
@@ -64,7 +65,17 @@
     <!-- Yield cho JS riêng từ các view -->
     @yield('scripts')
  
-   
+    function hideAlert(alertId) {
+        const alert = document.getElementById(alertId);
+        if (alert) {
+            setTimeout(() => {
+                alert.style.display = 'none';
+            }, 3000);
+        }
+    }
+    
+    hideAlert('success-alert');
+    hideAlert('error-alert');
 </body>
 
 </html>

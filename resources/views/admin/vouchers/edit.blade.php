@@ -30,6 +30,17 @@
                         <div class="card-header">
                             <h5>Edit Voucher</h5>
                         </div>
+                        @if ($errors->any())
+                            <div class="alert alert-danger">
+                                <strong>Đã xảy ra lỗi!</strong>
+                                <ul class="mb-0">
+                                    @foreach ($errors->all() as $error)
+                                        <li>{{ $error }}</li>
+                                    @endforeach
+                                </ul>
+                            </div>
+                        @endif
+
                         <div class="card-body">
                             <form action="{{ route('admin.vouchers.update', $voucher->id) }}" method="POST">
                                 @csrf
@@ -37,7 +48,8 @@
 
                                 <div class="mb-3">
                                     <label for="code" class="form-label">Voucher Code</label>
-                                    <input type="text" class="form-control" id="code" value="{{ $voucher->code }}" disabled>
+                                    <input type="text" class="form-control" id="code" value="{{ $voucher->code }}"
+                                        disabled>
                                 </div>
 
                                 {{-- <div class="mb-3">
@@ -58,8 +70,7 @@
 
                                 <div class="mb-3">
                                     <label for="description" class="form-label">Description</label>
-                                    <textarea name="description" id="description"
-                                        class="form-control @error('description') is-invalid @enderror"
+                                    <textarea name="description" id="description" class="form-control @error('description') is-invalid @enderror"
                                         rows="3">{{ old('description', $voucher->description) }}</textarea>
                                     @error('description')
                                         <div class="invalid-feedback">{{ $message }}</div>

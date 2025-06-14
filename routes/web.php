@@ -45,6 +45,7 @@ use App\Http\Controllers\client\ChatBotController;
 use App\Http\Controllers\client\ProductController as ClientProductController;
 use App\Http\Controllers\client\ProfileController;
 use App\Models\Invoice;
+use App\Http\Controllers\admin\ProductVariantController;
 
 /*
 |--------------------------------------------------------------------------
@@ -343,4 +344,11 @@ Route::prefix('admin')
         //Invoice Routes
         Route::resource('invoices', InvoiceController::class);
         Route::get('invoices/{invoice}/pdf', [InvoiceController::class, 'exportPdf'])->name('invoices.export-pdf');
+
+        // Product Variants
+        Route::get('variants', [ProductVariantController::class, 'index'])->name('variants.index');
+        Route::get('variants/trash', [ProductVariantController::class, 'trash'])->name('variants.trash');
+        Route::post('variants/{id}/restore', [ProductVariantController::class, 'restore'])->name('variants.restore');
+        Route::put('variants/{variant}', [ProductVariantController::class, 'update'])->name('variants.update');
+        Route::delete('variants/{variant}', [ProductVariantController::class, 'destroy'])->name('variants.destroy');
     });

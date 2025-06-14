@@ -80,7 +80,7 @@ class AuthController
         return back()->withErrors([
             'email' => 'Incorrect login information.',
             'password' => 'Password is not correct.',
-        ]);
+        ])->withInput();
     }
 
     public function logout(Request $request)

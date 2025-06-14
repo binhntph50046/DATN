@@ -1,4 +1,5 @@
 @extends('client.layouts.app')
+@section('title', 'Đơn hàng - Apple Store')
 
 @section('content')
 <div class="order-management">
@@ -112,6 +113,7 @@
             </div>
         @endif
 
+
         @if(session('warning'))
             <div class="alert alert-warning alert-modern alert-dismissible fade show" role="alert">
                 <div class="alert-icon">
@@ -124,6 +126,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>
         @endif
+
 
         <!-- Modern Orders Table -->
         <div class="table-responsive">
@@ -365,6 +368,20 @@
 
 .table-modern tbody tr {
     transition: all 0.3s ease;
+
+}
+
+.table-modern tbody tr:hover {
+    background: #f8f9fa;
+}
+
+.table-modern td {
+    padding: 1rem;
+    vertical-align: middle;
+    border-bottom: 1px solid #e9ecef;
+}
+
+
 }
 
 .table-modern tbody tr:hover {
@@ -482,6 +499,7 @@
         margin-bottom: 1rem;
         border: 1px solid #e9ecef;
         border-radius: 10px;
+
     }
     
     .table-modern td {
@@ -503,6 +521,27 @@
         color: #495057;
     }
     
+    }
+    
+    .table-modern td {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.75rem 1rem;
+        border: none;
+        border-bottom: 1px solid #e9ecef;
+    }
+    
+    .table-modern td:last-child {
+        border-bottom: none;
+    }
+    
+    .table-modern td::before {
+        content: attr(data-label);
+        font-weight: 600;
+        color: #495057;
+    }
+
     .order-actions {
         justify-content: flex-end;
     }
@@ -529,6 +568,7 @@
         padding: 0.5rem 0.75rem;
         font-size: 0.9rem;
     }
+
 }
 
 /* Alert Styling */
@@ -605,6 +645,8 @@
         transform: translateY(-20px);
         opacity: 0;
     }
+
+
 }
 
 .alert-hide {
@@ -718,6 +760,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         };
                         statusBadge.className = `status-badge status-${statusClassMap[e.status] || 'secondary'}`;
                         statusBadge.innerHTML = `<i class="fas ${statusIconMap[e.status] || 'fa-circle'}"></i> ${e.status_text}`;
+
                     }
 
                     // Cập nhật lại nút chức năng
@@ -746,6 +789,26 @@ alerts.forEach(alert => {
 });
 
 });
+
+
+                    }
+
+                    // Cập nhật lại nút chức năng
+                    renderOrderActions(orderId, e.status, card.getAttribute('data-created-at'));
+
+                    // Nếu đơn hàng bị hủy hoặc hoàn trả, reload trang để cập nhật danh sách
+                    if (e.status === 'cancelled' || e.status === 'returned' || e.status === 'partially_returned') {
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 1000);
+                    }
+                }
+            });
+    });
+},200);
+
+});
+
 
 
 </script>

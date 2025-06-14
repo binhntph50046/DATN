@@ -121,8 +121,21 @@ class CategoryController
 
         $category->update($data);
 
+        // Cập nhật trạng thái cho tất cả danh mục con
+        if ($data['status'] === 'inactive' || $data['status'] === 'active') {
+            $this->updateChildrenStatus($category, $data['status']);
+        }
+
         return redirect()->route('admin.categories.index')
             ->with('success', 'Category updated successfully.');
+    }
+
+    private function updateChildrenStatus($category, $status)
+    {
+        foreach ($category->children as $child) {
+            $child->update(['status' => $status]);
+            $this->updateChildrenStatus($child, $status);
+        }
     }
 
     /**

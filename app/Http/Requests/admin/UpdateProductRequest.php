@@ -4,6 +4,8 @@ namespace App\Http\Requests\admin;
 use App\Models\VariantAttributeType;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Str;
+use App\Models\ProductVariant;
 
 class UpdateProductRequest extends FormRequest
 {
@@ -42,200 +44,183 @@ class UpdateProductRequest extends FormRequest
             'status' => ['required', Rule::in(['active', 'inactive'])],
             'views' => ['nullable', 'integer', 'min:0'],
             'specifications' => ['nullable', 'array'],
-            'specifications.*.specification_id' => ['required', 'exists:specifications,id'],
-            'specifications.*.value' => ['required', 'string', 'max:255'],
-            'attributes' => ['required', 'array', 'min:1'],
-            'attributes.*.attribute_type_id' => [
-                function ($attribute, $value, $fail) {
-                    $index = (int) filter_var($attribute, FILTER_SANITIZE_NUMBER_INT);
-                    $selectedValues = request()->input("attributes.{$index}.selected_values");
-                    if ($index === 0 && empty($value)) {
-                        $fail('Please select attribute type.');
-                    }
-                    if ($index === 0 && empty($selectedValues)) {
-                        $fail('Please select at least one attribute value.');
-                    }
-                    // Attribute 2 is only required if attribute type is selected
-                    if ($index === 1 && $value && empty($selectedValues)) {
-                        $fail('Please select at least one attribute value.');
-                    }
-                }
-            ],
-            'attributes.*.selected_values' => ['required_with:attributes.*.attribute_type_id', 'array'],
-            'attributes.*.selected_values.*' => ['exists:variant_attribute_values,id'],
-            'variants' => [
-                'required',
-                'array',
-                'min:1',
-                function ($attribute, $value, $fail) use ($variantIds, $variantsToDelete) {
-                    $defaultCount = 0;
-                    $names = [];
-                    foreach ($value as $variant) {
-                        if (isset($variant['is_default']) && $variant['is_default'] == 1) {
-                            $defaultCount++;
-                        }
-                        
-                        // Check for duplicate variant name
-                        if (isset($variant['name'])) {
-                            $variantId = $variant['id'] ?? null;
-                            // If it's a new variant or variant not in delete list
-                            if (!$variantId || !in_array($variantId, $variantsToDelete)) {
-                                if (in_array($variant['name'], $names)) {
-                                    $fail('Variant name cannot be duplicated.');
-                                    return;
-                                }
-                                $names[] = $variant['name'];
-                            }
-                        }
-                    }
-                    if ($defaultCount !== 1) {
-                        $fail('Exactly one default variant is required.');
-                    }
-                },
-            ],
+            'specifications.*.specification_id' => ['nullable', 'exists:specifications,id'],
+            'specifications.*.value' => ['nullable', 'string', 'max:255'],
+            'attributes' => ['required', 'array'],
+            'attributes.*.attribute_type_id' => ['nullable', 'exists:variant_attribute_types,id'],
+            'attributes.*.selected_values' => ['nullable'],
+            'variants' => ['required', 'array'],
             'variants.*.id' => ['nullable', 'exists:product_variants,id'],
-            'variants.*.name' => [
-                'required', 
-                'string', 
-                'max:255',
-                function ($attribute, $value, $fail) use ($variantIds, $variantsToDelete) {
-                    $variantId = $this->input(str_replace('.name', '.id', $attribute));
-                    // If it's a new variant or variant not in delete list
-                    if (!$variantId || !in_array($variantId, $variantsToDelete)) {
-                        $exists = \App\Models\ProductVariant::where('name', $value)
-                            ->whereNotIn('id', array_merge($variantIds, $variantsToDelete))
-                            ->exists();
-                        if ($exists) {
-                            $fail('Variant name already exists.');
-                        }
-                    }
-                }
-            ],
-            'variants.*.slug' => [
-                'required', 
-                'string', 
-                'max:255',
-                function ($attribute, $value, $fail) use ($variantIds, $variantsToDelete) {
-                    $variantId = $this->input(str_replace('.slug', '.id', $attribute));
-                    // If it's a new variant or variant not in delete list
-                    if (!$variantId || !in_array($variantId, $variantsToDelete)) {
-                        $exists = \App\Models\ProductVariant::where('slug', $value)
-                            ->whereNotIn('id', array_merge($variantIds, $variantsToDelete))
-                            ->exists();
-                        if ($exists) {
-                            $fail('Slug variant already exists.');
-                        }
-                    }
-                }
-            ],
+            'variants.*.name' => ['required', 'string', 'max:255'],
+            'variants.*.slug' => ['required', 'string', 'max:255'],
             'variants.*.stock' => ['required', 'integer', 'min:0'],
             'variants.*.purchase_price' => ['required', 'numeric', 'min:0'],
             'variants.*.selling_price' => ['required', 'numeric', 'min:0'],
             'variants.*.is_default' => ['nullable', 'boolean'],
             'variants.*.images' => ['nullable', 'array'],
             'variants.*.images.*' => ['image', 'mimes:jpeg,png,jpg,gif,webp', 'max:2048'],
-            'variants_to_delete' => ['nullable', 'array'],
-            'variants_to_delete.*' => ['exists:product_variants,id'],
-            'images_to_delete' => ['nullable', 'array'],
-            'images_to_delete.*' => ['string'],
+            'variants_to_delete' => ['nullable'],
+            'images_to_delete' => ['nullable'],
         ];
     }
 
     public function messages(): array
     {
         return [
-            'name.required' => 'Please enter product name.',
-            'name.max' => 'Product name cannot exceed 255 characters.',
-            'name.unique' => 'Product name already exists.',
-            'slug.unique' => 'Slug product already exists.',
-            'category_id.required' => 'Please select a category.',
-            'category_id.exists' => 'Invalid category.',
-            'warranty_months.required' => 'Please enter warranty period.',
-            'warranty_months.min' => 'Warranty period must be greater than or equal to 0.',
-            'status.required' => 'Product status is required.',
-            'status.in' => 'Invalid status.',
-            'views.integer' => 'Views must be an integer.',
-            'views.min' => 'Views cannot be negative.',
-            'specifications.*.specification_id.required' => 'Please select specification.',
-            'specifications.*.specification_id.exists' => 'Invalid specification.',
-            'specifications.*.value.required' => 'Please enter specification value.',
-            'specifications.*.value.max' => 'Specification value cannot exceed 255 characters.',
-            'attributes.required' => 'At least one attribute is required to create variants.',
-            'attributes.min' => 'At least one attribute is required to create variants.',
-            'attributes.*.selected_values.required_with' => 'Please select at least one value for each attribute type.',
-            'attributes.*.selected_values.*.exists' => 'Invalid attribute value selected.',
-            'variants.required' => 'At least one variant is required.',
-            'variants.min' => 'At least one variant is required.',
-            'variants.*.name.required' => 'Please enter variant name.',
-            'variants.*.name.max' => 'Variant name cannot exceed 255 characters.',
-            'variants.*.name.unique' => 'Variant name already exists.',
-            'variants.*.slug.unique' => 'Slug variant already exists.',
-            'variants.*.stock.required' => 'Please enter stock quantity.',
-            'variants.*.stock.min' => 'Stock quantity must be greater than or equal to 0.',
-            'variants.*.purchase_price.required' => 'Please enter purchase price.',
-            'variants.*.purchase_price.min' => 'Purchase price must be greater than or equal to 0.',
-            'variants.*.selling_price.required' => 'Please enter selling price.',
-            'variants.*.selling_price.min' => 'Selling price must be greater than or equal to 0.',
-            'variants.*.images.*.image' => 'File must be an image.',
-            'variants.*.images.*.mimes' => 'Image must be in jpeg, png, jpg, gif, webp format.',
-            'variants.*.images.*.max' => 'Image size must not exceed 2MB.',
+            'name.required' => 'Vui lòng nhập tên sản phẩm.',
+            'name.max' => 'Tên sản phẩm không được vượt quá 255 ký tự.',
+            'name.unique' => 'Tên sản phẩm đã tồn tại.',
+            'slug.unique' => 'Đường dẫn sản phẩm đã tồn tại.',
+            'category_id.required' => 'Vui lòng chọn danh mục.',
+            'category_id.exists' => 'Danh mục không hợp lệ.',
+            'warranty_months.required' => 'Vui lòng nhập thời gian bảo hành.',
+            'warranty_months.min' => 'Thời gian bảo hành phải lớn hơn hoặc bằng 0.',
+            'status.required' => 'Trạng thái sản phẩm là bắt buộc.',
+            'status.in' => 'Trạng thái không hợp lệ.',
+            'views.integer' => 'Lượt xem phải là số nguyên.',
+            'views.min' => 'Lượt xem không thể là số âm.',
+            'specifications.*.specification_id.exists' => 'Thông số kỹ thuật không hợp lệ.',
+            'specifications.*.value.max' => 'Giá trị thông số kỹ thuật không được vượt quá 255 ký tự.',
+            'attributes.required' => 'Cần ít nhất một thuộc tính để tạo biến thể.',
+            'attributes.min' => 'Cần ít nhất một thuộc tính để tạo biến thể.',
+            'attributes.*.attribute_type_id.required' => 'Vui lòng chọn loại thuộc tính.',
+            'attributes.*.selected_values.required_with' => 'Vui lòng chọn ít nhất một giá trị cho mỗi loại thuộc tính.',
+            'variants.required' => 'Cần ít nhất một biến thể.',
+            'variants.min' => 'Cần ít nhất một biến thể.',
+            'variants.*.id.exists' => 'Biến thể không tồn tại trong hệ thống.',
+            'variants.*.name.required' => 'Vui lòng nhập tên biến thể.',
+            'variants.*.name.max' => 'Tên biến thể không được vượt quá 255 ký tự.',
+            'variants.*.name.unique' => 'Tên biến thể đã tồn tại.',
+            'variants.*.slug.required' => 'Đường dẫn biến thể là bắt buộc.',
+            'variants.*.slug.max' => 'Đường dẫn biến thể không được vượt quá 255 ký tự.',
+            'variants.*.slug.unique' => 'Đường dẫn biến thể đã tồn tại.',
+            'variants.*.stock.required' => 'Vui lòng nhập số lượng tồn kho.',
+            'variants.*.stock.min' => 'Số lượng tồn kho phải lớn hơn hoặc bằng 0.',
+            'variants.*.purchase_price.required' => 'Vui lòng nhập giá nhập.',
+            'variants.*.purchase_price.min' => 'Giá nhập phải lớn hơn hoặc bằng 0.',
+            'variants.*.selling_price.required' => 'Vui lòng nhập giá bán.',
+            'variants.*.selling_price.min' => 'Giá bán phải lớn hơn hoặc bằng 0.',
+            'variants.*.images.*.image' => 'Tệp phải là hình ảnh.',
+            'variants.*.images.*.mimes' => 'Hình ảnh phải có định dạng jpeg, png, jpg, gif hoặc webp.',
+            'variants.*.images.*.max' => 'Kích thước hình ảnh không được vượt quá 2MB.',
+            'variants_to_delete.array' => 'Danh sách biến thể cần xóa không hợp lệ.',
+            'variants_to_delete.*.exists' => 'Một số biến thể cần xóa không tồn tại.',
+            'images_to_delete.array' => 'Danh sách hình ảnh cần xóa không hợp lệ.',
+            'images_to_delete.*.string' => 'Đường dẫn hình ảnh cần xóa không hợp lệ.'
         ];
     }
 
-    // Custom validation to ensure business logic
+    protected function prepareForValidation()
+    {
+        // Clean and prepare variants_to_delete
+        if ($this->has('variants_to_delete')) {
+            $variantsToDelete = $this->input('variants_to_delete');
+            if (is_string($variantsToDelete)) {
+                $variantsToDelete = json_decode($variantsToDelete, true) ?: [];
+            }
+            $this->merge(['variants_to_delete' => $variantsToDelete]);
+        }
+
+        // Clean and prepare images_to_delete
+        if ($this->has('images_to_delete')) {
+            $imagesToDelete = $this->input('images_to_delete');
+            if (is_string($imagesToDelete)) {
+                $imagesToDelete = json_decode($imagesToDelete, true) ?: [];
+            }
+            $this->merge(['images_to_delete' => $imagesToDelete]);
+        }
+
+        // Clean and prepare attributes
+        if ($this->has('attributes')) {
+            $attributes = $this->input('attributes', []);
+            foreach ($attributes as $key => $attribute) {
+                if (isset($attribute['selected_values'])) {
+                    $selectedValues = $attribute['selected_values'];
+                    if (is_string($selectedValues)) {
+                        $selectedValues = json_decode($selectedValues, true);
+                        if (!is_array($selectedValues)) {
+                            $selectedValues = [$selectedValues];
+                        }
+                    } elseif (!is_array($selectedValues)) {
+                        $selectedValues = [$selectedValues];
+                    }
+                    $attributes[$key]['selected_values'] = $selectedValues;
+                }
+            }
+            $this->merge(['attributes' => $attributes]);
+        }
+    }
+
     public function withValidator($validator)
     {
         $validator->after(function ($validator) {
+            // Validate at least one attribute is selected
             $attributes = $this->input('attributes', []);
-            // Check at least one attribute has complete information
-            $validAttributes = 0;
-            foreach ($attributes as $key => $attribute) {
-                if (!empty($attribute['attribute_type_id']) && !empty($attribute['selected_values'])) {
-                    $validAttributes++;
+            $hasValidAttribute = false;
+            foreach ($attributes as $attribute) {
+                if (!empty($attribute['attribute_type_id']) && 
+                    !empty($attribute['selected_values']) && 
+                    is_array($attribute['selected_values'])) {
+                    $hasValidAttribute = true;
+                    break;
                 }
             }
-            if ($validAttributes < 1) {
-                $validator->errors()->add('attributes', 'At least one attribute with complete information is required.');
+            if (!$hasValidAttribute) {
+                $validator->errors()->add('attributes', 'Cần ít nhất một thuộc tính để tạo biến thể.');
             }
-            // Check second attribute if exists
-            if (isset($attributes[1])) {
-                $attr1 = $attributes[1];
-                // If attribute_type_id exists, selected_values must exist
-                if (!empty($attr1['attribute_type_id']) && empty($attr1['selected_values'])) {
-                    $validator->errors()->add('attributes.1.selected_values', 'Please select at least one value for attribute 2.');
+
+            // Validate default variant & duplicate slug
+            $variants = $this->input('variants', []);
+            $defaultCount = 0;
+            $variantSlugs = [];
+            $productId = $this->route('product') ? $this->route('product')->id : null;
+            foreach ($variants as $index => $variant) {
+                if (!empty($variant['is_default'])) {
+                    $defaultCount++;
                 }
-                // If selected_values exists, attribute_type_id must exist
-                if (!empty($attr1['selected_values']) && empty($attr1['attribute_type_id'])) {
-                    $validator->errors()->add('attributes.1.attribute_type_id', 'Attribute 2 type is required when values are selected.');
+                // Validate duplicate slug (tên biến thể ghép)
+                $variantName = $variant['name'] ?? '';
+                $slug = Str::slug($variantName);
+                if (!empty($slug)) {
+                    // Kiểm tra trùng trong request
+                    if (in_array($slug, $variantSlugs)) {
+                        $validator->errors()->add(
+                            "variants.$index.name",
+                            "Biến thể '{$variantName}' bị trùng với biến thể khác trong form."
+                        );
+                    }
+                    $variantSlugs[] = $slug;
+
+                    // Kiểm tra trùng trong DB (kể cả soft delete)
+                    $exists = ProductVariant::withTrashed()
+                        ->where('product_id', $productId)
+                        ->where('slug', $slug)
+                        ->when(!empty($variant['id']), function ($query) use ($variant) {
+                            $query->where('id', '!=', $variant['id']);
+                        })
+                        ->exists();
+                    if ($exists) {
+                        $validator->errors()->add(
+                            "variants.$index.name",
+                            "Biến thể '{$variantName}' đã tồn tại trong hệ thống."
+                        );
+                    }
                 }
             }
-            // Check first attribute if exists
-            if (isset($attributes[0])) {
-                $attr0 = $attributes[0];
-                if (!empty($attr0['attribute_type_id']) && empty($attr0['selected_values'])) {
-                    $validator->errors()->add('attributes.0.selected_values', 'Please select at least one value for attribute 1.');
-                }
-                if (!empty($attr0['selected_values']) && empty($attr0['attribute_type_id'])) {
-                    $validator->errors()->add('attributes.0.attribute_type_id', 'Attribute 1 type is required when values are selected.');
+            if ($defaultCount !== 1) {
+                $validator->errors()->add('variants', 'Phải có đúng một biến thể mặc định.');
+            }
+
+            // Validate selling price > purchase price
+            foreach ($variants as $key => $variant) {
+                if (isset($variant['purchase_price'], $variant['selling_price']) &&
+                    $variant['selling_price'] < $variant['purchase_price']) {
+                    $validator->errors()->add(
+                        "variants.{$key}.selling_price",
+                        'Giá bán phải lớn hơn hoặc bằng giá nhập.'
+                    );
                 }
             }
         });
-    }
-
-    // Override prepareForValidation to clean data before validation
-    protected function prepareForValidation()
-    {
-        $attributes = $this->input('attributes', []);
-        
-        // Clean empty attributes
-        foreach ($attributes as $key => $attribute) {
-            if (empty($attribute['attribute_type_id']) && empty($attribute['selected_values'])) {
-                // If both are empty, set to null
-                $attributes[$key]['attribute_type_id'] = null;
-                $attributes[$key]['selected_values'] = null;
-            }
-        }
-        
-        $this->merge(['attributes' => $attributes]);
     }
 }

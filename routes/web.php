@@ -171,7 +171,7 @@ Route::get('/auth/facebook/callback', [FacebookController::class, 'handleFaceboo
 */
 
 Route::prefix('admin')
-    ->middleware(['auth'])
+    ->middleware(['auth', 'role:admin|staff'])
     ->name('admin.')
     ->group(function () {
         // Dashboard

@@ -194,9 +194,9 @@
                                                             value="{{ $product->name }}">
                                                     </form>
                                                     <span
-                                                        class="icon-heart icon-add-to-wishlist {{ in_array($product->id, $wishlistProductIds ?? []) ? 'in-wishlist' : '' }}"
+                                                        class="icon-heart icon-add-to-wishlist {{ in_array($product->id, $wishlistProductIds) ? 'in-wishlist' : '' }}"
                                                         onclick="event.preventDefault(); toggleWishlist('{{ $product->id }}', '{{ route('wishlist.toggle', $product) }}', this)"
-                                                        title="{{ in_array($product->id, $wishlistProductIds ?? []) ? 'Xóa khỏi yêu thích' : 'Thêm vào yêu thích' }}">
+                                                        title="{{ in_array($product->id, $wishlistProductIds) ? 'Xóa khỏi yêu thích' : 'Thêm vào yêu thích' }}">
                                                         <i class="fas fa-heart"></i>
                                                     </span>
                                                 @else
@@ -340,9 +340,9 @@
                                                     <input type="hidden" name="product_name" value="{{ $product->name }}">
                                                 </form>
                                                 <span
-                                                    class="icon-heart icon-add-to-wishlist {{ in_array($product->id, $wishlistProductIds ?? []) ? 'in-wishlist' : '' }}"
+                                                    class="icon-heart icon-add-to-wishlist {{ in_array($product->id, $wishlistProductIds) ? 'in-wishlist' : '' }}"
                                                     onclick="event.preventDefault(); toggleWishlist('{{ $product->id }}', '{{ route('wishlist.toggle', $product) }}', this)"
-                                                    title="{{ in_array($product->id, $wishlistProductIds ?? []) ? 'Xóa khỏi yêu thích' : 'Thêm vào yêu thích' }}">
+                                                    title="{{ in_array($product->id, $wishlistProductIds) ? 'Xóa khỏi yêu thích' : 'Thêm vào yêu thích' }}">
                                                     <i class="fas fa-heart"></i>
                                                 </span>
                                             @else
@@ -412,13 +412,17 @@
                             if (data.status) {
                                 showCustomAlert(data.message, data.type);
                                 if (data.type === 'success') {
-                                    if (data.in_wishlist) {
-                                        iconElement.classList.add('in-wishlist');
-                                        iconElement.title = 'Xóa khỏi yêu thích';
-                                    } else {
-                                        iconElement.classList.remove('in-wishlist');
-                                        iconElement.title = 'Thêm vào yêu thích';
-                                    }
+                                    // Cập nhật tất cả các trái tim của cùng một sản phẩm
+                                    const allHeartIcons = document.querySelectorAll(`.icon-heart[onclick*="toggleWishlist('${productId}'"]`);
+                                    allHeartIcons.forEach(icon => {
+                                        if (data.in_wishlist) {
+                                            icon.classList.add('in-wishlist');
+                                            icon.title = 'Xóa khỏi yêu thích';
+                                        } else {
+                                            icon.classList.remove('in-wishlist');
+                                            icon.title = 'Thêm vào yêu thích';
+                                        }
+                                    });
                                 }
                             } else {
                                 showCustomAlert(data.message || 'Đã xảy ra lỗi, vui lòng thử lại!', 'error');
@@ -1147,6 +1151,28 @@
                 width: 100%;
                 max-width: 300px;
             }
+        }
+
+        .icon-heart {
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .icon-heart i {
+            color: #000000;
+            transition: all 0.3s ease;
+        }
+
+        .icon-heart.in-wishlist i {
+            color: #ff4d4d;
+        }
+
+        .icon-heart:hover i {
+            transform: scale(1.1);
+        }
+
+        .icon-heart:not(.in-wishlist):hover i {
+            color: #ffffff;
         }
     </style>
 @endsection

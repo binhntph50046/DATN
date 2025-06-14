@@ -126,7 +126,7 @@
                                                         class="btn btn-info btn-sm" title="Edit">
                                                         <i class="ti ti-edit"></i>
                                                     </a>
-                                                    <form action="{{ route('admin.flash-sales.destroy', $flashSale->id) }}"
+                                                    {{-- <form action="{{ route('admin.flash-sales.destroy', $flashSale->id) }}"
                                                         method="POST" class="d-inline">
                                                         @csrf
                                                         @method('DELETE')
@@ -134,7 +134,7 @@
                                                             onclick="return confirm('Are you sure you want to delete this flash sale?')">
                                                             <i class="ti ti-trash"></i>
                                                         </button>
-                                                    </form>
+                                                    </form> --}}
                                                 </td>
                                             </tr>
                                         @endforeach

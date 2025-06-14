@@ -66,17 +66,19 @@
                                             disabled>
                                     </div>
 
-                                    <div class="col-md-12 mb-3">
-                                        <label class="form-label">Status</label>
-                                        <select name="status" class="form-select" required>
-                                            <option value="1" {{ $flashSale->status ? 'selected' : '' }}>Active
-                                            </option>
-                                            <option value="0" {{ !$flashSale->status ? 'selected' : '' }}>Inactive
-                                            </option>
-                                            <option value="2" {{ $flashSale->status == 2 ? 'selected' : '' }}>Ended
-                                            </option>
-                                        </select>
-                                    </div>
+                                    @if ($flashSale->status != 2)
+                                        <div class="col-md-12 mb-3">
+                                            <label class="form-label">Status</label>
+                                            <select name="status" class="form-select" required>
+                                                <option value="1" {{ $flashSale->status == 1 ? 'selected' : '' }}>
+                                                    Active</option>
+                                                <option value="0" {{ $flashSale->status == 0 ? 'selected' : '' }}>
+                                                    Inactive</option>
+                                                <option value="2" {{ $flashSale->status == 2 ? 'selected' : '' }}>Ended
+                                                </option>
+                                            </select>
+                                        </div>
+                                    @endif
                                 </div>
 
                                 <hr>
@@ -136,7 +138,9 @@
                                 </div>
 
                                 <div class="mb-3">
+                                    @if ($flashSale->status != 2)
                                     <button type="submit" class="btn btn-primary">Update Flash Sale</button>
+                                    @endif
                                     <a href="{{ route('admin.flash-sales.index') }}" class="btn btn-secondary">Cancel</a>
                                 </div>
                             </form>
@@ -160,7 +164,8 @@
                 statusSelect.addEventListener('change', function() {
                     if (this.value === '1') {
                         alert(
-                            "⚠️ Lưu ý: Nếu bạn kích hoạt flash sale này, tất cả flash sale đang hoạt động khác sẽ bị kết thúc tự động.");
+                            "⚠️ Lưu ý: Nếu bạn kích hoạt flash sale này, tất cả flash sale đang hoạt động khác sẽ bị kết thúc tự động."
+                            );
                     }
                 });
             });

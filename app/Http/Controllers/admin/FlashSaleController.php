@@ -126,6 +126,10 @@ public function update(Request $request, $id)
 
     $flashSale = FlashSale::with('items.variant')->findOrFail($id);
 
+    if ($flashSale->status == 2) {
+    return redirect()->back()->with('error', 'Flash Sale đã kết thúc và không thể chỉnh sửa.');
+    }
+
     DB::transaction(function () use ($request, $flashSale) {
         $newStatus = (int) $request->status;
 

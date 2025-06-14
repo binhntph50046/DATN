@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\ResendInvoiceRequest;
 
-class OrderController 
+class OrderController
 {
     public function index(Request $request)
     {
@@ -36,7 +36,7 @@ class OrderController
         ]);
 
         $order = Order::where('user_id', Auth::id())->findOrFail($id);
-        
+
         // Chỉ cho phép hủy đơn hàng ở trạng thái pending hoặc confirmed
         if (!in_array($order->status, ['pending', 'confirmed'])) {
             return redirect()->back()->with('error', 'Không thể hủy đơn hàng ở trạng thái này!');
@@ -51,25 +51,27 @@ class OrderController
             'status' => 'cancelled',
             'cancel_reason' => $request->cancellation_reason
         ]);
-        
+
         return redirect()->back()->with('success', 'Đã hủy đơn hàng thành công!');
     }
 
     public function guestTracking(Request $request)
     {
-        $request->validate([
-            'order_id' => 'required',
-            'email' => 'required|email'
-        ]);
+        // Nếu có order_code trong request (người dùng đã tra cứu)
+        if ($request->has('order_code')) {
+            $order = Order::where('order_code', $request->order_code)
+                ->where('shipping_email', $request->email)
+                ->first();
 
-        $order = Order::where('id', $request->order_id)
-                     ->where('shipping_email', $request->email)
-                     ->first();
+            if (!$order) {
+                return redirect()->back()->with('error', 'Không tìm thấy đơn hàng. Vui lòng kiểm tra lại mã đơn hàng và email.');
+            }
 
-        if (!$order) {
-            return redirect()->back()->with('error', 'Không tìm thấy đơn hàng. Vui lòng kiểm tra lại mã đơn hàng và email.');
+            // Nếu tìm thấy đơn hàng, chuyển đến trang tracking
+            return redirect()->route('order.tracking', ['order' => $order->id]);
         }
 
-        return view('client.order.tracking', compact('order'));
+        // Nếu không có order_code, hiển thị form tra cứu
+        return view('client.order.guest_tracking');
     }
-} 
+}

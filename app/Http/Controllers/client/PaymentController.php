@@ -23,7 +23,7 @@ class PaymentController
                 'variant_id' => 'required|exists:product_variants,id',
                 'quantity' => 'required|integer|min:1',
                 'c_fname' => 'required|string|max:255',
-                'c_lname' => 'required|string|max:255',
+                // 'c_lname' => 'required|string|max:255',
                 'c_email_address' => 'required|email|max:255',
                 'c_phone' => 'required|string|max:20',
                 'c_address' => 'required|string|max:255',
@@ -173,6 +173,14 @@ class PaymentController
                             'is_paid' => 1,
                             'status' => 'confirmed'
                         ]);
+                        // Nếu là khách (không đăng nhập), chuyển về guest tracking
+                        if (!$order->user_id) {
+                            return redirect()->route('order.guest.tracking', [
+                                'order_code' => $order->order_code,
+                                'email' => $order->shipping_email
+                            ]);
+                        }
+                        // Nếu là user đã đăng nhập, về trang quản lý đơn hàng
                         return redirect()->route('order.index')
                             ->with('success', 'Thanh toán thành công!');
                     } else {

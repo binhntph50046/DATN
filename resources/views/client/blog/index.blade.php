@@ -1,4 +1,5 @@
 @extends('client.layouts.app')
+@section('title', 'Bài viết - Apple Store')
 
 @section('content')
     <!-- Shop Banner -->

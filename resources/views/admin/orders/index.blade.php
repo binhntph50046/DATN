@@ -63,7 +63,7 @@
                         <table class="table table-hover align-middle table-modern" style="border-radius:0;">
                             <thead class="table-light">
                                 <tr>
-                                    <th>ID</th>
+                                    <th>Mã đơn hàng</th>
                                     <th>Khách hàng</th>
                                     <th>Tổng tiền</th>
                                     <th>Thanh toán</th>
@@ -74,7 +74,7 @@
                             <tbody>
                                 @forelse($orders as $order)
                                     <tr>
-                                        <td class="fw-bold text-primary">#{{ $order->id }}</td>
+                                        <td class="fw-bold text-primary">{{ $order->order_code }}</td>
                                         <td>
                                             <div class="fw-semibold">{{ $order->shipping_name }}</div>
                                             <div class="text-muted small">{{ $order->shipping_email }}</div>

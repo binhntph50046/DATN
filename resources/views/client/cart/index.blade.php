@@ -11,16 +11,17 @@
                         <br>
                         <!-- Hiển thị thông báo -->
                         @if (session('success'))
-                            <div class="alert alert-success">
+                            <div class="alert alert-success alert-dismissible fade show" role="alert" id="alert-success">
                                 {{ session('success') }}
                             </div>
                         @endif
 
                         @if (session('error'))
-                            <div class="alert alert-danger">
+                            <div class="alert alert-danger alert-dismissible fade show" role="alert" id="alert-error">
                                 {{ session('error') }}
                             </div>
                         @endif
+
                         <table class="table">
                             <thead>
                                 <tr>
@@ -65,16 +66,24 @@
                                             </td>
                                             <td class="product-thumbnail">
                                                 @php
-                                                    $imageUrl = 'images/default-product.png'; // Ảnh mặc định
-                                                    if (!empty($item->variant) && !empty($item->variant->image)) {
-                                                        $imageUrl = $item->variant->image;
-                                                    } elseif (!empty($item->product) && !empty($item->product->image)) {
-                                                        $imageUrl = $item->product->image;
+                                                    $imageUrl = 'assets/images/default-product.png';
+                                                    if (!empty($item->variant) && !empty($item->variant->images)) {
+                                                        $variantImages = json_decode($item->variant->images, true);
+                                                        if (is_array($variantImages) && !empty($variantImages[0])) {
+                                                            $imageUrl = $variantImages[0];
+                                                        }
+                                                    } elseif (
+                                                        !empty($item->product) &&
+                                                        !empty($item->product->images)
+                                                    ) {
+                                                        $productImages = json_decode($item->product->images, true);
+                                                        if (is_array($productImages) && !empty($productImages[0])) {
+                                                            $imageUrl = $productImages[0];
+                                                        }
                                                     }
                                                 @endphp
-                                                <img src="{{ asset($imageUrl) }}"
-                                                    alt="{{ $item->product->name ?? 'Product' }}" class="img-fluid"
-                                                    style="max-width: 80px; height: 80px; object-fit: cover;">
+                                                <img src="{{ asset($imageUrl) }}" alt="Ảnh sản phẩm"
+                                                    style="max-width:80px; height:80px; object-fit:cover;">
                                             </td>
                                             <td class="product-name">
                                                 <h2 class="h5 text-black">{{-- {{ $item->product->name }} --}}
@@ -132,12 +141,7 @@
 
             @if ($cartItems->count() > 0)
                 <div class="row">
-                    <div class="col-md-6 pl-5">
-                        <div class="row justify-content-end">
-                            <div class="col-md-12 text-right border-bottom mb-5">
-                                <h3 class="text-black h4 text-uppercase">Tổng giỏ hàng</h3>
-                            </div>
-                        </div>
+                    <div class="col-md-6 offset-md-6">
                         @php
                             $subtotal = 0;
                             foreach ($cartItems as $item) {
@@ -145,36 +149,52 @@
                                     ($item->variant->selling_price ?? $item->product->selling_price) * $item->quantity;
                             }
                         @endphp
-                        <div class="row mb-3">
-                            <div class="col-md-6">
-                                <span class="text-black">Tổng phụ</span>
-                            </div>
-                            <div class="col-md-6 text-right">
-                                <strong class="text-black" id="cart-subtotal">{{ number_format($subtotal, 0, ',', '.') }}
-                                    VNĐ</strong>
-                            </div>
-                        </div>
-                        <div class="row mb-5">
-                            <div class="col-md-6">
-                                <span class="text-black">Tổng cộng</span>
-                            </div>
-                            <div class="col-md-6 text-right">
-                                <strong class="text-black" id="cart-total">{{ number_format($subtotal, 0, ',', '.') }}
-                                    VNĐ</strong>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-12">
-                                <button class="btn btn-black btn-lg py-3 btn-block">Tiến hành thanh toán</button>
-                            </div>
-                        </div>
                     </div>
                 </div>
             @endif
+
+            @if ($cartItems->count() > 0)
+                <div class="cart-summary-sticky-bottom">
+                    <div class="row align-items-center justify-content-between">
+                        <div class="col-md-6 d-flex align-items-center gap-3">
+                            <div class="custom-control custom-checkbox d-inline-block">
+                                <input type="checkbox" class="custom-control-input" id="selectAll">
+                                <label class="custom-control-label" for="selectAll">Chọn tất cả</label>
+                            </div>
+                            <div class="cart-total">
+                                <strong>Tổng giỏ hàng:</strong>
+                                <span id="cart-total">{{ number_format($subtotal, 0, ',', '.') }} VNĐ</span>
+                            </div>
+                        </div>
+                        <div class="col-md-3 text-md-right mt-3 mt-md-0">
+                            <button class="btn btn-checkout">Tiến hành thanh toán</button>
+                        </div>
+                    </div>
+                </div>
+
         </div>
+        @endif
+    </div>
     </div>
 
     <script>
+        // Tự ẩn sau 3 giây
+        setTimeout(function() {
+            const successAlert = document.getElementById('alert-success');
+            const errorAlert = document.getElementById('alert-error');
+
+            if (successAlert) {
+                successAlert.style.transition = 'opacity 0.5s ease';
+                successAlert.style.opacity = '0';
+                setTimeout(() => successAlert.remove(), 500); // Xoá sau khi mờ
+            }
+
+            if (errorAlert) {
+                errorAlert.style.transition = 'opacity 0.5s ease';
+                errorAlert.style.opacity = '0';
+                setTimeout(() => errorAlert.remove(), 500);
+            }
+        }, 3000); // 3 giây
         function changeQuantity(itemId, type) {
             let input = document.getElementById('quantity-' + itemId);
             let currentQuantity = parseInt(input.value) || 0;
@@ -272,6 +292,13 @@
                 updateQuantityOnServer(itemId, newQuantity, oldQuantity);
             });
         });
+        document.getElementById('selectAll').addEventListener('change', function() {
+            let isChecked = this.checked;
+            let itemCheckboxes = document.querySelectorAll('input[name="selected_items[]"]');
+            itemCheckboxes.forEach(function(checkbox) {
+                checkbox.checked = isChecked;
+            });
+        });
     </script>
     <style>
         .alert {
@@ -293,6 +320,144 @@
             color: #842029;
             background-color: #f8d7da;
             border-color: #f5c2c7;
+        }
+
+        .cart-summary-sticky {
+            position: sticky;
+            top: 80px;
+            /* hoặc 20px, tuỳ header của bạn */
+            right: 0;
+            z-index: 100;
+            background: #fff;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            padding: 24px 16px;
+            min-width: 320px;
+            max-width: 100%;
+        }
+
+        @media (max-width: 991px) {
+            .cart-summary-sticky {
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                top: auto;
+                border-radius: 0;
+                box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.08);
+                min-width: unset;
+                padding: 16px 8px;
+            }
+        }
+
+        .cart-summary-fixed {
+            position: fixed;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 999;
+            background: #fff;
+            border-top: 1px solid #eee;
+            box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.08);
+            padding: 12px 0;
+        }
+
+        body {
+            padding-bottom: 80px;
+            /* Để tránh nội dung bị che bởi thanh này */
+        }
+
+        @media (max-width: 767px) {
+            .cart-summary-fixed .btn {
+                width: 100%;
+                margin-top: 8px;
+            }
+
+            .cart-summary-fixed .row {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+
+        .cart-summary-sticky-bottom {
+            position: sticky;
+            bottom: 0;
+            z-index: 10;
+            background: #fff;
+            border-top: 1px solid #eee;
+            box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.08);
+            padding: 12px 0;
+        }
+
+        .cart-summary-sticky-bottom {
+            position: sticky;
+            bottom: 0;
+            background-color: #fff;
+            padding: 16px 24px;
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+            border-top: 1px solid #eee;
+            z-index: 999;
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+            font-size: 15px;
+        }
+
+        .cart-total {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .cart-total strong {
+            font-weight: 500;
+            color: #333;
+        }
+
+        #cart-total {
+            color: #ee4d2d;
+            font-weight: bold;
+            font-size: 17px;
+        }
+
+        .custom-control-label {
+            color: #444;
+            font-weight: 500;
+            padding-left: 6px;
+        }
+
+        .btn-checkout {
+            background-color: #ee4d2d;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 15px;
+            transition: background 0.3s ease;
+        }
+
+        .btn-checkout:hover {
+            background-color: #d44027;
+        }
+
+        @media (max-width: 768px) {
+            .cart-summary-sticky-bottom {
+                padding: 12px 16px;
+            }
+
+            .btn-checkout {
+                width: 100%;
+            }
+
+            .row.align-items-center {
+                flex-direction: column;
+                gap: 12px;
+            }
+
+            .cart-total {
+                flex-direction: column;
+                align-items: flex-start;
+            }
         }
     </style>
 @endsection

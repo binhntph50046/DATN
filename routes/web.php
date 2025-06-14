@@ -43,6 +43,7 @@ use App\Http\Controllers\client\PaymentController;
 use App\Http\Controllers\client\OrderController as ClientOrderController;
 use App\Http\Controllers\client\ChatBotController;
 use App\Http\Controllers\client\ProductController as ClientProductController;
+use App\Http\Controllers\client\ProfileController;
 use App\Models\Invoice;
 
 /*
@@ -60,6 +61,15 @@ Route::post('/increment-view/{id}', [HomeController::class, 'incrementView'])->n
 // Shop Routes
 Route::get('/shop', [ShopController::class, 'index'])->name('shop');
 Route::get('/about', [AboutController::class, 'index'])->name('about');
+
+// Profile Routes
+Route::prefix('profile')->name('profile.')->group(function () {
+    Route::get('/', [ProfileController::class, 'index'])->name('index');
+    Route::put('/', [ProfileController::class, 'update'])->name('update');
+    Route::get('/password', [ProfileController::class, 'password'])->name('password');
+    Route::put('/password', [ProfileController::class, 'updatePassword'])->name('update-password');
+    Route::get('/orders', [ProfileController::class, 'orders'])->name('orders');
+});
 
 // Blog Routes
 Route::get('/blog', [ClientBlogController::class, 'index'])->name('blog');
@@ -98,13 +108,8 @@ Route::post('/subscribe', [\App\Http\Controllers\client\SubscribeController::cla
 Route::prefix('order')->name('order.')->group(function () {
     Route::get('/', [ClientOrderController::class, 'index'])->name('index'); // Danh sách đơn hàng
     Route::get('/tracking/{order}', [CheckoutController::class, 'tracking'])->name('tracking'); // Theo dõi đơn hàng
-
-    Route::get('/guest-tracking', [ClientOrderController::class, 'guestTracking'])->name('guest.tracking'); // Theo dõi đơn hàng cho khách không đăng nhập
+    Route::get('/guest-tracking/{order_code?}', [ClientOrderController::class, 'guestTracking'])->name('guest.tracking'); // Theo dõi đơn hàng cho khách không đăng nhập
     Route::post('/cancel/{order}', [ClientOrderController::class, 'cancel'])->name('cancel')->middleware('auth'); // Hủy đơn hàng
-    Route::post('/cancel/{order}', [ClientOrderController::class, 'cancel'])->name('cancel'); // Hủy đơn hàng
-    Route::get('/invoice/{order}', [CheckoutController::class, 'invoice'])->name('invoice'); // Xem hóa đơn
-    Route::get('/resend-invoice/{order}', [CheckoutController::class, 'resendInvoice'])->name('resend-invoice'); // Gửi lại hóa đơn (GET)
-    Route::post('/{id}/request-resend-invoice', [ClientOrderController::class, 'requestResendInvoice'])->name('request-resend-invoice'); // Yêu cầu gửi lại hóa đơn
     Route::get('/{order}/return', [ClientOrderReturnController::class, 'create'])->name('returns.create'); // Yêu cầu hoàn hàng (form)
     Route::post('/{order}/return', [ClientOrderReturnController::class, 'store'])->name('returns.store'); // Gửi yêu cầu hoàn hàng
 });
@@ -335,12 +340,6 @@ Route::prefix('admin')
             Route::post('/{faq}/restore', [FaqController::class, 'restore'])->name('restore');
             Route::delete('/{faq}/forceDelete', [FaqController::class, 'forceDelete'])->name('forceDelete');
         });
-
-        // Resend Invoice Requests trong admin
-        Route::get('resend-invoice-requests', [ResendInvoiceRequestController::class, 'index'])->name('resend-invoice-requests.index');
-        Route::post('resend-invoice-requests/{id}/approve', [ResendInvoiceRequestController::class, 'approve'])->name('resend-invoice-requests.approve');
-        Route::post('resend-invoice-requests/{id}/reject', [ResendInvoiceRequestController::class, 'reject'])->name('resend-invoice-requests.reject');
-
         //Invoice Routes
         Route::resource('invoices', InvoiceController::class);
         Route::get('invoices/{invoice}/pdf', [InvoiceController::class, 'exportPdf'])->name('invoices.export-pdf');

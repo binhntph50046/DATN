@@ -3,7 +3,7 @@
 @section('content')
 
     <!-- Start Product Detail Section -->
-    <div class="untree_co-section product-section">
+    <div class="untree_co-section product-section" style="margin-top: 70px">
         
         <div class="container">
             <!-- Hiển thị thông báo -->

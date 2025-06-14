@@ -270,45 +270,46 @@
                                 <!-- Variant Attributes -->
                 <div class="mb-3" id="variant-attributes-section">
                     <label class="form-label">Thuộc Tính Biến Thể <span class="text-danger">*</span></label>
-                                    <div id="variant-attributes">
-                                        <div id="attributes-wrapper">
-                                            @foreach($attributes as $attrIndex => $attribute)
-                                            <div class="row mb-2 attribute-row">
+                                    <div id="attributes-wrapper">
+                                        <div class="row mb-2 attribute-row">
+                                            @for($attrIndex = 0; $attrIndex < 2; $attrIndex++)
+                                                @php
+                                                    $attribute = $attributes[$attrIndex] ?? [];
+                                                @endphp
                                                 <div class="col-md-6">
                                                     <div class="mb-3">
-                                                            <label class="form-label">Thuộc Tính {{ $attrIndex + 1 }}</label>
-                                                            <select class="form-select attribute-type" name="attributes[{{ $attrIndex }}][attribute_type_id]" id="attribute_type_{{ $attrIndex }}">
+                                                        <label class="form-label">Thuộc Tính {{ $attrIndex + 1 }}</label>
+                                                        <select class="form-select attribute-type" name="attributes[{{ $attrIndex }}][attribute_type_id]" id="attribute_type_{{ $attrIndex }}">
                                                             <option value="">-- Chọn thuộc tính --</option>
                                                             @foreach ($attributeTypes as $type)
-                                                                    <option value="{{ $type->id }}" {{ old('attributes.'.$attrIndex.'.attribute_type_id', $attribute['attribute_type_id'] ?? '') == $type->id ? 'selected' : '' }}>
+                                                                <option value="{{ $type->id }}" {{ old('attributes.'.$attrIndex.'.attribute_type_id', $attribute['attribute_type_id'] ?? '') == $type->id ? 'selected' : '' }}>
                                                                     {{ $type->name }}
                                                                 </option>
                                                             @endforeach
                                                         </select>
                                                     </div>
                                                     <div class="mb-3">
-                                        <label class="form-label">Giá Trị</label>
-                                                            <select class="form-select attribute-values" name="attributes[{{ $attrIndex }}][selected_values][]" id="values_{{ $attrIndex }}" multiple>
+                                                        <label class="form-label">Giá Trị</label>
+                                                        <select class="form-select attribute-values" name="attributes[{{ $attrIndex }}][selected_values][]" id="values_{{ $attrIndex }}" multiple>
                                                             <option value="">-- Chọn giá trị --</option>
-                                                                @php
-                                                                    $selectedValues = old('attributes.'.$attrIndex.'.selected_values', $attribute['selected_values'] ?? []);
-                                                                    if (!is_array($selectedValues)) {
-                                                                        $selectedValues = [$selectedValues];
-                                                                    }
-                                                                    $typeId = old('attributes.'.$attrIndex.'.attribute_type_id', $attribute['attribute_type_id'] ?? null);
-                                                                    $values = $typeId ? $attributeTypes->firstWhere('id', $typeId)?->attributeValues ?? [] : [];
-                                                                @endphp
-                                                                @foreach($values as $value)
-                                                                    <option value="{{ $value->id }}" {{ in_array($value->id, $selectedValues) ? 'selected' : '' }} data-hex="{{ is_array($value->hex) ? implode(', ', $value->hex) : $value->hex }}">
-                                                                        {{ is_array($value->value) ? implode(', ', $value->value) : $value->value }}
-                                                                    </option>
-                                                                @endforeach
+                                                            @php
+                                                                $selectedValues = old('attributes.'.$attrIndex.'.selected_values', $attribute['selected_values'] ?? []);
+                                                                if (!is_array($selectedValues)) {
+                                                                    $selectedValues = [$selectedValues];
+                                                                }
+                                                                $typeId = old('attributes.'.$attrIndex.'.attribute_type_id', $attribute['attribute_type_id'] ?? null);
+                                                                $values = $typeId ? $attributeTypes->firstWhere('id', $typeId)?->attributeValues ?? [] : [];
+                                                            @endphp
+                                                            @foreach($values as $value)
+                                                                <option value="{{ $value->id }}" {{ in_array($value->id, $selectedValues) ? 'selected' : '' }} data-hex="{{ is_array($value->hex) ? implode(', ', $value->hex) : $value->hex }}">
+                                                                    {{ is_array($value->value) ? implode(', ', $value->value) : $value->value }}
+                                                                </option>
+                                                            @endforeach
                                                         </select>
-                                                            <div class="error-message" id="error-values-{{ $attrIndex }}">Vui lòng chọn ít nhất một giá trị.</div>
+                                                        <div class="error-message" id="error-values-{{ $attrIndex }}">Vui lòng chọn ít nhất một giá trị.</div>
                                                     </div>
                                                 </div>
-                                                    </div>
-                                                                @endforeach
+                                            @endfor
                                         </div>
                                     </div>
                     <div class="error-message" id="error-duplicate" style="display: none;">Không được chọn trùng loại thuộc tính.</div>
@@ -862,36 +863,44 @@
 
         function validateAllAttributes() {
             const selects = document.querySelectorAll('.attribute-type');
-                const valueSelects = document.querySelectorAll('.attribute-values');
+            const valueSelects = document.querySelectorAll('.attribute-values');
             let valid = false;
             let hasError = false;
 
-                // Reset error messages
+            // Reset error messages
             document.querySelectorAll('.error-message').forEach(error => {
                 error.style.display = 'none';
             });
 
-                // Check if at least one attribute is selected and valid
-                selects.forEach((select, idx) => {
-                    if (select.value && $(valueSelects[idx]).val() && $(valueSelects[idx]).val().length > 0) {
-                valid = true;
-            }
-                });
+            // Check if at least one attribute is selected and valid
+            selects.forEach((select, idx) => {
+                if (select.value && $(valueSelects[idx]).val() && $(valueSelects[idx]).val().length > 0) {
+                    valid = true;
+                }
+            });
 
-                // Check for duplicate attribute types
-                const selectedTypes = new Set();
-                selects.forEach(select => {
-                    if (select.value) {
-                        if (selectedTypes.has(select.value)) {
-                            document.getElementById('error-duplicate').style.display = 'block';
+            // Validate từng ô: Nếu đã chọn loại thuộc tính thì phải chọn ít nhất 1 giá trị
+            selects.forEach((select, idx) => {
+                if (select.value && (!$(valueSelects[idx]).val() || $(valueSelects[idx]).val().length === 0)) {
+                    document.getElementById(`error-values-${idx}`).style.display = 'block';
+                    hasError = true;
+                }
+            });
+
+            // Check for duplicate attribute types
+            const selectedTypes = new Set();
+            selects.forEach(select => {
+                if (select.value) {
+                    if (selectedTypes.has(select.value)) {
+                        document.getElementById('error-duplicate').style.display = 'block';
                         hasError = true;
                     }
-                        selectedTypes.add(select.value);
-                    }
-                });
+                    selectedTypes.add(select.value);
+                }
+            });
 
             if (!valid) {
-                    document.getElementById('error-min-attributes').style.display = 'block';
+                document.getElementById('error-min-attributes').style.display = 'block';
             }
 
             return valid && !hasError;

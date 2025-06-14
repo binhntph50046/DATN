@@ -23,9 +23,8 @@ class HomeController
                 $query->orderByDesc('is_default');
             }])
             ->orderBy('views', 'desc')
-            ->take(3) // Lấy 3 sản phẩm (1 hàng)
-            ->get()
-            ->chunk(3); // Chia thành các nhóm 3 sản phẩm
+            ->take(9) // Lấy 9 sản phẩm (3 hàng)
+            ->get();
 
         // Lấy 3 sản phẩm mới nhất trong tháng hiện tại
         $latestProducts = Product::where('status', 'active')
@@ -35,7 +34,7 @@ class HomeController
             ->whereMonth('created_at', Carbon::now()->month)
             ->whereYear('created_at', Carbon::now()->year)
             ->orderBy('created_at', 'desc')
-            ->take(3)
+            ->take(9)
             ->get();
 
         // Lấy ID sản phẩm trong wishlist của người dùng

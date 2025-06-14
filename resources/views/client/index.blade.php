@@ -54,52 +54,52 @@
         <div class="container">
             <div class="row justify-content-between">
                 <div class="col-lg-6">
-                    <h2 class="section-title">Why Choose Us</h2>
-                    <p>Donec vitae odio quis nisl dapibus malesuada. Nullam ac aliquet velit. Aliquam vulputate velit
-                        imperdiet dolor tempor tristique.</p>
+                    <h2 class="section-title">Vì Sao Bạn Chọn Chúng Tôi</h2>
+                    <p>Chúng tôi cam kết mang đến trải nghiệm mua sắm Apple chính hãng dễ dàng, nhanh chóng và đáng tin cậy.
+                        Dịch vụ tận tâm, sản phẩm chất lượng, giá cả hợp lý – tất cả đều vì bạn.</p>
 
                     <div class="row my-5">
                         <div class="col-6 col-md-6" data-aos="fade-up" data-aos-delay="100">
                             <div class="feature">
                                 <div class="icon">
-                                    <img src="images/truck.svg" alt="Image" class="imf-fluid">
+                                    <img src="images/truck.svg" alt="Giao hàng nhanh" class="img-fluid">
                                 </div>
-                                <h3>Fast & Free Shipping</h3>
-                                <p>Donec vitae odio quis nisl dapibus malesuada. Nullam ac aliquet velit. Aliquam
-                                    vulputate.</p>
+                                <h3>Giao Hàng Nhanh & Miễn Phí</h3>
+                                <p>Miễn phí giao hàng toàn quốc với tốc độ nhanh chóng, đảm bảo sản phẩm Apple đến tay bạn
+                                    an toàn và đúng hẹn.</p>
                             </div>
                         </div>
 
                         <div class="col-6 col-md-6" data-aos="fade-up" data-aos-delay="200">
                             <div class="feature">
                                 <div class="icon">
-                                    <img src="images/bag.svg" alt="Image" class="imf-fluid">
+                                    <img src="images/bag.svg" alt="Mua sắm dễ dàng" class="img-fluid">
                                 </div>
-                                <h3>Easy to Shop</h3>
-                                <p>Donec vitae odio quis nisl dapibus malesuada. Nullam ac aliquet velit. Aliquam
-                                    vulputate.</p>
+                                <h3>Mua Sắm Dễ Dàng</h3>
+                                <p>Website thân thiện, hỗ trợ tìm kiếm nhanh chóng các sản phẩm Apple chính hãng như iPhone,
+                                    MacBook, AirPods và nhiều hơn nữa.</p>
                             </div>
                         </div>
 
                         <div class="col-6 col-md-6" data-aos="fade-up" data-aos-delay="300">
                             <div class="feature">
                                 <div class="icon">
-                                    <img src="images/support.svg" alt="Image" class="imf-fluid">
+                                    <img src="images/support.svg" alt="Hỗ trợ 24/7" class="img-fluid">
                                 </div>
-                                <h3>24/7 Support</h3>
-                                <p>Donec vitae odio quis nisl dapibus malesuada. Nullam ac aliquet velit. Aliquam
-                                    vulputate.</p>
+                                <h3>Hỗ Trợ Khách Hàng 24/7</h3>
+                                <p>Đội ngũ tư vấn luôn sẵn sàng hỗ trợ bạn mọi lúc mọi nơi, từ chọn sản phẩm đến bảo hành và
+                                    kỹ thuật.</p>
                             </div>
                         </div>
 
                         <div class="col-6 col-md-6" data-aos="fade-up" data-aos-delay="400">
                             <div class="feature">
                                 <div class="icon">
-                                    <img src="images/return.svg" alt="Image" class="imf-fluid">
+                                    <img src="images/return.svg" alt="Đổi trả dễ dàng" class="img-fluid">
                                 </div>
-                                <h3>Hassle Free Returns</h3>
-                                <p>Donec vitae odio quis nisl dapibus malesuada. Nullam ac aliquet velit. Aliquam
-                                    vulputate.</p>
+                                <h3>Đổi Trả Nhanh Chóng</h3>
+                                <p>Hỗ trợ đổi trả trong 7 ngày nếu sản phẩm gặp lỗi từ nhà sản xuất hoặc không đúng mô tả.
+                                    Mua sắm không lo rủi ro.</p>
                             </div>
                         </div>
                     </div>
@@ -107,7 +107,8 @@
 
                 <div class="col-lg-5">
                     <div class="img-wrap" data-aos="zoom-in">
-                        <img src="images/why-choose-us-img.jpg" alt="Image" class="img-fluid">
+                        <img src="https://img.freepik.com/free-photo/business-man-holding-clipboard-with-why-choose-us-question_23-2148932313.jpg?semt=ais_hybrid&w=740"
+                            alt="Image" class="img-fluid">
                     </div>
                 </div>
             </div>
@@ -213,32 +214,33 @@
                 <!-- Start Text Column -->
                 <div class="col-lg-4">
                     <div class="popular-content" data-aos="fade-left" data-aos-delay="400">
-                        <h2 class="section-title">Most Popular Products</h2>
-                        <p class="mb-4">Experience our most sought-after devices that have redefined innovation and
-                            design. These products represent the perfect blend of cutting-edge.</p>
+                        <h2 class="section-title">Sản Phẩm Bán Chạy Nhất</h2>
+                        <p class="mb-4">Khám phá những thiết bị Apple được ưa chuộng nhất hiện nay – nơi hội tụ đỉnh cao
+                            công nghệ và thiết kế tinh tế. Đáp ứng mọi nhu cầu từ giải trí đến công việc.</p>
 
                         <div class="popular-features">
                             <div class="feature-item">
                                 <i class="fas fa-check-circle"></i>
-                                <span>Revolutionary Technology</span>
+                                <span>Công Nghệ Đột Phá</span>
                             </div>
                             <div class="feature-item">
                                 <i class="fas fa-check-circle"></i>
-                                <span>Premium Build Quality</span>
+                                <span>Thiết Kế Cao Cấp</span>
                             </div>
                             <div class="feature-item">
                                 <i class="fas fa-check-circle"></i>
-                                <span>Seamless Integration</span>
+                                <span>Đồng Bộ Hoàn Hảo</span>
                             </div>
                             <div class="feature-item">
                                 <i class="fas fa-check-circle"></i>
-                                <span>Global Warranty Support</span>
+                                <span>Bảo Hành Toàn Cầu</span>
                             </div>
                         </div>
 
-                        <p><a href="{{ route('shop') }}" class="btn">View All Products</a></p>
+                        <p><a href="{{ route('shop') }}" class="btn">Xem Tất Cả Sản Phẩm</a></p>
                     </div>
                 </div>
+
                 <!-- End Text Column -->
             </div>
         </div>
@@ -251,12 +253,13 @@
             <div class="row">
                 <!-- Start Column 1 -->
                 <div class="col-md-12 col-lg-3 mb-5 mb-lg-0" data-aos="fade-right" data-aos-delay="100">
-                    <h2 class="mb-4 section-title">Designed for the future.</h2>
-                    <p class="mb-4">Our devices are crafted with precision and care, using the finest materials and most
-                        advanced technology. Every detail is meticulously considered to create products that are not just
-                        tools, but works of art that enhance your digital lifestyle.</p>
-                    <p><a href="{{ route('shop') }}" class="btn">Explore</a></p>
+                    <h2 class="mb-4 section-title">Thiết Kế Hướng Tới Tương Lai</h2>
+                    <p class="mb-4">Các sản phẩm Apple của chúng tôi được chế tác tinh xảo, kết hợp giữa chất liệu cao
+                        cấp và công nghệ tiên tiến. Mỗi chi tiết đều được chăm chút để mang đến trải nghiệm vượt xa một
+                        thiết bị – là tuyên ngôn phong cách sống số hiện đại.</p>
+                    <p><a href="{{ route('shop') }}" class="btn">Khám Phá Ngay</a></p>
                 </div>
+
                 <!-- End Column 1 -->
 
                 <!-- Start Latest Products Column -->
@@ -614,76 +617,78 @@
             <div class="row justify-content-between">
                 <div class="col-lg-7 mb-5 mb-lg-0" data-aos="fade-right">
                     <div class="imgs-grid">
-                        <div class="grid grid-1"><img src="images/img-grid-1.jpg" alt="Untree.co"></div>
-                        <div class="grid grid-2"><img src="images/img-grid-2.jpg" alt="Untree.co"></div>
-                        <div class="grid grid-3"><img src="images/img-grid-3.jpg" alt="Untree.co"></div>
+                        <div class="grid grid-1"><img src="https://product.hstatic.net/1000259254/product/apple_watch_series_6_gps-3_f473dbbd7a8a4eebb713eb4737a4bb3c_grande.jpg" alt="Untree.co"></div>
+                        <div class="grid grid-2"><img src="https://store.storeimages.cdn-apple.com/1/as-images.apple.com/is/mac-card-100-customize-202503_FMT_WHH?wid=660&hei=492&fmt=png-alpha&.v=WGVJR1JzeVlHQndDQ0hPeUcxZEhIVVI0Q213c2R4MVpIbnhYSW0yemZZSjhCbGlKVjM2L2p6MTB1VFhaSTNQZTFpQTgzYnRLU3FIbktmUFFaOW9RVVI3OWM1K2xYY1BvNUdGM3NrY09OUVVBUlVVbndFOUhuNmlVSkZDVGZlRGc" alt="Untree.co"></div>
+                        <div class="grid grid-3"><img src="https://www.apple.com/newsroom/images/2023/09/apple-debuts-iphone-15-and-iphone-15-plus/article/Apple-iPhone-15-lineup-hero-geo-230912_inline.jpg.large.jpg" alt="Untree.co"></div>
                     </div>
                 </div>
                 <div class="col-lg-5 ps-lg-5" data-aos="fade-left" data-aos-delay="100">
-                    <h2 class="section-title mb-4">We Help You Make Modern Interior Design</h2>
-                    <p>Donec facilisis quam ut purus rutrum lobortis. Donec vitae odio quis nisl dapibus malesuada.
-                        Nullam ac aliquet velit. Aliquam vulputate velit imperdiet dolor tempor tristique. Pellentesque
-                        habitant morbi tristique senectus et netus et malesuada</p>
+                    <h2 class="section-title mb-4">Chúng Tôi Giúp Bạn Sở Hữu Thiết Bị Apple Hiện Đại</h2>
+                    <p>Chúng tôi không chỉ bán sản phẩm – chúng tôi mang đến giải pháp công nghệ toàn diện cho cuộc sống
+                        hiện đại. Từ iPhone đến MacBook, tất cả đều được chọn lọc kỹ lưỡng để mang đến trải nghiệm đỉnh cao.
+                    </p>
 
                     <ul class="list-unstyled custom-list my-4">
-                        <li>Donec vitae odio quis nisl dapibus malesuada</li>
-                        <li>Donec vitae odio quis nisl dapibus malesuada</li>
-                        <li>Donec vitae odio quis nisl dapibus malesuada</li>
-                        <li>Donec vitae odio quis nisl dapibus malesuada</li>
+                        <li>Sản phẩm Apple chính hãng, bảo hành toàn quốc</li>
+                        <li>Đa dạng mẫu mã từ iPhone, iPad, MacBook,...</li>
+                        <li>Giao hàng nhanh chóng, hỗ trợ tận nơi</li>
+                        <li>Hỗ trợ kỹ thuật & tư vấn tận tình 24/7</li>
                     </ul>
-                    <p><a herf="#" class="btn">Explore</a></p>
+                    <p><a href="{{ route('shop') }}" class="btn">Khám Phá Ngay</a></p>
                 </div>
+
             </div>
         </div>
     </div>
     <!-- End We Help Section -->
 
     <!-- Start Trust Banner Section -->
-    <div class="trust-banner-section" data-aos="fade-up">
+    {{-- <div class="trust-banner-section" data-aos="fade-up">
         <div class="container">
             <div class="row">
                 <div class="col-6 col-md-3" data-aos="fade-up" data-aos-delay="100">
                     <div class="trust-item text-center">
                         <div class="icon">
-                            <img src="images/trust-1.svg" alt="Trust" class="img-fluid">
+                            <img src="https://yourdomain.com/images/experience.svg" alt="Experience" class="img-fluid">
                         </div>
-                        <h3>10+ Years Experience</h3>
-                        <p>Over a decade of excellence in furniture design and manufacturing</p>
+                        <h3>10+ Năm Kinh Nghiệm</h3>
+                        <p>Uy tín trong lĩnh vực kinh doanh thiết bị Apple chính hãng tại Việt Nam</p>
                     </div>
                 </div>
 
                 <div class="col-6 col-md-3" data-aos="fade-up" data-aos-delay="200">
                     <div class="trust-item text-center">
                         <div class="icon">
-                            <img src="images/trust-2.svg" alt="Trust" class="img-fluid">
+                            <img src="https://yourdomain.com/images/customers.svg" alt="Customers" class="img-fluid">
                         </div>
-                        <h3>1000+ Happy Customers</h3>
-                        <p>Trusted by thousands of satisfied customers worldwide</p>
+                        <h3>1000+ Khách Hàng Hài Lòng</h3>
+                        <p>Phục vụ hàng nghìn khách hàng trên toàn quốc mỗi năm</p>
                     </div>
                 </div>
 
                 <div class="col-6 col-md-3" data-aos="fade-up" data-aos-delay="300">
                     <div class="trust-item text-center">
                         <div class="icon">
-                            <img src="images/trust-3.svg" alt="Trust" class="img-fluid">
+                            <img src="https://yourdomain.com/images/quality.svg" alt="Quality" class="img-fluid">
                         </div>
-                        <h3>Premium Quality</h3>
-                        <p>Using only the finest materials and craftsmanship</p>
+                        <h3>Chất Lượng Cao Cấp</h3>
+                        <p>Sản phẩm Apple chính hãng, nguyên seal, bảo hành toàn cầu</p>
                     </div>
                 </div>
 
                 <div class="col-6 col-md-3" data-aos="fade-up" data-aos-delay="400">
                     <div class="trust-item text-center">
                         <div class="icon">
-                            <img src="images/trust-4.svg" alt="Trust" class="img-fluid">
+                            <img src="https://yourdomain.com/images/rating.svg" alt="Rating" class="img-fluid">
                         </div>
-                        <h3>5-Star Rated</h3>
-                        <p>Consistently rated 5 stars by our valued customers</p>
+                        <h3>Đánh Giá 5 Sao</h3>
+                        <p>Được đánh giá cao về chất lượng sản phẩm và dịch vụ khách hàng</p>
                     </div>
                 </div>
+
             </div>
         </div>
-    </div>
+    </div> --}}
     <!-- End Trust Banner Section -->
 
     <!-- Start Testimonial Slider -->

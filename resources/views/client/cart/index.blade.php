@@ -58,121 +58,123 @@
                                                 <div class="custom-control custom-checkbox">
                                                     <input type="checkbox" class="custom-control-input"
                                                         id="customEnvelop{{ $item->id }}" name="selected_items[]"
-                                                        value="{{ $item->id }}">
+                                                        value="{{ $item->id }}"
+                                                        onchange="updateCartTotal()">
                                                     <label class="custom-control-label"
                                                         for="customEnvelop{{ $item->id }}"></label>
                                                 </div>
                                             </td>
                                             <td class="product-thumbnail">
-                                                @php
-                                                    $imageUrl = 'assets/images/default-product.png';
-                                                    // nếu có ảnh thì lấy ảnh từ variant
-                                                    if (!empty($item->variant) && !empty($item->variant->images)) {
-                                                        $variantImages = getImagesArray($item->variant->images);
-                                                        if (is_array($variantImages) && !empty($variantImages[0])) {
-                                                            $imageUrl = $variantImages[0];
-                                                        }
-                                                        // nếu không có ảnh thì lấy ảnh từ product
-                                                    } elseif (!empty($item->product) && !empty($item->product->images)) {
-                                                        $productImages = getImagesArray($item->product->images);
-                                                        if (is_array($productImages) && !empty($productImages[0])) {
-                                                            $imageUrl = $productImages[0];
-                                                        }
-                                                    }
-                                                @endphp
-                                                <img src="{{ asset($imageUrl) }}" alt="Ảnh sản phẩm"
-                                                    style="max-width:80px; height:80px; object-fit:cover;">
-                                            </td>
-                                            <td class="product-name">
-                                                <h2 class="h5 text-black">{{-- {{ $item->product->name }} --}}
-                                                    {{ $item->variant ? '(' . $item->variant->name . ')' : '' }}</h2>
-                                            </td>
-                                            <td class="product-price">
-                                                <span class="price"
-                                                    data-price="{{ $item->variant->selling_price ?? $item->product->selling_price }}">
-                                                    {{ number_format($item->variant->selling_price ?? $item->product->selling_price, 0, ',', '.') }}
-                                                    VNĐ
-                                                </span>
-                                            </td>
-                                            <td>
-                                                <div class="quantity-control">
-                                                    <button type="button" class="btn btn-outline-black decrease"
-                                                        data-item-id="{{ $item->id }}"
-                                                        onclick="changeQuantity({{ $item->id }}, 'decrease')">−</button>
-                                                    <input type="text" class="form-control text-center quantity-amount"
-                                                        name="quantity[{{ $item->id }}]" value="{{ $item->quantity }}"
-                                                        id="quantity-{{ $item->id }}"
-                                                        data-item-id="{{ $item->id }}" aria-label="Quantity"
-                                                        onchange="updateItemTotal({{ $item->id }})">
-                                                    <button type="button" class="btn btn-outline-black increase"
-                                                        data-item-id="{{ $item->id }}"
-                                                        onclick="changeQuantity({{ $item->id }}, 'increase')">+</button>
-                                                </div>
-                                            </td>
-                                            <td class="product-total">
-                                                <span class="item-total" id="total-{{ $item->id }}">
-                                                    {{ number_format(($item->variant->selling_price ?? $item->product->selling_price) * $item->quantity, 0, ',', '.') }}
-                                                    VNĐ
-                                                </span>
-                                            </td>
-                                            <td>
-                                                <form action="{{ route('cart.remove', $item->id) }}" method="POST"
-                                                    class="form-delete">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit" class="btn btn-black btn-sm">X</button>
-                                                </form>
-
-                                            </td>
-                                        </tr>
-                                    @endforeach
-                                @else
-                                    <tr>
-                                        <td colspan="7" class="text-center">Giỏ hàng của bạn đang trống!</td>
-                                    </tr>
-                                @endif
-                            </tbody>
-                        </table>
+                                                        @php
+                                                            $imageUrl = 'assets/images/default-product.png';
+                                                            // nếu có ảnh thì lấy ảnh từ variant
+                                                            if (!empty($item->variant) && !empty($item->variant->images)) {
+                                                                $variantImages = getImagesArray($item->variant->images);
+                                                                if (is_array($variantImages) && !empty($variantImages[0])) {
+                                                                    $imageUrl = $variantImages[0];
+                                                                }
+                                                                // nếu không có ảnh thì lấy ảnh từ product
+                                                            } elseif (!empty($item->product) && !empty($item->product->images)) {
+                                                                $productImages = getImagesArray($item->product->images);
+                                                                if (is_array($productImages) && !empty($productImages[0])) {
+                                                                    $imageUrl = $productImages[0];
+                                                                }
+                                                            }
+                                                        @endphp
+                                                        <img src="{{ asset($imageUrl) }}" alt="Ảnh sản phẩm"
+                                                            style="max-width:80px; height:80px; object-fit:cover;">
+                                                    </td>
+                                                    <td class="product-name">
+                                                        <h2 class="h5 text-black">{{-- {{ $item->product->name }} --}}
+                                                            {{ $item->variant ? '(' . $item->variant->name . ')' : '' }}</h2>
+                                                    </td>
+                                                    <td class="product-price">
+                                                        <span class="price"
+                                                            data-price="{{ $item->variant->selling_price ?? $item->product->selling_price }}">
+                                                            {{ number_format($item->variant->selling_price ?? $item->product->selling_price, 0, ',', '.') }}
+                                                            VNĐ
+                                                        </span>
+                                                    </td>
+                                                    <td>
+                                                        <div class="quantity-control">
+                                                            <button type="button" class="btn btn-outline-black decrease"
+                                                                data-item-id="{{ $item->id }}"
+                                                                onclick="changeQuantity({{ $item->id }}, 'decrease')">−</button>
+                                                            <input type="text" class="form-control text-center quantity-amount"
+                                                                name="quantity[{{ $item->id }}]" value="{{ $item->quantity }}"
+                                                                id="quantity-{{ $item->id }}"
+                                                                data-item-id="{{ $item->id }}" aria-label="Quantity"
+                                                                onchange="updateItemTotal({{ $item->id }})">
+                                                            <button type="button" class="btn btn-outline-black increase"
+                                                                data-item-id="{{ $item->id }}"
+                                                                onclick="changeQuantity({{ $item->id }}, 'increase')">+</button>
+                                                        </div>
+                                                    </td>
+                                                    <td class="product-total">
+                                                        <span class="item-total" id="total-{{ $item->id }}">
+                                                            {{ number_format(($item->variant->selling_price ?? $item->product->selling_price) * $item->quantity, 0, ',', '.') }}
+                                                            VNĐ
+                                                        </span>
+                                                    </td>
+                                                    <td>
+                                                        <form action="{{ route('cart.remove', $item->id) }}" method="POST"
+                                                            class="form-delete">
+                                                            @csrf
+                                                            @method('DELETE')
+                                                            <button type="submit" class="btn btn-black btn-sm">X</button>
+                                                        </form>
+                                                    </td>
+                                                </tr>
+                                            @endforeach
+                                        @else
+                                            <tr>
+                                                <td colspan="7" class="text-center">Giỏ hàng của bạn đang trống!</td>
+                                            </tr>
+                                        @endif
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
                     </div>
+
+                    @if ($cartItems->count() > 0)
+                        <div class="row">
+                            <div class="col-md-6 offset-md-6">
+                                @php
+                                    $subtotal = 0;
+                                    foreach ($cartItems as $item) {
+                                        $subtotal +=
+                                            ($item->variant->selling_price ?? $item->product->selling_price) * $item->quantity;
+                                    }
+                                @endphp
+                            </div>
+                        </div>
+                    @endif
+
+                    @if ($cartItems->count() > 0)
+                        <div class="cart-summary-sticky-bottom">
+                            <div class="row align-items-center justify-content-between">
+                                <div class="col-md-6 d-flex align-items-center gap-3">
+                                    <div class="custom-control custom-checkbox d-inline-block">
+                                        <input type="checkbox" class="custom-control-input" id="selectAll">
+                                        <label class="custom-control-label" for="selectAll">Chọn tất cả</label>
+                                    </div>
+                                    <div class="cart-total">
+                                        <strong>Tổng giỏ hàng:</strong>
+                                        <span id="cart-total">{{ number_format($subtotal, 0, ',', '.') }} VNĐ</span>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 text-md-right mt-3 mt-md-0">
+                                    <form action="{{ route('cart.checkout') }}" method="GET" id="checkout-form">
+                                        <button type="submit" class="btn btn-checkout">Tiến hành thanh toán</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    @endif
                 </div>
             </div>
-
-            @if ($cartItems->count() > 0)
-                <div class="row">
-                    <div class="col-md-6 offset-md-6">
-                        @php
-                            $subtotal = 0;
-                            foreach ($cartItems as $item) {
-                                $subtotal +=
-                                    ($item->variant->selling_price ?? $item->product->selling_price) * $item->quantity;
-                            }
-                        @endphp
-                    </div>
-                </div>
-            @endif
-
-            @if ($cartItems->count() > 0)
-                <div class="cart-summary-sticky-bottom">
-                    <div class="row align-items-center justify-content-between">
-                        <div class="col-md-6 d-flex align-items-center gap-3">
-                            <div class="custom-control custom-checkbox d-inline-block">
-                                <input type="checkbox" class="custom-control-input" id="selectAll">
-                                <label class="custom-control-label" for="selectAll">Chọn tất cả</label>
-                            </div>
-                            <div class="cart-total">
-                                <strong>Tổng giỏ hàng:</strong>
-                                <span id="cart-total">{{ number_format($subtotal, 0, ',', '.') }} VNĐ</span>
-                            </div>
-                        </div>
-                        <div class="col-md-3 text-md-right mt-3 mt-md-0">
-                            <button class="btn btn-checkout">Tiến hành thanh toán</button>
-                        </div>
-                    </div>
-                </div>
-
         </div>
-        @endif
-    </div>
     </div>
 
     <script>
@@ -259,15 +261,15 @@
 
         function updateCartTotal() {
             let cartSubtotal = 0;
-            document.querySelectorAll('input[id^="quantity-"]').forEach(function(input) {
-                let itemId = input.getAttribute('data-item-id');
-                let quantity = parseInt(input.value) || 0;
-                let row = input.closest('tr');
+            document.querySelectorAll('input[name="selected_items[]"]:checked').forEach(function(checkbox) {
+                let itemId = checkbox.value;
+                let quantityInput = document.getElementById('quantity-' + itemId);
+                let quantity = parseInt(quantityInput.value) || 0;
+                let row = checkbox.closest('tr');
                 let priceElement = row.querySelector('.price');
                 let price = parseFloat(priceElement.getAttribute('data-price')) || 0;
                 cartSubtotal += (price * quantity);
             });
-            document.getElementById('cart-subtotal').textContent = formatCurrency(cartSubtotal) + ' VNĐ';
             document.getElementById('cart-total').textContent = formatCurrency(cartSubtotal) + ' VNĐ';
         }
 
@@ -295,6 +297,44 @@
             let itemCheckboxes = document.querySelectorAll('input[name="selected_items[]"]');
             itemCheckboxes.forEach(function(checkbox) {
                 checkbox.checked = isChecked;
+            });
+            updateCartTotal();
+        });
+
+        // Thêm hàm để lấy danh sách sản phẩm được chọn
+        function getSelectedItems() {
+            let selectedItems = [];
+            document.querySelectorAll('input[name="selected_items[]"]:checked').forEach(function(checkbox) {
+                selectedItems.push(checkbox.value);
+            });
+            return selectedItems;
+        }
+
+        // Cập nhật form checkout để chỉ gửi các sản phẩm được chọn
+        document.getElementById('checkout-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            let selectedItems = getSelectedItems();
+            if (selectedItems.length === 0) {
+                alert('Vui lòng chọn ít nhất một sản phẩm để thanh toán!');
+                return;
+            }
+            
+            // Thêm các sản phẩm được chọn vào form
+            selectedItems.forEach(function(itemId) {
+                let input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'selected_items[]';
+                input.value = itemId;
+                this.appendChild(input);
+            }, this);
+            
+            this.submit();
+        });
+
+        // Thêm sự kiện change cho từng checkbox
+        document.querySelectorAll('input[name="selected_items[]"]').forEach(function(checkbox) {
+            checkbox.addEventListener('change', function() {
+                updateCartTotal();
             });
         });
     </script>

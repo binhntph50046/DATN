@@ -88,7 +88,12 @@ Route::delete('/cart/remove/{id}', [CartController::class, 'remove'])->name('car
 Route::delete('/cart/clear', [CartController::class, 'clear'])->name('cart.clear');
 Route::get('/cart', [CartController::class, 'index'])->name('cart');
 
-Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout');
+// Cart Checkout Routes
+Route::get('/cart/checkout', [CheckoutController::class, 'cartCheckout'])->name('cart.checkout');
+Route::post('/cart/checkout', [CheckoutController::class, 'processCartCheckout'])->name('cart.checkout.store');
+Route::post('/cart/checkout/vnpay', [PaymentController::class, 'cartVnPay'])->name('cart.checkout.vnpay');
+
+Route::match(['get', 'post'], '/checkout', [CheckoutController::class, 'index'])->name('checkout');
 Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
 Route::get('/checkout/vnpay/callback', [CheckoutController::class, 'vnpayCallback'])->name('checkout.vnpay.callback');
 

@@ -9,6 +9,7 @@ use App\Models\ProductVariant;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Log;
 
 class PaymentController 
@@ -77,6 +78,9 @@ class PaymentController
             // Cập nhật số lượng tồn kho
             $variant->decrement('stock', $quantity);
 
+            // Gửi mail xác nhận đơn hàng cho cả khách chưa đăng nhập
+           
+
             // Tạo URL thanh toán VNPay
             $vnp_Url = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
             $vnp_Returnurl = route('vnpay.return');
@@ -125,6 +129,28 @@ class PaymentController
             $vnp_Url .= 'vnp_SecureHash=' . $vnpSecureHash;
 
             DB::commit();
+
+            // Gửi mail hóa đơn PDF cho khách (giống như bên CheckoutController)
+           
+                if ($order->shipping_email) {
+                    // Tạo hoặc lấy hóa đơn
+                    $invoice = \App\Models\Invoice::where('order_id', $order->id)->first();
+                    if (!$invoice) {
+                        $invoiceCode = 'INV' . str_pad($order->id, 6, '0', STR_PAD_LEFT);
+                        $invoice = \App\Models\Invoice::create([
+                            'order_id' => $order->id,
+                            'invoice_code' => $invoiceCode,
+                            'total' => $order->total_price,
+                            'issued_by' => null,
+                            'issued_at' => now(),
+                        ]);
+                    }
+                    $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('admin.invoices.pdf', ['invoice' => $invoice]);
+                    $pdfContent = $pdf->output();
+                    Mail::to($order->shipping_email)->send(new \App\Mail\InvoicePdfMail($invoice, $pdfContent));
+                    
+                }
+          
 
             return redirect()->away($vnp_Url);
 

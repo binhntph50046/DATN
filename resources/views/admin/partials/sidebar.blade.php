@@ -53,6 +53,12 @@
                                 <span class="pc-mtext">Thông số kỹ thuật</span>
                             </a>
                         </li>
+                        <li class="pc-item">
+                            <a href="{{ route('admin.variants.index') }}" class="pc-link">
+                                <span class="pc-micon"><i class="ti ti-box-multiple"></i></span>
+                                <span class="pc-mtext">Biến thể sản phẩm</span>
+                            </a>
+                        </li>
                     </ul>
                 </li>
 
@@ -83,6 +89,17 @@
                                 <span class="pc-mtext">Yêu cầu hoàn hàng</span>
                             </a>
                         </li>
+                    </ul>
+                </li>
+
+                <!-- Quản lý giảm giá -->
+                <li class="pc-item pc-hasmenu" data-pc-parent="multiple">
+                    <a class="pc-link">
+                        <span class="pc-micon"><i class="ti ti-gift"></i></span>
+                        <span class="pc-mtext">Quản lý ưu đãi</span>
+                        <span class="pc-arrow"><i data-feather="chevron-right"></i></span>
+                    </a>
+                    <ul class="pc-submenu">
                         <li class="pc-item">
                             <a href="{{ route('admin.vouchers.index') }}" class="pc-link">
                                 <span class="pc-micon"><i class="ti ti-ticket"></i></span>

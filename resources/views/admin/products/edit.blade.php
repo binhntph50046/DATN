@@ -1,5 +1,5 @@
 @extends('admin.layouts.app')
-@section('title', 'Edit Product')
+@section('title', 'Chỉnh Sửa Sản Phẩm')
 
 <style>
     .custom-shadow {
@@ -28,111 +28,50 @@
         display: none;
     }
 
-    /* Select2 Custom Styles */
-    .select2-container--default .select2-selection--multiple {
-        border: 1px solid #ced4da;
-        border-radius: 0.25rem;
-        min-height: 38px;
-    }
-
-    .select2-container--default.select2-container--focus .select2-selection--multiple {
-        border-color: #80bdff;
-        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
-    }
-
-    .select2-container--default .select2-selection--multiple .select2-selection__choice {
-        background-color: #e9ecef;
-        border: 1px solid #ced4da;
-        border-radius: 0.25rem;
-        padding: 2px 8px;
-        margin: 3px;
-    }
-
-    .select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
-        color: #6c757d;
-        margin-right: 5px;
-    }
-
-    .select2-container--default .select2-selection--multiple .select2-selection__choice__remove:hover {
-        color: #343a40;
-    }
-
-    .select2-container--default .select2-search--inline .select2-search__field {
-        margin-top: 3px;
-    }
-
-    .select2-container .select2-selection--multiple {
-        min-height: 38px;
-    }
-
-    .select2-container .select2-search--inline .select2-search__field {
-        margin-top: 7px;
-    }
-
-    .selected-value-tag {
-        display: inline-flex;
-        align-items: center;
-        padding: 2px 8px;
-        background: #f0f0f0;
-        border-radius: 4px;
-        margin: 2px;
-        font-size: 14px;
-    }
-
-    .selected-value-tag .color-preview {
-        width: 15px;
-        height: 15px;
-        margin-right: 5px;
-        border: 1px solid #ddd;
-        display: inline-block;
-        vertical-align: middle;
-    }
-
-    .selected-value-tag .remove-value {
-        margin-left: 5px;
-        cursor: pointer;
-        color: #999;
-        font-size: 12px;
-    }
-
-    .selected-value-tag .remove-value:hover {
-        color: #666;
-    }
-
-    .attribute-values-dropdown-0,
-    .attribute-values-dropdown-1 {
-        max-height: 200px;
-        overflow-y: auto;
-    }
-
-    .attribute-value-option {
+    .image-preview-container {
         display: flex;
-        align-items: center;
-        padding: 8px 12px;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 10px;
     }
 
-    .attribute-value-option:hover {
-        background-color: #f8f9fa;
+    .image-preview-wrapper {
+        position: relative;
+        width: 100px;
+        height: 100px;
     }
 
-    .attribute-value-option .color-preview {
-        width: 15px;
-        height: 15px;
-        margin-right: 8px;
-        border: 1px solid #ddd;
+    .image-preview {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 4px;
     }
 
-    .selected-values-display-0,
-    .selected-values-display-1 {
+    .delete-image {
+        position: absolute;
+        top: -5px;
+        right: -5px;
+        background: #dc3545;
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 20px;
+        height: 20px;
+        font-size: 12px;
+        line-height: 20px;
+        text-align: center;
         cursor: pointer;
+    }
+
+    .delete-image:hover {
+        background: #c82333;
     }
 </style>
 
 @section('content')
-    <!-- Add Select2 CSS at the top of the file -->
+    <!-- Add Select2 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
     <div class="pc-container">
         <div class="pc-content">
@@ -141,12 +80,12 @@
                     <div class="row align-items-center">
                         <div class="col-md-12">
                             <div class="page-header-title">
-                                <h5 class="m-b-10">Chỉnh sửa sản phẩm</h5>
+                                <h5 class="m-b-10">Chỉnh Sửa Sản Phẩm</h5>
                             </div>
                             <ul class="breadcrumb">
-                                <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Trang chủ</a></li>
-                                <li class="breadcrumb-item"><a href="{{ route('admin.products.index') }}">Sản phẩm</a></li>
-                                <li class="breadcrumb-item" aria-current="page">Chỉnh sửa</li>
+                                <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Trang Chủ</a></li>
+                                <li class="breadcrumb-item"><a href="{{ route('admin.products.index') }}">Sản Phẩm</a></li>
+                                <li class="breadcrumb-item" aria-current="page">Chỉnh Sửa</li>
                             </ul>
                         </div>
                     </div>
@@ -157,37 +96,55 @@
                 <div class="col-12">
                     <div class="card custom-shadow">
                         <div class="card-header">
-                            <h5>Chỉnh sửa sản phẩm</h5>
+                            <h5>Chỉnh Sửa Sản Phẩm: {{ $product->name }}</h5>
                         </div>
                         <div class="card-body">
                             @if ($errors->any())
                                 <div class="alert alert-danger">
-                                    <h6><strong>Đã xảy ra lỗi:</strong></h6>
+                                    <h6><strong>Có một số lỗi:</strong></h6>
                                     <ul class="mb-2">
                                         @foreach ($errors->all() as $error)
                                             <li>{{ $error }}</li>
                                         @endforeach
                                     </ul>
+
+                                    @if ($errors->has('variants.*.images.*'))
+                                        <div class="mt-2 p-2 bg-warning text-dark rounded">
+                                            <i class="fas fa-exclamation-triangle"></i>
+                                            <strong>Lưu ý về hình ảnh:</strong> Do lỗi xác thực, bạn cần chọn lại hình ảnh cho các biến thể.
+                                            Chúng tôi đã lưu thông tin về các tệp đã chọn trước đó để bạn tham khảo.
                                 </div>
                             @endif
 
-                            @if ($errors->any())
-                                <div class="alert alert-warning">
-                                    <strong>Lưu ý:</strong> Bạn cần chọn lại hình ảnh cho các biến thể mới thêm vì trình duyệt không thể tự động giữ lại các lựa chọn file sau khi có lỗi.
+                                    <div class="mt-2 p-2 bg-info text-white rounded">
+                                        <i class="fas fa-info-circle"></i>
+                                        <strong>Hướng dẫn:</strong>
+                                        <ul class="mt-1 mb-0">
+                                            <li>Kiểm tra và sửa các trường có lỗi ở trên</li>
+                                            <li>Đảm bảo chọn ít nhất một thuộc tính với giá trị hợp lệ</li>
+                                            <li>Không chọn trùng loại thuộc tính</li>
+                                            <li>Chọn lại hình ảnh cho các biến thể nếu cần</li>
+                                        </ul>
+                                    </div>
                                 </div>
                             @endif
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-                            <form action="{{ route('admin.products.update', $product->id) }}" method="POST"
-                                enctype="multipart/form-data" id="productForm">
+            <form action="{{ route('admin.products.update', $product) }}" method="POST" enctype="multipart/form-data" id="productForm">
                                 @csrf
                                 @method('PUT')
+
                                 <div class="row">
                                     <div class="col-md-12">
                                         <div class="mb-3">
-                                            <label for="name" class="form-label">Tên sản phẩm <span
-                                                    class="text-danger">*</span></label>
+                            <label for="name" class="form-label">Tên Sản Phẩm <span class="text-danger">*</span></label>
                                             <input type="text" class="form-control @error('name') is-invalid @enderror"
-                                                id="name" name="name" value="{{ old('name', $product->name) }}"
+                                id="name" 
+                                name="name" 
+                                value="{{ old('name', is_array($product->name) ? implode(', ', $product->name) : $product->name) }}" 
                                                 required>
                                             @error('name')
                                                 <div class="invalid-feedback">{{ $message }}</div>
@@ -195,18 +152,17 @@
                                         </div>
                                     </div>
                                 </div>
+
                                 <div class="row">
                                     <div class="col-md-6">
                                         <div class="mb-3">
-                                            <label for="category_id" class="form-label">Danh mục <span
-                                                    class="text-danger">*</span></label>
-                                            <select class="form-select @error('category_id') is-invalid @enderror"
-                                                id="category_id" name="category_id" required>
+                            <label for="category_id" class="form-label">Danh Mục <span class="text-danger">*</span></label>
+                            <select class="form-select @error('category_id') is-invalid @enderror" id="category_id" name="category_id" required>
                                                 <option value="">Chọn danh mục</option>
                                                 @foreach ($categories as $category)
-                                                    <option value="{{ $category->id }}"
-                                                        {{ old('category_id', $product->category_id) == $category->id ? 'selected' : '' }}>
-                                                        {{ $category->name }}</option>
+                                    <option value="{{ $category->id }}" {{ old('category_id', $product->category_id) == $category->id ? 'selected' : '' }}>
+                                        {{ $category->name }}
+                                    </option>
                                                 @endforeach
                                             </select>
                                             @error('category_id')
@@ -216,244 +172,220 @@
                                     </div>
                                     <div class="col-md-6">
                                         <div class="mb-3">
-                                            <label for="warranty_months" class="form-label">Thời gian bảo hành (tháng) <span
-                                                    class="text-danger">*</span></label>
-                                            <input type="number"
-                                                class="form-control @error('warranty_months') is-invalid @enderror"
-                                                id="warranty_months" name="warranty_months"
-                                                value="{{ old('warranty_months', $product->warranty_months) }}"
-                                                min="0" required>
+                            <label for="warranty_months" class="form-label">Thời Gian Bảo Hành (Tháng) <span class="text-danger">*</span></label>
+                            <input type="number" class="form-control @error('warranty_months') is-invalid @enderror" id="warranty_months" name="warranty_months" value="{{ old('warranty_months', $product->warranty_months) }}" min="0" required>
                                             @error('warranty_months')
                                                 <div class="invalid-feedback">{{ $message }}</div>
                                             @enderror
                                         </div>
                                     </div>
                                 </div>
+
                                 <div class="row">
                                     <div class="col-md-12">
                                         <div class="mb-3">
-                                            <label for="description" class="form-label">Mô tả ngắn</label>
-                                            <textarea class="form-control @error('description') is-invalid @enderror" id="description" name="description"
-                                                rows="3">{{ old('description', $product->description) }}</textarea>
+                            <label for="description" class="form-label">Mô Tả Ngắn</label>
+                            <textarea class="form-control @error('description') is-invalid @enderror" 
+                                id="description" 
+                                name="description" 
+                                rows="3">{{ old('description', is_array($product->description) ? implode("\n", $product->description) : $product->description) }}</textarea>
                                             @error('description')
                                                 <div class="invalid-feedback">{{ $message }}</div>
                                             @enderror
                                         </div>
                                     </div>
                                 </div>
+
                                 <div class="row">
                                     <div class="col-md-12">
                                         <div class="mb-3">
-                                            <label for="content" class="form-label">Mô tả chi tiết</label>
-                                            <textarea class="snettech-editor form-control @error('content') is-invalid @enderror" id="content" name="content">{{ old('content', $product->content) }}</textarea>
+                            <label for="content" class="form-label">Nội Dung Chi Tiết</label>
+                            <textarea class="snettech-editor form-control @error('content') is-invalid @enderror" 
+                                id="content" 
+                                name="content">{{ old('content', is_array($product->content) ? implode("\n", $product->content) : $product->content) }}</textarea>
                                             @error('content')
                                                 <div class="invalid-feedback">{{ $message }}</div>
                                             @enderror
                                         </div>
                                     </div>
                                 </div>
+
                                 <div class="row">
                                     <div class="col-md-6">
                                         <div class="mb-3">
-                                            <label class="form-label">Sản phẩm nổi bật</label>
+                            <label class="form-label">Sản Phẩm Nổi Bật</label>
                                             <div class="form-check form-switch">
-                                                <input class="form-check-input" type="checkbox" id="is_featured"
-                                                    name="is_featured" value="1"
-                                                    {{ old('is_featured', $product->is_featured) ? 'checked' : '' }}>
-                                                <label class="form-check-label" for="is_featured">Đặt làm nổi bật</label>
+                                <input class="form-check-input" type="checkbox" id="is_featured" name="is_featured" value="1" {{ old('is_featured', $product->is_featured) ? 'checked' : '' }}>
+                                <label class="form-check-label" for="is_featured">Đặt làm sản phẩm nổi bật</label>
                                             </div>
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="mb-3">
-                                            <label for="status" class="form-label">Trạng thái <span class="text-danger">*</span></label>
-                                            <select class="form-select @error('status') is-invalid @enderror" id="status" name="status" required>
-                                                <option value="active" {{ old('status', $product->status) == 'active' ? 'selected' : '' }}>Hoạt động</option>
-                                                <option value="inactive" {{ old('status', $product->status) == 'inactive' ? 'selected' : '' }}>Không hoạt động</option>
-                                            </select>
-                                            @error('status')
-                                                <div class="invalid-feedback">{{ $message }}</div>
-                                            @enderror
+                            <label class="form-label">Trạng Thái</label>
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="status" name="status" value="active" {{ old('status', $product->status) === 'active' ? 'checked' : '' }}>
+                                <label class="form-check-label" for="status">Kích hoạt</label>
                                         </div>
                                     </div>
                                 </div>
+                </div>
+
                                 <!-- Technical Specifications -->
-                                <div class="mb-3" id="specifications-section" style="display: {{ $product->category_id ? 'block' : 'none' }}">
-                                    <label class="form-label">Thông số kỹ thuật</label>
+                <div class="mb-3" id="specifications-section">
+                    <label class="form-label">Thông Số Kỹ Thuật</label>
                                     <div id="categorySpecifications">
-                                        @if(!$product->category_id)
-                                            <p class="text-muted">Vui lòng chọn danh mục để hiển thị thông số kỹ thuật.</p>
-                                        @else
+                        @if($specificationsData->isNotEmpty())
                                             <div id="specifications-wrapper">
-                                                @foreach($specificationsData as $index => $spec)
-                                                    @if($index % 2 == 0)
-                                                        <div class="row mb-2 spec-row" {!! $index >= 6 ? 'style="display: none;"' : '' !!}>
-                                                    @endif
+                                @foreach($specificationsData->chunk(2) as $chunk)
+                                    <div class="row mb-2 spec-row">
+                                        @foreach($chunk as $spec)
                                                         <div class="col-md-6">
                                                             <div class="mb-3">
-                                                                <label class="form-label">{{ $spec['name'] }} <span class="text-danger"></span></label>
-                                                                <input type="hidden" name="specifications[{{ $index }}][specification_id]" value="{{ $spec['id'] }}">
-                                                                <input type="text" class="form-control" name="specifications[{{ $index }}][value]" value="{{ old('specifications.'.$index.'.value', $spec['value']) }}" required>
+                                                    <label class="form-label">{{ is_array($spec['name']) ? implode(', ', $spec['name']) : $spec['name'] }}</label>
+                                                    <input type="hidden" name="specifications[{{ $loop->parent->index * 2 + $loop->index }}][specification_id]" value="{{ $spec['id'] }}">
+                                                    <input type="text" 
+                                                        class="form-control" 
+                                                        name="specifications[{{ $loop->parent->index * 2 + $loop->index }}][value]" 
+                                                        value="{{ old('specifications.' . ($loop->parent->index * 2 + $loop->index) . '.value', is_array($spec['value']) ? implode(', ', $spec['value']) : $spec['value']) }}" 
+                                                        placeholder="Nhập thông số (tùy chọn)">
                                                             </div>
                                                         </div>
-                                                    @if($index % 2 == 1 || $loop->last)
+                                        @endforeach
                                                         </div>
-                                                    @endif
                                                 @endforeach
                                             </div>
-                                            @if(count($specificationsData) > 6)
-                                                <button type="button" class="btn btn-link p-0" onclick="showMoreSpecs(this)">Xem thêm</button>
-                                            @endif
+                        @else
+                            <p class="text-muted">Không tìm thấy thông số kỹ thuật cho danh mục này.</p>
                                         @endif
                                     </div>
                                 </div>
+
+                                @php
+                                    // Ưu tiên lấy dữ liệu vừa nhập khi validate lỗi
+                                    $variants = old('variants') ?? $product->variants->whereNull('deleted_at')->toArray();
+                                    $attributes = old('attributes') ?? $attributeValues;
+                                @endphp
+
                                 <!-- Variant Attributes -->
-                                <div class="mb-3" id="variant-attributes-section" style="display: {{ $product->category_id ? 'block' : 'none' }}">
-                                    <label class="form-label">Thuộc tính biến thể <span
-                                            class="text-danger">*</span></label>
-                                    <div id="variant-attributes">
-                                        <div id="attributes-wrapper">
-                                            <div class="row mb-2 attribute-row">
+                <div class="mb-3" id="variant-attributes-section">
+                    <label class="form-label">Thuộc Tính Biến Thể <span class="text-danger">*</span></label>
+                                    <div id="attributes-wrapper">
+                                        <div class="row mb-2 attribute-row">
+                                            @for($attrIndex = 0; $attrIndex < 2; $attrIndex++)
+                                                @php
+                                                    $attribute = $attributes[$attrIndex] ?? [];
+                                                @endphp
                                                 <div class="col-md-6">
                                                     <div class="mb-3">
-                                                        <label class="form-label">Thuộc tính 1</label>
-                                                        <select class="form-select attribute-type"
-                                                            name="attributes[0][attribute_type_id]" id="attribute_type_0">
+                                                        <label class="form-label">Thuộc Tính {{ $attrIndex + 1 }}</label>
+                                                        <select class="form-select attribute-type" name="attributes[{{ $attrIndex }}][attribute_type_id]" id="attribute_type_{{ $attrIndex }}">
                                                             <option value="">-- Chọn thuộc tính --</option>
                                                             @foreach ($attributeTypes as $type)
-                                                                <option value="{{ $type->id }}" 
-                                                                    {{ old('attributes.0.attribute_type_id', isset($attributeValues[0]) ? $attributeValues[0]['attribute_type_id'] : '') == $type->id ? 'selected' : '' }}>
+                                                                <option value="{{ $type->id }}" {{ old('attributes.'.$attrIndex.'.attribute_type_id', $attribute['attribute_type_id'] ?? '') == $type->id ? 'selected' : '' }}>
                                                                     {{ $type->name }}
                                                                 </option>
                                                             @endforeach
                                                         </select>
-                                                        <div class="error-message" id="error-type-0">Vui lòng chọn loại thuộc tính.</div>
                                                     </div>
                                                     <div class="mb-3">
-                                                        <label class="form-label">Giá trị</label>
-                                                        <select class="form-select attribute-values"
-                                                            name="attributes[0][selected_values][]" id="values_0"
-                                                            multiple>
+                                                        <label class="form-label">Giá Trị</label>
+                                                        <select class="form-select attribute-values" name="attributes[{{ $attrIndex }}][selected_values][]" id="values_{{ $attrIndex }}" multiple>
                                                             <option value="">-- Chọn giá trị --</option>
-                                                            @if(isset($attributeValues[0]) && !empty($attributeValues[0]['selected_values']))
-                                                                @foreach($attributeTypes->first(function($type) use ($attributeValues) { return $type->id == $attributeValues[0]['attribute_type_id']; })->attributeValues as $value)
-                                                                    <option value="{{ $value->id }}" 
-                                                                        {{ in_array($value->id, $attributeValues[0]['selected_values']) ? 'selected' : '' }}>
-                                                                        {{ is_array($value->value) ? implode(', ', $value->value) : $value->value }}
-                                                                    </option>
-                                                                @endforeach
-                                                            @endif
-                                                        </select>
-                                                        <div class="error-message" id="error-values-0">Vui lòng chọn ít nhất một giá trị.</div>
-                                                    </div>
-                                                </div>
-                                                <div class="col-md-6">
-                                                    <div class="mb-3">
-                                                        <label class="form-label">Thuộc tính 2</label>
-                                                        <select class="form-select attribute-type"
-                                                            name="attributes[1][attribute_type_id]" id="attribute_type_1">
-                                                            <option value="">-- Chọn thuộc tính --</option>
-                                                            @foreach ($attributeTypes as $type)
-                                                                <option value="{{ $type->id }}" 
-                                                                    {{ old('attributes.1.attribute_type_id', isset($attributeValues[1]) ? $attributeValues[1]['attribute_type_id'] : '') == $type->id ? 'selected' : '' }}>
-                                                                    {{ $type->name }}
+                                                            @php
+                                                                $selectedValues = old('attributes.'.$attrIndex.'.selected_values', $attribute['selected_values'] ?? []);
+                                                                if (!is_array($selectedValues)) {
+                                                                    $selectedValues = [$selectedValues];
+                                                                }
+                                                                $typeId = old('attributes.'.$attrIndex.'.attribute_type_id', $attribute['attribute_type_id'] ?? null);
+                                                                $values = $typeId ? $attributeTypes->firstWhere('id', $typeId)?->attributeValues ?? [] : [];
+                                                            @endphp
+                                                            @foreach($values as $value)
+                                                                <option value="{{ $value->id }}" {{ in_array($value->id, $selectedValues) ? 'selected' : '' }} data-hex="{{ is_array($value->hex) ? implode(', ', $value->hex) : $value->hex }}">
+                                                                    {{ is_array($value->value) ? implode(', ', $value->value) : $value->value }}
                                                                 </option>
                                                             @endforeach
                                                         </select>
-                                                        <div class="error-message" id="error-type-1">Vui lòng chọn loại thuộc tính.</div>
-                                                    </div>
-                                                    <div class="mb-3">
-                                                        <label class="form-label">Giá trị</label>
-                                                        <select class="form-select attribute-values"
-                                                            name="attributes[1][selected_values][]" id="values_1"
-                                                            multiple>
-                                                            <option value="">-- Chọn giá trị --</option>
-                                                            @if(isset($attributeValues[1]) && !empty($attributeValues[1]['selected_values']))
-                                                                @foreach($attributeTypes->first(function($type) use ($attributeValues) { return $type->id == $attributeValues[1]['attribute_type_id']; })->attributeValues as $value)
-                                                                    <option value="{{ $value->id }}" 
-                                                                        {{ in_array($value->id, $attributeValues[1]['selected_values']) ? 'selected' : '' }}>
-                                                                        {{ is_array($value->value) ? implode(', ', $value->value) : $value->value }}
-                                                                    </option>
-                                                                @endforeach
-                                                            @endif
-                                                        </select>
-                                                        <div class="error-message" id="error-values-1">Vui lòng chọn ít nhất một giá trị.</div>
+                                                        <div class="error-message" id="error-values-{{ $attrIndex }}">Vui lòng chọn ít nhất một giá trị.</div>
                                                     </div>
                                                 </div>
-                                            </div>
+                                            @endfor
                                         </div>
                                     </div>
-                                </div>
-                                <div class="error-message" id="error-duplicate" style="display: none;">Không được phép chọn trùng loại thuộc tính.</div>
+                    <div class="error-message" id="error-duplicate" style="display: none;">Không được chọn trùng loại thuộc tính.</div>
                                 <div class="error-message" id="error-min-attributes" style="display: none;">Vui lòng chọn ít nhất một thuộc tính với giá trị hợp lệ.</div>
-                                <!-- Product Variants -->
+                </div>
+
+                <!-- Generated Variants -->
                                 <div class="mb-3">
-                                    <label class="form-label">Biến thể sản phẩm</label> <br>
-                                    <button type="button" class="btn btn-primary mb-3" id="generate-variants">Tạo lại biến thể</button>
+                    <label class="form-label">Biến Thể Sản Phẩm</label> <br>
+                    <button type="button" class="btn btn-primary mb-3" id="generate-variants">Tạo Biến Thể</button>
                                     <div id="variantsContainer">
-                                        @php
-                                            $variants = old('variants', $product->variants->toArray());
-                                        @endphp
-                                        @foreach ($variants as $index => $variant)
+                                        @foreach($variants as $index => $variant)
                                             <div class="variant-row" data-index="{{ $index }}">
-                                                <h6>Biến thể {{ $index + 1 }}: {{ $variant['name'] ?? '' }}</h6>
-                                                <input type="hidden" name="variants[{{ $index }}][id]" value="{{ $variant['id'] ?? '' }}">
-                                                <input type="hidden" name="variants[{{ $index }}][name]" value="{{ $variant['name'] ?? '' }}">
-                                                <input type="hidden" name="variants[{{ $index }}][slug]" value="{{ $variant['slug'] ?? '' }}">
+                                                <h6>Biến Thể {{ $index + 1 }}: {{ old('variants.'.$index.'.name', $variant['name'] ?? '') }}</h6>
+                                                <input type="hidden" name="variants[{{ $index }}][id]" value="{{ old('variants.'.$index.'.id', $variant['id'] ?? '') }}">
+                                                <input type="hidden" name="variants[{{ $index }}][name]" value="{{ old('variants.'.$index.'.name', $variant['name'] ?? '') }}">
+                                                <input type="hidden" name="variants[{{ $index }}][slug]" value="{{ old('variants.'.$index.'.slug', $variant['slug'] ?? '') }}">
                                                 <div class="row">
                                                     <div class="col-md-3">
                                                         <div class="mb-3">
-                                                            <label class="form-label">Tồn kho</label>
-                                                            <input type="number" class="form-control" name="variants[{{ $index }}][stock]" min="0" value="{{ $variant['stock'] ?? 0 }}" required>
+                                            <label class="form-label">Tồn Kho</label>
+                                                            <input type="number" class="form-control" name="variants[{{ $index }}][stock]" min="0" value="{{ old('variants.'.$index.'.stock', $variant['stock'] ?? '') }}" required>
                                                         </div>
                                                     </div>
                                                     <div class="col-md-3">
                                                         <div class="mb-3">
-                                                            <label class="form-label">Giá nhập</label>
-                                                            <input type="number" class="form-control" name="variants[{{ $index }}][purchase_price]" min="0" step="0.01" value="{{ $variant['purchase_price'] ?? 0 }}" required>
+                                            <label class="form-label">Giá Nhập</label>
+                                                            <input type="number" class="form-control" name="variants[{{ $index }}][purchase_price]" min="0" step="0.01" value="{{ old('variants.'.$index.'.purchase_price', $variant['purchase_price'] ?? '') }}" required>
                                                         </div>
                                                     </div>
                                                     <div class="col-md-3">
                                                         <div class="mb-3">
-                                                            <label class="form-label">Giá bán</label>
-                                                            <input type="number" class="form-control" name="variants[{{ $index }}][selling_price]" min="0" step="0.01" value="{{ $variant['selling_price'] ?? 0 }}" required>
+                                            <label class="form-label">Giá Bán</label>
+                                                            <input type="number" class="form-control" name="variants[{{ $index }}][selling_price]" min="0" step="0.01" value="{{ old('variants.'.$index.'.selling_price', $variant['selling_price'] ?? '') }}" required>
                                                         </div>
                                                     </div>
                                                 </div>
                                                 <div class="row">
                                                     <div class="col-md-6">
                                                         <div class="mb-3">
-                                                            <label class="form-label">Hình ảnh</label>
+                                            <label class="form-label">Hình Ảnh</label>
                                                             <input type="file" class="form-control variant-images" name="variants[{{ $index }}][images][]" multiple accept="image/*">
-                                                            <div id="preview-{{ $index }}" class="preview-images-container mt-2 d-flex flex-wrap gap-2">
-                                                                @if (!empty($variant['images']))
-                                                                    @foreach (is_array($variant['images']) ? $variant['images'] : json_decode($variant['images'], true) as $image)
-                                                                        <div class="position-relative">
-                                                                            <img src="{{ asset($image) }}" class="preview-image">
-                                                                            <button type="button" class="btn btn-danger btn-sm position-absolute top-0 end-0 remove-image" data-variant="{{ $index }}" data-image="{{ $image }}">
-                                                                                <i class="ti ti-x"></i>
-                                                                            </button>
-                                                                        </div>
-                                                                    @endforeach
-                                                                @endif
+                                            <div class="image-preview-container" id="preview-{{ $index }}">
+                                                                @php
+                                                                    $oldImages = old('variants.'.$index.'.images');
+                                                                    // Nếu không có old (tức là lần đầu vào form hoặc không lỗi validate), lấy ảnh từ DB
+                                                                    if (is_null($oldImages) && !empty($variant['images'])) {
+                                                                        $images = is_array($variant['images']) ? $variant['images'] : json_decode($variant['images'], true);
+                                                                        if (is_array($images)) {
+                                                                            foreach ($images as $image) {
+                                                                                echo '<div class="image-preview-wrapper">';
+                                                                                echo '<img src="'.asset($image).'" class="image-preview">';
+                                                                                echo '<button type="button" class="delete-image" data-image="'.$image.'" data-variant="'.($variant['id'] ?? '').'">×</button>';
+                                                                                echo '</div>';
+                                                                            }
+                                                                        }
+                                                                    }
+                                                    @endphp
                                                             </div>
                                                         </div>
                                                     </div>
                                                     <div class="col-md-6">
                                                         <div class="mb-3">
-                                                            <label class="form-label">Biến thể mặc định</label>
+                                            <label class="form-label">Biến Thể Mặc Định</label>
                                                             <div class="form-check form-switch">
-                                                                <input class="form-check-input default-variant-toggle" type="checkbox" name="variants[{{ $index }}][is_default]" id="is_default_{{ $index }}" value="1" {{ !empty($variant['is_default']) ? 'checked' : '' }}>
+                                                                <input class="form-check-input default-variant-toggle" type="checkbox" name="variants[{{ $index }}][is_default]" id="is_default_{{ $index }}" value="1" {{ old('variants.'.$index.'.is_default', $variant['is_default'] ?? false) ? 'checked' : '' }}>
                                                                 <label class="form-check-label" for="is_default_{{ $index }}">Đặt làm mặc định</label>
                                                             </div>
                                                         </div>
                                                     </div>
                                                 </div>
-                                                @if (isset($variant['attributes']) && is_array($variant['attributes']))
-                                                    @foreach ($variant['attributes'] as $attrIdx => $attr)
-                                                        <input type="hidden" name="variants[{{ $index }}][attributes][{{ $attrIdx }}][attribute_type_id]" value="{{ $attr['attribute_type_id'] }}">
-                                                        <input type="hidden" name="variants[{{ $index }}][attributes][{{ $attrIdx }}][value]" value="{{ $attr['value'] }}">
-                                                        <input type="hidden" name="variants[{{ $index }}][attributes][{{ $attrIdx }}][hex]" value="{{ $attr['hex'] ?? '' }}">
+                                                {{-- Hidden inputs for variant combinations nếu cần --}}
+                                                @if(isset($variant['attributes']))
+                                                    @foreach($variant['attributes'] as $attrIdx => $attr)
+                                                        <input type="hidden" name="variants[{{ $index }}][attributes][{{ $attrIdx }}][attribute_type_id]" value="{{ $attr['attribute_type_id'] ?? '' }}">
+                                                        <input type="hidden" name="variants[{{ $index }}][attributes][{{ $attrIdx }}][selected_values]" value="{{ is_array($attr['selected_values'] ?? null) ? implode(',', $attr['selected_values']) : ($attr['selected_values'] ?? '') }}">
                                                     @endforeach
                                                 @endif
                                             </div>
@@ -461,741 +393,437 @@
                                     </div>
                                 </div>
 
+                <!-- Hidden input for images to delete -->
+                <input type="hidden" name="images_to_delete" id="images_to_delete" value="">
+                <!-- Hidden input for variants to delete -->
+                <input type="hidden" name="variants_to_delete" id="variants_to_delete" value="">
+
                                 <div class="mb-3">
-                                    <button type="submit" class="btn btn-primary">Cập nhật sản phẩm</button>
+                    <button type="submit" class="btn btn-primary">Cập Nhật Sản Phẩm</button>
                                     <a href="{{ route('admin.products.index') }}" class="btn btn-secondary">Hủy</a>
                                 </div>
                             </form>
                         </div>
                     </div>
-                </div>
-            </div>
-        </div>
-    </div>
+
     <script>
-        function showMoreSpecs(btn) {
-            document.querySelectorAll('#specifications-wrapper .spec-row').forEach(row => {
-                row.style.display = '';
-            });
-            btn.style.display = 'none';
-        }
-
-        // Truyền dữ liệu old specifications từ Blade sang JavaScript
-        const oldSpecifications = @json(old('specifications', []));
-        const productSpecifications = @json($product->specifications->pluck('pivot.value', 'id')); // Lấy giá trị theo ID spec
-
-        let attributeIndex = 0;
-        let selectedTypes = new Set();
-        let imagesToDelete = new Set();
-        let variantsToDelete = new Set(); // Thêm set để theo dõi biến thể cần xóa
-        let askedCategory = false;
-        let askedAttribute = false;
-        let askedValueOrHex = false;
-
         document.addEventListener('DOMContentLoaded', function() {
-            // Khởi tạo Select2 cho các select box thuộc tính
-            $('.attribute-type, .attribute-values').select2({
+            // Initialize Select2
+            $('.attribute-values').select2({
                 width: '100%',
-                placeholder: 'Chọn thuộc tính',
-                allowClear: true
+                placeholder: 'Chọn giá trị',
+                allowClear: true,
+                multiple: true,
+                templateResult: formatAttributeValue,
+                templateSelection: formatAttributeValue
             });
 
-            // Xử lý khi thay đổi loại thuộc tính
+            function formatAttributeValue(data) {
+                if (!data.id) return data.text;
+
+                const option = data.element;
+                const hex = option ? option.getAttribute('data-hex') : null;
+
+                if (hex) {
+                    return $(
+                        `<span>${data.text} <span style="display:inline-block;width:15px;height:15px;background-color:${hex};margin-left:5px;vertical-align:middle;border:1px solid #ddd;"></span></span>`
+                    );
+                }
+
+                return data.text;
+            }
+
+            // Handle category change
+            const categorySelect = document.getElementById('category_id');
+            let previousCategoryId = categorySelect.value;
+            
+            categorySelect.addEventListener('change', function() {
+                const newCategoryId = this.value;
+                const confirmMessage = 'CẢNH BÁO: Thay đổi danh mục sẽ:\n\n' +
+                    '1. Xóa tất cả thông số kỹ thuật hiện tại\n' +
+                    '2. Xóa tất cả thuộc tính và giá trị thuộc tính hiện tại\n' +
+                    '3. Xóa tất cả biến thể (chúng sẽ được xóa mềm)\n' +
+                    '4. Xóa tất cả hình ảnh liên quan\n\n' +
+                    'Những thay đổi này sẽ có hiệu lực sau khi bạn nhấn Cập Nhật Sản Phẩm.\n\n' +
+                    'Bạn có chắc chắn muốn thay đổi danh mục?';
+
+                if (confirm(confirmMessage)) {
+                    // Store old variants for deletion
+                    const variantsToDelete = [];
+                    document.querySelectorAll('.variant-row input[name$="[id]"]').forEach(input => {
+                        if (input.value) {
+                            variantsToDelete.push(input.value);
+                        }
+                    });
+                    document.getElementById('variants_to_delete').value = JSON.stringify(variantsToDelete);
+
+                    // Store old images for deletion
+                    const imagesToDelete = [];
+                    document.querySelectorAll('.image-preview-wrapper img').forEach(img => {
+                        const imgSrc = img.src.split('/').slice(-3).join('/');
+                        imagesToDelete.push(imgSrc);
+                    });
+                    document.getElementById('images_to_delete').value = JSON.stringify(imagesToDelete);
+
+                    // Clear specifications
+                    const specificationsWrapper = document.getElementById('specifications-wrapper');
+                    if (specificationsWrapper) {
+                        specificationsWrapper.innerHTML = '<p class="text-muted">Đang tải thông số kỹ thuật cho danh mục mới...</p>';
+                    }
+
+                    // Clear both attribute types and their values
+                    document.querySelectorAll('.attribute-type').forEach(select => {
+                        select.value = '';
+                        const index = select.id.replace('attribute_type_', '');
+                        const valueSelect = $(`#values_${index}`);
+                        valueSelect.empty().trigger('change');
+                        valueSelect.append(new Option('-- Chọn giá trị --', '', false, false));
+                    });
+
+                    // Clear variants container
+                    document.getElementById('variantsContainer').innerHTML = '';
+
+                    // Add hidden input to track category change
+                    let categoryChangeInput = document.getElementById('category_changed');
+                    if (!categoryChangeInput) {
+                        categoryChangeInput = document.createElement('input');
+                        categoryChangeInput.type = 'hidden';
+                        categoryChangeInput.name = 'category_changed';
+                        categoryChangeInput.id = 'category_changed';
+                        document.getElementById('productForm').appendChild(categoryChangeInput);
+                    }
+                    categoryChangeInput.value = 'true';
+
+                    // Load new category data
+                    loadCategoryData(newCategoryId);
+                    previousCategoryId = newCategoryId;
+                } else {
+                    // Revert to previous category if user cancels
+                    this.value = previousCategoryId;
+                }
+            });
+
+            // Handle attribute type change
             $('.attribute-type').on('change', function() {
                 const index = $(this).attr('id').replace('attribute_type_', '');
                 const valueSelect = $(`#values_${index}`);
                 const attributeTypeId = $(this).val();
+                const selectedValues = valueSelect.val(); // Store current selected values
+                const oldAttributeTypeId = $(this).data('old-value');
+                let userConfirmed = false;
 
-                // Reset và disable select nếu không chọn thuộc tính
-                if (!attributeTypeId) {
-                    valueSelect.prop('disabled', true).empty().append('<option value="">-- Chọn giá trị --</option>');
-                    valueSelect.trigger('change');
-                    return;
+                // Nếu đang chuyển từ có giá trị sang không có giá trị (bỏ chọn thuộc tính)
+                if (oldAttributeTypeId && !attributeTypeId) {
+                    const confirmMessage = 'CẢNH BÁO: Bỏ chọn thuộc tính sẽ:\n\n' +
+                        '1. Xóa tất cả giá trị đã chọn của thuộc tính này\n' +
+                        '2. Xóa tất cả biến thể hiện tại\n' +
+                        '3. Xóa tất cả hình ảnh của các biến thể\n\n' +
+                        'Những thay đổi này sẽ có hiệu lực sau khi bạn nhấn Cập Nhật Sản Phẩm.\n\n' +
+                        'Bạn có chắc chắn muốn bỏ chọn thuộc tính này?';
+
+                    if (!confirm(confirmMessage)) {
+                        $(this).val(oldAttributeTypeId).trigger('change');
+                        return;
+                    }
+                    userConfirmed = true;
+
+                    // Store variants for deletion
+                    const variantsToDelete = [];
+                    $('#variantsContainer .variant-row input[name$="[id]"]').each(function() {
+                        if (this.value) {
+                            variantsToDelete.push(this.value);
+                        }
+                    });
+                    $('#variants_to_delete').val(JSON.stringify(variantsToDelete));
+
+                    // Store images for deletion
+                    const imagesToDelete = [];
+                    $('#variantsContainer .image-preview-wrapper img').each(function() {
+                        const imgSrc = $(this).attr('src').split('/').slice(-3).join('/');
+                        imagesToDelete.push(imgSrc);
+                    });
+                    $('#images_to_delete').val(JSON.stringify(imagesToDelete));
+
+                    // Clear variants container
+                    $('#variantsContainer').empty();
+                }
+                // Nếu đang thay đổi từ một thuộc tính sang thuộc tính khác
+                else if (attributeTypeId && oldAttributeTypeId && attributeTypeId !== oldAttributeTypeId) {
+                    const confirmMessage = 'CẢNH BÁO: Thay đổi loại thuộc tính sẽ:\n\n' +
+                        '1. Xóa tất cả giá trị đã chọn của thuộc tính này\n' +
+                        '2. Xóa tất cả biến thể hiện tại\n' +
+                        '3. Xóa tất cả hình ảnh của các biến thể\n\n' +
+                        'Những thay đổi này sẽ có hiệu lực sau khi bạn nhấn Cập Nhật Sản Phẩm.\n\n' +
+                        'Bạn có chắc chắn muốn thay đổi loại thuộc tính?';
+
+                    if (!confirm(confirmMessage)) {
+                        $(this).val(oldAttributeTypeId).trigger('change');
+                        return;
+                    }
+                    userConfirmed = true;
+
+                    // Store variants for deletion
+                    const variantsToDelete = [];
+                    $('#variantsContainer .variant-row input[name$="[id]"]').each(function() {
+                        if (this.value) {
+                            variantsToDelete.push(this.value);
+                        }
+                    });
+                    $('#variants_to_delete').val(JSON.stringify(variantsToDelete));
+
+                    // Store images for deletion
+                    const imagesToDelete = [];
+                    $('#variantsContainer .image-preview-wrapper img').each(function() {
+                        const imgSrc = $(this).attr('src').split('/').slice(-3).join('/');
+                        imagesToDelete.push(imgSrc);
+                    });
+                    $('#images_to_delete').val(JSON.stringify(imagesToDelete));
+
+                    // Clear variants container
+                    $('#variantsContainer').empty();
                 }
 
-                // Enable select khi đã chọn thuộc tính
-                valueSelect.prop('disabled', false);
+                // Store new value as old value for next change
+                $(this).data('old-value', attributeTypeId);
+                $(this).data('changing', true); // Mark that we're changing attribute type
 
-                // Fetch giá trị thuộc tính
-                fetch(`/admin/attributes/${attributeTypeId}/values`)
-                    .then(response => response.json())
-                    .then(data => {
-                        valueSelect.empty().append('<option value="">-- Chọn giá trị --</option>');
-                        
-                        data.forEach(value => {
-                            const displayValue = Array.isArray(value.value) ? value.value.join(', ') : value.value;
-                            const option = new Option(displayValue, value.id);
-                            valueSelect.append(option);
+                if (attributeTypeId) {
+                    fetch(`/admin/attributes/${attributeTypeId}/values`)
+                        .then(response => response.json())
+                        .then(data => {
+                            valueSelect.empty();
+                            
+                            // Add placeholder option
+                            valueSelect.append(new Option('-- Chọn giá trị --', '', false, false));
+
+                            data.forEach(item => {
+                                const option = new Option(item.value, item.id, false, false);
+                                if (item.hex) {
+                                    option.setAttribute('data-hex', item.hex);
+                                }
+                                valueSelect.append(option);
+                            });
+
+                            // Restore previously selected values if not changing attribute type
+                            if (!userConfirmed && selectedValues) {
+                                valueSelect.val(selectedValues).trigger('change');
+                            }
+
+                            $(this).data('changing', false); // Reset the changing flag
                         });
-
-                        valueSelect.trigger('change');
-                    });
+                } else {
+                    valueSelect.empty().trigger('change');
+                    valueSelect.append(new Option('-- Chọn giá trị --', '', false, false));
+                    $(this).data('changing', false); // Reset the changing flag
+                }
             });
 
-            // Xử lý khi thay đổi giá trị
+            // Store initial attribute type values when page loads
+            $('.attribute-type').each(function() {
+                $(this).data('old-value', $(this).val());
+                $(this).data('changing', false); // Initialize the changing flag
+            });
+
+            // Handle attribute values change
             $('.attribute-values').on('change', function() {
                 const index = $(this).attr('id').replace('values_', '');
-                validateAttributeValues(index);
-            });
+                const attributeTypeId = $(`#attribute_type_${index}`).val();
+                const oldValues = $(this).data('old-values') || [];
+                const newValues = $(this).val() || [];
 
-            // Khởi tạo ban đầu nếu có giá trị
-            $('.attribute-type').each(function() {
-                if ($(this).val()) {
-                    $(this).trigger('change');
-                }
-            });
+                // Only show warning if we're changing existing values and there are variants
+                // AND the change wasn't triggered by attribute type change
+                if (attributeTypeId && oldValues.length > 0 && 
+                    JSON.stringify(oldValues.sort()) !== JSON.stringify(newValues.sort()) &&
+                    $('#variantsContainer .variant-row').length > 0 &&
+                    !$(`#attribute_type_${index}`).data('changing')) {
+                    
+                    const confirmMessage = 'CẢNH BÁO: Thay đổi giá trị thuộc tính sẽ:\n\n' +
+                        '1. Xóa tất cả biến thể hiện tại\n' +
+                        '2. Xóa tất cả hình ảnh của các biến thể\n' +
+                        '3. Các biến thể và quan hệ sẽ được đánh dấu để xóa mềm khi cập nhật sản phẩm\n\n' +
+                        'Bạn sẽ cần tạo lại các biến thể mới.\n' +
+                        'Những thay đổi này sẽ có hiệu lực sau khi bạn nhấn Cập Nhật Sản Phẩm.\n\n' +
+                        'Bạn có chắc chắn muốn thay đổi giá trị thuộc tính?';
 
-            const categorySelect = document.getElementById('category_id');
-            if (categorySelect) {
-                categorySelect.setAttribute('data-old-category', categorySelect.value);
-            }
-            restoreImagesFromTemp(); // Khôi phục ảnh tạm thời nếu có
-
-            // Lưu lại phần thuộc tính của từng biến thể khi load trang
-            const variantsContainer = document.getElementById('variantsContainer');
-            variantsContainer.querySelectorAll('.variant-row').forEach(row => {
-                const variantNameInput = row.querySelector('input[name^="variants"][name$="[name]"]');
-                if (variantNameInput) {
-                    const currentVariantName = variantNameInput.value;
-                    const parts = currentVariantName.split(' - ');
-                    parts.shift(); // Bỏ tên sản phẩm cũ
-                    // Lưu lại phần thuộc tính vào data-attributes
-                    row.dataset.attributes = parts.join(' - ');
-                }
-            });
-
-            // Thêm sự kiện cho input tên sản phẩm
-            const productNameInput = document.getElementById('name');
-            if (productNameInput) {
-                productNameInput.addEventListener('input', function() {
-                    const productName = this.value.trim();
-                    variantsContainer.querySelectorAll('.variant-row').forEach(row => {
-                        const variantTitle = row.querySelector('h6');
-                        const variantNameInput = row.querySelector('input[name^="variants"][name$="[name]"]');
-                        const variantSlugInput = row.querySelector('input[name^="variants"][name$="[slug]"]');
-                        const attributes = row.dataset.attributes || '';
-                        
-                        if (variantTitle && variantNameInput && variantSlugInput) {
-                            const newVariantName = attributes ? (productName + ' - ' + attributes) : productName;
-                            variantTitle.textContent = `Variant ${parseInt(row.dataset.index) + 1}: ${newVariantName}`;
-                            variantNameInput.value = newVariantName;
-                            variantSlugInput.value = newVariantName.toLowerCase().replace(/\s+/g, '-');
-                        }
-                    });
-                });
-            }
-        });
-
-        // Thay đổi danh mục
-        const categorySelect = document.getElementById('category_id');
-        if (categorySelect) {
-            categorySelect.addEventListener('change', function() {
-                const categoryId = this.value;
-                const oldCategoryId = this.getAttribute('data-old-category');
-                if (!oldCategoryId || oldCategoryId === categoryId) {
-                    handleCategoryChange(categoryId);
-                    return;
-                }
-                if (!askedCategory) {
-                    if (confirm('Thay đổi danh mục sẽ xóa toàn bộ thuộc tính, giá trị thuộc tính, mã màu và biến thể. Bạn có chắc chắn?')) {
-                        askedCategory = true;
-                        markAllVariantImagesForDelete();
-                        markAllAttributesForDelete();
-                        // Xóa thuộc tính, giá trị, mã màu (reset input)
-                        document.getElementById('attribute_type_0').selectedIndex = 0;
-                        document.getElementById('attribute_type_1').selectedIndex = 0;
-                        document.getElementById('values_0').value = '';
-                        document.getElementById('values_1').value = '';
-                        document.getElementById('hex_0').value = '';
-                        document.getElementById('hex_1').value = '';
-                    handleCategoryChange(categoryId);
-                } else {
-                    this.value = oldCategoryId;
+                    if (!confirm(confirmMessage)) {
+                        $(this).val(oldValues).trigger('change');
+                        return;
                     }
-                } else {
-                    handleCategoryChange(categoryId);
-                }
-            });
-        }
 
-        // Thay đổi thuộc tính
-        Array.from(document.querySelectorAll('.attribute-type')).forEach((select, idx) => {
-            // Lưu giá trị ban đầu
-            select.setAttribute('data-old-value', select.value);
-
-            select.addEventListener('change', function() {
-                const oldValue = this.getAttribute('data-old-value');
-                const newValue = this.value;
-
-                // Nếu giá trị không thay đổi hoặc đang xóa giá trị (chọn option rỗng) thì không cần xác nhận
-                if (oldValue === newValue || (!oldValue && !newValue)) {
-                    this.setAttribute('data-old-value', newValue);
-                    return;
-                }
-
-                // Hiển thị dialog xác nhận
-                if (confirm('Thay đổi thuộc tính sẽ xóa toàn bộ giá trị thuộc tính, mã màu và biến thể. Bạn có chắc chắn?')) {
-                    askedAttribute = true;
-                    markAllVariantImagesForDelete();
-                    markAllAttributesForDelete();
-                    // Xóa giá trị, mã màu (reset input)
-                    if (document.getElementById(`values_${idx}`)) document.getElementById(`values_${idx}`).value = '';
-                    if (document.getElementById(`hex_${idx}`)) document.getElementById(`hex_${idx}`).value = '';
-                    this.setAttribute('data-old-value', newValue);
-                } else {
-                    // Nếu người dùng không đồng ý, khôi phục lại giá trị cũ
-                    this.value = oldValue;
-                    return;
-                }
-
-                validateAttributeType(idx);
-            });
-        });
-
-        // Thay đổi giá trị hoặc mã màu
-        ['values_0','hex_0','values_1','hex_1'].forEach(function(id) {
-            const input = document.getElementById(id);
-            if (input) {
-                let oldVal = input.value;
-            input.addEventListener('input', function() {
-                    if (this.value !== oldVal) {
-                        if (!askedValueOrHex) {
-                            if (confirm('Thay đổi giá trị hoặc mã màu sẽ xóa toàn bộ biến thể. Bạn có chắc chắn?')) {
-                                askedValueOrHex = true;
-                markAllVariantImagesForDelete();
-                                oldVal = this.value;
-                            } else {
-                                this.value = oldVal;
-                            }
-                        } else {
-                            oldVal = this.value;
+                    // Store variants for soft deletion
+                    const variantsToDelete = [];
+                    $('#variantsContainer .variant-row input[name$="[id]"]').each(function() {
+                        if (this.value) {
+                            variantsToDelete.push(this.value);
                         }
+                    });
+                    $('#variants_to_delete').val(JSON.stringify(variantsToDelete));
+
+                    // Store images for deletion
+                    const imagesToDelete = [];
+                    $('#variantsContainer .image-preview-wrapper img').each(function() {
+                        const imgSrc = $(this).attr('src').split('/').slice(-3).join('/');
+                        imagesToDelete.push(imgSrc);
+                    });
+                    $('#images_to_delete').val(JSON.stringify(imagesToDelete));
+
+                    // Clear variants container since values changed
+                    $('#variantsContainer').empty();
+
+                    // Add hidden input to track attribute value changes
+                    let attributeValueChangeInput = document.getElementById('attribute_value_changed');
+                    if (!attributeValueChangeInput) {
+                        attributeValueChangeInput = document.createElement('input');
+                        attributeValueChangeInput.type = 'hidden';
+                        attributeValueChangeInput.name = 'attribute_value_changed';
+                        attributeValueChangeInput.id = 'attribute_value_changed';
+                        document.getElementById('productForm').appendChild(attributeValueChangeInput);
                     }
-                });
-            }
-        });
-
-        // Tạo lại biến thể
-        const generateVariantsBtn = document.getElementById('generate-variants');
-        if (generateVariantsBtn) {
-            generateVariantsBtn.addEventListener('click', function() {
-                if (validateAllAttributes()) {
-                    markAllVariantImagesForDelete();
-                    regenerateVariants();
-                } else {
-                    alert('Please check attribute information.');
+                    attributeValueChangeInput.value = 'true';
                 }
+
+                // Store new values as old values for next change
+                $(this).data('old-values', $(this).val());
             });
-        }
 
-        // Khi submit form, truyền danh sách ảnh và biến thể cần xóa lên server
-        const productForm = document.getElementById('productForm');
-        if (productForm) {
-            productForm.addEventListener('submit', function(event) {
-                // Xóa các input cũ
-                document.querySelectorAll('input[name="variants_to_delete[]"]').forEach(e => e.remove());
-                document.querySelectorAll('input[name="images_to_delete[]"]').forEach(e => e.remove());
-
-                // Xử lý variants_to_delete
-                if (variantsToDelete && variantsToDelete.size > 0) {
-                    Array.from(variantsToDelete).forEach(id => {
-                        if (id) { // chỉ thêm nếu có id thực sự
-                            const input = document.createElement('input');
-                            input.type = 'hidden';
-                            input.name = 'variants_to_delete[]';
-                            input.value = id;
-                            this.appendChild(input);
-                        }
-                    });
-                }
-
-                // Xử lý images_to_delete
-                if (imagesToDelete && imagesToDelete.size > 0) {
-                    Array.from(imagesToDelete).forEach(path => {
-                        if (path) {
-                            const input = document.createElement('input');
-                            input.type = 'hidden';
-                            input.name = 'images_to_delete[]';
-                            input.value = path;
-                            this.appendChild(input);
-                        }
-                    });
-                }
+            // Store initial attribute values
+            $('.attribute-values').each(function() {
+                $(this).data('old-values', $(this).val());
             });
-        }
 
-        // Tách logic xử lý thay đổi danh mục thành hàm riêng
-        function handleCategoryChange(categoryId) {
-            const selects = [document.getElementById('attribute_type_0'), document.getElementById('attribute_type_1')];
-            const valueInputs = [document.getElementById('values_0'), document.getElementById('values_1')];
-            const hexInputs = [document.getElementById('hex_0'), document.getElementById('hex_1')];
-
-            // Đánh dấu tất cả biến thể và ảnh để xóa
-            const variantsContainer = document.getElementById('variantsContainer');
-            variantsContainer.querySelectorAll('.variant-row').forEach(row => {
-                // Lấy ID của biến thể từ input hidden
-                const variantId = row.querySelector('input[name^="variants"][name$="[id]"]')?.value;
-                if (variantId) {
-                    variantsToDelete.add(variantId);
-                }
-                
-                // Đánh dấu ảnh để xóa
-                row.querySelectorAll('.preview-image').forEach(img => {
-                    const imagePath = img.src.split('/').pop();
-                    if (imagePath) imagesToDelete.add(imagePath);
+            // Handle image deletion
+            const imagesToDelete = new Set();
+            document.querySelectorAll('.delete-image').forEach(button => {
+                button.addEventListener('click', function() {
+                    const imagePath = this.dataset.image;
+                    const variantId = this.dataset.variant;
+                    imagesToDelete.add(imagePath);
+                    document.getElementById('images_to_delete').value = JSON.stringify(Array.from(imagesToDelete));
+                    this.closest('.image-preview-wrapper').remove();
                 });
             });
 
-            // Xóa hết các thuộc tính biến thể cũ khi đổi danh mục
-            selects.forEach(s => {
-                s.selectedIndex = 0;
-                s.setAttribute('data-old-value', '');
-            });
-            valueInputs.forEach(i => {
-                i.value = '';
-                i.setAttribute('data-old-value', '');
-            });
-            hexInputs.forEach(i => {
-                i.value = '';
-                i.setAttribute('data-old-value', '');
-            });
-            selectedTypes.clear();
-            validateAllAttributes(); // Validate lại sau khi xóa
-
-            // Xóa toàn bộ biến thể hiện tại
-            variantsContainer.innerHTML = '';
-
-            if (categoryId) {
-                selects.forEach(s => s.disabled = false);
-                valueInputs.forEach(i => i.disabled = false);
-                hexInputs.forEach(i => i.disabled = false);
-
-                // Show sections
-                const variantAttributesSection = document.getElementById('variant-attributes-section');
-                const specificationsSection = document.getElementById('specifications-section');
-                variantAttributesSection.style.display = 'block';
-                specificationsSection.style.display = 'block';
-
-                // Fetch Specifications
-                fetch(`/admin/categories/${categoryId}/specifications`)
-                    .then(response => response.json())
-                    .then(data => {
-                        const container = document.getElementById('categorySpecifications');
-                        container.innerHTML = ''; // Clear previous specs
-                        if (data.length > 0) {
-                            const wrapper = document.createElement('div');
-                            wrapper.id = 'specifications-wrapper';
-                            let row = null;
-                            data.forEach((spec, idx) => {
-                                if (idx % 2 === 0) {
-                                    row = document.createElement('div');
-                                    row.className = 'row mb-2 spec-row';
-                                    // Ẩn bớt nếu nhiều hơn 3 hàng ban đầu
-                                    if (idx / 2 >= 3) row.style.display = 'none';
-                                    wrapper.appendChild(row);
-                                }
-                                const col = document.createElement('div');
-                                col.className = 'col-md-6';
-
-                                col.innerHTML = `
-                                    <div class="mb-3">
-                                        <label class="form-label">${spec.name} <span class="text-danger">*</span></label>
-                                        <input type="hidden" name="specifications[${idx}][specification_id]" value="${spec.id}">
-                                        <input type="text" class="form-control" name="specifications[${idx}][value]" value="" required>
-                                    </div>
-                                `;
-                                if (row) row.appendChild(col);
-                            });
-                            container.appendChild(wrapper);
-                            // Hiển thị nút "Xem thêm" nếu có nhiều hơn 6 thông số
-                            if (data.length > 6) {
-                                const seeMoreBtn = document.createElement('button');
-                                seeMoreBtn.type = 'button';
-                                seeMoreBtn.className = 'btn btn-link p-0';
-                                seeMoreBtn.textContent = 'Xem thêm';
-                                seeMoreBtn.onclick = function() {
-                                    document.querySelectorAll('#categorySpecifications .spec-row').forEach((row) => {
-                                        row.style.display = '';
-                                    });
-                                    this.style.display = 'none';
-                                };
-                                container.appendChild(seeMoreBtn);
-                            }
-                        } else {
-                            container.innerHTML = '<p class="text-muted">No specifications found for this category.</p>';
-                        }
-                    });
-
-                // Fetch Attributes
-                fetch(`/admin/categories/${categoryId}/attributes`)
-                    .then(response => response.json())
-                    .then(data => {
-                        selects.forEach(select => {
-                            select.options.length = 1; // Xóa các option cũ trừ option đầu tiên
-                            data.forEach(attr => {
-                                const opt = document.createElement('option');
-                                opt.value = attr.id;
-                                opt.textContent = attr.name;
-                                select.appendChild(opt);
-                            });
-                        });
-
-                        selects.forEach((select, idx) => {
-                            // Remove previous listeners to prevent duplicates
-                            const newSelect = select.cloneNode(true);
-                            select.parentNode.replaceChild(newSelect, select);
-                            selects[idx] = newSelect;
-
-                            // Thêm data-index để xác định select box
-                            newSelect.setAttribute('data-index', idx);
-
-                            // Cập nhật trạng thái disabled của các option
-                            const otherSelect = selects[idx === 0 ? 1 : 0];
-                            selects.forEach(s => {
-                                Array.from(s.options).forEach(opt => {
-                                    if (opt.value) opt.disabled = false;
-                                });
-                            });
-                            if (newSelect.value) {
-                                Array.from(otherSelect.options).forEach(opt => {
-                                    if (opt.value === newSelect.value) opt.disabled = true;
-                                });
-                            }
-
-                            validateAttributeType(idx);
-                        });
-
-                        validateAttributeType(0);
-                        validateAttributeType(1);
-
-                        valueInputs.forEach((input, idx) => {
-                            const newValueInput = input.cloneNode(true);
-                            input.parentNode.replaceChild(newValueInput, input);
-                            valueInputs[idx] = newValueInput;
-
-                            // Lưu giá trị cũ
-                            newValueInput.setAttribute('data-old-value', newValueInput.value);
-
-                            newValueInput.addEventListener('input', function() {
-                                const oldValue = this.getAttribute('data-old-value');
-                                const newValue = this.value;
-
-                                // Nếu giá trị không thay đổi thì không cần xử lý
-                                if (oldValue === newValue) {
-                                    return;
-                                }
-
-                                // Tự động đánh dấu xóa biến thể và ảnh
-                                markAllVariantImagesForDelete();
-                                // Cập nhật giá trị cũ
-                                this.setAttribute('data-old-value', newValue);
-
-                                validateAttributeValues(idx);
-                            });
-                            validateAttributeValues(idx);
-                        });
-
-                        hexInputs.forEach((input, idx) => {
-                            const newHexInput = input.cloneNode(true);
-                            input.parentNode.replaceChild(newHexInput, input);
-                            hexInputs[idx] = newHexInput;
-
-                            // Lưu giá trị cũ
-                            newHexInput.setAttribute('data-old-value', newHexInput.value);
-
-                            newHexInput.addEventListener('input', function() {
-                                const oldValue = this.getAttribute('data-old-value');
-                                const newValue = this.value;
-
-                                // Nếu giá trị không thay đổi thì không cần xử lý
-                                if (oldValue === newValue) {
-                                    return;
-                                }
-
-                                // Tự động đánh dấu xóa biến thể và ảnh
-                                markAllVariantImagesForDelete();
-                                // Cập nhật giá trị cũ
-                                this.setAttribute('data-old-value', newValue);
-
-                                validateHexValues(idx);
-                            });
-                            validateHexValues(idx);
-                        });
-
-                        setTimeout(() => {
-                            validateAllAttributes();
-                        }, 0);
-                    });
-            } else {
-                // Hide sections
-                const variantAttributesSection = document.getElementById('variant-attributes-section');
-                const specificationsSection = document.getElementById('specifications-section');
-                variantAttributesSection.style.display = 'none';
-                specificationsSection.style.display = 'none';
-
-                // Clear specifications section
-                const specContainer = document.getElementById('categorySpecifications');
-                specContainer.innerHTML = '<p class="text-muted">Vui lòng chọn danh mục để hiển thị thông số kỹ thuật.</p>';
-
-                // Reset and disable other inputs
-                selects.forEach(s => {
-                    s.disabled = true;
-                    s.selectedIndex = 0;
-                });
-                valueInputs.forEach(i => {
-                    i.disabled = true;
-                    i.value = '';
-                });
-                hexInputs.forEach(i => {
-                    i.disabled = true;
-                    i.value = '';
-                });
-                validateAllAttributes();
-            }
-        }
-
-        // Cập nhật hàm validateAttributeType
-        function validateAttributeType(index) {
-            const select = document.getElementById(`attribute_type_${index}`);
-            const error = document.getElementById(`error-type-${index}`);
-            if (!select || !error) return; // Added safety check
-
-            const value = select.value;
-            // Update selectedTypes set based on current values of *both* selects
-            selectedTypes.clear();
-            document.querySelectorAll('.attribute-type').forEach(s => {
-                if (s.value) selectedTypes.add(s.value);
-            });
-
-            if (index === 0) { // Thuộc tính 1 là bắt buộc
-                if (value) {
-                    error.style.display = 'none';
-                } else {
-                    error.style.display = 'block';
+            // Handle variant generation
+            document.getElementById('generate-variants').addEventListener('click', function() {
+                if (!validateAllAttributes()) {
+                    alert('Vui lòng kiểm tra lại các lựa chọn thuộc tính.');
+                    return;
                 }
-            } else { // Thuộc tính 2 là tùy chọn, chỉ check khi có giá trị
-                error.style.display = 'none'; // Mặc định ẩn lỗi nếu không chọn
-            }
-            validateAllAttributes();
-        }
 
-        // Cập nhật hàm validateAttributeValues
-        function validateAttributeValues(index) {
-            const input = document.getElementById(`values_${index}`);
-            const error = document.getElementById(`error-values-${index}`);
-            const typeSelect = document.getElementById(`attribute_type_${index}`);
-            if (!input || !error || !typeSelect) return; // Added safety check
+                // Check if there are existing variants
+                if ($('#variantsContainer .variant-row').length > 0) {
+                    const confirmMessage = 'CẢNH BÁO: Tạo biến thể mới sẽ:\n\n' +
+                        '1. Xóa tất cả biến thể hiện tại\n' +
+                        '2. Xóa tất cả hình ảnh của các biến thể\n' +
+                        '3. Tạo lại biến thể mới dựa trên các thuộc tính đã chọn\n\n' +
+                        'Bạn có chắc chắn muốn tiếp tục?';
 
-            const values = input.value.split(',').map(v => v.trim()).filter(v => v.length > 0);
-
-            if (index === 0) { // Giá trị thuộc tính 1 là bắt buộc nếu chọn loại thuộc tính 1
-                if (typeSelect.value && values.length === 0) {
-                    error.style.display = 'block';
-                } else {
-                    error.style.display = 'none';
+                    if (!confirm(confirmMessage)) {
+                        return;
+                    }
                 }
-            } else { // Giá trị thuộc tính 2 là tùy chọn, chỉ check khi có giá trị hoặc khi loại thuộc tính được chọn
-                if (typeSelect.value && values.length === 0) {
-                    error.style.display = 'block'; // Báo lỗi nếu chọn loại thuộc tính 2 mà không nhập giá trị
-                } else {
-                    error.style.display = 'none';
-                }
-            }
-            validateAllAttributes();
-        }
 
-        // Cập nhật hàm validateHexValues
-        function validateHexValues(index) {
-            const input = document.getElementById(`hex_${index}`);
-            const error = document.getElementById(`error-hex-${index}`);
-            if (!input || !error) return; // Added safety check
-            // Validation cho hex values thường không bắt buộc unless specified
-            error.style.display = 'none'; // Assume hex is optional and doesn't cause validation errors here
-            validateAllAttributes(); // Still call to update overall form state if needed
-        }
-
-        // Cập nhật hàm validateAllAttributes để xử lý chính xác validation
-        function validateAllAttributes() {
+                // Collect attribute data
+                const attributeData = [];
             const selects = document.querySelectorAll('.attribute-type');
-            const valueInputs = document.querySelectorAll('.attribute-values');
-            let valid = false;
-            let hasError = false;
+                const valueSelects = document.querySelectorAll('.attribute-values');
 
-            // Reset tất cả error messages
-            document.querySelectorAll('.error-message').forEach(error => {
-                error.style.display = 'none';
-            });
+                selects.forEach((select, idx) => {
+                    if (select && select.value) {
+                        const valueSelect = valueSelects[idx];
+                        if (valueSelect && $(valueSelect).val() && $(valueSelect).val().length > 0) {
+                            const selectedValues = Array.from(valueSelect.selectedOptions).map(opt => ({
+                                id: parseInt(opt.value),
+                                value: opt.text.split(' ')[0],
+                                attribute_type_id: parseInt(select.value),
+                                hex: opt.getAttribute('data-hex')
+                            }));
 
-            // Kiểm tra thuộc tính đầu tiên (bắt buộc)
-            const firstSelect = selects[0];
-            const firstValueInput = valueInputs[0];
-            const errorType0 = document.getElementById('error-type-0');
-            const errorValue0 = document.getElementById('error-values-0');
-            const errorMinAttributes = document.getElementById('error-min-attributes');
-
-            if (!firstSelect || !firstValueInput || !errorType0 || !errorValue0 || !errorMinAttributes) {
-                console.error("Required attribute elements not found for validation.");
-                return false;
-            }
-
-            if (!firstSelect.value) {
-                errorType0.style.display = 'block';
-                hasError = true;
-            }
-
-            const firstValues = firstValueInput.value.split(',').map(v => v.trim()).filter(v => v.length > 0);
-            if (firstSelect.value && firstValues.length === 0) {
-                errorValue0.style.display = 'block';
-                hasError = true;
-            } else if (firstSelect.value && firstValues.length > 0) {
-                valid = true;
-            }
-
-            // Kiểm tra thuộc tính thứ hai (tùy chọn)
-            if (selects[1]) {
-                const secondSelect = selects[1];
-                const secondValueInput = valueInputs[1];
-                const errorType1 = document.getElementById('error-type-1');
-                const errorValue1 = document.getElementById('error-values-1');
-                const errorDuplicate = document.getElementById('error-duplicate');
-
-                if (secondSelect && secondValueInput && errorType1 && errorValue1 && errorDuplicate) {
-                    const secondValues = secondValueInput.value.split(',').map(v => v.trim()).filter(v => v.length > 0);
-
-                    if (secondSelect.value && secondValues.length === 0) {
-                        errorValue1.style.display = 'block';
-                        hasError = true;
+                            if (selectedValues.length > 0) {
+                                attributeData.push({
+                                    attribute_type_id: parseInt(select.value),
+                                    selected_values: selectedValues
+                                });
+                            }
+                        }
                     }
+                });
 
-                    if (!secondSelect.value && secondValues.length > 0) {
-                        errorType1.style.display = 'block';
-                        hasError = true;
-                    }
-
-                    if (secondSelect.value && firstSelect.value === secondSelect.value) {
-                        errorDuplicate.style.display = 'block';
-                        hasError = true;
-                    }
-                }
-            }
-
-            if (!valid) {
-                errorMinAttributes.style.display = 'block';
-                hasError = true;
-            }
-
-            return valid && !hasError;
-        }
-
-        function markAllVariantImagesForDelete() {
+                // Generate variants
+                const combinations = generateCombinations(attributeData);
             const variantsContainer = document.getElementById('variantsContainer');
-            variantsContainer.querySelectorAll('.variant-row').forEach(row => {
-                // Lấy ID của biến thể từ input hidden
-                const variantId = row.querySelector('input[name^="variants"][name$="[id]"]')?.value;
+                const productName = document.getElementById('name').value;
+                const existingVariants = Array.from(variantsContainer.children);
+                const variantsToDelete = [];
+
+                // Mark existing variants for deletion
+                existingVariants.forEach(variant => {
+                    const variantId = variant.querySelector('input[name$="[id]"]')?.value;
                 if (variantId) {
-                    variantsToDelete.add(variantId);
-                }
-                
-                // Đánh dấu ảnh để xóa
-                row.querySelectorAll('.preview-image').forEach(img => {
-                    const imagePath = img.src.split('/').pop();
-                    if (imagePath) imagesToDelete.add(imagePath);
+                        variantsToDelete.push(variantId);
+                    }
                 });
-            });
+
+                // Update variants to delete
+                document.getElementById('variants_to_delete').value = JSON.stringify(variantsToDelete);
+
+                // Clear and regenerate variants
             variantsContainer.innerHTML = '';
-        }
+                combinations.forEach((combination, index) => {
+                    const variantValues = combination.map(item => item.value).filter(Boolean);
+                    const variantName = productName + (variantValues.length > 0 ? ' - ' + variantValues.join(' - ') : '');
+                    const variantSlug = variantName
+                        .toLowerCase()
+                        .normalize('NFD')
+                        .replace(/[\u0300-\u036f]/g, '')
+                        .replace(/[^a-z0-9]+/g, '-')
+                        .replace(/^-+|-+$/g, '');
 
-        function regenerateVariants() {
-            const variantsContainer = document.getElementById('variantsContainer');
-            const attributeType0 = document.getElementById('attribute_type_0');
-            const attributeType1 = document.getElementById('attribute_type_1');
-            const values0 = document.getElementById('values_0').value.split(',').map(v => v.trim()).filter(v => v);
-            const values1 = document.getElementById('values_1').value.split(',').map(v => v.trim()).filter(v => v);
-            const hex0 = document.getElementById('hex_0').value.split(',').map(v => v.trim()).filter(v => v);
-            const hex1 = document.getElementById('hex_1').value.split(',').map(v => v.trim()).filter(v => v);
-
-            // Lấy tên sản phẩm hiện tại
-            const productName = document.getElementById('name').value.trim();
-
-            // Chỉ tạo biến thể nếu có ít nhất một thuộc tính và giá trị
-            if (!attributeType0.value || values0.length === 0 || !productName) {
-                return;
-            }
-
-            // Tạo các tổ hợp giá trị
-            let combinations = [];
-            if (attributeType1.value && values1.length > 0) {
-                // Tạo tổ hợp cho 2 thuộc tính
-                values0.forEach((v0, i0) => {
-                    values1.forEach((v1, i1) => {
-                        combinations.push({
-                            name: `${productName} - ${v0} - ${v1}`,
-                            values: [v0, v1],
-                            hex: [hex0[i0] || '', hex1[i1] || '']
-                        });
-                    });
+                    const variantHtml = generateVariantHtml(index, variantName, variantSlug, combination);
+                    variantsContainer.insertAdjacentHTML('beforeend', variantHtml);
                 });
-            } else {
-                // Tạo tổ hợp cho 1 thuộc tính
-                values0.forEach((v0, i0) => {
-                    combinations.push({
-                        name: `${productName} - ${v0}`,
-                        values: [v0],
-                        hex: [hex0[i0] || '']
-                    });
-                });
-            }
 
-            // Tạo HTML cho các biến thể
-            combinations.forEach((combo, index) => {
-                let attributesInputs = '';
-                // Thuộc tính 1
-                attributesInputs += `<input type="hidden" name="variants[${index}][attributes][0][attribute_type_id]" value="${attributeType0.value}">`;
-                attributesInputs += `<input type="hidden" name="variants[${index}][attributes][0][value]" value="${combo.values[0]}">`;
-                attributesInputs += `<input type="hidden" name="variants[${index}][attributes][0][hex]" value="${combo.hex[0] || ''}">`;
-                // Thuộc tính 2 (nếu có)
-                if (attributeType1.value && combo.values.length > 1) {
-                    attributesInputs += `<input type="hidden" name="variants[${index}][attributes][1][attribute_type_id]" value="${attributeType1.value}">`;
-                    attributesInputs += `<input type="hidden" name="variants[${index}][attributes][1][value]" value="${combo.values[1]}">`;
-                    attributesInputs += `<input type="hidden" name="variants[${index}][attributes][1][hex]" value="${combo.hex[1] || ''}">`;
-                }
-                const variantHtml = `
+                initializeVariantListeners();
+            });
+
+            function generateVariantHtml(index, variantName, variantSlug, combination) {
+                return `
                     <div class="variant-row" data-index="${index}">
-                        <h6>Biến thể ${index + 1}: ${combo.name}</h6>
-                        <input type="hidden" name="variants[${index}][name]" value="${combo.name}">
-                        <input type="hidden" name="variants[${index}][slug]" value="${combo.name.toLowerCase().replace(/\s+/g, '-')}">
-                        ${attributesInputs}
+                        <h6>Biến Thể ${index + 1}: ${variantName}</h6>
+                        <input type="hidden" name="variants[${index}][name]" value="${variantName}">
+                        <input type="hidden" name="variants[${index}][slug]" value="${variantSlug}">
                         <div class="row">
                             <div class="col-md-3">
                                 <div class="mb-3">
-                                    <label class="form-label">Tồn kho</label>
-                                    <input type="number" class="form-control" name="variants[${index}][stock]" min="0">
+                                    <label class="form-label">Tồn Kho</label>
+                                    <input type="number" class="form-control" name="variants[${index}][stock]" min="0" required>
                                 </div>
                             </div>
                             <div class="col-md-3">
                                 <div class="mb-3">
-                                    <label class="form-label">Giá nhập</label>
-                                    <input type="number" class="form-control" name="variants[${index}][purchase_price]" min="0" step="0.01">
+                                    <label class="form-label">Giá Nhập</label>
+                                    <input type="number" class="form-control" name="variants[${index}][purchase_price]" min="0" step="0.01" required>
                                 </div>
                             </div>
                             <div class="col-md-3">
                                 <div class="mb-3">
-                                    <label class="form-label">Giá bán</label>
-                                    <input type="number" class="form-control" name="variants[${index}][selling_price]" min="0" step="0.01">
+                                    <label class="form-label">Giá Bán</label>
+                                    <input type="number" class="form-control" name="variants[${index}][selling_price]" min="0" step="0.01" required>
                                 </div>
                             </div>
                         </div>
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="mb-3">
-                                    <label class="form-label">Hình ảnh</label>
+                                    <label class="form-label">Hình Ảnh</label>
                                     <input type="file" class="form-control variant-images" name="variants[${index}][images][]" multiple accept="image/*">
-                                    <div id="preview-${index}" class="preview-images-container mt-2 d-flex flex-wrap gap-2"></div>
+                                    <div id="preview-${index}" class="image-preview-container"></div>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="mb-3">
-                                    <label class="form-label">Biến thể mặc định</label>
+                                    <label class="form-label">Biến Thể Mặc Định</label>
                                     <div class="form-check form-switch">
                                         <input class="form-check-input default-variant-toggle" type="checkbox" name="variants[${index}][is_default]" id="is_default_${index}" value="1" ${index === 0 ? 'checked' : ''}>
                                         <label class="form-check-label" for="is_default_${index}">Đặt làm mặc định</label>
@@ -1203,91 +831,224 @@
                                 </div>
                             </div>
                         </div>
+                        ${generateAttributeInputs(combination, index)}
                     </div>
                 `;
-                variantsContainer.insertAdjacentHTML('beforeend', variantHtml);
+            }
+
+            function generateAttributeInputs(combination, variantIndex) {
+                return combination.map((attrValue, attrIdx) => `
+                    <input type="hidden" name="variants[${variantIndex}][attributes][${attrIdx}][attribute_type_id]" value="${attrValue.attribute_type_id}">
+                    <input type="hidden" name="variants[${variantIndex}][attributes][${attrIdx}][selected_values]" value="${attrValue.id}">
+                `).join('');
+            }
+
+            function generateCombinations(arrays) {
+                if (!arrays || arrays.length === 0) return [];
+
+                return arrays.reduce((acc, curr) => {
+                    if (acc.length === 0) {
+                        return curr.selected_values.map(value => [value]);
+                    }
+
+                    const combinations = [];
+                    acc.forEach(combination => {
+                        curr.selected_values.forEach(value => {
+                            combinations.push([...combination, value]);
+                        });
+                    });
+                    return combinations;
+                }, []);
+            }
+
+        function validateAllAttributes() {
+            const selects = document.querySelectorAll('.attribute-type');
+            const valueSelects = document.querySelectorAll('.attribute-values');
+            let valid = false;
+            let hasError = false;
+
+            // Reset error messages
+            document.querySelectorAll('.error-message').forEach(error => {
+                error.style.display = 'none';
             });
 
-            // Thêm sự kiện cho các input mới
-            setupVariantEvents();
+            // Check if at least one attribute is selected and valid
+            selects.forEach((select, idx) => {
+                if (select.value && $(valueSelects[idx]).val() && $(valueSelects[idx]).val().length > 0) {
+                    valid = true;
+                }
+            });
+
+            // Validate từng ô: Nếu đã chọn loại thuộc tính thì phải chọn ít nhất 1 giá trị
+            selects.forEach((select, idx) => {
+                if (select.value && (!$(valueSelects[idx]).val() || $(valueSelects[idx]).val().length === 0)) {
+                    document.getElementById(`error-values-${idx}`).style.display = 'block';
+                    hasError = true;
+                }
+            });
+
+            // Check for duplicate attribute types
+            const selectedTypes = new Set();
+            selects.forEach(select => {
+                if (select.value) {
+                    if (selectedTypes.has(select.value)) {
+                        document.getElementById('error-duplicate').style.display = 'block';
+                        hasError = true;
+                    }
+                    selectedTypes.add(select.value);
+                }
+            });
+
+            if (!valid) {
+                document.getElementById('error-min-attributes').style.display = 'block';
+            }
+
+            return valid && !hasError;
         }
 
-        function setupVariantEvents() {
-            // Sự kiện cho default variant toggle
-            document.querySelectorAll('.default-variant-toggle').forEach(toggle => {
-                toggle.addEventListener('change', function() {
-                    if (this.checked) {
-                        document.querySelectorAll('.default-variant-toggle').forEach(t => {
-                            if (t !== this) t.checked = false;
-                        });
-                    }
+            function initializeVariantListeners() {
+                // Initialize image preview
+                document.querySelectorAll('.variant-images').forEach((input, index) => {
+                    input.addEventListener('change', function() {
+                        previewVariantImages(index, this);
                 });
             });
 
-            // Sự kiện cho variant images
-            document.querySelectorAll('.variant-images').forEach(input => {
-                input.addEventListener('change', function() {
-                    const previewContainer = document.getElementById(`preview-${this.closest('.variant-row').dataset.index}`);
-                    previewContainer.innerHTML = '';
-                    
-                    Array.from(this.files).forEach(file => {
+                // Initialize default variant toggles
+                document.querySelectorAll('.default-variant-toggle').forEach((checkbox, index) => {
+                    checkbox.addEventListener('change', function() {
+                    if (this.checked) {
+                            // Uncheck all other default toggles
+                            document.querySelectorAll('.default-variant-toggle').forEach((cb, idx) => {
+                                if (idx !== index) {
+                                    cb.checked = false;
+                                }
+                });
+            } else {
+                            // If unchecking, ensure at least one variant is default
+                            const otherCheckboxes = Array.from(document.querySelectorAll('.default-variant-toggle'));
+                            const hasDefaultChecked = otherCheckboxes.some(cb => cb !== this && cb.checked);
+                            if (!hasDefaultChecked) {
+                                // If no other variant is set as default, prevent unchecking
+                                this.checked = true;
+                                alert('Phải có ít nhất một biến thể được đặt làm mặc định.');
+                            }
+                    }
+                });
+            });
+            }
+
+            // Initialize default variant toggles for existing variants
+            initializeVariantListeners();
+
+            function previewVariantImages(index, input) {
+                const previewContainer = document.getElementById(`preview-${index}`);
+                if (input.files) {
+                    Array.from(input.files).forEach(file => {
                         const reader = new FileReader();
                         reader.onload = function(e) {
+                            const wrapper = document.createElement('div');
+                            wrapper.className = 'image-preview-wrapper';
+
                             const img = document.createElement('img');
                             img.src = e.target.result;
-                            img.className = 'preview-image';
-                            previewContainer.appendChild(img);
+                            img.className = 'image-preview';
+
+                            const deleteBtn = document.createElement('button');
+                            deleteBtn.type = 'button';
+                            deleteBtn.className = 'delete-image';
+                            deleteBtn.textContent = '×';
+                            deleteBtn.onclick = function() {
+                                wrapper.remove();
+                            };
+
+                            wrapper.appendChild(img);
+                            wrapper.appendChild(deleteBtn);
+                            previewContainer.appendChild(wrapper);
                         };
                         reader.readAsDataURL(file);
                     });
-                });
-            });
-        }
-
-        function markAllAttributesForDelete() {
-            // Lấy toàn bộ attribute_value_id từ các input hidden trong các variant-row
-            const form = document.getElementById('productForm');
-            // Xóa các input cũ để tránh trùng lặp
-            document.querySelectorAll('input[name="attributes_to_delete[]"]').forEach(e => e.remove());
-            document.querySelectorAll('.variant-row').forEach(row => {
-                row.querySelectorAll('input[name*="[attributes]"][name$="[attribute_type_id]"]').forEach(input => {
-                    const attrId = input.value;
-                    if (attrId) {
-                        // Thêm input ẩn vào form nếu chưa có
-                        if (!form.querySelector(`input[name="attributes_to_delete[]"][value="${attrId}"]`)) {
-                            const hidden = document.createElement('input');
-                            hidden.type = 'hidden';
-                            hidden.name = 'attributes_to_delete[]';
-                            hidden.value = attrId;
-                            form.appendChild(hidden);
-                        }
-                    }
-                });
-            });
-        }
-
-        function markImageForDelete(imagePath, variantIndex) {
-            imagesToDelete.add(imagePath);
-            // Ẩn cả khối div chứa ảnh và nút xóa
-            const previewContainer = document.getElementById(`preview-${variantIndex}`);
-            if (previewContainer) {
-                const btns = previewContainer.querySelectorAll('.remove-image');
-                btns.forEach(btn => {
-                    if (btn.dataset.image === imagePath) {
-                        btn.parentElement.style.display = 'none';
-                    }
-                });
+                }
             }
-        }
 
-        // Thêm event delegation cho nút xóa ảnh
-        document.addEventListener('click', function(e) {
-            if (e.target.closest('.remove-image')) {
-                const btn = e.target.closest('.remove-image');
-                const imagePath = btn.dataset.image;
-                const variantIndex = btn.dataset.variant;
-                markImageForDelete(imagePath, variantIndex);
+            // Load category data on page load if category is selected
+            if (categorySelect.value) {
+                loadCategoryData(categorySelect.value);
+            }
+
+            // Function to load category data
+            function loadCategoryData(categoryId) {
+                if (categoryId) {
+                    // Load specifications
+                    fetch(`/admin/categories/${categoryId}/specifications`)
+                        .then(response => response.json())
+                        .then(data => {
+                            const container = document.getElementById('categorySpecifications');
+                            if (data.length > 0) {
+                                let html = '<div id="specifications-wrapper">';
+                                for (let i = 0; i < data.length; i += 2) {
+                                    html += '<div class="row mb-2 spec-row">';
+                                    for (let j = 0; j < 2 && (i + j) < data.length; j++) {
+                                        const spec = data[i + j];
+                                        const oldValue = document.querySelector(`input[name="specifications[${i + j}][value]"]`)?.value || '';
+                                        html += `
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <label class="form-label">${spec.name}</label>
+                                                    <input type="hidden" name="specifications[${i + j}][specification_id]" value="${spec.id}">
+                                                    <input type="text" 
+                                                        class="form-control" 
+                                                        name="specifications[${i + j}][value]" 
+                                                        value="${oldValue}"
+                                                        placeholder="Enter specification (optional)">
+                                                </div>
+                                            </div>`;
+                                    }
+                                    html += '</div>';
+                                }
+                                html += '</div>';
+                                container.innerHTML = html;
+                            } else {
+                                container.innerHTML = '<p class="text-muted">Không tìm thấy thông số kỹ thuật cho danh mục này.</p>';
+                            }
+                        });
+
+                    // Load attribute types
+                    fetch(`/admin/categories/${categoryId}/attributes`)
+                        .then(response => response.json())
+                        .then(data => {
+                            const attributeTypes = document.querySelectorAll('.attribute-type');
+                            attributeTypes.forEach((select, index) => {
+                                // Store current values before clearing
+                                const currentTypeId = select.value;
+                                const currentValues = $(`#values_${index}`).val();
+
+                                select.options.length = 1; // Keep only the first option (placeholder)
+                                data.forEach(attr => {
+                                    const option = new Option(attr.name, attr.id);
+                                    select.add(option);
+                                });
+
+                                // Restore previous selection if it exists in new options
+                                if (currentTypeId && Array.from(select.options).some(opt => opt.value === currentTypeId)) {
+                                    select.value = currentTypeId;
+                                    // Trigger change event to load values
+                                    $(select).trigger('change');
+                                    // Store values to be restored after loading
+                                    if (currentValues && currentValues.length) {
+                                        setTimeout(() => {
+                                            $(`#values_${index}`).val(currentValues).trigger('change');
+                                        }, 500); // Wait for values to load
+                                    }
+                                }
+                            });
+                        });
+                }
             }
         });
     </script>
 @endsection
+
+@push('scripts')
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+@endpush

@@ -46,74 +46,67 @@ class FlashSaleController
     public function create()
     {
         $products = Product::select('id', 'name')->get();
-        // dd($products);
 
         return view('admin.flash-sales.create', compact('products'));
     }
 
-    // Lưu flash sale mới
-    // public function store(Request $request)
-    // {
-    //     $request->validate([
-    //         'title' => 'required|string|max:255',
-    //         'start_time' => 'required|date',
-    //         'end_time' => 'required|date|after:start_time',
-    //         'status' => 'required|in:active,inactive',
-    //     ]);
+public function store(FlashSaleRequest $request)
+{
+    $variantIds = array_column($request->items, 'product_variant_id');
 
-    //     $flashSale = new FlashSale();
-    //     $flashSale->title = $request->title;
-    //     $flashSale->start_time = $request->start_time;
-    //     $flashSale->end_time = $request->end_time;
-    //     $flashSale->status = $request->status;
-    //     $flashSale->slug = Str::slug($request->title); // tạo slug nếu cần
-    //     $flashSale->save();
-
-    //     return redirect()->route('admin.flash-sales.index')->with('success', 'Flash sale created successfully.');
-    // }
-
-    public function store(FlashSaleRequest $request)
-    {
-        // Lấy danh sách product_variant_id từ request
-        $variantIds = array_column($request->items, 'product_variant_id');
-
-        // Kiểm tra trùng biến thể
-        if (count($variantIds) !== count(array_unique($variantIds))) {
-            return redirect()->back()
-                ->withInput()
-                ->withErrors(['items' => 'Các biến thể sản phẩm trong flash sale không được trùng nhau.']);
-        }
-        try {
-            DB::beginTransaction();
-
-            $flashSale = FlashSale::create([
-                'name' => $request->name,
-                'start_time' => $request->start_time,
-                'end_time' => $request->end_time,
-                'status' => $request->status,
-            ]);
-
-            foreach ($request->items as $item) {
-                FlashSaleItem::create([
-                    'flash_sale_id' => $flashSale->id,
-                    'product_variant_id' => $item['product_variant_id'],
-                    'count' => $item['count'],
-                    'discount' => $item['discount'],
-                    'discount_type' => $item['discount_type'],
-                    'buy_limit' => $item['buy_limit'],
-                ]);
-            }
-
-            DB::commit();
-
-            return redirect()->route('admin.flash-sales.index')->with('success', 'Flash sale created successfully.');
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return redirect()->back()->withInput()->withErrors([
-                'error' => 'Đã có lỗi xảy ra: ' . $e->getMessage()
-            ]);
-        }
+    // Kiểm tra trùng biến thể
+    if (count($variantIds) !== count(array_unique($variantIds))) {
+        return redirect()->back()
+            ->withInput()
+            ->withErrors(['items' => 'Các biến thể sản phẩm trong flash sale không được trùng nhau.']);
     }
+
+    try {
+        DB::beginTransaction();
+
+        // Kiểm tra tồn kho trước khi tạo
+        foreach ($request->items as $item) {
+            $variant = ProductVariant::findOrFail($item['product_variant_id']);
+            if ($variant->stock < $item['count']) {
+                throw new \Exception("Biến thể [{$variant->name}] không đủ hàng trong kho.");
+            }
+        }
+
+        // Tạo flash sale
+        $flashSale = FlashSale::create([
+            'name' => $request->name,
+            'start_time' => $request->start_time,
+            'end_time' => $request->end_time,
+            'status' => 0, // chưa kích hoạt
+        ]);
+
+        foreach ($request->items as $item) {
+            FlashSaleItem::create([
+                'flash_sale_id' => $flashSale->id,
+                'product_variant_id' => $item['product_variant_id'],
+                'count' => $item['count'],
+                'discount' => $item['discount'],
+                'discount_type' => $item['discount_type'],
+                'buy_limit' => $item['buy_limit'],
+            ]);
+
+            // Trừ tồn kho
+            $variant = ProductVariant::findOrFail($item['product_variant_id']);
+            $variant->stock -= $item['count'];
+            $variant->save();
+        }
+
+        DB::commit();
+
+        return redirect()->route('admin.flash-sales.index')->with('success', 'Flash sale đã được tạo và trừ kho.');
+    } catch (\Exception $e) {
+        DB::rollBack();
+        return redirect()->back()->withInput()->withErrors([
+            'error' => 'Đã có lỗi xảy ra: ' . $e->getMessage()
+        ]);
+    }
+}
+
 
     public function edit($id)
     {
@@ -125,21 +118,68 @@ class FlashSaleController
         return view('admin.flash-sales.edit', compact('flashSale', 'products'));
     }
 
-    public function update(Request $request, $id)
-    {
-        $flashSale = FlashSale::findOrFail($id);
+public function update(Request $request, $id)
+{
+    $request->validate([
+        'status' => 'required|in:0,1,2',
+    ]);
 
-        // Chỉ cập nhật trường status
-        $request->validate([
-            'status' => 'required|boolean',
-        ]);
+    $flashSale = FlashSale::with('items.variant')->findOrFail($id);
 
-        $flashSale->update($request->only('status'));
-
-        // Không xử lý update hay thêm xóa flash sale items nữa
-
-        return redirect()->route('admin.flash-sales.index')->with('success', 'Flash sale status updated successfully!');
+    if ($flashSale->status == 2) {
+    return redirect()->back()->with('error', 'Flash Sale đã kết thúc và không thể chỉnh sửa.');
     }
+
+    DB::transaction(function () use ($request, $flashSale) {
+        $newStatus = (int) $request->status;
+
+        if ($newStatus === 1) {
+            // Trường hợp Active: end cái đang active khác nếu có
+            $currentActive = FlashSale::with('items.variant')
+                ->where('status', 1)
+                ->where('id', '!=', $flashSale->id)
+                ->first();
+
+            if ($currentActive) {
+                // Trả stock cho cái đang active hiện tại (sắp bị end)
+                foreach ($currentActive->items as $item) {
+                    $variant = $item->variant;
+                    if ($variant) {
+                        $variant->stock += $item->count;
+                        $variant->save();
+                    }
+                }
+
+                $currentActive->update(['status' => 2]);
+            }
+
+            // Không cần trừ stock nữa vì đã trừ khi tạo
+            $flashSale->update(['status' => 1]);
+        }
+
+        elseif ($newStatus === 2) {
+            // Trường hợp End chính nó → hoàn trả stock
+            foreach ($flashSale->items as $item) {
+                $variant = $item->variant;
+                if ($variant) {
+                    $variant->stock += $item->count;
+                    $variant->save();
+                }
+            }
+
+            $flashSale->update(['status' => 2]);
+        }
+
+        elseif ($newStatus === 0) {
+            // Inactive → không hoàn trả gì, chỉ update trạng thái
+            $flashSale->update(['status' => 0]);
+        }
+    });
+
+    return redirect()->route('admin.flash-sales.index')->with('success', 'Trạng thái flash sale đã được cập nhật.');
+}
+
+
 
 
     // Xóa flash sale
@@ -162,31 +202,5 @@ class FlashSaleController
     {
         $variants = ProductVariant::where('product_id', $productId)->get(['id', 'name', 'sku']);
         return response()->json($variants);
-    }
-
-    public function returnStock($id)
-    {
-        $flashSale = FlashSale::findOrFail($id);
-
-        if ($flashSale->status != 2) {
-            return redirect()->back()->with('error', 'Flash Sale chưa kết thúc hoặc không thể hoàn trả stock.');
-        }
-
-        foreach ($flashSale->items as $item) {
-            // Giả sử variant có trường stock để quản lý tồn kho
-            $variant = $item->variant;
-
-            if ($variant) {
-                // Hoàn trả lại số lượng tồn kho theo count còn lại
-                $variant->stock += $item->count;
-                $variant->save();
-
-                // Reset count trong flash sale item nếu muốn
-                // $item->count = 0;
-                // $item->save();
-            }
-        }
-
-        return redirect()->back()->with('success', 'Hoàn trả stock thành công!');
     }
 }

@@ -13,10 +13,14 @@ use App\Http\Controllers\admin\VariantAttributeTypeController;
 use App\Http\Controllers\admin\RoleController;
 use App\Http\Controllers\admin\SpecificationController;
 use App\Http\Controllers\admin\VoucherController;
-use App\Http\Controllers\admin\AdminContactController;
 use App\Http\Controllers\admin\FlashSaleController;
-use App\Http\Controllers\admin\FlashSaleItemController;
 use App\Http\Controllers\admin\SubcriberController;
+use App\Http\Controllers\client\CheckoutController;
+// Client 
+use App\Http\Controllers\client\WishlistController;
+use App\Http\Controllers\Admin\OrderReturnController;
+use App\Http\Controllers\admin\AdminContactController;
+use App\Http\Controllers\admin\FlashSaleItemController;
 use App\Http\Controllers\admin\FaqController;
 use App\Http\Controllers\Admin\InvoiceController;
 use App\Http\Controllers\client\OrderReturnController as ClientOrderReturnController;
@@ -34,17 +38,14 @@ use App\Http\Controllers\client\ShopController;
 use App\Http\Controllers\client\AboutController;
 use App\Http\Controllers\client\BlogController as ClientBlogController;
 use App\Http\Controllers\client\CartController;
-use App\Http\Controllers\client\CheckoutController;
 use App\Http\Controllers\client\ContactController;
 use App\Http\Controllers\client\PaymentController;
-
-
 use App\Http\Controllers\client\OrderController as ClientOrderController;
 use App\Http\Controllers\client\ChatBotController;
-
 use App\Http\Controllers\client\ProductController as ClientProductController;
-use App\Http\Controllers\client\WishlistController;
+use App\Http\Controllers\client\ProfileController;
 use App\Models\Invoice;
+use App\Http\Controllers\admin\ProductVariantController;
 
 /*
 |--------------------------------------------------------------------------
@@ -61,6 +62,15 @@ Route::post('/increment-view/{id}', [HomeController::class, 'incrementView'])->n
 // Shop Routes
 Route::get('/shop', [ShopController::class, 'index'])->name('shop');
 Route::get('/about', [AboutController::class, 'index'])->name('about');
+
+// Profile Routes
+Route::prefix('profile')->name('profile.')->group(function () {
+    Route::get('/', [ProfileController::class, 'index'])->name('index');
+    Route::put('/', [ProfileController::class, 'update'])->name('update');
+    Route::get('/password', [ProfileController::class, 'password'])->name('password');
+    Route::put('/password', [ProfileController::class, 'updatePassword'])->name('update-password');
+    Route::get('/orders', [ProfileController::class, 'orders'])->name('orders');
+});
 
 // Blog Routes
 Route::get('/blog', [ClientBlogController::class, 'index'])->name('blog');
@@ -113,6 +123,20 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::post('order-returns/{id}/reject', [AdminOrderReturnController::class, 'reject'])->name('order-returns.reject');
 });
 
+// Route cho admin quản lý hoàn hàng
+Route::prefix('admin')->name('admin.')->group(function () {
+    Route::get('order-returns', [OrderReturnController::class, 'index'])->name('order-returns.index');
+    Route::get('order-returns/{id}', [OrderReturnController::class, 'show'])->name('order-returns.show');
+    Route::post('order-returns/{id}/approve', [OrderReturnController::class, 'approve'])->name('order-returns.approve');
+    Route::post('order-returns/{id}/reject', [OrderReturnController::class, 'reject'])->name('order-returns.reject');
+});
+
+// Route cho khách gửi yêu cầu hoàn hàng
+Route::middleware(['auth'])->group(function () {
+    Route::get('order/{order}/return', [ClientOrderReturnController::class, 'create'])->name('order.returns.create');
+    Route::post('order/{order}/return', [ClientOrderReturnController::class, 'store'])->name('order.returns.store');
+});
+
 // Theo dõi đơn hàng sau khi đặt hàng
 Route::get('/order', [ClientOrderController::class, 'index'])->name('order.index');
 Route::post('/order/cancel/{order}', [ClientOrderController::class, 'cancel'])->name('order.cancel');
@@ -153,7 +177,7 @@ Route::get('/auth/facebook/callback', [FacebookController::class, 'handleFaceboo
 */
 
 Route::prefix('admin')
-    ->middleware(['auth'])
+    ->middleware(['auth', 'role:admin|staff'])
     ->name('admin.')
     ->group(function () {
         // Dashboard
@@ -320,4 +344,11 @@ Route::prefix('admin')
         //Invoice Routes
         Route::resource('invoices', InvoiceController::class);
         Route::get('invoices/{invoice}/pdf', [InvoiceController::class, 'exportPdf'])->name('invoices.export-pdf');
+
+        // Product Variants
+        Route::get('variants', [ProductVariantController::class, 'index'])->name('variants.index');
+        Route::get('variants/trash', [ProductVariantController::class, 'trash'])->name('variants.trash');
+        Route::post('variants/{id}/restore', [ProductVariantController::class, 'restore'])->name('variants.restore');
+        Route::put('variants/{variant}', [ProductVariantController::class, 'update'])->name('variants.update');
+        Route::delete('variants/{variant}', [ProductVariantController::class, 'destroy'])->name('variants.destroy');
     });

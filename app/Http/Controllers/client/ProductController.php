@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\client;
 
 use App\Models\Product;
+use App\Models\ProductView;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Auth;
 
 class ProductController
 {
@@ -26,7 +28,12 @@ class ProductController
             ->where('slug', '!=', $slug)
             ->take(4)
             ->get();
-            
+        // Lưu dữ liệu xem sản phẩm
+        ProductView::create([
+            'user_id' => Auth::id(),
+            'product_id' => $product->id,
+        ]);
+
         return view('client.product.product-detail', compact('product', 'relatedProducts'));
     }
 

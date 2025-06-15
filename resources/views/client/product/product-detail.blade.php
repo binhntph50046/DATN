@@ -35,13 +35,25 @@
                         <div class="main-image mb-4 position-relative">
                             <button id="prevImageBtn" class="image-nav-btn" style="display:none;" onclick="showPrevImage()"><i class="fas fa-chevron-left"></i></button>
                             @php
+                                // Helper function to safely handle both JSON strings and arrays
+                                function getImagesArray($images) {
+                                    if (is_array($images)) {
+                                        return $images;
+                                    }
+                                    if (is_string($images)) {
+                                        $decoded = json_decode($images, true);
+                                        return is_array($decoded) ? $decoded : [];
+                                    }
+                                    return [];
+                                }
+
                                 $defaultVariant = $product->defaultVariant;
-                                $images = $defaultVariant ? json_decode($defaultVariant->images, true) : [];
+                                $images = $defaultVariant ? getImagesArray($defaultVariant->images) : [];
                                 $mainImage = $images[0] ?? 'uploads/default/default.jpg';
                                 // Gom tất cả ảnh của mọi biến thể
                                 $allImages = [];
                                 foreach ($product->variants as $variant) {
-                                    $imgs = json_decode($variant->images, true) ?? [];
+                                    $imgs = getImagesArray($variant->images);
                                     foreach ($imgs as $img) {
                                         if (!in_array($img, $allImages)) {
                                             $allImages[] = $img;
@@ -628,7 +640,7 @@ hideAlert('error-alert');
             // Khởi tạo dữ liệu biến thể
             @foreach ($product->variants as $variant)
                 variantData[{{ $variant->id }}] = {
-                    images: {!! json_encode(json_decode($variant->images, true) ?? []) !!},
+                    images: {!! json_encode(getImagesArray($variant->images)) !!},
                     price: {{ $variant->selling_price }}
                 };
             @endforeach

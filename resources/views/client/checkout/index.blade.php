@@ -195,15 +195,28 @@
                                         <th>Tổng</th>
                                     </thead>
                                     <tbody>
+                                        @php
+                                            // Helper function to safely handle both JSON strings and arrays
+                                            function getImagesArray($images) {
+                                                if (is_array($images)) {
+                                                    return $images;
+                                                }
+                                                if (is_string($images)) {
+                                                    $decoded = json_decode($images, true);
+                                                    return is_array($decoded) ? $decoded : [];
+                                                }
+                                                return [];
+                                            }
+                                        @endphp
                                         @if($variant)
                                             <tr>
                                                 <td style="vertical-align:middle;">
                                                     <div class="d-flex align-items-center gap-3">
                                                         @php
-                                                            $variantImages = json_decode($variant->images, true);
+                                                            $variantImages = getImagesArray($variant->images);
                                                             if (empty($variantImages) || !$variantImages[0]) {
                                                                 // Lấy ảnh sản phẩm cha nếu biến thể không có ảnh
-                                                                $productImages = json_decode($variant->product->images ?? '[]', true);
+                                                                $productImages = getImagesArray($variant->product->images ?? []);
                                                                 $variantImage = $productImages[0] ?? 'uploads/default/default.jpg';
                                                             } else {
                                                                 $variantImage = $variantImages[0];

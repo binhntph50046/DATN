@@ -37,19 +37,18 @@
                             <tbody>
                                 @if ($cartItems->count() > 0)
                                     @php
-                                        function getFirstImage($image)
-                                        {
-                                            if (is_array($image) && !empty($image)) {
-                                                return $image[0];
-                                            } elseif (is_string($image)) {
-                                                $decoded = json_decode($image, true);
-                                                if (is_array($decoded) && !empty($decoded)) {
-                                                    return $decoded[0];
-                                                } else {
-                                                    return $image;
+                                        // Helper function to safely handle both JSON strings và arrays cho images
+                                        if (!function_exists('getImagesArray')) {
+                                            function getImagesArray($images) {
+                                                if (is_array($images)) {
+                                                    return $images;
                                                 }
+                                                if (is_string($images)) {
+                                                    $decoded = json_decode($images, true);
+                                                    return is_array($decoded) ? $decoded : [];
+                                                }
+                                                return [];
                                             }
-                                            return '';
                                         }
                                     @endphp
 
@@ -67,16 +66,15 @@
                                             <td class="product-thumbnail">
                                                 @php
                                                     $imageUrl = 'assets/images/default-product.png';
+                                                    // nếu có ảnh thì lấy ảnh từ variant
                                                     if (!empty($item->variant) && !empty($item->variant->images)) {
-                                                        $variantImages = json_decode($item->variant->images, true);
+                                                        $variantImages = getImagesArray($item->variant->images);
                                                         if (is_array($variantImages) && !empty($variantImages[0])) {
                                                             $imageUrl = $variantImages[0];
                                                         }
-                                                    } elseif (
-                                                        !empty($item->product) &&
-                                                        !empty($item->product->images)
-                                                    ) {
-                                                        $productImages = json_decode($item->product->images, true);
+                                                        // nếu không có ảnh thì lấy ảnh từ product
+                                                    } elseif (!empty($item->product) && !empty($item->product->images)) {
+                                                        $productImages = getImagesArray($item->product->images);
                                                         if (is_array($productImages) && !empty($productImages[0])) {
                                                             $imageUrl = $productImages[0];
                                                         }

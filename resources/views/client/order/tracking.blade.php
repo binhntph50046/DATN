@@ -199,14 +199,26 @@
                     </tr>
                 </thead>
                 <tbody>
+                    @php
+                        // Helper function to safely handle both JSON strings and arrays
+                        function getImagesArray($images) {
+                            if (is_array($images)) {
+                                return $images;
+                            }
+                            if (is_string($images)) {
+                                $decoded = json_decode($images, true);
+                                return is_array($decoded) ? $decoded : [];
+                            }
+                            return [];
+                        }
+                    @endphp
                     @foreach ($order->items as $item)
                         <tr>
                             <td>
                                 @php
-                                    $images =
-                                        $item->variant && $item->variant->images
-                                            ? json_decode($item->variant->images, true)
-                                            : [];
+                                    $images = $item->variant && $item->variant->images
+                                        ? getImagesArray($item->variant->images)
+                                        : [];
                                     $imgSrc = isset($images[0])
                                         ? asset($images[0])
                                         : (isset($item->product->image)

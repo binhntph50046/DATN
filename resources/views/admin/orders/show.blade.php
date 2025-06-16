@@ -563,13 +563,26 @@
                             <i class="fas fa-shopping-bag"></i>
                             Sản phẩm đã đặt
                         </h4>
+                        @php
+                            // Helper function to safely handle both JSON strings and arrays
+                            function getImagesArray($images) {
+                                if (is_array($images)) {
+                                    return $images;
+                                }
+                                if (is_string($images)) {
+                                    $decoded = json_decode($images, true);
+                                    return is_array($decoded) ? $decoded : [];
+                                }
+                                return [];
+                            }
+                        @endphp
                         @foreach($order->items as $item)
+                            @php
+                                $images = $item->variant && $item->variant->images ? getImagesArray($item->variant->images) : [];
+                                $imgSrc = isset($images[0]) ? asset($images[0]) : asset('uploads/default/default.jpg');
+                            @endphp
                             <div class="item-card">
                                 <div class="item-info">
-                                    @php
-                                        $images = $item->variant && $item->variant->images ? json_decode($item->variant->images, true) : [];
-                                        $imgSrc = isset($images[0]) ? asset($images[0]) : asset('uploads/default/default.jpg');
-                                    @endphp
                                     <img src="{{ $imgSrc }}" alt="{{ $item->variant->name ?? '' }}" class="item-image">
                                     <div>
                                         <h5 class="product-name">{{ $item->product->name ?? 'N/A' }}</h5>

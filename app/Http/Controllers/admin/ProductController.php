@@ -107,77 +107,11 @@ class ProductController
         try {
             DB::beginTransaction();
 
-            $oldCategoryId = $product->category_id;
-            $newCategoryId = $request->category_id;
-            $categoryChanged = $request->has('category_changed') && $request->category_changed === 'true';
-            $attributeValueChanged = $request->has('attribute_value_changed') && $request->attribute_value_changed === 'true';
-
-            // Handle variants to delete - ensure it's always an array
-            $variantsToDelete = [];
-            if ($request->has('variants_to_delete') && $request->variants_to_delete !== null) {
-                $variantsToDelete = $request->variants_to_delete;
-                if (is_string($variantsToDelete)) {
-                    $variantsToDelete = json_decode($variantsToDelete, true);
-                }
-                // Ensure it's an array even if json_decode fails
-                $variantsToDelete = is_array($variantsToDelete) ? $variantsToDelete : [];
-            }
-
-            // Handle images to delete - ensure it's always an array
-            $imagesToDelete = [];
-            if ($request->has('images_to_delete') && $request->images_to_delete !== null) {
-                $imagesToDelete = $request->images_to_delete;
-                if (is_string($imagesToDelete)) {
-                    $imagesToDelete = json_decode($imagesToDelete, true);
-                }
-                // Ensure it's an array even if json_decode fails
-                $imagesToDelete = is_array($imagesToDelete) ? $imagesToDelete : [];
-            }
-
-            // Log for debugging
-            Log::info('Variants to delete:', ['variants' => $variantsToDelete]);
-
-            if ($categoryChanged && $oldCategoryId !== $newCategoryId) {
-                // Force delete all specifications
-                $product->specifications()->forceDelete();
-
-                // Get all variant IDs (including soft deleted ones)
-                $variantIds = $product->variants()->withTrashed()->pluck('id')->toArray();
-
-                // Soft delete all variant combinations
-                VariantCombination::whereIn('variant_id', $variantIds)->delete();
-
-                // Soft delete all variants
-                $product->variants()->delete();
-
-                // Handle image deletion
-                if (!empty($imagesToDelete) && is_array($imagesToDelete)) {
-                    foreach ($imagesToDelete as $imagePath) {
-                        $fullPath = public_path($imagePath);
-                        if (file_exists($fullPath)) {
-                            @unlink($fullPath);
-                        }
-                    }
-                }
-            } elseif ($attributeValueChanged) {
-                // Get all existing variant IDs for this product
-                $existingVariantIds = $product->variants()->pluck('id')->toArray();
-
-                // Soft delete all existing variants
+            // Luôn xóa mềm toàn bộ biến thể và combination cũ trước khi tạo mới
+            $existingVariantIds = $product->variants()->pluck('id')->toArray();
+            if (!empty($existingVariantIds)) {
                 ProductVariant::whereIn('id', $existingVariantIds)->delete();
-
-                // Soft delete all variant combinations for these variants
                 VariantCombination::whereIn('variant_id', $existingVariantIds)->delete();
-
-                // Handle image deletion for these variants
-                if (!empty($imagesToDelete) && is_array($imagesToDelete)) {
-                    foreach ($imagesToDelete as $imagePath) {
-                        $fullPath = public_path($imagePath);
-                        if (file_exists($fullPath)) {
-                            @unlink($fullPath);
-                        }
-                    }
-                }
             }
 
             // Update product basic information
@@ -194,11 +128,6 @@ class ProductController
 
             // Handle specifications
             if ($request->has('specifications')) {
-                // Delete old specifications if category changed
-                if ($categoryChanged) {
-                    $product->specifications()->forceDelete();
-                }
-
                 $specifications = $request->specifications;
                 if (is_array($specifications)) {
                     foreach ($specifications as $spec) {

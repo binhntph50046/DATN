@@ -132,88 +132,77 @@
                                     onclick="incrementView('{{ $product->id }}')">
                                     <div class="product-thumbnail text-center">
                                         @php
-                                            $defaultImage = asset('uploads/default/default.jpg');
-                                            $variantImage = null;
-                                            $defaultVariant = $product->variants->first();
-
-                                            if ($defaultVariant && $defaultVariant->images) {
-                                                $images = json_decode($defaultVariant->images, true);
-                                                if (!empty($images[0])) {
-                                                    $variantImage = asset($images[0]);
-                                                }
+                                            $images = getImagesArray($product->images);
+                                            if (empty($images) && $product->variants->isNotEmpty()) {
+                                                $variant = $product->variants->first();
+                                                $images = getImagesArray($variant->images);
                                             }
-
-                                            if (!$variantImage) {
-                                                $otherVariant = $product->variants->skip(1)->first();
-                                                if ($otherVariant && $otherVariant->images) {
-                                                    $images = json_decode($otherVariant->images, true);
-                                                    if (!empty($images[0])) {
-                                                        $variantImage = asset($images[0]);
-                                                    }
-                                                }
+                                            $mainImage = $images[0] ?? 'uploads/default/default.jpg';
+                                            if (!empty($mainImage) && !str_starts_with($mainImage, 'uploads/')) {
+                                                $mainImage = 'uploads/products/' . $mainImage;
                                             }
                                         @endphp
 
-                                                <img src="{{ $variantImage ?? $defaultImage }}" class="img-fluid mx-auto"
-                                                    alt="{{ $product->name }}"
-                                                    style="max-height: 200px; object-fit: contain;">
-                                            </div>
-                                            <h3 class="product-title text-center">{{ $product->name }}</h3>
-                                            <div class="product-price-and-rating text-center">
-                                                @if ($product->variants->isNotEmpty())
-                                                    @php
-                                                        $variant = $product->variants->first();
-                                                    @endphp
-                                                    @if ($variant->discount_price)
-                                                        <strong
-                                                            class="product-price text-decoration-line-through text-muted">{{ number_format($variant->selling_price) }}đ</strong>
-                                                        <strong
-                                                            class="product-price text-danger ms-2">{{ number_format($variant->discount_price) }}đ</strong>
-                                                    @else
-                                                        <strong
-                                                            class="product-price">{{ number_format($variant->selling_price) }}đ</strong>
-                                                    @endif
-                                                @endif
-                                                <div
-                                                    class="product-rating d-flex justify-content-center align-items-center">
-                                                    <i class="fas fa-star"></i>
-                                                    <i class="fas fa-star"></i>
-                                                    <i class="fas fa-star"></i>
-                                                    <i class="fas fa-star"></i>
-                                                    <i class="fas fa-star"></i>
-                                                    <span>({{ number_format($product->views) }} views)</span>
-                                                </div>
-                                            </div>
-                                            <div class="product-icons">
-                                                <span class="icon-add-to-cart"><i class="fas fa-cart-plus"></i></span>
-                                                @auth
-                                                    <form action="{{ route('wishlist.toggle', $product) }}" method="POST"
-                                                        style="display: none;" id="wishlist-form-{{ $product->id }}">
-                                                        @csrf
-                                                        <input type="hidden" name="product_name"
-                                                            value="{{ $product->name }}">
-                                                    </form>
-                                                    <span
-                                                        class="icon-heart icon-add-to-wishlist {{ in_array($product->id, $wishlistProductIds) ? 'in-wishlist' : '' }}"
-                                                        onclick="event.preventDefault(); toggleWishlist('{{ $product->id }}', '{{ route('wishlist.toggle', $product) }}', this)"
-                                                        title="{{ in_array($product->id, $wishlistProductIds) ? 'Xóa khỏi yêu thích' : 'Thêm vào yêu thích' }}">
-                                                        <i class="fas fa-heart"></i>
-                                                    </span>
-                                                @else
-                                                    <span class="icon-heart icon-add-to-wishlist"
-                                                        onclick="event.preventDefault(); showLoginPrompt()"
-                                                        title="Đăng nhập để thêm vào yêu thích">
-                                                        <i class="fas fa-heart"></i>
-                                                    </span>
-                                                @endauth
-                                                <span class="icon-quick-view"
-                                                    onclick="event.preventDefault(); showQuickView({{ $product->id }})"><i
-                                                        class="fas fa-eye"></i></span>
-                                            </div>
-                                        </a>
+                                        <img src="{{ asset($mainImage) }}" class="img-fluid mx-auto"
+                                            alt="{{ $product->name }}"
+                                            style="max-height: 200px; object-fit: contain;">
                                     </div>
-                                @endforeach
+                                    <h3 class="product-title text-center">{{ $product->name }}</h3>
+                                    <div class="product-price-and-rating text-center">
+                                        @if ($product->variants->isNotEmpty())
+                                            @php
+                                                $variant = $product->variants->first();
+                                            @endphp
+                                            @if ($variant->discount_price)
+                                                <strong
+                                                    class="product-price text-decoration-line-through text-muted">{{ number_format($variant->selling_price) }}đ</strong>
+                                                <strong
+                                                    class="product-price text-danger ms-2">{{ number_format($variant->discount_price) }}đ</strong>
+                                            @else
+                                                <strong
+                                                    class="product-price">{{ number_format($variant->selling_price) }}đ</strong>
+                                            @endif
+                                        @endif
+                                        <div
+                                            class="product-rating d-flex justify-content-center align-items-center">
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <span>({{ number_format($product->views) }} views)</span>
+                                        </div>
+                                    </div>
+                                    <div class="product-icons">
+                                        <span class="icon-add-to-cart"><i class="fas fa-cart-plus"></i></span>
+                                        @auth
+                                            <form action="{{ route('wishlist.toggle', $product) }}" method="POST"
+                                                style="display: none;" id="wishlist-form-{{ $product->id }}">
+                                                @csrf
+                                                <input type="hidden" name="product_name"
+                                                    value="{{ $product->name }}">
+                                            </form>
+                                            <span
+                                                class="icon-heart icon-add-to-wishlist {{ in_array($product->id, $wishlistProductIds) ? 'in-wishlist' : '' }}"
+                                                onclick="event.preventDefault(); toggleWishlist('{{ $product->id }}', '{{ route('wishlist.toggle', $product) }}', this)"
+                                                title="{{ in_array($product->id, $wishlistProductIds) ? 'Xóa khỏi yêu thích' : 'Thêm vào yêu thích' }}">
+                                                <i class="fas fa-heart"></i>
+                                            </span>
+                                        @else
+                                            <span class="icon-heart icon-add-to-wishlist"
+                                                onclick="event.preventDefault(); showLoginPrompt()"
+                                                title="Đăng nhập để thêm vào yêu thích">
+                                                <i class="fas fa-heart"></i>
+                                            </span>
+                                        @endauth
+                                        <span class="icon-quick-view"
+                                            onclick="event.preventDefault(); showQuickView({{ $product->id }})"><i
+                                                class="fas fa-eye"></i></span>
+                                    </div>
+                                </a>
                             </div>
+                        @endforeach
+                    </div>
                 </div>
                 <!-- End Products Column -->
 
@@ -246,7 +235,6 @@
                         <p><a href="{{ route('shop') }}" class="btn">Xem Tất Cả Sản Phẩm</a></p>
                     </div>
                 </div>
-
                 <!-- End Text Column -->
             </div>
         </div>
@@ -265,99 +253,86 @@
                         thiết bị – là tuyên ngôn phong cách sống số hiện đại.</p>
                     <p><a href="{{ route('shop') }}" class="btn">Khám Phá Ngay</a></p>
                 </div>
-
                 <!-- End Column 1 -->
 
                 <!-- Start Latest Products Column -->
                 <div class="col-lg-9">
                     <div class="product-slider">
                         @foreach ($latestProducts as $product)
-                            {{-- <div class="product-row"> --}}
                             <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="{{ $loop->iteration * 100 }}">
                                 <a class="product-item" href="{{ route('product.detail', $product->slug) }}"
                                     onclick="incrementView('{{ $product->id }}')">
                                     <div class="product-thumbnail text-center">
                                         @php
-                                            $defaultImage = asset('Uploads/default/default.jpg');
-                                            $variantImage = null;
-                                            $defaultVariant = $product->variants->first();
-
-                                            if ($defaultVariant && $defaultVariant->images) {
-                                                $images = json_decode($defaultVariant->images, true);
-                                                if (!empty($images[0])) {
-                                                    $variantImage = asset($images[0]);
-                                                }
+                                            $images = getImagesArray($product->images);
+                                            if (empty($images) && $product->variants->isNotEmpty()) {
+                                                $variant = $product->variants->first();
+                                                $images = getImagesArray($variant->images);
                                             }
-
-                                            if (!$variantImage) {
-                                                $otherVariant = $product->variants->skip(1)->first();
-                                                if ($otherVariant && $otherVariant->images) {
-                                                    $images = json_decode($otherVariant->images, true);
-                                                    if (!empty($images[0])) {
-                                                        $variantImage = asset($images[0]);
-                                                    }
-                                                }
+                                            $mainImage = $images[0] ?? 'uploads/default/default.jpg';
+                                            if (!empty($mainImage) && !str_starts_with($mainImage, 'uploads/')) {
+                                                $mainImage = 'uploads/products/' . $mainImage;
                                             }
                                         @endphp
 
-                                            <img src="{{ $variantImage ?? $defaultImage }}" class="img-fluid mx-auto"
-                                                alt="{{ $product->name }}"
-                                                style="max-height: 200px; object-fit: contain;">
-                                        </div>
-                                        <h3 class="product-title text-center">{{ $product->name }}</h3>
-                                        <div class="product-price-and-rating text-center">
-                                            @if ($product->variants->isNotEmpty())
-                                                @php
-                                                    $variant = $product->variants->first();
-                                                @endphp
-                                                @if ($variant->discount_price)
-                                                    <strong
-                                                        class="product-price text-decoration-line-through text-muted">{{ number_format($variant->selling_price) }}đ</strong>
-                                                    <strong
-                                                        class="product-price text-danger ms-2">{{ number_format($variant->discount_price) }}đ</strong>
-                                                @else
-                                                    <strong
-                                                        class="product-price">{{ number_format($variant->selling_price) }}đ</strong>
-                                                @endif
-                                            @endif
-                                            <div class="product-rating d-flex justify-content-center align-items-center">
-                                                <i class="fas fa-star"></i>
-                                                <i class="fas fa-star"></i>
-                                                <i class="fas fa-star"></i>
-                                                <i class="fas fa-star"></i>
-                                                <i class="fas fa-star"></i>
-                                                <span>({{ number_format($product->views) }} views)</span>
-                                            </div>
-                                        </div>
-                                        <div class="product-icons">
-                                            <span class="icon-add-to-cart"><i class="fas fa-cart-plus"></i></span>
-                                            @auth
-                                                <form action="{{ route('wishlist.toggle', $product) }}" method="POST"
-                                                    style="display: none;" id="wishlist-form-{{ $product->id }}">
-                                                    @csrf
-                                                    <input type="hidden" name="product_name" value="{{ $product->name }}">
-                                                </form>
-                                                <span
-                                                    class="icon-heart icon-add-to-wishlist {{ in_array($product->id, $wishlistProductIds) ? 'in-wishlist' : '' }}"
-                                                    onclick="event.preventDefault(); toggleWishlist('{{ $product->id }}', '{{ route('wishlist.toggle', $product) }}', this)"
-                                                    title="{{ in_array($product->id, $wishlistProductIds) ? 'Xóa khỏi yêu thích' : 'Thêm vào yêu thích' }}">
-                                                    <i class="fas fa-heart"></i>
-                                                </span>
+                                        <img src="{{ asset($mainImage) }}" class="img-fluid mx-auto"
+                                            alt="{{ $product->name }}"
+                                            style="max-height: 200px; object-fit: contain;">
+                                    </div>
+                                    <h3 class="product-title text-center">{{ $product->name }}</h3>
+                                    <div class="product-price-and-rating text-center">
+                                        @if ($product->variants->isNotEmpty())
+                                            @php
+                                                $variant = $product->variants->first();
+                                            @endphp
+                                            @if ($variant->discount_price)
+                                                <strong
+                                                    class="product-price text-decoration-line-through text-muted">{{ number_format($variant->selling_price) }}đ</strong>
+                                                <strong
+                                                    class="product-price text-danger ms-2">{{ number_format($variant->discount_price) }}đ</strong>
                                             @else
-                                                <span class="icon-heart icon-add-to-wishlist"
-                                                    onclick="event.preventDefault(); showLoginPrompt()"
-                                                    title="Đăng nhập để thêm vào yêu thích">
-                                                    <i class="fas fa-heart"></i>
-                                                </span>
-                                            @endauth
-                                            <span class="icon-quick-view"
-                                                onclick="event.preventDefault(); showQuickView({{ $product->id }})"><i
-                                                    class="fas fa-eye"></i></span>
+                                                <strong
+                                                    class="product-price">{{ number_format($variant->selling_price) }}đ</strong>
+                                            @endif
+                                        @endif
+                                        <div
+                                            class="product-rating d-flex justify-content-center align-items-center">
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <span>({{ number_format($product->views) }} views)</span>
                                         </div>
-                                    </a>
-                                </div>
-                            @endforeach
-                        </div>
+                                    </div>
+                                    <div class="product-icons">
+                                        <span class="icon-add-to-cart"><i class="fas fa-cart-plus"></i></span>
+                                        @auth
+                                            <form action="{{ route('wishlist.toggle', $product) }}" method="POST"
+                                                style="display: none;" id="wishlist-form-{{ $product->id }}">
+                                                @csrf
+                                                <input type="hidden" name="product_name" value="{{ $product->name }}">
+                                            </form>
+                                            <span
+                                                class="icon-heart icon-add-to-wishlist {{ in_array($product->id, $wishlistProductIds) ? 'in-wishlist' : '' }}"
+                                                onclick="event.preventDefault(); toggleWishlist('{{ $product->id }}', '{{ route('wishlist.toggle', $product) }}', this)"
+                                                title="{{ in_array($product->id, $wishlistProductIds) ? 'Xóa khỏi yêu thích' : 'Thêm vào yêu thích' }}">
+                                                <i class="fas fa-heart"></i>
+                                            </span>
+                                        @else
+                                            <span class="icon-heart icon-add-to-wishlist"
+                                                onclick="event.preventDefault(); showLoginPrompt()"
+                                                title="Đăng nhập để thêm vào yêu thích">
+                                                <i class="fas fa-heart"></i>
+                                            </span>
+                                        @endauth
+                                        <span class="icon-quick-view"
+                                            onclick="event.preventDefault(); showQuickView({{ $product->id }})"><i
+                                                class="fas fa-eye"></i></span>
+                                    </div>
+                                </a>
+                            </div>
+                        @endforeach
                     </div>
                 </div>
                 <!-- End Latest Products Column -->
@@ -1214,4 +1189,20 @@
             color: #ffffff;
         }
     </style>
+
+@php
+    // Helper function to safely handle both JSON strings and arrays
+    function getImagesArray($images) {
+        if (is_array($images)) {
+            return $images;
+        }
+        if (is_string($images)) {
+            $decoded = json_decode($images, true);
+            return is_array($decoded) ? $decoded : [];
+        }
+        return [];
+    }
+@endphp
+
+{{-- @include('client.partials.quick-view-modal') --}}
 @endsection

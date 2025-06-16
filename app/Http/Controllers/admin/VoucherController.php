@@ -104,15 +104,15 @@ class VoucherController
     public function update(Request $request, Voucher $voucher)
     {
         $data = $request->validate([
-            'code' => 'required|string|unique:vouchers,code,' . $voucher->id,
-            'type' => 'required|in:fixed,percentage',
-            'value' => 'required|numeric|min:0',
+            // 'code' => 'required|string|unique:vouchers,code,' . $voucher->id,
+            // 'type' => 'required|in:fixed,percentage',
+            // 'value' => 'required|numeric|min:0',
             'min_order_amount' => 'nullable|numeric|min:0',
             'expires_at' => 'date',
             'usage_limit' => 'integer|min:0',
             'per_user_limit' => 'integer|min:0',
             'is_active' => 'boolean',
-            'purpose' => 'required|in:product_discount,free_shipping',
+            // 'purpose' => 'required|in:product_discount,free_shipping',
             'description' => 'nullable|string|max:255',
         ]);
         $voucher->update($data);

@@ -214,8 +214,6 @@
                                     </div>
                                 @endforeach
                             </div>
-                        @endforeach
-                    </div>
                 </div>
                 <!-- End Products Column -->
 

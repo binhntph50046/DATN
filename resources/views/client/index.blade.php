@@ -235,7 +235,6 @@
                         <p><a href="{{ route('shop') }}" class="btn">Xem Tất Cả Sản Phẩm</a></p>
                     </div>
                 </div>
-
                 <!-- End Text Column -->
             </div>
         </div>
@@ -254,7 +253,6 @@
                         thiết bị – là tuyên ngôn phong cách sống số hiện đại.</p>
                     <p><a href="{{ route('shop') }}" class="btn">Khám Phá Ngay</a></p>
                 </div>
-
                 <!-- End Column 1 -->
 
                 <!-- Start Latest Products Column -->
@@ -1191,7 +1189,6 @@
             color: #ffffff;
         }
     </style>
-@endsection
 
 @php
     // Helper function to safely handle both JSON strings and arrays
@@ -1206,3 +1203,6 @@
         return [];
     }
 @endphp
+
+{{-- @include('client.partials.quick-view-modal') --}}
+@endsection

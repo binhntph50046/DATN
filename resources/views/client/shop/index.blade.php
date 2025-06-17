@@ -245,18 +245,38 @@
                                                         $defaultVariant = $product->variants->first();
 
                                                         if ($defaultVariant && $defaultVariant->images) {
-                                                            $images = json_decode($defaultVariant->images, true);
-                                                            if (!empty($images[0])) {
-                                                                $variantImage = asset($images[0]);
+                                                            $images = $defaultVariant->images;
+                                                            // Nếu là array, sử dụng trực tiếp
+                                                            if (is_array($images)) {
+                                                                if (!empty($images[0])) {
+                                                                    $variantImage = asset($images[0]);
+                                                                }
+                                                            } 
+                                                            // Nếu là string, thử decode
+                                                            else if (is_string($images)) {
+                                                                $decoded = json_decode($images, true);
+                                                                if (is_array($decoded) && !empty($decoded[0])) {
+                                                                    $variantImage = asset($decoded[0]);
+                                                                }
                                                             }
                                                         }
 
                                                         if (!$variantImage) {
                                                             $otherVariant = $product->variants->skip(1)->first();
                                                             if ($otherVariant && $otherVariant->images) {
-                                                                $images = json_decode($otherVariant->images, true);
-                                                                if (!empty($images[0])) {
-                                                                    $variantImage = asset($images[0]);
+                                                                $images = $otherVariant->images;
+                                                                // Nếu là array, sử dụng trực tiếp
+                                                                if (is_array($images)) {
+                                                                    if (!empty($images[0])) {
+                                                                        $variantImage = asset($images[0]);
+                                                                    }
+                                                                } 
+                                                                // Nếu là string, thử decode
+                                                                else if (is_string($images)) {
+                                                                    $decoded = json_decode($images, true);
+                                                                    if (is_array($decoded) && !empty($decoded[0])) {
+                                                                        $variantImage = asset($decoded[0]);
+                                                                    }
                                                                 }
                                                             }
                                                         }
@@ -325,18 +345,38 @@
                                                             $defaultVariant = $product->variants->first();
 
                                                             if ($defaultVariant && $defaultVariant->images) {
-                                                                $images = json_decode($defaultVariant->images, true);
-                                                                if (!empty($images[0])) {
-                                                                    $variantImage = asset($images[0]);
+                                                                $images = $defaultVariant->images;
+                                                                // Nếu là array, sử dụng trực tiếp
+                                                                if (is_array($images)) {
+                                                                    if (!empty($images[0])) {
+                                                                        $variantImage = asset($images[0]);
+                                                                    }
+                                                                } 
+                                                                // Nếu là string, thử decode
+                                                                else if (is_string($images)) {
+                                                                    $decoded = json_decode($images, true);
+                                                                    if (is_array($decoded) && !empty($decoded[0])) {
+                                                                        $variantImage = asset($decoded[0]);
+                                                                    }
                                                                 }
                                                             }
 
                                                             if (!$variantImage) {
                                                                 $otherVariant = $product->variants->skip(1)->first();
                                                                 if ($otherVariant && $otherVariant->images) {
-                                                                    $images = json_decode($otherVariant->images, true);
-                                                                    if (!empty($images[0])) {
-                                                                        $variantImage = asset($images[0]);
+                                                                    $images = $otherVariant->images;
+                                                                    // Nếu là array, sử dụng trực tiếp
+                                                                    if (is_array($images)) {
+                                                                        if (!empty($images[0])) {
+                                                                            $variantImage = asset($images[0]);
+                                                                        }
+                                                                    } 
+                                                                    // Nếu là string, thử decode
+                                                                    else if (is_string($images)) {
+                                                                        $decoded = json_decode($images, true);
+                                                                        if (is_array($decoded) && !empty($decoded[0])) {
+                                                                            $variantImage = asset($decoded[0]);
+                                                                        }
                                                                     }
                                                                 }
                                                             }

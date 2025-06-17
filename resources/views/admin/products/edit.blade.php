@@ -397,6 +397,8 @@
                 <input type="hidden" name="images_to_delete" id="images_to_delete" value="">
                 <!-- Hidden input for variants to delete -->
                 <input type="hidden" name="variants_to_delete" id="variants_to_delete" value="">
+                <!-- Hidden input to track if any images were deleted -->
+                <input type="hidden" name="has_image_deletions" id="has_image_deletions" value="0">
 
                                 <div class="mb-3">
                     <button type="submit" class="btn btn-primary">Cập Nhật Sản Phẩm</button>
@@ -698,8 +700,36 @@
                 button.addEventListener('click', function() {
                     const imagePath = this.dataset.image;
                     const variantId = this.dataset.variant;
-                    imagesToDelete.add(imagePath);
-                    document.getElementById('images_to_delete').value = JSON.stringify(Array.from(imagesToDelete));
+                    
+                    if (imagePath) {
+                        // Normalize the image path to match database format
+                        let normalizedPath = imagePath;
+                        
+                        // If it's a full URL, extract the relative path
+                        if (imagePath.startsWith('http') || imagePath.startsWith('/')) {
+                            if (imagePath.includes('/uploads/')) {
+                                normalizedPath = imagePath.split('/uploads/')[1];
+                            } else {
+                                // Fallback: take the last 3 parts of the path
+                                normalizedPath = imagePath.split('/').slice(-3).join('/');
+                            }
+                        }
+                        
+                        // Ensure it starts with 'uploads/'
+                        if (!normalizedPath.startsWith('uploads/')) {
+                            normalizedPath = 'uploads/' + normalizedPath;
+                        }
+                        
+                        console.log('Deleting image:', {
+                            original: imagePath,
+                            normalized: normalizedPath
+                        });
+                        
+                        imagesToDelete.add(normalizedPath);
+                        document.getElementById('images_to_delete').value = JSON.stringify(Array.from(imagesToDelete));
+                        document.getElementById('has_image_deletions').value = '1';
+                    }
+                    
                     this.closest('.image-preview-wrapper').remove();
                 });
             });
@@ -722,11 +752,31 @@
                     if (!confirm(confirmMessage)) {
                         return;
                     }
+
+                    // Store existing variants for deletion
+                    const variantsToDelete = [];
+                    $('#variantsContainer .variant-row input[name$="[id]"]').each(function() {
+                        if (this.value) {
+                            variantsToDelete.push(this.value);
+                        }
+                    });
+                    $('#variants_to_delete').val(JSON.stringify(variantsToDelete));
+
+                    // Store images for deletion
+                    const imagesToDelete = [];
+                    $('#variantsContainer .image-preview-wrapper img').each(function() {
+                        const imgSrc = $(this).attr('src');
+                        const relativePath = imgSrc.includes('/uploads/') ? 
+                            imgSrc.split('/uploads/')[1] : 
+                            imgSrc.split('/').slice(-3).join('/');
+                        imagesToDelete.push('uploads/' + relativePath);
+                    });
+                    $('#images_to_delete').val(JSON.stringify(imagesToDelete));
                 }
 
                 // Collect attribute data
                 const attributeData = [];
-            const selects = document.querySelectorAll('.attribute-type');
+                const selects = document.querySelectorAll('.attribute-type');
                 const valueSelects = document.querySelectorAll('.attribute-values');
 
                 selects.forEach((select, idx) => {
@@ -735,7 +785,7 @@
                         if (valueSelect && $(valueSelect).val() && $(valueSelect).val().length > 0) {
                             const selectedValues = Array.from(valueSelect.selectedOptions).map(opt => ({
                                 id: parseInt(opt.value),
-                                value: opt.text.split(' ')[0],
+                                value: opt.text,
                                 attribute_type_id: parseInt(select.value),
                                 hex: opt.getAttribute('data-hex')
                             }));
@@ -752,24 +802,11 @@
 
                 // Generate variants
                 const combinations = generateCombinations(attributeData);
-            const variantsContainer = document.getElementById('variantsContainer');
+                const variantsContainer = document.getElementById('variantsContainer');
                 const productName = document.getElementById('name').value;
-                const existingVariants = Array.from(variantsContainer.children);
-                const variantsToDelete = [];
-
-                // Mark existing variants for deletion
-                existingVariants.forEach(variant => {
-                    const variantId = variant.querySelector('input[name$="[id]"]')?.value;
-                if (variantId) {
-                        variantsToDelete.push(variantId);
-                    }
-                });
-
-                // Update variants to delete
-                document.getElementById('variants_to_delete').value = JSON.stringify(variantsToDelete);
 
                 // Clear and regenerate variants
-            variantsContainer.innerHTML = '';
+                variantsContainer.innerHTML = '';
                 combinations.forEach((combination, index) => {
                     const variantValues = combination.map(item => item.value).filter(Boolean);
                     const variantName = productName + (variantValues.length > 0 ? ' - ' + variantValues.join(' - ') : '');

@@ -28,7 +28,10 @@ class ProductController
         
         $categories = Category::where('type', 1)->get();
         
-        return view('admin.products.index', compact('products', 'categories'));
+        // Get count of soft deleted products
+        $trashedCount = Product::onlyTrashed()->count();
+        
+        return view('admin.products.index', compact('products', 'categories', 'trashedCount'));
     }
 
     public function create()
@@ -184,16 +187,39 @@ class ProductController
                     $variantsToDelete = array_merge($variantsToDelete, array_diff($existingVariantIds, $requestedVariantIds));
                     
                     if (!empty($variantsToDelete)) {
-                        ProductVariant::whereIn('id', $variantsToDelete)->delete();
-                        VariantCombination::whereIn('variant_id', $variantsToDelete)->delete();
+                        foreach ($variantsToDelete as $variantId) {
+                            $variant = ProductVariant::find($variantId);
+                            if ($variant) {
+                                // Nếu biến thể bị xóa là mặc định, tìm biến thể khác làm mặc định
+                                if ($variant->is_default) {
+                                    $newDefaultVariant = ProductVariant::where('product_id', $product->id)
+                                        ->where('id', '!=', $variantId)
+                                        ->whereNull('deleted_at')
+                                        ->whereNotIn('id', $variantsToDelete)
+                                        ->first();
+
+                                    if ($newDefaultVariant) {
+                                        $newDefaultVariant->update(['is_default' => 1]);
+                                    }
+                                }
+                                
+                                $variant->combinations()->delete();
+                                $variant->delete();
+                            }
+                        }
                     }
                 }
             } else {
                 // If no variants in request, soft delete all existing variants
                 $existingVariantIds = $product->variants()->whereNull('deleted_at')->pluck('id')->toArray();
                 if (!empty($existingVariantIds)) {
-                    ProductVariant::whereIn('id', $existingVariantIds)->delete();
-                    VariantCombination::whereIn('variant_id', $existingVariantIds)->delete();
+                    foreach ($existingVariantIds as $variantId) {
+                        $variant = ProductVariant::find($variantId);
+                        if ($variant) {
+                            $variant->combinations()->delete();
+                            $variant->delete();
+                        }
+                    }
                 }
             }
 
@@ -729,8 +755,12 @@ class ProductController
         $products = Product::onlyTrashed()
             ->with([
                 'category', 
-                'variants',
-                'defaultVariant'
+                'variants' => function($query) {
+                    $query->withTrashed(); // Load cả variants đã bị xóa mềm
+                },
+                'defaultVariant' => function($query) {
+                    $query->withTrashed(); // Load default variant đã bị xóa mềm
+                }
             ])
             ->latest()
             ->paginate(10);
@@ -743,13 +773,29 @@ class ProductController
         try {
             DB::beginTransaction();
             
+            // Find the product with trashed
             $product = Product::onlyTrashed()->findOrFail($id);
+            
+            // Get all soft deleted variants of this product
+            $variantIds = ProductVariant::onlyTrashed()
+                ->where('product_id', $id)
+                ->pluck('id')
+                ->toArray();
+            
+            if (!empty($variantIds)) {
+                // Restore all soft deleted variants
+                ProductVariant::onlyTrashed()
+                    ->whereIn('id', $variantIds)
+                    ->restore();
+                
+                // Restore all soft deleted variant combinations
+                VariantCombination::onlyTrashed()
+                    ->whereIn('variant_id', $variantIds)
+                    ->restore();
+            }
             
             // Restore the product
             $product->restore();
-            
-            // Restore all related variants
-            $product->variants()->onlyTrashed()->restore();
             
             DB::commit();
             
@@ -767,6 +813,17 @@ class ProductController
     {
         try {
             DB::beginTransaction();
+            
+            // Get all variant IDs before soft deleting them
+            $variantIds = $product->variants()->pluck('id')->toArray();
+            
+            // Soft delete all variants
+            if (!empty($variantIds)) {
+                ProductVariant::whereIn('id', $variantIds)->delete();
+                
+                // Soft delete all variant combinations
+                VariantCombination::whereIn('variant_id', $variantIds)->delete();
+            }
             
             // Soft delete the product
             $product->delete();

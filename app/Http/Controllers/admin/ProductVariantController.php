@@ -5,6 +5,8 @@ namespace App\Http\Controllers\admin;
 use App\Models\ProductVariant;
 use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class ProductVariantController
 {
@@ -36,10 +38,38 @@ class ProductVariantController
 
     public function restore($id)
     {
-        $variant = ProductVariant::onlyTrashed()->findOrFail($id);
-        $variant->restore();
-        $variant->combinations()->withTrashed()->restore();
-        return redirect()->route('admin.variants.trash')->with('success', 'Khôi phục biến thể thành công!');
+        try {
+            DB::beginTransaction();
+
+            $variant = ProductVariant::onlyTrashed()->findOrFail($id);
+            
+            // Kiểm tra xem biến thể này có phải là biến thể mặc định ban đầu không
+            $wasDefault = $variant->is_default;
+            
+            // Khôi phục biến thể và các combinations
+            $variant->restore();
+            $variant->combinations()->withTrashed()->restore();
+
+            // Nếu biến thể này là mặc định ban đầu, đặt lại nó làm mặc định
+            if ($wasDefault) {
+                // Bỏ mặc định của biến thể hiện tại (nếu có)
+                ProductVariant::where('product_id', $variant->product_id)
+                    ->where('id', '!=', $variant->id)
+                    ->where('is_default', 1)
+                    ->update(['is_default' => 0]);
+                
+                // Đặt lại biến thể này làm mặc định
+                $variant->update(['is_default' => 1]);
+            }
+
+            DB::commit();
+            return redirect()->route('admin.variants.trash')
+                ->with('success', 'Khôi phục biến thể thành công!');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Lỗi khi khôi phục biến thể: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Có lỗi xảy ra khi khôi phục biến thể.');
+        }
     }
 
     public function update(Request $request, ProductVariant $variant)
@@ -73,8 +103,34 @@ class ProductVariantController
 
     public function destroy(ProductVariant $variant)
     {
-        $variant->combinations()->delete();
-        $variant->delete();
-        return redirect()->route('admin.variants.index')->with('success', 'Đã xóa biến thể thành công!');
+        try {
+            DB::beginTransaction();
+
+            // Kiểm tra xem biến thể này có phải là mặc định không
+            if ($variant->is_default) {
+                // Tìm một biến thể khác còn tồn tại của cùng sản phẩm
+                $newDefaultVariant = ProductVariant::where('product_id', $variant->product_id)
+                    ->where('id', '!=', $variant->id)
+                    ->whereNull('deleted_at')
+                    ->first();
+
+                if ($newDefaultVariant) {
+                    // Đặt biến thể mới làm mặc định
+                    $newDefaultVariant->update(['is_default' => 1]);
+                }
+            }
+
+            // Xóa mềm các combinations và biến thể
+            $variant->combinations()->delete();
+            $variant->delete();
+
+            DB::commit();
+            return redirect()->route('admin.variants.index')
+                ->with('success', 'Đã xóa biến thể thành công!');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Lỗi khi xóa biến thể: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Có lỗi xảy ra khi xóa biến thể.');
+        }
     }
 } 

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Máy chủ: localhost
--- Thời gian đã tạo: Th6 16, 2025 lúc 04:21 PM
+-- Thời gian đã tạo: Th6 18, 2025 lúc 02:43 PM
 -- Phiên bản máy phục vụ: 5.7.43-log
 -- Phiên bản PHP: 8.3.15
 
@@ -86,7 +86,7 @@ CREATE TABLE `cache` (
 --
 
 INSERT INTO `cache` (`key`, `value`, `expiration`) VALUES
-('laravel_cache_spatie.permission.cache', 'a:3:{s:5:\"alias\";a:4:{s:1:\"a\";s:2:\"id\";s:1:\"b\";s:4:\"name\";s:1:\"c\";s:10:\"guard_name\";s:1:\"r\";s:5:\"roles\";}s:11:\"permissions\";a:37:{i:0;a:4:{s:1:\"a\";i:1;s:1:\"b\";s:15:\"view categories\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:1;a:4:{s:1:\"a\";i:2;s:1:\"b\";s:17:\"create categories\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:2;a:4:{s:1:\"a\";i:3;s:1:\"b\";s:15:\"edit categories\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:3;a:4:{s:1:\"a\";i:4;s:1:\"b\";s:17:\"delete categories\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:4;a:4:{s:1:\"a\";i:5;s:1:\"b\";s:12:\"view banners\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:5;a:4:{s:1:\"a\";i:6;s:1:\"b\";s:14:\"create banners\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:6;a:4:{s:1:\"a\";i:7;s:1:\"b\";s:12:\"edit banners\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:7;a:4:{s:1:\"a\";i:8;s:1:\"b\";s:14:\"delete banners\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:8;a:4:{s:1:\"a\";i:9;s:1:\"b\";s:13:\"view products\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:9;a:4:{s:1:\"a\";i:10;s:1:\"b\";s:15:\"create products\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:10;a:4:{s:1:\"a\";i:11;s:1:\"b\";s:13:\"edit products\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:11;a:4:{s:1:\"a\";i:12;s:1:\"b\";s:15:\"delete products\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:12;a:4:{s:1:\"a\";i:13;s:1:\"b\";s:11:\"view orders\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:13;a:4:{s:1:\"a\";i:14;s:1:\"b\";s:13:\"create orders\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:14;a:4:{s:1:\"a\";i:15;s:1:\"b\";s:11:\"edit orders\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:15;a:4:{s:1:\"a\";i:16;s:1:\"b\";s:13:\"delete orders\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:16;a:4:{s:1:\"a\";i:17;s:1:\"b\";s:10:\"view users\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:17;a:4:{s:1:\"a\";i:18;s:1:\"b\";s:12:\"create users\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:18;a:4:{s:1:\"a\";i:19;s:1:\"b\";s:10:\"edit users\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:19;a:4:{s:1:\"a\";i:20;s:1:\"b\";s:12:\"delete users\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:20;a:4:{s:1:\"a\";i:21;s:1:\"b\";s:10:\"view blogs\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:21;a:4:{s:1:\"a\";i:22;s:1:\"b\";s:12:\"create blogs\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:22;a:4:{s:1:\"a\";i:23;s:1:\"b\";s:10:\"edit blogs\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:23;a:4:{s:1:\"a\";i:24;s:1:\"b\";s:12:\"delete blogs\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:24;a:4:{s:1:\"a\";i:25;s:1:\"b\";s:15:\"view attributes\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:25;a:4:{s:1:\"a\";i:26;s:1:\"b\";s:17:\"create attributes\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:26;a:4:{s:1:\"a\";i:27;s:1:\"b\";s:15:\"edit attributes\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:27;a:4:{s:1:\"a\";i:28;s:1:\"b\";s:17:\"delete attributes\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:28;a:4:{s:1:\"a\";i:29;s:1:\"b\";s:14:\"view dashboard\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:29;a:4:{s:1:\"a\";i:30;s:1:\"b\";s:7:\"addrole\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:30;a:4:{s:1:\"a\";i:31;s:1:\"b\";s:28:\"view category specifications\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:31;a:4:{s:1:\"a\";i:32;s:1:\"b\";s:24:\"view category attributes\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:32;a:4:{s:1:\"a\";i:33;s:1:\"b\";s:19:\"view specifications\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:33;a:4:{s:1:\"a\";i:34;s:1:\"b\";s:20:\"trash specifications\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:34;a:4:{s:1:\"a\";i:35;s:1:\"b\";s:22:\"restore specifications\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:35;a:4:{s:1:\"a\";i:36;s:1:\"b\";s:21:\"delete specifications\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:36;a:4:{s:1:\"a\";i:37;s:1:\"b\";s:13:\"view vouchers\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}}s:5:\"roles\";a:2:{i:0;a:3:{s:1:\"a\";i:1;s:1:\"b\";s:5:\"admin\";s:1:\"c\";s:3:\"web\";}i:1;a:3:{s:1:\"a\";i:2;s:1:\"b\";s:5:\"staff\";s:1:\"c\";s:3:\"web\";}}}', 1750094730);
+('laravel_cache_spatie.permission.cache', 'a:3:{s:5:\"alias\";a:4:{s:1:\"a\";s:2:\"id\";s:1:\"b\";s:4:\"name\";s:1:\"c\";s:10:\"guard_name\";s:1:\"r\";s:5:\"roles\";}s:11:\"permissions\";a:37:{i:0;a:4:{s:1:\"a\";i:1;s:1:\"b\";s:15:\"view categories\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:1;a:4:{s:1:\"a\";i:2;s:1:\"b\";s:17:\"create categories\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:2;a:4:{s:1:\"a\";i:3;s:1:\"b\";s:15:\"edit categories\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:3;a:4:{s:1:\"a\";i:4;s:1:\"b\";s:17:\"delete categories\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:4;a:4:{s:1:\"a\";i:5;s:1:\"b\";s:12:\"view banners\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:5;a:4:{s:1:\"a\";i:6;s:1:\"b\";s:14:\"create banners\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:6;a:4:{s:1:\"a\";i:7;s:1:\"b\";s:12:\"edit banners\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:7;a:4:{s:1:\"a\";i:8;s:1:\"b\";s:14:\"delete banners\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:8;a:4:{s:1:\"a\";i:9;s:1:\"b\";s:13:\"view products\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:9;a:4:{s:1:\"a\";i:10;s:1:\"b\";s:15:\"create products\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:10;a:4:{s:1:\"a\";i:11;s:1:\"b\";s:13:\"edit products\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:11;a:4:{s:1:\"a\";i:12;s:1:\"b\";s:15:\"delete products\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:12;a:4:{s:1:\"a\";i:13;s:1:\"b\";s:11:\"view orders\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:13;a:4:{s:1:\"a\";i:14;s:1:\"b\";s:13:\"create orders\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:14;a:4:{s:1:\"a\";i:15;s:1:\"b\";s:11:\"edit orders\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:15;a:4:{s:1:\"a\";i:16;s:1:\"b\";s:13:\"delete orders\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:16;a:4:{s:1:\"a\";i:17;s:1:\"b\";s:10:\"view users\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:17;a:4:{s:1:\"a\";i:18;s:1:\"b\";s:12:\"create users\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:18;a:4:{s:1:\"a\";i:19;s:1:\"b\";s:10:\"edit users\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:19;a:4:{s:1:\"a\";i:20;s:1:\"b\";s:12:\"delete users\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:20;a:4:{s:1:\"a\";i:21;s:1:\"b\";s:10:\"view blogs\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:21;a:4:{s:1:\"a\";i:22;s:1:\"b\";s:12:\"create blogs\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:22;a:4:{s:1:\"a\";i:23;s:1:\"b\";s:10:\"edit blogs\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:23;a:4:{s:1:\"a\";i:24;s:1:\"b\";s:12:\"delete blogs\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:24;a:4:{s:1:\"a\";i:25;s:1:\"b\";s:15:\"view attributes\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:25;a:4:{s:1:\"a\";i:26;s:1:\"b\";s:17:\"create attributes\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:26;a:4:{s:1:\"a\";i:27;s:1:\"b\";s:15:\"edit attributes\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:27;a:4:{s:1:\"a\";i:28;s:1:\"b\";s:17:\"delete attributes\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:28;a:4:{s:1:\"a\";i:29;s:1:\"b\";s:14:\"view dashboard\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:2:{i:0;i:1;i:1;i:2;}}i:29;a:4:{s:1:\"a\";i:30;s:1:\"b\";s:7:\"addrole\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:30;a:4:{s:1:\"a\";i:31;s:1:\"b\";s:28:\"view category specifications\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:31;a:4:{s:1:\"a\";i:32;s:1:\"b\";s:24:\"view category attributes\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:32;a:4:{s:1:\"a\";i:33;s:1:\"b\";s:19:\"view specifications\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:33;a:4:{s:1:\"a\";i:34;s:1:\"b\";s:20:\"trash specifications\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:34;a:4:{s:1:\"a\";i:35;s:1:\"b\";s:22:\"restore specifications\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:35;a:4:{s:1:\"a\";i:36;s:1:\"b\";s:21:\"delete specifications\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}i:36;a:4:{s:1:\"a\";i:37;s:1:\"b\";s:13:\"view vouchers\";s:1:\"c\";s:3:\"web\";s:1:\"r\";a:1:{i:0;i:1;}}}s:5:\"roles\";a:2:{i:0;a:3:{s:1:\"a\";i:1;s:1:\"b\";s:5:\"admin\";s:1:\"c\";s:3:\"web\";}i:1;a:3:{s:1:\"a\";i:2;s:1:\"b\";s:5:\"staff\";s:1:\"c\";s:3:\"web\";}}}', 1750217869);
 
 -- --------------------------------------------------------
 
@@ -142,8 +142,7 @@ CREATE TABLE `cart_items` (
 --
 
 INSERT INTO `cart_items` (`id`, `cart_id`, `product_id`, `variant_id`, `quantity`) VALUES
-(103, 2, 146, 192, 1),
-(104, 2, 146, 193, 1);
+(108, 2, 152, 240, 1);
 
 -- --------------------------------------------------------
 
@@ -388,7 +387,10 @@ INSERT INTO `invoices` (`id`, `order_id`, `invoice_code`, `total`, `issued_by`, 
 (62, 82, 'INV000082', 34333.00, NULL, '2025-06-16 00:32:27', NULL, '2025-06-16 00:32:27', '2025-06-16 00:32:27'),
 (63, 84, 'INV000084', 34333.00, NULL, '2025-06-16 00:34:42', NULL, '2025-06-16 00:34:42', '2025-06-16 00:34:42'),
 (64, 85, 'INV000085', 12999999.00, NULL, '2025-06-16 00:35:28', NULL, '2025-06-16 00:35:28', '2025-06-16 00:35:28'),
-(65, 88, 'INV000088', 34333.00, NULL, '2025-06-16 01:00:09', NULL, '2025-06-16 01:00:09', '2025-06-16 01:00:09');
+(65, 88, 'INV000088', 34333.00, NULL, '2025-06-16 01:00:09', NULL, '2025-06-16 01:00:09', '2025-06-16 01:00:09'),
+(70, 93, 'INV000093', 12345.00, NULL, '2025-06-16 15:27:36', NULL, '2025-06-16 15:27:36', '2025-06-16 15:27:36'),
+(71, 94, 'INV000094', 2345678.00, NULL, '2025-06-16 22:58:34', NULL, '2025-06-16 22:58:34', '2025-06-16 22:58:34'),
+(72, 95, 'INV000095', 555.00, NULL, '2025-06-17 22:45:55', NULL, '2025-06-17 22:45:55', '2025-06-17 22:45:55');
 
 -- --------------------------------------------------------
 
@@ -405,6 +407,19 @@ CREATE TABLE `jobs` (
   `available_at` int(10) UNSIGNED NOT NULL,
   `created_at` int(10) UNSIGNED NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Đang đổ dữ liệu cho bảng `jobs`
+--
+
+INSERT INTO `jobs` (`id`, `queue`, `payload`, `attempts`, `reserved_at`, `available_at`, `created_at`) VALUES
+(284, 'default', '{\"uuid\":\"b88e287b-f80f-41c7-b3a9-0771d83d405b\",\"displayName\":\"App\\\\Events\\\\OrderStatusUpdated\",\"job\":\"Illuminate\\\\Queue\\\\CallQueuedHandler@call\",\"maxTries\":null,\"maxExceptions\":null,\"failOnTimeout\":false,\"backoff\":null,\"timeout\":null,\"retryUntil\":null,\"data\":{\"commandName\":\"Illuminate\\\\Broadcasting\\\\BroadcastEvent\",\"command\":\"O:38:\\\"Illuminate\\\\Broadcasting\\\\BroadcastEvent\\\":14:{s:5:\\\"event\\\";O:29:\\\"App\\\\Events\\\\OrderStatusUpdated\\\":1:{s:5:\\\"order\\\";O:45:\\\"Illuminate\\\\Contracts\\\\Database\\\\ModelIdentifier\\\":5:{s:5:\\\"class\\\";s:16:\\\"App\\\\Models\\\\Order\\\";s:2:\\\"id\\\";i:87;s:9:\\\"relations\\\";a:0:{}s:10:\\\"connection\\\";s:5:\\\"mysql\\\";s:15:\\\"collectionClass\\\";N;}}s:5:\\\"tries\\\";N;s:7:\\\"timeout\\\";N;s:7:\\\"backoff\\\";N;s:13:\\\"maxExceptions\\\";N;s:10:\\\"connection\\\";N;s:5:\\\"queue\\\";N;s:5:\\\"delay\\\";N;s:11:\\\"afterCommit\\\";N;s:10:\\\"middleware\\\";a:0:{}s:7:\\\"chained\\\";a:0:{}s:15:\\\"chainConnection\\\";N;s:10:\\\"chainQueue\\\";N;s:19:\\\"chainCatchCallbacks\\\";N;}\"},\"createdAt\":1750175418,\"delay\":null}', 0, NULL, 1750175418, 1750175418),
+(285, 'default', '{\"uuid\":\"d173fd9c-6d6c-40d1-a002-4a34c4b0c0f0\",\"displayName\":\"App\\\\Events\\\\OrderStatusUpdated\",\"job\":\"Illuminate\\\\Queue\\\\CallQueuedHandler@call\",\"maxTries\":null,\"maxExceptions\":null,\"failOnTimeout\":false,\"backoff\":null,\"timeout\":null,\"retryUntil\":null,\"data\":{\"commandName\":\"Illuminate\\\\Broadcasting\\\\BroadcastEvent\",\"command\":\"O:38:\\\"Illuminate\\\\Broadcasting\\\\BroadcastEvent\\\":14:{s:5:\\\"event\\\";O:29:\\\"App\\\\Events\\\\OrderStatusUpdated\\\":1:{s:5:\\\"order\\\";O:45:\\\"Illuminate\\\\Contracts\\\\Database\\\\ModelIdentifier\\\":5:{s:5:\\\"class\\\";s:16:\\\"App\\\\Models\\\\Order\\\";s:2:\\\"id\\\";i:87;s:9:\\\"relations\\\";a:0:{}s:10:\\\"connection\\\";s:5:\\\"mysql\\\";s:15:\\\"collectionClass\\\";N;}}s:5:\\\"tries\\\";N;s:7:\\\"timeout\\\";N;s:7:\\\"backoff\\\";N;s:13:\\\"maxExceptions\\\";N;s:10:\\\"connection\\\";N;s:5:\\\"queue\\\";N;s:5:\\\"delay\\\";N;s:11:\\\"afterCommit\\\";N;s:10:\\\"middleware\\\";a:0:{}s:7:\\\"chained\\\";a:0:{}s:15:\\\"chainConnection\\\";N;s:10:\\\"chainQueue\\\";N;s:19:\\\"chainCatchCallbacks\\\";N;}\"},\"createdAt\":1750175423,\"delay\":null}', 0, NULL, 1750175423, 1750175423),
+(286, 'default', '{\"uuid\":\"cb3be89b-b2a5-4539-9368-8393b4950ce3\",\"displayName\":\"App\\\\Events\\\\OrderStatusUpdated\",\"job\":\"Illuminate\\\\Queue\\\\CallQueuedHandler@call\",\"maxTries\":null,\"maxExceptions\":null,\"failOnTimeout\":false,\"backoff\":null,\"timeout\":null,\"retryUntil\":null,\"data\":{\"commandName\":\"Illuminate\\\\Broadcasting\\\\BroadcastEvent\",\"command\":\"O:38:\\\"Illuminate\\\\Broadcasting\\\\BroadcastEvent\\\":14:{s:5:\\\"event\\\";O:29:\\\"App\\\\Events\\\\OrderStatusUpdated\\\":1:{s:5:\\\"order\\\";O:45:\\\"Illuminate\\\\Contracts\\\\Database\\\\ModelIdentifier\\\":5:{s:5:\\\"class\\\";s:16:\\\"App\\\\Models\\\\Order\\\";s:2:\\\"id\\\";i:87;s:9:\\\"relations\\\";a:0:{}s:10:\\\"connection\\\";s:5:\\\"mysql\\\";s:15:\\\"collectionClass\\\";N;}}s:5:\\\"tries\\\";N;s:7:\\\"timeout\\\";N;s:7:\\\"backoff\\\";N;s:13:\\\"maxExceptions\\\";N;s:10:\\\"connection\\\";N;s:5:\\\"queue\\\";N;s:5:\\\"delay\\\";N;s:11:\\\"afterCommit\\\";N;s:10:\\\"middleware\\\";a:0:{}s:7:\\\"chained\\\";a:0:{}s:15:\\\"chainConnection\\\";N;s:10:\\\"chainQueue\\\";N;s:19:\\\"chainCatchCallbacks\\\";N;}\"},\"createdAt\":1750175427,\"delay\":null}', 0, NULL, 1750175427, 1750175427),
+(287, 'default', '{\"uuid\":\"8e06699a-cabd-48ef-9f67-15710c9f0ad5\",\"displayName\":\"App\\\\Events\\\\OrderStatusUpdated\",\"job\":\"Illuminate\\\\Queue\\\\CallQueuedHandler@call\",\"maxTries\":null,\"maxExceptions\":null,\"failOnTimeout\":false,\"backoff\":null,\"timeout\":null,\"retryUntil\":null,\"data\":{\"commandName\":\"Illuminate\\\\Broadcasting\\\\BroadcastEvent\",\"command\":\"O:38:\\\"Illuminate\\\\Broadcasting\\\\BroadcastEvent\\\":14:{s:5:\\\"event\\\";O:29:\\\"App\\\\Events\\\\OrderStatusUpdated\\\":1:{s:5:\\\"order\\\";O:45:\\\"Illuminate\\\\Contracts\\\\Database\\\\ModelIdentifier\\\":5:{s:5:\\\"class\\\";s:16:\\\"App\\\\Models\\\\Order\\\";s:2:\\\"id\\\";i:95;s:9:\\\"relations\\\";a:0:{}s:10:\\\"connection\\\";s:5:\\\"mysql\\\";s:15:\\\"collectionClass\\\";N;}}s:5:\\\"tries\\\";N;s:7:\\\"timeout\\\";N;s:7:\\\"backoff\\\";N;s:13:\\\"maxExceptions\\\";N;s:10:\\\"connection\\\";N;s:5:\\\"queue\\\";N;s:5:\\\"delay\\\";N;s:11:\\\"afterCommit\\\";N;s:10:\\\"middleware\\\";a:0:{}s:7:\\\"chained\\\";a:0:{}s:15:\\\"chainConnection\\\";N;s:10:\\\"chainQueue\\\";N;s:19:\\\"chainCatchCallbacks\\\";N;}\"},\"createdAt\":1750175452,\"delay\":null}', 0, NULL, 1750175452, 1750175452),
+(288, 'default', '{\"uuid\":\"dbd61015-f8b7-4be5-9f3d-482197daed46\",\"displayName\":\"App\\\\Events\\\\OrderStatusUpdated\",\"job\":\"Illuminate\\\\Queue\\\\CallQueuedHandler@call\",\"maxTries\":null,\"maxExceptions\":null,\"failOnTimeout\":false,\"backoff\":null,\"timeout\":null,\"retryUntil\":null,\"data\":{\"commandName\":\"Illuminate\\\\Broadcasting\\\\BroadcastEvent\",\"command\":\"O:38:\\\"Illuminate\\\\Broadcasting\\\\BroadcastEvent\\\":14:{s:5:\\\"event\\\";O:29:\\\"App\\\\Events\\\\OrderStatusUpdated\\\":1:{s:5:\\\"order\\\";O:45:\\\"Illuminate\\\\Contracts\\\\Database\\\\ModelIdentifier\\\":5:{s:5:\\\"class\\\";s:16:\\\"App\\\\Models\\\\Order\\\";s:2:\\\"id\\\";i:95;s:9:\\\"relations\\\";a:0:{}s:10:\\\"connection\\\";s:5:\\\"mysql\\\";s:15:\\\"collectionClass\\\";N;}}s:5:\\\"tries\\\";N;s:7:\\\"timeout\\\";N;s:7:\\\"backoff\\\";N;s:13:\\\"maxExceptions\\\";N;s:10:\\\"connection\\\";N;s:5:\\\"queue\\\";N;s:5:\\\"delay\\\";N;s:11:\\\"afterCommit\\\";N;s:10:\\\"middleware\\\";a:0:{}s:7:\\\"chained\\\";a:0:{}s:15:\\\"chainConnection\\\";N;s:10:\\\"chainQueue\\\";N;s:19:\\\"chainCatchCallbacks\\\";N;}\"},\"createdAt\":1750175511,\"delay\":null}', 0, NULL, 1750175511, 1750175511),
+(289, 'default', '{\"uuid\":\"542ca5f8-8e7f-425e-a279-d8d1c680edd6\",\"displayName\":\"App\\\\Events\\\\OrderStatusUpdated\",\"job\":\"Illuminate\\\\Queue\\\\CallQueuedHandler@call\",\"maxTries\":null,\"maxExceptions\":null,\"failOnTimeout\":false,\"backoff\":null,\"timeout\":null,\"retryUntil\":null,\"data\":{\"commandName\":\"Illuminate\\\\Broadcasting\\\\BroadcastEvent\",\"command\":\"O:38:\\\"Illuminate\\\\Broadcasting\\\\BroadcastEvent\\\":14:{s:5:\\\"event\\\";O:29:\\\"App\\\\Events\\\\OrderStatusUpdated\\\":1:{s:5:\\\"order\\\";O:45:\\\"Illuminate\\\\Contracts\\\\Database\\\\ModelIdentifier\\\":5:{s:5:\\\"class\\\";s:16:\\\"App\\\\Models\\\\Order\\\";s:2:\\\"id\\\";i:95;s:9:\\\"relations\\\";a:0:{}s:10:\\\"connection\\\";s:5:\\\"mysql\\\";s:15:\\\"collectionClass\\\";N;}}s:5:\\\"tries\\\";N;s:7:\\\"timeout\\\";N;s:7:\\\"backoff\\\";N;s:13:\\\"maxExceptions\\\";N;s:10:\\\"connection\\\";N;s:5:\\\"queue\\\";N;s:5:\\\"delay\\\";N;s:11:\\\"afterCommit\\\";N;s:10:\\\"middleware\\\";a:0:{}s:7:\\\"chained\\\";a:0:{}s:15:\\\"chainConnection\\\";N;s:10:\\\"chainQueue\\\";N;s:19:\\\"chainCatchCallbacks\\\";N;}\"},\"createdAt\":1750175569,\"delay\":null}', 0, NULL, 1750175569, 1750175569),
+(290, 'default', '{\"uuid\":\"8279f4fd-5f3a-4d1f-8402-5ab02fae71c8\",\"displayName\":\"App\\\\Events\\\\OrderStatusUpdated\",\"job\":\"Illuminate\\\\Queue\\\\CallQueuedHandler@call\",\"maxTries\":null,\"maxExceptions\":null,\"failOnTimeout\":false,\"backoff\":null,\"timeout\":null,\"retryUntil\":null,\"data\":{\"commandName\":\"Illuminate\\\\Broadcasting\\\\BroadcastEvent\",\"command\":\"O:38:\\\"Illuminate\\\\Broadcasting\\\\BroadcastEvent\\\":14:{s:5:\\\"event\\\";O:29:\\\"App\\\\Events\\\\OrderStatusUpdated\\\":1:{s:5:\\\"order\\\";O:45:\\\"Illuminate\\\\Contracts\\\\Database\\\\ModelIdentifier\\\":5:{s:5:\\\"class\\\";s:16:\\\"App\\\\Models\\\\Order\\\";s:2:\\\"id\\\";i:95;s:9:\\\"relations\\\";a:0:{}s:10:\\\"connection\\\";s:5:\\\"mysql\\\";s:15:\\\"collectionClass\\\";N;}}s:5:\\\"tries\\\";N;s:7:\\\"timeout\\\";N;s:7:\\\"backoff\\\";N;s:13:\\\"maxExceptions\\\";N;s:10:\\\"connection\\\";N;s:5:\\\"queue\\\";N;s:5:\\\"delay\\\";N;s:11:\\\"afterCommit\\\";N;s:10:\\\"middleware\\\";a:0:{}s:7:\\\"chained\\\";a:0:{}s:15:\\\"chainConnection\\\";N;s:10:\\\"chainQueue\\\";N;s:19:\\\"chainCatchCallbacks\\\";N;}\"},\"createdAt\":1750175607,\"delay\":null}', 0, NULL, 1750175607, 1750175607);
 
 -- --------------------------------------------------------
 
@@ -677,7 +692,7 @@ INSERT INTO `orders` (`id`, `order_code`, `user_id`, `subtotal`, `discount`, `sh
 (7, 'ORD202506155013', 42, 55444.00, 0.00, 0.00, 55444.00, 0.00, 'Vọng Giang', 'đại học coder', '0968791308', 'daichuvan05@gmail.com', 'cod', 'pending', NULL, 'completed', 0, NULL, 'tôi cần thay đổi phương thức thanh toán', '2025-06-15 01:19:31', '2025-06-15 02:27:59', NULL),
 (8, 'ORD202506159614', 42, 110888.00, 0.00, 0.00, 55444.00, 55444.00, 'Vọng Giang', 'đại học coder', '0968791308', 'daichuvan05@gmail.com', 'vnpay', 'paid', NULL, 'shipping', 1, NULL, NULL, '2025-06-15 01:23:09', '2025-06-15 03:38:28', NULL),
 (9, 'ORD202506156707', NULL, 3333.00, 0.00, 0.00, 3333.00, 0.00, 'Vọng Giang', 'đại học coder ', '0368706552', 'yineh95741@finfave.com', 'vnpay', 'pending', NULL, 'pending', 0, NULL, NULL, '2025-06-15 06:51:56', '2025-06-15 06:51:56', NULL),
-(10, 'ORD202506159114', NULL, 34333.00, 0.00, 0.00, 34333.00, 0.00, 'Vọng Giang', 'đại học coder ', '0968791308', 'yineh95741@finfave.com', 'vnpay', 'paid', NULL, 'preparing', 1, NULL, NULL, '2025-06-15 06:54:05', '2025-06-15 07:03:18', NULL),
+(10, 'ORD202506159114', NULL, 34333.00, 0.00, 0.00, 34333.00, 0.00, 'Vọng Giang', 'đại học coder ', '0968791308', 'yineh95741@finfave.com', 'vnpay', 'paid', NULL, 'preparing', 1, NULL, NULL, '2024-06-15 06:54:05', '2024-06-15 07:03:18', NULL),
 (11, 'DH11', NULL, 34333.00, 0.00, 0.00, 34333.00, 0.00, 'Vọng Giang', 'đại học coder', '0123456789', 'daicvph50503@gmail.com', 'cod', 'pending', NULL, 'pending', 0, NULL, NULL, '2025-06-15 07:05:10', '2025-06-15 07:05:10', NULL),
 (12, 'ORD202506157532', NULL, 34333.00, 0.00, 0.00, 34333.00, 0.00, 'Hanoi', 'aaaa ', '0968791308', 'daichuvan05@gmail.com', 'vnpay', 'paid', NULL, 'confirmed', 1, NULL, NULL, '2025-06-15 07:09:32', '2025-06-15 07:10:29', NULL),
 (13, 'DH13', 42, 34333.00, 0.00, 0.00, 34333.00, 0.00, 'Vọng Giang', 'đại học coder', '0968791308', 'daichuvan05@gmail.com', 'cod', 'pending', NULL, 'confirmed', 0, NULL, NULL, '2025-06-15 07:16:17', '2025-06-15 07:47:37', NULL),
@@ -754,8 +769,11 @@ INSERT INTO `orders` (`id`, `order_code`, `user_id`, `subtotal`, `discount`, `sh
 (84, 'DH84', 42, 34333.00, 0.00, 0.00, 34333.00, 0.00, 'Vọng Giang', 'đại học coder', '0968791308', 'daichuvan95@gmail.com', 'cod', 'pending', NULL, 'pending', 0, NULL, NULL, '2025-06-16 00:34:42', '2025-06-16 00:34:42', NULL),
 (85, 'DH85', 42, 12999999.00, 0.00, 0.00, 12999999.00, 0.00, 'Vọng Giang', 'đại học coder', '0968791308', 'daichuvan95@gmail.com', 'cod', 'pending', NULL, 'pending', 0, NULL, NULL, '2025-06-16 00:35:28', '2025-06-16 00:35:28', NULL),
 (86, 'DH86', 42, 26799997.00, 0.00, 0.00, 26799997.00, 0.00, 'Vọng Giang', 'đại học coder', '0968791308', 'daichuvan95@gmail.com', 'vnpay', 'paid', NULL, 'confirmed', 1, NULL, NULL, '2025-06-16 00:43:50', '2025-06-16 00:44:19', NULL),
-(87, 'DH87', 42, 13068665.00, 0.00, 0.00, 13068665.00, 0.00, 'Vọng Giang', 'đại học coder', '0968791308', 'daichuvan95@gmail.com', 'vnpay', 'paid', NULL, 'confirmed', 1, NULL, NULL, '2025-06-16 00:53:12', '2025-06-16 00:53:39', NULL),
-(88, 'DH88', 42, 34333.00, 0.00, 0.00, 34333.00, 0.00, 'Vọng Giang', 'đại học coder', '0968791308', 'daichuvan95@gmail.com', 'cod', 'pending', NULL, 'pending', 0, NULL, NULL, '2025-06-16 01:00:09', '2025-06-16 01:00:09', NULL);
+(87, 'DH87', 42, 13068665.00, 0.00, 0.00, 13068665.00, 0.00, 'Vọng Giang', 'đại học coder', '0968791308', 'daichuvan95@gmail.com', 'vnpay', 'paid', NULL, 'completed', 1, NULL, NULL, '2025-06-16 00:53:12', '2025-06-17 22:50:27', NULL),
+(88, 'DH88', 42, 34333.00, 0.00, 0.00, 34333.00, 0.00, 'Vọng Giang', 'đại học coder', '0968791308', 'daichuvan95@gmail.com', 'cod', 'pending', NULL, 'pending', 0, NULL, NULL, '2025-06-16 01:00:09', '2025-06-16 01:00:09', NULL),
+(93, 'DH93', 43, 12345.00, 0.00, 0.00, 12345.00, 0.00, 'Hà Nội', 'Cường', '0987654321', 'test@gmail.com', 'cod', 'pending', NULL, 'pending', 0, NULL, NULL, '2025-06-16 15:27:36', '2025-06-16 15:27:36', NULL),
+(94, 'DH94', 43, 2345678.00, 0.00, 0.00, 2345678.00, 0.00, 'Hà Nội', 'Cường', '0987654311', 'test@gmail.com', 'cod', 'pending', NULL, 'pending', 0, NULL, NULL, '2025-06-16 22:58:34', '2025-06-16 22:58:34', NULL),
+(95, 'DH95', 43, 35555555.00, 0.00, 0.00, 35555555.00, 0.00, 'Hà Nội', 'Cường', '0987654321', 'test@gmail.com', 'cod', 'paid', NULL, 'completed', 0, NULL, NULL, '2025-06-17 22:45:55', '2025-06-17 22:53:27', NULL);
 
 -- --------------------------------------------------------
 
@@ -792,6 +810,13 @@ CREATE TABLE `order_items` (
   `updated_at` timestamp NULL DEFAULT NULL,
   `deleted_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Đang đổ dữ liệu cho bảng `order_items`
+--
+
+INSERT INTO `order_items` (`id`, `order_id`, `product_id`, `product_variant_id`, `quantity`, `price`, `total`, `created_at`, `updated_at`, `deleted_at`) VALUES
+(98, 95, 152, 239, 1, 555.00, 555.00, '2025-06-17 22:45:55', '2025-06-17 22:45:55', NULL);
 
 -- --------------------------------------------------------
 
@@ -943,8 +968,7 @@ CREATE TABLE `products` (
 --
 
 INSERT INTO `products` (`id`, `name`, `slug`, `description`, `content`, `category_id`, `warranty_months`, `is_featured`, `status`, `views`, `created_at`, `updated_at`, `deleted_at`) VALUES
-(146, 'Iphone 12', 'iphone-12-1750060918', '122', '<p>123</p>', 25, 12, 0, 'active', 8, '2025-06-16 14:29:02', '2025-06-16 15:01:58', NULL),
-(147, 'iPhone 16 Pro Max', 'iphone-16-pro-max-1750061656', 'Bộ sản phẩm gồm: Hộp, Sách hướng dẫn, Cáp, Cây lấy sim\r\n Hư gì đổi nấy 12 tháng tại 3041 siêu thị trên toàn quốc Xem chi tiết chính sách bảo hành, đổi trả\r\n Giao hàng nhanh toàn quốc Xem chi tiết\r\n Tổng đài: 1900.9696.42 (8:00 - 21:30)', '<p><br />\r\n<a href=\"https://www.topzone.vn/iphone/iphone-16-pro-max-1tb\"><img alt=\"iPhone 16 Pro Max 1TB - Tổng Quan\" src=\"https://cdnv2.tgdd.vn/mwg-static//42/329151/s16/iphone-16-pro-max-1tb-081024-023919-238.jpg\" /><img alt=\"iPhone 16 Pro Max 1TB - Thông Số Kỹ Thuật\" src=\"https://cdnv2.tgdd.vn/mwg-static//42/329151/s16/iphone-16-pro-max-1tb-081024-023919-705.jpg\" /><img alt=\"iPhone 16 Pro Max 1TB - AI và Pin\" src=\"https://cdnv2.tgdd.vn/mwg-static//42/329151/s16/iphone-16-pro-max-1tb-081024-023920-641.jpg\" /><img alt=\"iPhone 16 Pro Max 1TB - So Sánh\" src=\"https://cdnv2.tgdd.vn/mwg-static//42/329151/s16/iphone-16-pro-max-1tb-081024-023921-325.jpg\" /></a></p>\r\n\r\n<p>&nbsp;</p>\r\n\r\n<p><strong>Nội dung quảng c&aacute;o</strong></p>\r\n\r\n<p>iPhone 16 Pro Max. Sở hữu thiết kế titan tuyệt đẹp. Điều Khiển Camera. 4K Dolby Vision tốc độ 120 fps. V&agrave; chip A18 Pro.</p>', 25, 12, 0, 'active', 2, '2025-06-16 15:14:16', '2025-06-16 15:15:56', NULL);
+(152, 'iPhone 15 Pro Max test', 'iphone-15-pro-max-test-1750152130', 'aaaaaa', '<p>aaaaaa</p>', 25, 12, 0, 'active', 21, '2025-06-17 13:23:02', '2025-06-18 13:42:09', '2025-06-18 13:42:09');
 
 -- --------------------------------------------------------
 
@@ -983,12 +1007,54 @@ CREATE TABLE `product_specifications` (
 --
 
 INSERT INTO `product_specifications` (`id`, `product_id`, `specification_id`, `value`, `created_at`, `updated_at`, `deleted_at`) VALUES
-(282, 147, 14, 'iOS 18', '2025-06-16 15:14:16', '2025-06-16 15:14:16', NULL),
-(283, 147, 15, 'Apple A18 Pro 6 nhân', '2025-06-16 15:14:16', '2025-06-16 15:14:16', NULL),
-(284, 147, 16, 'Hãng không công bố', '2025-06-16 15:14:16', '2025-06-16 15:14:16', NULL),
-(285, 147, 17, 'Apple GPU 6 nhân', '2025-06-16 15:14:16', '2025-06-16 15:14:16', NULL),
-(286, 147, 18, '8 GB', '2025-06-16 15:14:16', '2025-06-16 15:14:16', NULL),
-(287, 147, 21, 'Không giới hạn', '2025-06-16 15:14:16', '2025-06-16 15:14:16', NULL);
+(294, 152, 14, 'aaaaaa', '2025-06-17 16:06:04', '2025-06-17 16:06:48', '2025-06-17 16:06:48'),
+(295, 152, 15, 'aaaaaa', '2025-06-17 16:06:04', '2025-06-17 16:06:48', '2025-06-17 16:06:48'),
+(296, 152, 16, 'aaaaaa', '2025-06-17 16:06:04', '2025-06-17 16:06:48', '2025-06-17 16:06:48'),
+(297, 152, 17, 'aaaaaa', '2025-06-17 16:06:04', '2025-06-17 16:06:48', '2025-06-17 16:06:48'),
+(298, 152, 18, 'aaaaaa', '2025-06-17 16:06:04', '2025-06-17 16:06:48', '2025-06-17 16:06:48'),
+(299, 152, 19, 'aaaaaa', '2025-06-17 16:06:04', '2025-06-17 16:06:48', '2025-06-17 16:06:48'),
+(300, 152, 20, 'aaaaaa', '2025-06-17 16:06:04', '2025-06-17 16:06:48', '2025-06-17 16:06:48'),
+(301, 152, 21, 'aaaaaa', '2025-06-17 16:06:04', '2025-06-17 16:06:48', '2025-06-17 16:06:48'),
+(302, 152, 14, 'aaaaaa', '2025-06-17 16:06:48', '2025-06-17 16:16:16', '2025-06-17 16:16:16'),
+(303, 152, 15, 'aaaaaa', '2025-06-17 16:06:48', '2025-06-17 16:16:16', '2025-06-17 16:16:16'),
+(304, 152, 16, 'aaaaaa', '2025-06-17 16:06:48', '2025-06-17 16:16:16', '2025-06-17 16:16:16'),
+(305, 152, 17, 'aaaaaa', '2025-06-17 16:06:48', '2025-06-17 16:16:16', '2025-06-17 16:16:16'),
+(306, 152, 18, 'aaaaaa', '2025-06-17 16:06:48', '2025-06-17 16:16:16', '2025-06-17 16:16:16'),
+(307, 152, 19, 'aaaaaa', '2025-06-17 16:06:48', '2025-06-17 16:16:16', '2025-06-17 16:16:16'),
+(308, 152, 20, 'aaaaaa', '2025-06-17 16:06:48', '2025-06-17 16:16:16', '2025-06-17 16:16:16'),
+(309, 152, 21, 'aaaaaa', '2025-06-17 16:06:48', '2025-06-17 16:16:16', '2025-06-17 16:16:16'),
+(310, 152, 14, 'aaaaaa', '2025-06-17 16:16:16', '2025-06-17 16:18:06', '2025-06-17 16:18:06'),
+(311, 152, 15, 'aaaaaa', '2025-06-17 16:16:16', '2025-06-17 16:18:06', '2025-06-17 16:18:06'),
+(312, 152, 16, 'aaaaaa', '2025-06-17 16:16:16', '2025-06-17 16:18:06', '2025-06-17 16:18:06'),
+(313, 152, 17, 'aaaaaa', '2025-06-17 16:16:16', '2025-06-17 16:18:06', '2025-06-17 16:18:06'),
+(314, 152, 18, 'aaaaaa', '2025-06-17 16:16:16', '2025-06-17 16:18:06', '2025-06-17 16:18:06'),
+(315, 152, 19, 'aaaaaa', '2025-06-17 16:16:16', '2025-06-17 16:18:06', '2025-06-17 16:18:06'),
+(316, 152, 20, 'aaaaaa', '2025-06-17 16:16:16', '2025-06-17 16:18:06', '2025-06-17 16:18:06'),
+(317, 152, 21, 'aaaaaa', '2025-06-17 16:16:16', '2025-06-17 16:18:06', '2025-06-17 16:18:06'),
+(318, 152, 14, 'aaaaaa', '2025-06-17 16:18:06', '2025-06-17 16:19:53', '2025-06-17 16:19:53'),
+(319, 152, 15, 'aaaaaa', '2025-06-17 16:18:06', '2025-06-17 16:19:53', '2025-06-17 16:19:53'),
+(320, 152, 16, 'aaaaaa', '2025-06-17 16:18:07', '2025-06-17 16:19:53', '2025-06-17 16:19:53'),
+(321, 152, 17, 'aaaaaa', '2025-06-17 16:18:07', '2025-06-17 16:19:53', '2025-06-17 16:19:53'),
+(322, 152, 18, 'aaaaaa', '2025-06-17 16:18:07', '2025-06-17 16:19:53', '2025-06-17 16:19:53'),
+(323, 152, 19, 'aaaaaa', '2025-06-17 16:18:07', '2025-06-17 16:19:53', '2025-06-17 16:19:53'),
+(324, 152, 20, 'aaaaaa', '2025-06-17 16:18:07', '2025-06-17 16:19:53', '2025-06-17 16:19:53'),
+(325, 152, 21, 'aaaaaa', '2025-06-17 16:18:07', '2025-06-17 16:19:53', '2025-06-17 16:19:53'),
+(326, 152, 14, 'aaaaaa', '2025-06-17 16:19:53', '2025-06-17 16:22:10', '2025-06-17 16:22:10'),
+(327, 152, 15, 'aaaaaa', '2025-06-17 16:19:53', '2025-06-17 16:22:10', '2025-06-17 16:22:10'),
+(328, 152, 16, 'aaaaaa', '2025-06-17 16:19:53', '2025-06-17 16:22:10', '2025-06-17 16:22:10'),
+(329, 152, 17, 'aaaaaa', '2025-06-17 16:19:53', '2025-06-17 16:22:10', '2025-06-17 16:22:10'),
+(330, 152, 18, 'aaaaaa', '2025-06-17 16:19:53', '2025-06-17 16:22:10', '2025-06-17 16:22:10'),
+(331, 152, 19, 'aaaaaa', '2025-06-17 16:19:53', '2025-06-17 16:22:10', '2025-06-17 16:22:10'),
+(332, 152, 20, 'aaaaaa', '2025-06-17 16:19:53', '2025-06-17 16:22:10', '2025-06-17 16:22:10'),
+(333, 152, 21, 'aaaaaa', '2025-06-17 16:19:53', '2025-06-17 16:22:10', '2025-06-17 16:22:10'),
+(334, 152, 14, 'aaaaaa', '2025-06-17 16:22:10', '2025-06-17 16:22:10', NULL),
+(335, 152, 15, 'aaaaaa', '2025-06-17 16:22:10', '2025-06-17 16:22:10', NULL),
+(336, 152, 16, 'aaaaaa', '2025-06-17 16:22:10', '2025-06-17 16:22:10', NULL),
+(337, 152, 17, 'aaaaaa', '2025-06-17 16:22:10', '2025-06-17 16:22:10', NULL),
+(338, 152, 18, 'aaaaaa', '2025-06-17 16:22:10', '2025-06-17 16:22:10', NULL),
+(339, 152, 19, 'aaaaaa', '2025-06-17 16:22:10', '2025-06-17 16:22:10', NULL),
+(340, 152, 20, 'aaaaaa', '2025-06-17 16:22:10', '2025-06-17 16:22:10', NULL),
+(341, 152, 21, 'aaaaaa', '2025-06-17 16:22:10', '2025-06-17 16:22:10', NULL);
 
 -- --------------------------------------------------------
 
@@ -1019,22 +1085,8 @@ CREATE TABLE `product_variants` (
 --
 
 INSERT INTO `product_variants` (`id`, `product_id`, `sku`, `name`, `slug`, `discount_price`, `stock`, `status`, `is_default`, `created_at`, `updated_at`, `deleted_at`, `images`, `purchase_price`, `selling_price`) VALUES
-(192, 146, 'SP-58523', 'Iphone 12 - Titan Sa Mạc - 256GB', 'iphone-12-titan-sa-mac-256gb-1750058942-0', NULL, 12, 'active', 1, '2025-06-16 14:29:02', '2025-06-16 15:01:58', '2025-06-16 15:01:58', '\"[\\\"uploads\\\\/products\\\\/1750058942_0_1732206682_1731698037_1731610492_a7.jpg\\\"]\"', 123.00, 1234.00),
-(193, 146, 'SP-96164', 'Iphone 12 - Titan đen - 256GB', 'iphone-12-titan-den-256gb-1750058942-1', NULL, 12, 'active', 0, '2025-06-16 14:29:02', '2025-06-16 15:01:58', '2025-06-16 15:01:58', '\"[\\\"uploads\\\\/products\\\\/1750058942_1_1732218025_2021_9_15_637673230231791121_iphone-13-mini-den-1.jpg\\\"]\"', 12344.00, 12345.00),
-(194, 146, 'SP-35263', 'Iphone 12 - Titan Sa Mạc - 256GB', 'iphone-12-titan-sa-mac-256gb', NULL, 12, 'active', 1, '2025-06-16 15:01:58', '2025-06-16 15:01:58', NULL, NULL, 123.00, 1234.00),
-(195, 146, 'SP-90046', 'Iphone 12 - Titan đen - 256GB', 'iphone-12-titan-den-256gb', NULL, 12, 'active', 0, '2025-06-16 15:01:58', '2025-06-16 15:01:58', NULL, NULL, 12344.00, 12345.00),
-(196, 147, 'SP-78969', 'iPhone 16 Pro Max - Titan Sa Mạc - 256GB', 'iphone-16-pro-max-titan-sa-mac-256gb-1750061656-0', NULL, 111, 'active', 1, '2025-06-16 15:14:16', '2025-06-16 15:14:16', NULL, '\"[\\\"uploads\\\\/products\\\\/1750061656_0_iphone-16-pro-max-desert-titan-1-638621795564494521-650x650.jpg\\\",\\\"uploads\\\\/products\\\\/1750061656_0_iphone-16-pro-max-desert-titan-2-638621795572208419-650x650.jpg\\\",\\\"uploads\\\\/products\\\\/1750061656_0_iphone-16-pro-max-desert-titan-3-638621795578568215-650x650.jpg\\\",\\\"uploads\\\\/products\\\\/1750061656_0_iphone-16-pro-max-desert-titan-4-638621795588787112-650x650.jpg\\\",\\\"uploads\\\\/products\\\\/1750061656_0_iphone-16-pro-max-desert-titan-5-638621795595539246-650x650.jpg\\\",\\\"uploads\\\\/products\\\\/1750061656_0_iphone-16-pro-max-desert-titan-6-638621795603626395-650x650.jpg\\\",\\\"uploads\\\\/products\\\\/1750061656_0_iphone-16-pro-max-desert-titan-7-638621795610778662-650x650.jpg\\\",\\\"uploads\\\\/products\\\\/1750061656_0_iphone-16-pro-max-desert-titan-8-638621795619447667-650x650.jpg\\\",\\\"uploads\\\\/products\\\\/1750061656_0_iphone-16-pro-max-desert-titan-9-638621795626802491-650x650.jpg\\\",\\\"uploads\\\\/products\\\\/1750061656_0_iphone-16-pro-max-desert-titan-10-638621795633165181-650x650.jpg\\\",\\\"uploads\\\\/products\\\\/1750061656_0_iphone-16-pro-max-titan-sa-mac-thumbnew-650x650.png\\\"]\"', 29999999.99, 30490000.00),
-(197, 147, 'SP-50560', 'iPhone 16 Pro Max - Titan Sa Mạc - 512GB', 'iphone-16-pro-max-titan-sa-mac-512gb-1750061656-1', NULL, 222, 'active', 0, '2025-06-16 15:14:16', '2025-06-16 15:14:16', NULL, '\"[\\\"uploads\\\\/products\\\\/1750061656_1_iphone-16-pro-max-desert-titan-1-638621795814068657-650x650.jpg\\\",\\\"uploads\\\\/products\\\\/1750061656_1_iphone-16-pro-max-desert-titan-2-638621795820805902-650x650.jpg\\\",\\\"uploads\\\\/products\\\\/1750061656_1_iphone-16-pro-max-desert-titan-3-638621795830695784-650x650.jpg\\\",\\\"uploads\\\\/products\\\\/1750061656_1_iphone-16-pro-max-desert-titan-4-638621795837108334-650x650.jpg\\\",\\\"uploads\\\\/products\\\\/1750061656_1_iphone-16-pro-max-desert-titan-5-638621795845312767-650x650.jpg\\\",\\\"uploads\\\\/products\\\\/1750061656_1_iphone-16-pro-max-desert-titan-6-638621795853249888-650x650.jpg\\\",\\\"uploads\\\\/products\\\\/1750061656_1_iphone-16-pro-max-desert-titan-7-638621795859754532-650x650.jpg\\\",\\\"uploads\\\\/products\\\\/1750061656_1_iphone-16-pro-max-desert-titan-8-638621795866866908-650x650.jpg\\\",\\\"uploads\\\\/products\\\\/1750061656_1_iphone-16-pro-max-desert-titan-9-638621795875118266-650x650.jpg\\\"]\"', 30000000.00, 36790000.00),
-(198, 147, 'SP-59724', 'iPhone 16 Pro Max - Titan Sa Mạc - 1TB', 'iphone-16-pro-max-titan-sa-mac-1tb-1750061657-2', NULL, 333, 'active', 0, '2025-06-16 15:14:17', '2025-06-16 15:14:17', NULL, '\"[]\"', 30000000.00, 42990000.00),
-(199, 147, 'SP-01816', 'iPhone 16 Pro Max - Titan đen - 256GB', 'iphone-16-pro-max-titan-den-256gb-1750061657-3', NULL, 444, 'active', 0, '2025-06-16 15:14:17', '2025-06-16 15:14:17', NULL, '\"[]\"', 30000000.00, 30490000.00),
-(200, 147, 'SP-16120', 'iPhone 16 Pro Max - Titan đen - 512GB', 'iphone-16-pro-max-titan-den-512gb-1750061657-4', NULL, 555, 'active', 0, '2025-06-16 15:14:17', '2025-06-16 15:14:17', NULL, '\"[]\"', 30000000.00, 36790000.00),
-(201, 147, 'SP-13067', 'iPhone 16 Pro Max - Titan đen - 1TB', 'iphone-16-pro-max-titan-den-1tb-1750061657-5', NULL, 666, 'active', 0, '2025-06-16 15:14:17', '2025-06-16 15:14:17', NULL, '\"[]\"', 30000000.00, 42990000.00),
-(202, 147, 'SP-93060', 'iPhone 16 Pro Max - Titan tự nhiên - 256GB', 'iphone-16-pro-max-titan-tu-nhien-256gb-1750061657-6', NULL, 777, 'active', 0, '2025-06-16 15:14:17', '2025-06-16 15:14:17', NULL, '\"[]\"', 30000000.00, 30890000.00),
-(203, 147, 'SP-35040', 'iPhone 16 Pro Max - Titan tự nhiên - 512GB', 'iphone-16-pro-max-titan-tu-nhien-512gb-1750061657-7', NULL, 888, 'active', 0, '2025-06-16 15:14:17', '2025-06-16 15:14:17', NULL, '\"[]\"', 30000000.00, 36990000.00),
-(204, 147, 'SP-92123', 'iPhone 16 Pro Max - Titan tự nhiên - 1TB', 'iphone-16-pro-max-titan-tu-nhien-1tb-1750061657-8', NULL, 999, 'active', 0, '2025-06-16 15:14:17', '2025-06-16 15:14:17', NULL, '\"[]\"', 29999999.98, 42990000.00),
-(205, 147, 'SP-66546', 'iPhone 16 Pro Max - Titan trắng - 256GB', 'iphone-16-pro-max-titan-trang-256gb-1750061657-9', NULL, 123, 'active', 0, '2025-06-16 15:14:17', '2025-06-16 15:14:17', NULL, '\"[]\"', 30000000.00, 30690000.00),
-(206, 147, 'SP-12062', 'iPhone 16 Pro Max - Titan trắng - 512GB', 'iphone-16-pro-max-titan-trang-512gb-1750061657-10', NULL, 234, 'active', 0, '2025-06-16 15:14:17', '2025-06-16 15:14:17', NULL, '\"[]\"', 30000000.00, 36990000.00),
-(207, 147, 'SP-56345', 'iPhone 16 Pro Max - Titan trắng - 1TB', 'iphone-16-pro-max-titan-trang-1tb-1750061657-11', NULL, 345, 'active', 0, '2025-06-16 15:14:17', '2025-06-16 15:14:17', NULL, '\"[]\"', 29999999.97, 42990000.00);
+(239, 152, 'SP-68348', 'iPhone 15 Pro Max - Titan Sa Mạc - 1TB', 'iphone-15-pro-max-titan-sa-mac-1tb', NULL, 110, 'active', 1, '2025-06-17 13:23:02', '2025-06-18 13:42:09', '2025-06-18 13:42:09', '\"[\\\"uploads\\\\/products\\\\/1750141382_0_macbook-air-13-inch-m4-12-638772027208679591-650x650.jpg\\\",\\\"uploads\\\\/products\\\\/1750141382_0_macbook-air-13-inch-m4-13-638772027216304066-650x650.jpg\\\",\\\"uploads\\\\/products\\\\/1750141382_0_macbook-air-13-inch-m4-14-638772027222384420-650x650.jpg\\\",\\\"uploads\\\\/products\\\\/1750141382_0_macbook-air-13-inch-m4-15-638772027228926275-650x650.jpg\\\",\\\"uploads\\\\/products\\\\/1750141382_0_macbook-air-13-inch-m4-16-638772027238166613-650x650.jpg\\\",\\\"uploads\\\\/products\\\\/1750141382_0_macbook-air-13-inch-m4-18-638772027245004354-650x650.jpg\\\",\\\"uploads\\\\/products\\\\/1750141382_0_macbook-air-13-inch-m4-19-638772027251967937-650x650.jpg\\\",\\\"uploads\\\\/products\\\\/1750141382_0_macbook-air-13-inch-m4-20-638772027259250283-650x650.jpg\\\",\\\"uploads\\\\/products\\\\/1750141382_0_macbook-air-13-inch-m4-21-638772027266138378-650x650.jpg\\\",\\\"uploads\\\\/products\\\\/1750141382_0_macbook-air-13-inch-m4-22-638772027273564585-650x650.jpg\\\",\\\"uploads\\\\/products\\\\/1750141382_0_macbook-air-13-inch-m4-thumb-xanh-da-troi-650x650.png\\\",\\\"uploads\\\\/products\\\\/1750151208_0_macbook-air-13-inch-m4-thumb-xanh-da-troi-650x650.png\\\"]\"', 333.00, 55125.00),
+(240, 152, 'SP-66578', 'iPhone 15 Pro Max - Titan đen - 1TB', 'iphone-15-pro-max-titan-den-1tb', NULL, 222, 'active', 0, '2025-06-17 13:23:02', '2025-06-18 13:42:09', '2025-06-18 13:42:09', '\"[\\\"uploads\\\\/products\\\\/1750141382_1_macbook-air-13-inch-m4-12-638772027208679591-650x650.jpg\\\",\\\"uploads\\\\/products\\\\/1750152130_1_macbook-air-13-inch-m4-13-638772027216304066-650x650.jpg\\\",\\\"uploads\\\\/products\\\\/1750152130_1_macbook-air-13-inch-m4-14-638772027222384420-650x650.jpg\\\",\\\"uploads\\\\/products\\\\/1750152130_1_macbook-air-13-inch-m4-15-638772027228926275-650x650.jpg\\\",\\\"uploads\\\\/products\\\\/1750152130_1_macbook-air-13-inch-m4-16-638772027238166613-650x650.jpg\\\",\\\"uploads\\\\/products\\\\/1750152130_1_macbook-air-13-inch-m4-18-638772027245004354-650x650.jpg\\\",\\\"uploads\\\\/products\\\\/1750152130_1_macbook-air-13-inch-m4-19-638772027251967937-650x650.jpg\\\",\\\"uploads\\\\/products\\\\/1750152130_1_macbook-air-13-inch-m4-20-638772027259250283-650x650.jpg\\\",\\\"uploads\\\\/products\\\\/1750152130_1_macbook-air-13-inch-m4-21-638772027266138378-650x650.jpg\\\",\\\"uploads\\\\/products\\\\/1750152130_1_macbook-air-13-inch-m4-22-638772027273564585-650x650.jpg\\\"]\"', 333.00, 444.00);
 
 -- --------------------------------------------------------
 
@@ -1054,12 +1106,15 @@ CREATE TABLE `product_views` (
 --
 
 INSERT INTO `product_views` (`id`, `user_id`, `product_id`, `viewed_at`) VALUES
-(193, 43, 146, '2025-06-16 07:30:10'),
-(194, 43, 146, '2025-06-16 07:30:37'),
-(195, 43, 146, '2025-06-16 07:31:48'),
-(196, 43, 146, '2025-06-16 07:32:07'),
-(197, 43, 146, '2025-06-16 07:34:54'),
-(198, 1, 147, '2025-06-16 08:16:04');
+(218, 43, 152, '2025-06-17 10:23:55'),
+(219, 43, 152, '2025-06-17 15:15:03'),
+(220, 43, 152, '2025-06-17 15:16:07'),
+(221, 43, 152, '2025-06-17 15:16:30'),
+(222, 43, 152, '2025-06-17 15:20:57'),
+(223, 43, 152, '2025-06-17 15:40:41'),
+(224, 43, 152, '2025-06-17 15:41:07'),
+(225, 43, 152, '2025-06-17 15:44:46'),
+(226, NULL, 152, '2025-06-17 17:15:06');
 
 -- --------------------------------------------------------
 
@@ -1184,10 +1239,15 @@ CREATE TABLE `sessions` (
 --
 
 INSERT INTO `sessions` (`id`, `user_id`, `ip_address`, `user_agent`, `payload`, `last_activity`) VALUES
-('dKYzJlxyJWUc5fom2j25Lt8AM2O8Z760kXssLusn', 1, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36', 'YTo2OntzOjY6Il90b2tlbiI7czo0MDoiWUN2dWppNkNMVzBJQ05ObzNwRWZjc1FFZWF4NkJjcG9zb0ZzaVVVdSI7czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czozOiJ1cmwiO2E6MDp7fXM6NTA6ImxvZ2luX3dlYl81OWJhMzZhZGRjMmIyZjk0MDE1ODBmMDE0YzdmNThlYTRlMzA5ODlkIjtpOjE7czoxNzoicGFzc3dvcmRfaGFzaF93ZWIiO3M6NjA6IiQyeSQxMiRzaTdnUnlkYkplNnVQRHovMHB4cUR1aXB3RHdUOVEvMnBWcGYwSHBTNmsvbHQ1ejcwVWh0dSI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6MzY6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9hZG1pbi9wcm9kdWN0cyI7fX0=', 1750061701),
-('iN4giHForfWAf0rEK4ROEd0JV4sFIigmPLtFe4h8', 1, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36', 'YTo2OntzOjY6Il90b2tlbiI7czo0MDoiZTBkYnZ0Z2t5UW44eWltWDJ2TFByMkVwR21STFRheTQyeWZRajBhciI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6MzY6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9hZG1pbi92YXJpYW50cyI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fXM6MzoidXJsIjthOjA6e31zOjUwOiJsb2dpbl93ZWJfNTliYTM2YWRkYzJiMmY5NDAxNTgwZjAxNGM3ZjU4ZWE0ZTMwOTg5ZCI7aToxO3M6MTc6InBhc3N3b3JkX2hhc2hfd2ViIjtzOjYwOiIkMnkkMTIkc2k3Z1J5ZGJKZTZ1UER6LzBweHFEdWlwd0R3VDlRLzJwVnBmMEhwUzZrL2x0NXo3MFVodHUiO30=', 1750061891),
-('rWhmcUmota98YNTjBQg9cYx4I26qaLBoPH2gJsxR', 43, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36', 'YTo1OntzOjY6Il90b2tlbiI7czo0MDoiaThROXpWWk1KWjNoVThFMDJJdmJ0MDQ4cHNxMEZnaUFXS0hVUnpDUCI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6MjE6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMCI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fXM6NTA6ImxvZ2luX3dlYl81OWJhMzZhZGRjMmIyZjk0MDE1ODBmMDE0YzdmNThlYTRlMzA5ODlkIjtpOjQzO3M6MTc6InBhc3N3b3JkX2hhc2hfd2ViIjtzOjYwOiIkMnkkMTIkM242TExuY1A2b0lBZm9yREdFa0NLTzVZRXAvbWhkdkhRd0s0VVUydGhlaE9VTlJHbXpCaGEiO30=', 1750061643),
-('ZUjNVgKvbjlpVuggfcZ7z2ly1mhUIgwIDCRStiPE', 42, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36', 'YTo1OntzOjY6Il90b2tlbiI7czo0MDoiSXZBOEptdURmSDZEWDNLNmdxQ1R0QTk3WW9GYzh3RTFjdXF2a3pDaCI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6MjE6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMCI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fXM6NTA6ImxvZ2luX3dlYl81OWJhMzZhZGRjMmIyZjk0MDE1ODBmMDE0YzdmNThlYTRlMzA5ODlkIjtpOjQyO3M6MTc6InBhc3N3b3JkX2hhc2hfd2ViIjtzOjYwOiIkMnkkMTIkemFidnZhOFNkemFiTEtiT2tienZLT3hjek93eFVhRXh3R2VQT1VCM21qRjd3bHlBM0IvVjIiO30=', 1750056469);
+('dktv7icVX6IF4X9NDc29C4FaFlyhJ5ujKOTBCLhk', NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoicHhqYkxoUXVOaTFBaTZ0SE9Nbm1WSmVBNjZOTDhhRzZFRllONmNqSSI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6MjE6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMCI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fX0=', 1750227598),
+('jDtkntAyheTyetDfNfb8Ai7WW7li2KT2Zg1rVDdX', 1, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36', 'YTo2OntzOjY6Il90b2tlbiI7czo0MDoiUUZ4SDhyNWM4U0JNNGR0RmI3ckdYRXY2WkhPOGt6Y2E3Z1U2ODU2byI7czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czozOiJ1cmwiO2E6MDp7fXM6OToiX3ByZXZpb3VzIjthOjE6e3M6MzoidXJsIjtzOjM0OiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvYWRtaW4vb3JkZXJzIjt9czo1MDoibG9naW5fd2ViXzU5YmEzNmFkZGMyYjJmOTQwMTU4MGYwMTRjN2Y1OGVhNGUzMDk4OWQiO2k6MTtzOjE3OiJwYXNzd29yZF9oYXNoX3dlYiI7czo2MDoiJDJ5JDEyJHNpN2dSeWRiSmU2dVBEei8wcHhxRHVpcHdEd1Q5US8ycFZwZjBIcFM2ay9sdDV6NzBVaHR1Ijt9', 1750175785),
+('m6CPf4RCcMonQaz047FQh5VWx4udlvRSj6pkx0at', NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoiVjJyR2tGZkw5amltTEg0enR5SjdHdDZTMWRieVhLcVA4c0JkRGpVbiI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6MTg1OiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvY2hlY2tvdXQ/aW1hZ2U9aHR0cCUzQSUyRiUyRjEyNy4wLjAuMSUzQTgwMDAlMkZ1cGxvYWRzJTJGcHJvZHVjdHMlMkYxNzUwMTQxMzgyXzBfbWFjYm9vay1haXItMTMtaW5jaC1tNC0xMi02Mzg3NzIwMjcyMDg2Nzk1OTEtNjUweDY1MC5qcGcmcXVhbnRpdHk9MSZ2YXJpYW50X2lkPTIzOSI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fX0=', 1750180574),
+('MkED2FpQsAb4TSvuBDnJyw2mrxBopvTOicU5DQb9', 1, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36', 'YTo2OntzOjY6Il90b2tlbiI7czo0MDoiSzJmUW1CVUtpOVJhaEVxYUZrSDBmVVY3MEh0ZVZQRG5yZzJVcWxTQiI7czozOiJ1cmwiO2E6MDp7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fXM6NTA6ImxvZ2luX3dlYl81OWJhMzZhZGRjMmIyZjk0MDE1ODBmMDE0YzdmNThlYTRlMzA5ODlkIjtpOjE7czoxNzoicGFzc3dvcmRfaGFzaF93ZWIiO3M6NjA6IiQyeSQxMiRzaTdnUnlkYkplNnVQRHovMHB4cUR1aXB3RHdUOVEvMnBWcGYwSHBTNmsvbHQ1ejcwVWh0dSI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6MzY6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9hZG1pbi92YXJpYW50cyI7fX0=', 1750228941),
+('oG3akoR5C1BXIEDxS0T9XDhlaMq52hOP9VHOOMOl', 1, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36', 'YTo2OntzOjY6Il90b2tlbiI7czo0MDoiWnFHVXczMEk3emZYdWVKM3hoTXpFSjJzejhqUnZqRFpCWDhBaWJRRiI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6MzY6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9hZG1pbi9wcm9kdWN0cyI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fXM6MzoidXJsIjthOjA6e31zOjUwOiJsb2dpbl93ZWJfNTliYTM2YWRkYzJiMmY5NDAxNTgwZjAxNGM3ZjU4ZWE0ZTMwOTg5ZCI7aToxO3M6MTc6InBhc3N3b3JkX2hhc2hfd2ViIjtzOjYwOiIkMnkkMTIkc2k3Z1J5ZGJKZTZ1UER6LzBweHFEdWlwd0R3VDlRLzJwVnBmMEhwUzZrL2x0NXo3MFVodHUiO30=', 1750170481),
+('R8RmDrTTak24SEohpWLX825LvN5mVaLQBdad7zZP', 19, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36', 'YTo1OntzOjY6Il90b2tlbiI7czo0MDoieTJHbkw1b3JLT3o3RjRDam05UkQ5aUhIa2JCUjZnWkRlSUppdU5yMCI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6MzM6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9hZG1pbi91c2VycyI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fXM6NTA6ImxvZ2luX3dlYl81OWJhMzZhZGRjMmIyZjk0MDE1ODBmMDE0YzdmNThlYTRlMzA5ODlkIjtpOjE5O3M6MTc6InBhc3N3b3JkX2hhc2hfd2ViIjtzOjYwOiIkMnkkMTIkV0hycW01NWdXSGNvNXk4V2tpTmN6ZUxuRUxVcGtwRWozZUpDM3RPQXhIVjJRVXAxbzBESm0iO30=', 1750172682),
+('R9wQMyRV58aRXirVL3TgOPkYEPdPQBiVqTFx745V', 1, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36', 'YTo1OntzOjY6Il90b2tlbiI7czo0MDoidERlVFZ3Q0ZCaXFza0RnNmEyczdCblFWZUFDaER6bWhnVEdkd3VCOSI7czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6Mjc6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9hZG1pbiI7fXM6NTA6ImxvZ2luX3dlYl81OWJhMzZhZGRjMmIyZjk0MDE1ODBmMDE0YzdmNThlYTRlMzA5ODlkIjtpOjE7czoxNzoicGFzc3dvcmRfaGFzaF93ZWIiO3M6NjA6IiQyeSQxMiRzaTdnUnlkYkplNnVQRHovMHB4cUR1aXB3RHdUOVEvMnBWcGYwSHBTNmsvbHQ1ejcwVWh0dSI7fQ==', 1750175719),
+('y1vxE6cE4LxYT0utVVrrPlv4VVXwBj7m111zCumU', 1, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36', 'YTo1OntzOjY6Il90b2tlbiI7czo0MDoiTXdZZVNVaXNPU2s4TTJES3hIVGJ3dkNXbjVKaHNaNUZVbndrSENRYSI7czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6Mjc6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9hZG1pbiI7fXM6NTA6ImxvZ2luX3dlYl81OWJhMzZhZGRjMmIyZjk0MDE1ODBmMDE0YzdmNThlYTRlMzA5ODlkIjtpOjE7czoxNzoicGFzc3dvcmRfaGFzaF93ZWIiO3M6NjA6IiQyeSQxMiRzaTdnUnlkYkplNnVQRHovMHB4cUR1aXB3RHdUOVEvMnBWcGYwSHBTNmsvbHQ1ejcwVWh0dSI7fQ==', 1750176220),
+('ZM1n8d27fFo0ecWV8ChL3eGM4rHzBBUDsuhvOBfm', 43, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Safari/537.36', 'YTo1OntzOjY6Il90b2tlbiI7czo0MDoiajdFVHQ5SzNyV2pDdTNnTHo2THdFV0ZDT281M1FHN3dxUGhZYTlDQSI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6Mjc6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9vcmRlciI7fXM6NjoiX2ZsYXNoIjthOjI6e3M6Mzoib2xkIjthOjA6e31zOjM6Im5ldyI7YTowOnt9fXM6NTA6ImxvZ2luX3dlYl81OWJhMzZhZGRjMmIyZjk0MDE1ODBmMDE0YzdmNThlYTRlMzA5ODlkIjtpOjQzO3M6MTc6InBhc3N3b3JkX2hhc2hfd2ViIjtzOjYwOiIkMnkkMTIkM242TExuY1A2b0lBZm9yREdFa0NLTzVZRXAvbWhkdkhRd0s0VVUydGhlaE9VTlJHbXpCaGEiO30=', 1750175877);
 
 -- --------------------------------------------------------
 
@@ -1367,9 +1427,9 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `name`, `email`, `email_verified_at`, `password`, `provider`, `provider_id`, `phone`, `address`, `avatar`, `dob`, `gender`, `is_verified`, `last_login`, `status`, `remember_token`, `created_at`, `updated_at`, `deleted_at`) VALUES
-(1, 'Admin ', 'admin@gmail.com', NULL, '$2y$12$si7gRydbJe6uPDz/0pxqDuipwDwT9Q/2pVpf0HpS6k/lt5z70Uhtu', NULL, NULL, '0123456789', 'Hanoi', NULL, NULL, 'other', 0, '2025-06-16 14:08:03', 'active', 'ZiFWGSFLIBPjqIqQgZwn9eq0SzAXRe6VjEhPgII0UF3JLN771c4oaUkCPBqc', '2025-05-16 15:31:25', '2025-06-16 14:08:03', NULL),
+(1, 'Admin ', 'admin@gmail.com', NULL, '$2y$12$si7gRydbJe6uPDz/0pxqDuipwDwT9Q/2pVpf0HpS6k/lt5z70Uhtu', NULL, NULL, '0123456789', 'Hanoi', NULL, NULL, 'other', 0, '2025-06-18 13:22:09', 'active', 'HhID8c9f84Zp1BVx4Mm3Cq8zJhYShKFa6nGRGrCq8KAlDXACoSISqK1DC9Ra', '2025-05-16 15:31:25', '2025-06-18 13:22:09', NULL),
 (2, 'Staff ', 'staffp@gmail.com', NULL, '$2y$12$de5HWZYmyu9wLPmTzHmyJOjVt1J1uxTaBtWCyQQgZj/kIpNR7At3a', NULL, NULL, '0987654321', 'Hanoi', NULL, NULL, 'other', 0, NULL, 'active', NULL, '2025-05-15 12:40:59', '2025-05-15 12:40:59', NULL),
-(19, 'Staff User', 'staffp@example.com', NULL, '$2y$12$WHrqm55gWHco5y8WkiNczeLnELUpkpEj3eJC3tOAxHV2QUp1o0DJm', NULL, NULL, '0987654321', 'Hanoi', NULL, NULL, 'other', 0, '2025-06-11 09:20:36', 'active', NULL, '2025-05-23 14:48:11', '2025-06-11 09:20:36', NULL),
+(19, 'Staff User', 'staffp@example.com', NULL, '$2y$12$WHrqm55gWHco5y8WkiNczeLnELUpkpEj3eJC3tOAxHV2QUp1o0DJm', NULL, NULL, '0987654321', 'Hanoi', NULL, NULL, 'other', 0, '2025-06-17 21:16:42', 'active', NULL, '2025-05-23 14:48:11', '2025-06-17 21:16:42', NULL),
 (20, 'Normal User', 'userp@example.com', NULL, '$12$si7gRydbJe6uPDz/0pxqDuipwDwT9Q/2pVpf0HpS6k/lt5z70Uhtu', NULL, NULL, '1234567890', 'Hanoi', NULL, NULL, 'other', 0, NULL, 'active', NULL, '2025-05-23 14:48:12', '2025-05-23 14:48:12', NULL),
 (22, 'Banh đẹp traiii', 'banhday@example.com', NULL, '$2y$12$2RR91Wl.OzECaT5HLkwGoufESlbD7GhGXqbFvwEEIlCJfHEUjmUti', NULL, NULL, '1234567890', 'Viet Tri ,Phu Tho', NULL, NULL, 'other', 0, '2025-05-25 04:28:32', 'active', NULL, '2025-05-25 04:23:02', '2025-05-25 04:28:32', NULL),
 (33, 'banh tester 1', 'banhtester@gmail.com', NULL, '$2y$12$h2CYhIAl0f2VOK8rl.1HPOeTLrfKuK7KNcTyJ0oCxFYuRXJap6MO2', NULL, NULL, '0368706552', 'Số nhà 71, phố tiền phong, phường tiên cát', NULL, '2025-05-16', 'female', 0, NULL, 'active', NULL, '2025-05-25 18:46:03', '2025-05-25 18:46:03', NULL),
@@ -1382,7 +1442,7 @@ INSERT INTO `users` (`id`, `name`, `email`, `email_verified_at`, `password`, `pr
 (40, 'bui quang dong', 'dongbui@gmail.com', NULL, '$2y$12$lENUgnn9oOJWPfSrQSrguucx9hzpikO7.IjgSduonsxBi/.T1jMjy', NULL, NULL, '0368706552', 'Số nhà 71, phố tiền phong, phường tiên cát', NULL, '2025-06-06', 'male', 0, NULL, 'active', NULL, '2025-05-26 08:45:25', '2025-05-26 08:45:25', NULL),
 (41, 'Kim Hong Phong Dai', 'daicv@gmail.com', NULL, '$2y$12$JcBJQvn.Cffa3B/ohBz2v..4mW4hmeKceF9cYV3qtj55ZKy6.2WX6', NULL, NULL, '0368706552', 'Số nhà 71, phố tiền phong, phường tiên cát', NULL, '2025-05-21', 'male', 0, '2025-05-26 22:08:16', 'active', 'JHGQYfCLgyB1gD0ebHR1CSEclBpoAoJoKl9sxjHt9jFMkq3ENc4lU0cN8bHi', '2025-05-26 22:07:41', '2025-05-31 20:55:29', NULL),
 (42, 'đại học coder', 'daichuvan95@gmail.com', NULL, '$2y$12$zabvva8SdzabLKbOkbzvKOxczOwxUaExwGePOUB3mjF7wlyA3B/V2', NULL, NULL, '0968791308', 'Vọng Giang', NULL, '2025-05-05', 'male', 0, '2025-06-16 13:47:32', 'inactive', NULL, '2025-05-28 14:57:13', '2025-06-16 13:47:32', NULL),
-(43, 'Cường', 'test@gmail.com', NULL, '$2y$12$3n6LLncP6oIAforDGEkCKO5YEp/mhdvHQwK4UU2thehOUNRGmzBha', NULL, NULL, '09876543', 'Hà Nội', NULL, '2025-05-28', 'male', 0, '2025-06-16 14:06:32', 'active', NULL, '2025-05-28 22:46:16', '2025-06-16 14:06:32', NULL),
+(43, 'Cường', 'test@gmail.com', NULL, '$2y$12$3n6LLncP6oIAforDGEkCKO5YEp/mhdvHQwK4UU2thehOUNRGmzBha', NULL, NULL, '09876543', 'Hà Nội', NULL, '2025-05-28', 'male', 0, '2025-06-17 21:01:02', 'active', NULL, '2025-05-28 22:46:16', '2025-06-17 21:01:02', NULL),
 (44, 'banhdayyy', 'anh@gmail.com', NULL, '$2y$12$iL89MO6m8aJ6ytcW/gmKo.DM.6KpdA44E.QCUI.ZTtZ.u0iGCxNW2', NULL, NULL, '0368706552', 'asdsadas', NULL, '2025-05-15', 'male', 0, '2025-05-31 22:09:59', 'active', 'tR6P0OXUsCQtwboq9YCyaCdVdT2exORi6s27GcphWL6lhOk395FRM0vc8KCH', '2025-05-31 22:07:02', '2025-05-31 22:09:59', NULL),
 (45, 'Thanh Bình Nguyễn', 'nguyenthanhbinh05082005@gmail.com', '2025-06-01 09:28:50', '$2y$12$Q0KzVz4F/HD5o609kbqZi.phhyITvFuXSEMqtOPFUpetszd6G0pkO', 'google', '102989406420602569869', NULL, NULL, 'https://lh3.googleusercontent.com/a/ACg8ocJ_1MC1lN0WwDtNb4x5D2AWjmSLm1k-R0V7TX3BrL80CWKlpw=s96-c', NULL, 'other', 0, NULL, 'active', NULL, '2025-06-01 09:28:50', '2025-06-01 09:28:50', NULL),
 (52, 'banh dayy', 'banhday1234@gmail.com', NULL, '$2y$12$7WnXBp6SLBYwdJgmWWFG3eBlA/JskA4gLWGJjwAjBsvb2WI0NyatC', NULL, NULL, NULL, 'dfsdfadfas', NULL, '2025-05-28', 'female', 0, '2025-06-01 23:02:58', 'active', NULL, '2025-06-01 23:01:51', '2025-06-01 23:02:58', NULL),
@@ -1403,10 +1463,10 @@ INSERT INTO `users` (`id`, `name`, `email`, `email_verified_at`, `password`, `pr
 (68, 'banh2', 'banh2@gmail.com', NULL, '$2y$12$5zQ/FCKyacb5iFQikTHqZObDA1laqePq0ttpuxkiY8E6YBBpya/3O', NULL, NULL, '0368706552', 'Số nhà 71, phố tiền phong, phường tiên cát', NULL, '2025-06-10', 'female', 0, '2025-06-09 23:26:16', 'active', NULL, '2025-06-09 23:26:10', '2025-06-09 23:26:16', NULL),
 (69, 'banh3', 'banh3@gmail.com', NULL, '$2y$12$WOihTFzKzHXwyS/ws4TXzOHXLLIJd4/E9.AIOjJqDd85fsXSdkVL6', NULL, NULL, '0368706552', 'Số nhà 71, phố tiền phong, phường tiên cát', NULL, '2025-06-05', 'male', 0, NULL, 'active', NULL, '2025-06-09 23:26:45', '2025-06-09 23:26:45', NULL),
 (70, 'banh4', 'banh4@gmail.com', NULL, '$2y$12$LA9.5uLFmc73niHHOwDa5.YXjQlShsndDWiXi/MFb1gnFMWjNFQY6', NULL, NULL, '0368706552', 'Số nhà 71, phố tiền phong, phường tiên cát', NULL, '2025-06-04', 'male', 0, '2025-06-10 21:22:26', 'active', NULL, '2025-06-09 23:30:10', '2025-06-10 21:52:38', NULL),
-(71, 'Kim Hồng Phong', 'phongk211005@gmail.com', NULL, '$2y$12$rp7twYOYmt9jty9fCUq0qO2soMHTXLPH48ctJ/EtAVj3bLvB6qX56', NULL, NULL, '0973067464', 'Tx. Thái Hòa', NULL, '2025-06-11', 'male', 0, '2025-06-16 08:32:40', 'active', NULL, '2025-06-11 08:41:22', '2025-06-16 08:32:40', NULL),
+(71, 'Kim Hồng Phong', 'phongk211005@gmail.com', NULL, '$2y$12$rp7twYOYmt9jty9fCUq0qO2soMHTXLPH48ctJ/EtAVj3bLvB6qX56', NULL, NULL, '0973067464', 'Tx. Thái Hòa', NULL, '2025-06-11', 'male', 0, '2025-06-16 22:28:17', 'active', NULL, '2025-06-11 08:41:22', '2025-06-16 22:28:17', NULL),
 (72, 'Sasasa', 'sasa@gmail.com', NULL, '$2y$12$fgOECBmANwtUwB5yXtKzMe/XE788BzJ9a6yxxFLew4m4vzGiUX2jy', NULL, NULL, '0987233444', 'Hà Nội, Việt Nam', 'uploads/users/1749606552.jpg', '2025-06-11', 'male', 0, '2025-06-11 08:59:52', 'active', NULL, '2025-06-11 08:49:12', '2025-06-11 08:59:52', NULL),
 (73, 'Dớ Văn Hải', 'hai@gmail.com', NULL, '$2y$12$f8RGEGkRociQvEe4rZP8guR3K3E9HPT6fNn8NF1Hc37OsipBkcKeu', NULL, NULL, '0973067464', 'Tx. Thái Hòa', 'uploads/users/1749608295.jpg', '2025-06-27', 'male', 0, '2025-06-14 22:04:40', 'active', NULL, '2025-06-11 09:18:15', '2025-06-14 22:04:40', NULL),
-(74, 'Banh là tester', 'banhtester3@gmail.com', NULL, '$2y$12$MU1poTdfxhsbpDKz.Befbedmry0wSyE50fwye.OxAiX.gupl//ZJ6', NULL, NULL, '0368706552', 'Số nhà 71, phố tiền phong, phường tiên cát', '/uploads/avatar/1749632129.jpg', '2025-05-29', 'male', 0, '2025-06-13 21:29:03', 'active', NULL, '2025-06-11 09:25:05', '2025-06-13 21:29:03', NULL),
+(74, 'Banh là tester', 'banhtester3@gmail.com', NULL, '$2y$12$MU1poTdfxhsbpDKz.Befbedmry0wSyE50fwye.OxAiX.gupl//ZJ6', NULL, NULL, '0368706552', 'Số nhà 71, phố tiền phong, phường tiên cát', '/uploads/avatar/1749632129.jpg', '2025-05-29', 'male', 0, '2025-06-17 22:51:49', 'active', NULL, '2025-06-11 09:25:05', '2025-06-17 22:51:49', NULL),
 (75, 'âsasd', 'aad@gmail.com', NULL, '$2y$12$vcmY9KDXL7TpT4L6opulIut6rPi/4Bg61u3km4ggB6c/OoG3fUCUm', NULL, NULL, '0368706552', 'Số nhà 71, phố tiền phong, phường tiên cát', NULL, '2025-06-04', 'male', 0, NULL, 'active', NULL, '2025-06-11 21:13:06', '2025-06-11 21:13:06', NULL),
 (76, 'Mạnh Cường Nguyễn', 'cuongnmph50179@gmail.com', '2025-06-13 21:22:09', '$2y$12$7Bv46Tz3cGlclwO0NGvnROs1LsyWeEeHjQslPzN8qiqvA7u0X8vK6', 'google', '104624917371279928945', NULL, NULL, 'https://lh3.googleusercontent.com/a/ACg8ocK0-i1PegLtv3q4m1wr9zz-1ijX0PlHybhgc1wCGlNH99DdJQ=s96-c', NULL, 'other', 0, '2025-06-13 21:22:09', 'active', NULL, '2025-06-13 21:22:09', '2025-06-13 21:22:09', NULL);
 
@@ -1469,7 +1529,8 @@ CREATE TABLE `variant_attribute_types` (
 
 INSERT INTO `variant_attribute_types` (`id`, `name`, `category_ids`, `type`, `is_required`, `status`, `created_at`, `updated_at`, `deleted_at`) VALUES
 (63, 'Màu sắc', '[\"25\", \"26\", \"27\", \"28\"]', 'text', 0, 'active', '2025-06-16 13:42:18', '2025-06-16 13:52:01', NULL),
-(64, 'Dung lượng', '[\"25\", \"26\", \"27\", \"28\"]', 'text', 0, 'active', '2025-06-16 13:52:28', '2025-06-16 13:52:28', NULL);
+(64, 'Dung lượng', '[\"25\", \"26\"]', 'text', 0, 'active', '2025-06-16 13:52:28', '2025-06-16 23:23:14', NULL),
+(65, 'Màu sắc Iphone', '[\"25\"]', 'text', 0, 'active', '2025-06-17 15:00:33', '2025-06-17 15:03:17', '2025-06-17 15:03:17');
 
 -- --------------------------------------------------------
 
@@ -1499,9 +1560,16 @@ INSERT INTO `variant_attribute_values` (`id`, `attribute_type_id`, `value`, `hex
 (142, 63, '[\"Titan đen\"]', '[\"#3f4042\"]', 'active', '2025-06-16 13:46:30', '2025-06-16 13:46:30', NULL),
 (143, 63, '[\"Titan tự nhiên\"]', '[\"#bab4a9\"]', 'active', '2025-06-16 13:46:30', '2025-06-16 13:46:30', NULL),
 (144, 63, '[\"Titan trắng\"]', '[\"#f2f1eb\"]', 'active', '2025-06-16 13:46:30', '2025-06-16 13:46:30', NULL),
-(145, 64, '[\"256GB\"]', '[]', 'active', '2025-06-16 13:52:53', '2025-06-16 13:52:53', NULL),
-(146, 64, '[\"512GB\"]', '[]', 'active', '2025-06-16 13:52:53', '2025-06-16 13:52:53', NULL),
-(147, 64, '[\"1TB\"]', '[]', 'active', '2025-06-16 13:52:53', '2025-06-16 13:52:53', NULL);
+(145, 64, '[\"256GB\"]', '[]', 'active', '2025-06-16 13:52:53', '2025-06-16 23:11:59', '2025-06-16 23:11:59'),
+(146, 64, '[\"512GB\"]', '[]', 'active', '2025-06-16 13:52:53', '2025-06-16 23:11:59', '2025-06-16 23:11:59'),
+(147, 64, '[\"1TB\"]', '[]', 'active', '2025-06-16 13:52:53', '2025-06-16 23:11:59', '2025-06-16 23:11:59'),
+(148, 64, '[\"256GB\"]', '[]', 'active', '2025-06-16 23:21:34', '2025-06-16 23:21:34', NULL),
+(149, 64, '[\"512GB\"]', '[]', 'active', '2025-06-16 23:21:34', '2025-06-16 23:21:34', NULL),
+(150, 64, '[\"1TB\"]', '[]', 'active', '2025-06-16 23:21:34', '2025-06-16 23:21:34', NULL),
+(151, 63, '[\"Xanh da trời nhạt\"]', '[\"#9ca6ca\"]', 'active', '2025-06-16 23:48:01', '2025-06-16 23:48:01', NULL),
+(152, 63, '[\"Xanh đen\"]', '[\"#17213e\"]', 'active', '2025-06-16 23:48:01', '2025-06-16 23:48:01', NULL),
+(153, 63, '[\"Vàng\"]', '[\"#f4e8cf\"]', 'active', '2025-06-16 23:48:01', '2025-06-16 23:48:01', NULL),
+(154, 65, '[\"Hồng\"]', '[\"#ffe8e8\"]', 'active', '2025-06-17 15:01:57', '2025-06-17 15:01:57', NULL);
 
 -- --------------------------------------------------------
 
@@ -1523,34 +1591,10 @@ CREATE TABLE `variant_combinations` (
 --
 
 INSERT INTO `variant_combinations` (`id`, `variant_id`, `attribute_value_id`, `created_at`, `updated_at`, `deleted_at`) VALUES
-(245, 192, 141, '2025-06-16 14:29:02', '2025-06-16 15:01:58', '2025-06-16 15:01:58'),
-(246, 192, 145, '2025-06-16 14:29:02', '2025-06-16 15:01:58', '2025-06-16 15:01:58'),
-(247, 193, 142, '2025-06-16 14:29:02', '2025-06-16 15:01:58', '2025-06-16 15:01:58'),
-(248, 193, 145, '2025-06-16 14:29:02', '2025-06-16 15:01:58', '2025-06-16 15:01:58'),
-(249, 196, 141, '2025-06-16 15:14:16', '2025-06-16 15:14:16', NULL),
-(250, 196, 145, '2025-06-16 15:14:16', '2025-06-16 15:14:16', NULL),
-(251, 197, 141, '2025-06-16 15:14:16', '2025-06-16 15:14:16', NULL),
-(252, 197, 146, '2025-06-16 15:14:17', '2025-06-16 15:14:17', NULL),
-(253, 198, 141, '2025-06-16 15:14:17', '2025-06-16 15:14:17', NULL),
-(254, 198, 147, '2025-06-16 15:14:17', '2025-06-16 15:14:17', NULL),
-(255, 199, 142, '2025-06-16 15:14:17', '2025-06-16 15:14:17', NULL),
-(256, 199, 145, '2025-06-16 15:14:17', '2025-06-16 15:14:17', NULL),
-(257, 200, 142, '2025-06-16 15:14:17', '2025-06-16 15:14:17', NULL),
-(258, 200, 146, '2025-06-16 15:14:17', '2025-06-16 15:14:17', NULL),
-(259, 201, 142, '2025-06-16 15:14:17', '2025-06-16 15:14:17', NULL),
-(260, 201, 147, '2025-06-16 15:14:17', '2025-06-16 15:14:17', NULL),
-(261, 202, 143, '2025-06-16 15:14:17', '2025-06-16 15:14:17', NULL),
-(262, 202, 145, '2025-06-16 15:14:17', '2025-06-16 15:14:17', NULL),
-(263, 203, 143, '2025-06-16 15:14:17', '2025-06-16 15:14:17', NULL),
-(264, 203, 146, '2025-06-16 15:14:17', '2025-06-16 15:14:17', NULL),
-(265, 204, 143, '2025-06-16 15:14:17', '2025-06-16 15:14:17', NULL),
-(266, 204, 147, '2025-06-16 15:14:17', '2025-06-16 15:14:17', NULL),
-(267, 205, 144, '2025-06-16 15:14:17', '2025-06-16 15:14:17', NULL),
-(268, 205, 145, '2025-06-16 15:14:17', '2025-06-16 15:14:17', NULL),
-(269, 206, 144, '2025-06-16 15:14:17', '2025-06-16 15:14:17', NULL),
-(270, 206, 146, '2025-06-16 15:14:17', '2025-06-16 15:14:17', NULL),
-(271, 207, 144, '2025-06-16 15:14:17', '2025-06-16 15:14:17', NULL),
-(272, 207, 147, '2025-06-16 15:14:17', '2025-06-16 15:14:17', NULL);
+(300, 239, 141, '2025-06-17 13:23:02', '2025-06-18 13:42:09', '2025-06-18 13:42:09'),
+(301, 239, 150, '2025-06-17 13:23:02', '2025-06-18 13:42:09', '2025-06-18 13:42:09'),
+(302, 240, 142, '2025-06-17 13:23:02', '2025-06-18 13:42:09', '2025-06-18 13:42:09'),
+(303, 240, 150, '2025-06-17 13:23:02', '2025-06-18 13:42:09', '2025-06-18 13:42:09');
 
 -- --------------------------------------------------------
 
@@ -1994,7 +2038,7 @@ ALTER TABLE `carts`
 -- AUTO_INCREMENT cho bảng `cart_items`
 --
 ALTER TABLE `cart_items`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=105;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=109;
 
 --
 -- AUTO_INCREMENT cho bảng `categories`
@@ -2036,13 +2080,13 @@ ALTER TABLE `flash_sale_items`
 -- AUTO_INCREMENT cho bảng `invoices`
 --
 ALTER TABLE `invoices`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=70;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=73;
 
 --
 -- AUTO_INCREMENT cho bảng `jobs`
 --
 ALTER TABLE `jobs`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=284;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=291;
 
 --
 -- AUTO_INCREMENT cho bảng `migrations`
@@ -2054,7 +2098,7 @@ ALTER TABLE `migrations`
 -- AUTO_INCREMENT cho bảng `orders`
 --
 ALTER TABLE `orders`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=93;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=96;
 
 --
 -- AUTO_INCREMENT cho bảng `order_details`
@@ -2066,7 +2110,7 @@ ALTER TABLE `order_details`
 -- AUTO_INCREMENT cho bảng `order_items`
 --
 ALTER TABLE `order_items`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=96;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=99;
 
 --
 -- AUTO_INCREMENT cho bảng `order_returns`
@@ -2096,7 +2140,7 @@ ALTER TABLE `permissions`
 -- AUTO_INCREMENT cho bảng `products`
 --
 ALTER TABLE `products`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=148;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=153;
 
 --
 -- AUTO_INCREMENT cho bảng `product_reviews`
@@ -2108,19 +2152,19 @@ ALTER TABLE `product_reviews`
 -- AUTO_INCREMENT cho bảng `product_specifications`
 --
 ALTER TABLE `product_specifications`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=288;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=342;
 
 --
 -- AUTO_INCREMENT cho bảng `product_variants`
 --
 ALTER TABLE `product_variants`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=208;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=241;
 
 --
 -- AUTO_INCREMENT cho bảng `product_views`
 --
 ALTER TABLE `product_views`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=199;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=227;
 
 --
 -- AUTO_INCREMENT cho bảng `roles`
@@ -2192,19 +2236,19 @@ ALTER TABLE `user_vouchers`
 -- AUTO_INCREMENT cho bảng `variant_attribute_types`
 --
 ALTER TABLE `variant_attribute_types`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=65;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=66;
 
 --
 -- AUTO_INCREMENT cho bảng `variant_attribute_values`
 --
 ALTER TABLE `variant_attribute_values`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=148;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=155;
 
 --
 -- AUTO_INCREMENT cho bảng `variant_combinations`
 --
 ALTER TABLE `variant_combinations`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=273;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=304;
 
 --
 -- AUTO_INCREMENT cho bảng `vouchers`

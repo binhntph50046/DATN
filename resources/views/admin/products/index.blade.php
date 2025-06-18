@@ -1,6 +1,6 @@
 <!-- resources/views/admin/products/index.blade.php -->
 @extends('admin.layouts.app')
-@section('title', 'Product Management')
+@section('title', 'Quản lý sản phẩm')
 
 <style>
     .custom-shadow {
@@ -20,11 +20,11 @@
                 <div class="row align-items-center">
                     <div class="col-md-12">
                         <div class="page-header-title">
-                            <h5 class="m-b-10">Products</h5>
+                            <h5 class="m-b-10">Sản phẩm</h5>
                         </div>
                         <ul class="breadcrumb">
-                            <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Home</a></li>
-                            <li class="breadcrumb-item" aria-current="page">Products</li>
+                            <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Trang chủ</a></li>
+                            <li class="breadcrumb-item" aria-current="page">Sản phẩm</li>
                         </ul>
                     </div>
                 </div>
@@ -37,13 +37,16 @@
             <div class="col-12">
                 <div class="card">
                     <div class="card-header">
-                        <h5>Products List</h5>
+                        <h5>Danh sách sản phẩm</h5>
                         <div class="card-header-right">
                             <a href="{{ route('admin.products.create') }}" class="btn btn-primary btn-sm rounded-3 me-2">
-                                <i class="ti ti-plus"></i> Add Product
+                                <i class="ti ti-plus"></i> Thêm sản phẩm
                             </a>
                             <a href="{{ route('admin.products.trash') }}" class="btn btn-danger btn-sm rounded-3">
-                                <i class="ti ti-trash"></i> Trash
+                                <i class="ti ti-trash"></i> Thùng rác
+                                @if($trashedCount > 0)
+                                    <span class="badge bg-light text-danger ms-1">{{ $trashedCount }}</span>
+                                @endif
                             </a>
                         </div>
                     </div>
@@ -58,12 +61,12 @@
                             <div class="card-body">
                                 <form method="GET" action="{{ route('admin.products.index') }}" class="row g-3 mb-3">
                                     <div class="col-md-3">
-                                        <input type="text" name="name" class="form-control" placeholder="Search by name..." value="{{ request('name') }}">
+                                        <input type="text" name="name" class="form-control" placeholder="Tìm theo tên..." value="{{ request('name') }}">
                                     </div>
                                 
                                     <div class="col-md-3">
                                         <select name="category_id" class="form-select">
-                                            <option value="">-- Select Category --</option>
+                                            <option value="">-- Chọn danh mục --</option>
                                             @foreach($categories as $category)
                                                 <option value="{{ $category->id }}" {{ request('category_id') == $category->id ? 'selected' : '' }}>
                                                     {{ $category->name }}
@@ -73,14 +76,14 @@
                                     </div>
                                     <div class="col-md-3">
                                         <select name="status" class="form-select">
-                                            <option value="">-- Select Status --</option>
-                                            <option value="active" {{ request('status') == 'active' ? 'selected' : '' }}>Active</option>
-                                            <option value="inactive" {{ request('status') == 'inactive' ? 'selected' : '' }}>Inactive</option>
+                                            <option value="">-- Chọn trạng thái --</option>
+                                            <option value="active" {{ request('status') == 'active' ? 'selected' : '' }}>Hoạt động</option>
+                                            <option value="inactive" {{ request('status') == 'inactive' ? 'selected' : '' }}>Không hoạt động</option>
                                         </select>
                                     </div>
                                     <div class="col-md-3">
-                                        <button type="submit" class="btn btn-primary">Search</button>
-                                        <a href="{{ route('admin.products.index') }}" class="btn btn-secondary">Reset</a>
+                                        <button type="submit" class="btn btn-primary">Tìm kiếm</button>
+                                        <a href="{{ route('admin.products.index') }}" class="btn btn-secondary">Đặt lại</a>
                                     </div>
                                 </form>
                             </div>
@@ -106,14 +109,14 @@
                                 <thead>
                                     <tr>
                                         <th class="text-nowrap">ID</th>
-                                        <th>Image</th>
-                                        <th class="text-nowrap">Name</th>
-                                        <th class="text-nowrap">Category</th>
-                                        <th class="text-nowrap">Price</th>
-                                        <th class="text-nowrap">Stock</th>
-                                        <th class="text-nowrap">Status</th>
-                                        <th class="text-nowrap">Featured</th>
-                                        <th class="text-center text-nowrap">Actions</th>
+                                        <th>Hình ảnh</th>
+                                        <th class="text-nowrap">Tên sản phẩm</th>
+                                        <th class="text-nowrap">Danh mục</th>
+                                        <th class="text-nowrap">Giá</th>
+                                        <th class="text-nowrap">Kho</th>
+                                        <th class="text-nowrap">Trạng thái</th>
+                                        <th class="text-nowrap">Nổi bật</th>
+                                        <th class="text-center text-nowrap">Thao tác</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -128,7 +131,7 @@
                                                          style="width: 100px; height: 100px; object-fit: cover; border-radius: 8px;">
                                                 @else
                                                     <img src="{{ asset('uploads/default/default.jpg') }}"
-                                                         alt="default image"
+                                                         alt="Ảnh mặc định"
                                                          class="product-img-thumb"
                                                          style="width: 100px; height: 100px; object-fit: cover; border-radius: 8px;">
                                                 @endif
@@ -154,34 +157,34 @@
                                             <td class="text-nowrap">{{ $product->variants->sum('stock') }}</td>
                                             <td class="text-nowrap">
                                                 <span class="badge {{ $product->status === 'active' ? 'bg-success' : 'bg-danger' }}">
-                                                    {{ ucfirst($product->status) }}
+                                                    {{ $product->status === 'active' ? 'Hoạt động' : 'Không hoạt động' }}
                                                 </span>
                                             </td>
                                             <td class="text-nowrap">
                                                 @if ($product->is_featured)
-                                                    <span class="badge bg-info">Featured</span>
+                                                    <span class="badge bg-info">Nổi bật</span>
                                                 @else
-                                                    <span class="badge bg-secondary">Normal</span>
+                                                    <span class="badge bg-secondary">Bình thường</span>
                                                 @endif
                                             </td>
                                             <td class="text-center text-nowrap">
                                                 <a href="{{ route('admin.products.show', $product) }}" 
                                                    class="btn btn-info btn-sm rounded-3 me-2" 
-                                                   title="View Details">
+                                                   title="Xem chi tiết">
                                                     <i class="ti ti-eye"></i>
                                                 </a>
                                                 <a href="{{ route('admin.products.edit', $product) }}" 
                                                    class="btn btn-warning btn-sm rounded-3 me-2" 
-                                                   title="Edit Product">
+                                                   title="Chỉnh sửa">
                                                     <i class="ti ti-edit"></i>
                                                 </a>
                                                 <form action="{{ route('admin.products.destroy', $product) }}" 
                                                       method="POST" 
                                                       class="d-inline" 
-                                                      onsubmit="return confirm('Are you sure you want to delete this product?');">
+                                                      onsubmit="return confirm('Bạn có chắc chắn muốn xóa sản phẩm này?');">
                                                     @csrf
                                                     @method('DELETE')
-                                                    <button type="submit" class="btn btn-danger btn-sm rounded-3" title="Delete Product">
+                                                    <button type="submit" class="btn btn-danger btn-sm rounded-3" title="Xóa">
                                                         <i class="ti ti-trash"></i>
                                                     </button>
                                                 </form>
@@ -189,7 +192,7 @@
                                         </tr>
                                     @empty
                                         <tr>
-                                            <td colspan="9" class="text-center">No products found.</td>
+                                            <td colspan="9" class="text-center">Không tìm thấy sản phẩm nào.</td>
                                         </tr>
                                     @endforelse
                                 </tbody>

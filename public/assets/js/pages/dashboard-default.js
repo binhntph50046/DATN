@@ -7,67 +7,75 @@ document.addEventListener('DOMContentLoaded', function () {
 
 function floatchart() {
   (function () {
-    var options = {
+    // Lấy dữ liệu từ attribute Blade
+    const weeklyEl = document.querySelector('#visitor-chart');
+    const monthlyEl = document.querySelector('#visitor-chart-1');
+
+    const weeklyData = JSON.parse(weeklyEl.dataset.weekVisitors || '{}');
+    const monthlyData = JSON.parse(monthlyEl.dataset.monthVisitors || '{}');
+
+    // Weekly Chart
+    const weeklyOptions = {
       chart: {
         height: 450,
         type: 'area',
-        toolbar: {
-          show: false
-        }
+        toolbar: { show: false }
       },
-      dataLabels: {
-        enabled: false
-      },
+      dataLabels: { enabled: false },
       colors: ['#1890ff', '#13c2c2'],
-      series: [{
-        name: 'Page Views',
-        data: [31, 40, 28, 51, 42, 109, 100]
-      }, {
-        name: 'Sessions',
-        data: [11, 32, 45, 32, 34, 52, 41]
-      }],
-      stroke: {
-        curve: 'smooth',
-        width: 2
-      },
+      series: [
+        { name: 'Lượt xem trang', data: weeklyData.pageViews },
+        { name: 'Sessions', data: weeklyData.sessions }
+      ],
+      stroke: { curve: 'smooth', width: 2 },
       xaxis: {
-        categories: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+        categories: ['Thứ 2', 'Thứ 3', 'Thứ 4', 'Thứ 5', 'Thứ 6', 'Thứ 7', 'Chủ nhật']
+      },
+      tooltip: {
+        y: {
+          formatter: (val) => val.toLocaleString('vi-VN')
+        }
       }
     };
-    var chart = new ApexCharts(document.querySelector('#visitor-chart'), options);
-    chart.render();
-    var options1 = {
+    new ApexCharts(weeklyEl, weeklyOptions).render();
+
+    // Monthly Chart
+    const monthlyOptions = {
       chart: {
         height: 450,
         type: 'area',
-        toolbar: {
-          show: false
-        }
+        toolbar: { show: false }
       },
-      dataLabels: {
-        enabled: false
-      },
+      dataLabels: { enabled: false },
       colors: ['#1890ff', '#13c2c2'],
-      series: [{
-        name: 'Page Views',
-        data: [76, 85, 101, 98, 87, 105, 91, 114, 94, 86, 115, 35]
-      }, {
-        name: 'Sessions',
-        data: [110, 60, 150, 35, 60, 36, 26, 45, 65, 52, 53, 41]
-      }],
-      stroke: {
-        curve: 'smooth',
-        width: 2
-      },
+      series: [
+        { name: 'Lượt xem trang', data: monthlyData.pageViews },
+        { name: 'Sessions', data: monthlyData.sessions }
+      ],
+      stroke: { curve: 'smooth', width: 2 },
       xaxis: {
-        categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+        categories: ['Tháng 1', 'Tháng 2', 'Tháng 3', 'Tháng 4', 'Tháng 5', 'Tháng 6', 'Tháng 7', 'Tháng 8', 'Tháng 9', 'Tháng 10', 'Tháng 11', 'Tháng 12']
+      },
+      tooltip: {
+        y: {
+          formatter: (val) => val.toLocaleString('vi-VN')
+        }
       }
     };
-    var chart = new ApexCharts(document.querySelector('#visitor-chart-1'), options1);
-    chart.render();
+    new ApexCharts(monthlyEl, monthlyOptions).render();
   })();
 
+
   (function () {
+    const chartEl = document.querySelector('#income-overview-chart');
+    if (!chartEl) return;
+
+    const weeklyIncome = JSON.parse(chartEl.dataset.weeklyIncome || '[]');
+
+    const formatCurrency = (value) => {
+      return new Intl.NumberFormat('vi-VN').format(value) + ' đ';
+    };
+
     var options = {
       chart: {
         type: 'bar',
@@ -87,14 +95,15 @@ function floatchart() {
         enabled: false
       },
       series: [{
-        data: [80, 95, 70, 42, 65, 55, 78]
+        name: "Doanh thu",
+        data: weeklyIncome
       }],
       stroke: {
         curve: 'smooth',
         width: 2
       },
       xaxis: {
-        categories: ['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'],
+        categories: ['Thứ 2', 'Thứ 3', 'Thứ 4', 'Thứ 5', 'Thứ 6', 'Thứ 7', 'Chủ nhật'],
         axisBorder: {
           show: false
         },
@@ -104,71 +113,76 @@ function floatchart() {
       },
       yaxis: {
         show: false
+      },
+      tooltip: {
+        y: {
+          formatter: formatCurrency
+        }
       },
       grid: {
         show: false
       }
     };
-    var chart = new ApexCharts(document.querySelector('#income-overview-chart'), options);
+    var chart = new ApexCharts(chartEl, options);
     chart.render();
   })();
 
-  
-  (function () {
-    var options = {
-      chart: {
-        type: 'line',
-        height: 340,
-        toolbar: {
-          show: false
-        }
-      },
-      colors: ['#faad14'],
-      plotOptions: {
-        bar: {
-          columnWidth: '45%',
-          borderRadius: 4
-        }
-      },
-      stroke: {
-        curve: 'smooth',
-        width: 1.5
-      },
-      grid: {
-        strokeDashArray: 4
-      },
-      series: [{
-        data: [58, 90, 38, 83, 63, 75, 35, 55]
-      }],
-      xaxis: {
-        type: 'datetime',
-        categories: [
-          '2018-05-19T00:00:00.000Z',
-          '2018-06-19T00:00:00.000Z',
-          '2018-07-19T01:30:00.000Z',
-          '2018-08-19T02:30:00.000Z',
-          '2018-09-19T03:30:00.000Z',
-          '2018-10-19T04:30:00.000Z',
-          '2018-11-19T05:30:00.000Z',
-          '2018-12-19T06:30:00.000Z'
-        ],
-        labels: {
-          format: 'MMM'
-        },
-        axisBorder: {
-          show: false
-        },
-        axisTicks: {
-          show: false
-        }
-      },
-      yaxis: {
-        show: false
-      },
-    };
-    var chart = new ApexCharts(document.querySelector('#analytics-report-chart'), options);
-    chart.render();
-  })();
+
+  // (function () {
+  //   var options = {
+  //     chart: {
+  //       type: 'line',
+  //       height: 340,
+  //       toolbar: {
+  //         show: false
+  //       }
+  //     },
+  //     colors: ['#faad14'],
+  //     plotOptions: {
+  //       bar: {
+  //         columnWidth: '45%',
+  //         borderRadius: 4
+  //       }
+  //     },
+  //     stroke: {
+  //       curve: 'smooth',
+  //       width: 1.5
+  //     },
+  //     grid: {
+  //       strokeDashArray: 4
+  //     },
+  //     series: [{
+  //       data: [58, 90, 38, 83, 63, 75, 35, 55]
+  //     }],
+  //     xaxis: {
+  //       type: 'datetime',
+  //       categories: [
+  //         '2018-05-19T00:00:00.000Z',
+  //         '2018-06-19T00:00:00.000Z',
+  //         '2018-07-19T01:30:00.000Z',
+  //         '2018-08-19T02:30:00.000Z',
+  //         '2018-09-19T03:30:00.000Z',
+  //         '2018-10-19T04:30:00.000Z',
+  //         '2018-11-19T05:30:00.000Z',
+  //         '2018-12-19T06:30:00.000Z'
+  //       ],
+  //       labels: {
+  //         format: 'MMM'
+  //       },
+  //       axisBorder: {
+  //         show: false
+  //       },
+  //       axisTicks: {
+  //         show: false
+  //       }
+  //     },
+  //     yaxis: {
+  //       show: false
+  //     },
+  //   };
+  //   var chart = new ApexCharts(document.querySelector('#analytics-report-chart'), options);
+  //   chart.render();
+  // })();
   (function () {
     var options = {
       chart: {

@@ -26,6 +26,8 @@ return Application::configure(basePath: dirname(__DIR__))
             \Illuminate\Session\Middleware\AuthenticateSession::class,
             \Illuminate\View\Middleware\ShareErrorsFromSession::class,
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
+            \App\Http\Middleware\UpdateSessionTimestamps::class,
+            \App\Http\Middleware\LogPageViewMiddleware::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

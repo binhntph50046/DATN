@@ -143,6 +143,42 @@
                             </tbody>
                         </table>
                     </div>
+
+                    @if ($cartItems->count() > 0)
+                        <div class="row">
+                            <div class="col-md-6 offset-md-6">
+                                @php
+                                    $subtotal = 0;
+                                    foreach ($cartItems as $item) {
+                                        $subtotal +=
+                                            ($item->variant->selling_price ?? $item->product->selling_price) * $item->quantity;
+                                    }
+                                @endphp
+                            </div>
+                        </div>
+                    @endif
+
+                    @if ($cartItems->count() > 0)
+                        <div class="cart-summary-sticky-bottom">
+                            <div class="row align-items-center justify-content-between">
+                                <div class="col-md-6 d-flex align-items-center gap-3">
+                                    <div class="custom-control custom-checkbox d-inline-block">
+                                        <input type="checkbox" class="custom-control-input" id="selectAll">
+                                        <label class="custom-control-label" for="selectAll">Chọn tất cả</label>
+                                    </div>
+                                    <div class="cart-total">
+                                        <strong>Tổng giỏ hàng:</strong>
+                                        <span id="cart-total">{{ number_format($subtotal, 0, ',', '.') }} VNĐ</span>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 text-md-right mt-3 mt-md-0">
+                                    <form action="{{ route('cart.checkout') }}" method="GET" id="checkout-form">
+                                        <button type="submit" class="btn btn-checkout">Tiến hành thanh toán</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    @endif
                 </div>
             </div>
 
@@ -165,7 +201,7 @@
                     </div>
                 @endif
 
-                <div class="cart-summary-sticky-bottom">
+                {{-- <div class="cart-summary-sticky-bottom">
                     <div class="row align-items-center justify-content-between">
                         <div class="col-md-6 d-flex align-items-center gap-3">
                             <div class="custom-control custom-checkbox d-inline-block">
@@ -182,7 +218,7 @@
                                 toán</button>
                         </div>
                     </div>
-                </div>
+                </div> --}}
             @endif
         </div>
     </div>
@@ -271,15 +307,15 @@
 
         function updateCartTotal() {
             let cartSubtotal = 0;
-            document.querySelectorAll('input[id^="quantity-"]').forEach(function(input) {
-                let itemId = input.getAttribute('data-item-id');
-                let quantity = parseInt(input.value) || 0;
-                let row = input.closest('tr');
+            document.querySelectorAll('input[name="selected_items[]"]:checked').forEach(function(checkbox) {
+                let itemId = checkbox.value;
+                let quantityInput = document.getElementById('quantity-' + itemId);
+                let quantity = parseInt(quantityInput.value) || 0;
+                let row = checkbox.closest('tr');
                 let priceElement = row.querySelector('.price');
                 let price = parseFloat(priceElement.getAttribute('data-price')) || 0;
                 cartSubtotal += (price * quantity);
             });
-            document.getElementById('cart-subtotal').textContent = formatCurrency(cartSubtotal) + ' VNĐ';
             document.getElementById('cart-total').textContent = formatCurrency(cartSubtotal) + ' VNĐ';
         }
 
@@ -307,6 +343,44 @@
             let itemCheckboxes = document.querySelectorAll('input[name="selected_items[]"]');
             itemCheckboxes.forEach(function(checkbox) {
                 checkbox.checked = isChecked;
+            });
+            updateCartTotal();
+        });
+
+        // Thêm hàm để lấy danh sách sản phẩm được chọn
+        function getSelectedItems() {
+            let selectedItems = [];
+            document.querySelectorAll('input[name="selected_items[]"]:checked').forEach(function(checkbox) {
+                selectedItems.push(checkbox.value);
+            });
+            return selectedItems;
+        }
+
+        // Cập nhật form checkout để chỉ gửi các sản phẩm được chọn
+        document.getElementById('checkout-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            let selectedItems = getSelectedItems();
+            if (selectedItems.length === 0) {
+                alert('Vui lòng chọn ít nhất một sản phẩm để thanh toán!');
+                return;
+            }
+            
+            // Thêm các sản phẩm được chọn vào form
+            selectedItems.forEach(function(itemId) {
+                let input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'selected_items[]';
+                input.value = itemId;
+                this.appendChild(input);
+            }, this);
+            
+            this.submit();
+        });
+
+        // Thêm sự kiện change cho từng checkbox
+        document.querySelectorAll('input[name="selected_items[]"]').forEach(function(checkbox) {
+            checkbox.addEventListener('change', function() {
+                updateCartTotal();
             });
         });
     </script>

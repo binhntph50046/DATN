@@ -46,4 +46,9 @@ class ProductVariant extends Model
         return $this->belongsToMany(VariantAttributeValue::class, 'variant_combinations', 'variant_id', 'attribute_value_id')
             ->withTimestamps();
     }
+
+    public function reviews()
+    {
+        return $this->hasMany(ProductReview::class, 'variant_id')->where('status', 'active');
+    }
 }

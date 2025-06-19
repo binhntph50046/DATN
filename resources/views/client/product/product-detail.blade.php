@@ -104,6 +104,10 @@
                             $seenValues = []; // Mảng để theo dõi các giá trị đã xuất hiện
                             
                             foreach ($product->variants as $variant) {
+                                // Bỏ qua các biến thể đã bị xóa mềm
+                                if ($variant->deleted_at !== null) {
+                                    continue;
+                                }
                                 foreach ($variant->combinations as $combination) {
                                     $typeName = $combination->attributeValue->attributeType->name ?? null;
                                     if ($typeName) {
@@ -265,11 +269,13 @@
                                 <tbody>
                                     @if ($product->specifications && $product->specifications->isNotEmpty())
                                         @foreach ($product->specifications as $spec)
-                                            <tr>
-                                                <td class="text-secondary" style="width: 220px;">
-                                                    {{ $spec->specification->name }}</td>
-                                                <td>{{ $spec->value }}</td>
-                                            </tr>
+                                            @if($spec->specification)
+                                                <tr>
+                                                    <td class="text-secondary" style="width: 220px;">
+                                                        {{ $spec->specification->name }}</td>
+                                                    <td>{{ $spec->value }}</td>
+                                                </tr>
+                                            @endif
                                         @endforeach
                                     @else
                                         <tr>
@@ -639,14 +645,17 @@ hideAlert('error-alert');
 
             // Khởi tạo dữ liệu biến thể
             @foreach ($product->variants as $variant)
+                @if ($variant->deleted_at === null)
                 variantData[{{ $variant->id }}] = {
                     images: {!! json_encode(getImagesArray($variant->images)) !!},
                     price: {{ $variant->selling_price }}
                 };
+                @endif
             @endforeach
 
             // Khởi tạo mapping attribute -> variant
             @foreach ($product->variants as $variant)
+                @if ($variant->deleted_at === null)
                 @php
                     $attrValues = [];
                     foreach ($variant->combinations as $comb) {
@@ -656,6 +665,7 @@ hideAlert('error-alert');
                     $key = implode('|', $attrValues);
                 @endphp
                 attributeToVariant["{{ $key }}"] = {{ $variant->id }};
+                @endif
             @endforeach
 
             // Lấy danh sách các loại thuộc tính bắt buộc

@@ -743,7 +743,7 @@
                     if (valueSelect && $(valueSelect).val() && $(valueSelect).val().length > 0) {
                         const selectedValues = Array.from(valueSelect.selectedOptions).map(opt => ({
                             id: parseInt(opt.value),
-                            value: opt.text.split(' ')[0], // Lấy phần text trước color box
+                            value: opt.text,
                             attribute_type_id: parseInt(select.value),
                             hex: opt.getAttribute('data-hex')
                         }));

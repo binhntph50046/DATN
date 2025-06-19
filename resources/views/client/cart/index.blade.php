@@ -9,6 +9,7 @@
                 <div class="col-md-12">
                     <div class="site-blocks-table">
                         <br>
+
                         <!-- Hiển thị thông báo -->
                         @if (session('success'))
                             <div class="alert alert-success alert-dismissible fade show" role="alert" id="alert-success">
@@ -37,9 +38,9 @@
                             <tbody>
                                 @if ($cartItems->count() > 0)
                                     @php
-                                        // Helper function to safely handle both JSON strings và arrays cho images
                                         if (!function_exists('getImagesArray')) {
-                                            function getImagesArray($images) {
+                                            function getImagesArray($images)
+                                            {
                                                 if (is_array($images)) {
                                                     return $images;
                                                 }
@@ -59,82 +60,88 @@
                                                     <input type="checkbox" class="custom-control-input"
                                                         id="customEnvelop{{ $item->id }}" name="selected_items[]"
                                                         value="{{ $item->id }}"
-                                                        onchange="updateCartTotal()">
+                                                        {{ $item->is_invalid ? 'disabled' : '' }}>
                                                     <label class="custom-control-label"
                                                         for="customEnvelop{{ $item->id }}"></label>
                                                 </div>
                                             </td>
                                             <td class="product-thumbnail">
-                                                        @php
-                                                            $imageUrl = 'assets/images/default-product.png';
-                                                            // nếu có ảnh thì lấy ảnh từ variant
-                                                            if (!empty($item->variant) && !empty($item->variant->images)) {
-                                                                $variantImages = getImagesArray($item->variant->images);
-                                                                if (is_array($variantImages) && !empty($variantImages[0])) {
-                                                                    $imageUrl = $variantImages[0];
-                                                                }
-                                                                // nếu không có ảnh thì lấy ảnh từ product
-                                                            } elseif (!empty($item->product) && !empty($item->product->images)) {
-                                                                $productImages = getImagesArray($item->product->images);
-                                                                if (is_array($productImages) && !empty($productImages[0])) {
-                                                                    $imageUrl = $productImages[0];
-                                                                }
-                                                            }
-                                                        @endphp
-                                                        <img src="{{ asset($imageUrl) }}" alt="Ảnh sản phẩm"
-                                                            style="max-width:80px; height:80px; object-fit:cover;">
-                                                    </td>
-                                                    <td class="product-name">
-                                                        <h2 class="h5 text-black">{{-- {{ $item->product->name }} --}}
-                                                            {{ $item->variant ? '(' . $item->variant->name . ')' : '' }}</h2>
-                                                    </td>
-                                                    <td class="product-price">
-                                                        <span class="price"
-                                                            data-price="{{ $item->variant->selling_price ?? $item->product->selling_price }}">
-                                                            {{ number_format($item->variant->selling_price ?? $item->product->selling_price, 0, ',', '.') }}
-                                                            VNĐ
-                                                        </span>
-                                                    </td>
-                                                    <td>
-                                                        <div class="quantity-control">
-                                                            <button type="button" class="btn btn-outline-black decrease"
-                                                                data-item-id="{{ $item->id }}"
-                                                                onclick="changeQuantity({{ $item->id }}, 'decrease')">−</button>
-                                                            <input type="text" class="form-control text-center quantity-amount"
-                                                                name="quantity[{{ $item->id }}]" value="{{ $item->quantity }}"
-                                                                id="quantity-{{ $item->id }}"
-                                                                data-item-id="{{ $item->id }}" aria-label="Quantity"
-                                                                onchange="updateItemTotal({{ $item->id }})">
-                                                            <button type="button" class="btn btn-outline-black increase"
-                                                                data-item-id="{{ $item->id }}"
-                                                                onclick="changeQuantity({{ $item->id }}, 'increase')">+</button>
-                                                        </div>
-                                                    </td>
-                                                    <td class="product-total">
-                                                        <span class="item-total" id="total-{{ $item->id }}">
-                                                            {{ number_format(($item->variant->selling_price ?? $item->product->selling_price) * $item->quantity, 0, ',', '.') }}
-                                                            VNĐ
-                                                        </span>
-                                                    </td>
-                                                    <td>
-                                                        <form action="{{ route('cart.remove', $item->id) }}" method="POST"
-                                                            class="form-delete">
-                                                            @csrf
-                                                            @method('DELETE')
-                                                            <button type="submit" class="btn btn-black btn-sm">X</button>
-                                                        </form>
-                                                    </td>
-                                                </tr>
-                                            @endforeach
-                                        @else
-                                            <tr>
-                                                <td colspan="7" class="text-center">Giỏ hàng của bạn đang trống!</td>
-                                            </tr>
-                                        @endif
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
+                                                @php
+                                                    $imageUrl = 'assets/images/default-product.png';
+                                                    if (!empty($item->variant) && !empty($item->variant->images)) {
+                                                        $variantImages = getImagesArray($item->variant->images);
+                                                        if (is_array($variantImages) && !empty($variantImages[0])) {
+                                                            $imageUrl = $variantImages[0];
+                                                        }
+                                                    } elseif (
+                                                        !empty($item->product) &&
+                                                        !empty($item->product->images)
+                                                    ) {
+                                                        $productImages = getImagesArray($item->product->images);
+                                                        if (is_array($productImages) && !empty($productImages[0])) {
+                                                            $imageUrl = $productImages[0];
+                                                        }
+                                                    }
+                                                @endphp
+                                                <img src="{{ asset($imageUrl) }}" alt="Ảnh sản phẩm"
+                                                    style="max-width:80px; height:80px; object-fit:cover;">
+                                            </td>
+                                            <td class="product-name">
+                                                <h2 class="h5 text-black">
+                                                    {{ $item->variant ? '(' . $item->variant->name . ')' : '' }}
+                                                </h2>
+                                                @if ($item->is_invalid)
+                                                    <div class="text-danger small">Biến thể này đã ngừng kinh doanh</div>
+                                                @endif
+                                            </td>
+                                            <td class="product-price">
+                                                <span class="price"
+                                                    data-price="{{ $item->variant->selling_price ?? $item->product->selling_price }}">
+                                                    {{ number_format($item->variant->selling_price ?? $item->product->selling_price, 0, ',', '.') }}
+                                                    VNĐ
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <div class="quantity-control">
+                                                    <button type="button" class="btn btn-outline-black decrease"
+                                                        data-item-id="{{ $item->id }}"
+                                                        onclick="changeQuantity({{ $item->id }}, 'decrease')"
+                                                        {{ $item->is_invalid ? 'disabled' : '' }}>−</button>
+                                                    <input type="text" class="form-control text-center quantity-amount"
+                                                        name="quantity[{{ $item->id }}]" value="{{ $item->quantity }}"
+                                                        id="quantity-{{ $item->id }}"
+                                                        data-item-id="{{ $item->id }}" aria-label="Quantity"
+                                                        onchange="updateItemTotal({{ $item->id }})"
+                                                        {{ $item->is_invalid ? 'readonly' : '' }}>
+                                                    <button type="button" class="btn btn-outline-black increase"
+                                                        data-item-id="{{ $item->id }}"
+                                                        onclick="changeQuantity({{ $item->id }}, 'increase')"
+                                                        {{ $item->is_invalid ? 'disabled' : '' }}>+</button>
+                                                </div>
+                                            </td>
+                                            <td class="product-total">
+                                                <span class="item-total" id="total-{{ $item->id }}">
+                                                    {{ number_format(($item->variant->selling_price ?? $item->product->selling_price) * $item->quantity, 0, ',', '.') }}
+                                                    VNĐ
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <form action="{{ route('cart.remove', $item->id) }}" method="POST"
+                                                    class="form-delete">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="btn btn-black btn-sm">X</button>
+                                                </form>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                @else
+                                    <tr>
+                                        <td colspan="7" class="text-center">Giỏ hàng của bạn đang trống!</td>
+                                    </tr>
+                                @endif
+                            </tbody>
+                        </table>
                     </div>
 
                     @if ($cartItems->count() > 0)
@@ -174,6 +181,45 @@
                     @endif
                 </div>
             </div>
+
+            @if ($cartItems->count() > 0)
+                @php
+                    $subtotal = 0;
+                    $hasInvalidItems = false;
+                    foreach ($cartItems as $item) {
+                        $subtotal += ($item->variant->selling_price ?? $item->product->selling_price) * $item->quantity;
+                        if ($item->is_invalid) {
+                            $hasInvalidItems = true;
+                        }
+                    }
+                @endphp
+
+                @if ($hasInvalidItems)
+                    <div class="alert alert-danger mt-3">
+                        Giỏ hàng của bạn có sản phẩm không còn kinh doanh. Vui lòng xóa hoặc cập nhật giỏ hàng trước khi
+                        thanh toán.
+                    </div>
+                @endif
+
+                {{-- <div class="cart-summary-sticky-bottom">
+                    <div class="row align-items-center justify-content-between">
+                        <div class="col-md-6 d-flex align-items-center gap-3">
+                            <div class="custom-control custom-checkbox d-inline-block">
+                                <input type="checkbox" class="custom-control-input" id="selectAll">
+                                <label class="custom-control-label" for="selectAll">Chọn tất cả</label>
+                            </div>
+                            <div class="cart-total">
+                                <strong>Tổng giỏ hàng:</strong>
+                                <span id="cart-total">{{ number_format($subtotal, 0, ',', '.') }} VNĐ</span>
+                            </div>
+                        </div>
+                        <div class="col-md-3 text-md-right mt-3 mt-md-0">
+                            <button class="btn btn-checkout" {{ $hasInvalidItems ? 'disabled' : '' }}>Tiến hành thanh
+                                toán</button>
+                        </div>
+                    </div>
+                </div> --}}
+            @endif
         </div>
     </div>
 

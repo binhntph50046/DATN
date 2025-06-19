@@ -56,7 +56,8 @@ use App\Http\Controllers\admin\ProductVariantController;
 // Home & Product Routes
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/product/{slug}', [ClientProductController::class, 'show'])->name('product.detail');
-Route::get('/api/products/{id}', [ClientProductController::class, 'getProductDetails']);
+Route::get('/api/products/{id}', [ClientProductController::class, 'getProductDetails'])->name('api.products.show');
+Route::get('/api/variants/{id}', [ClientProductController::class, 'getVariant'])->name('api.variants.show');
 Route::post('/increment-view/{id}', [HomeController::class, 'incrementView'])->name('increment.view');
 
 // Shop Routes
@@ -272,12 +273,12 @@ Route::prefix('admin')
             Route::get('/', [ProductController::class, 'index'])->name('index');
             Route::get('/create', [ProductController::class, 'create'])->name('create');
             Route::post('/', [ProductController::class, 'store'])->name('store');
+            Route::get('/trash', [ProductController::class, 'trash'])->name('trash');
+            Route::post('/{product}/restore', [ProductController::class, 'restore'])->name('restore');
             Route::get('/{product}', [ProductController::class, 'show'])->name('show');
             Route::get('/{product}/edit', [ProductController::class, 'edit'])->name('edit');
             Route::put('/{product}', [ProductController::class, 'update'])->name('update');
             Route::delete('/{product}', [ProductController::class, 'destroy'])->name('destroy');
-            Route::get('/trash', [ProductController::class, 'trash'])->name('trash');
-            Route::post('/{product}/restore', [ProductController::class, 'restore'])->name('restore');
         });
         Route::get('attributes/{id}/values', [ProductController::class, 'getAttributeValues']);
 

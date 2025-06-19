@@ -5,6 +5,7 @@ namespace App\Http\Controllers\client;
 use App\Models\Banner;
 use App\Models\Product;
 use App\Models\Wishlist;
+use App\Models\ProductVariant;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 
@@ -58,5 +59,36 @@ class HomeController
         $product = Product::findOrFail($id);
         $product->increment('views');
         return response()->json(['success' => true, 'views' => $product->views]);
+    }
+
+    public function getProduct($id)
+    {
+        $product = Product::with(['variants' => function($query) {
+            $query->whereNull('deleted_at')
+                ->with(['combinations' => function($query) {
+                    $query->with(['attribute_value' => function($query) {
+                        $query->whereNull('deleted_at')
+                            ->with('attribute_type');
+                    }]);
+                }]);
+        }])
+        ->where('status', 'active')
+        ->findOrFail($id);
+
+        return response()->json($product);
+    }
+
+    public function getVariant($id)
+    {
+        $variant = ProductVariant::with(['combinations' => function($query) {
+            $query->with(['attribute_value' => function($query) {
+                $query->whereNull('deleted_at')
+                    ->with('attribute_type');
+            }]);
+        }])
+        ->whereNull('deleted_at')
+        ->findOrFail($id);
+
+        return response()->json($variant);
     }
 }

@@ -352,4 +352,7 @@ Route::prefix('admin')
         Route::post('variants/{id}/restore', [ProductVariantController::class, 'restore'])->name('variants.restore');
         Route::put('variants/{variant}', [ProductVariantController::class, 'update'])->name('variants.update');
         Route::delete('variants/{variant}', [ProductVariantController::class, 'destroy'])->name('variants.destroy');
+
+        // New route for checking variant slug
+        Route::get('/admin/ajax/check-variant-slug', [ProductController::class, 'checkVariantSlug']);
     });

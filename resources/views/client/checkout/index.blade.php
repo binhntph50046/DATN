@@ -98,10 +98,15 @@
                                 </ul>
                             </div>
                         @endif
-                        <form action="{{ route('vnpay.payment') }}" method="POST" id="checkoutForm">
+                        <form action="{{ isset($variant) ? route('checkout.store') : route('cart.checkout.store') }}" method="POST" id="checkoutForm">
                             @csrf
-                            <input type="hidden" name="variant_id" value="{{ $variant ? $variant->id : '' }}">
-                            <input type="hidden" name="quantity" value="{{ $quantity ?? 1 }}">
+                            @if(isset($variant))
+                                <input type="hidden" name="variant_id" value="{{ $variant->id }}">
+                                <input type="hidden" name="quantity" value="{{ $quantity ?? 1 }}">
+                            @endif
+                            @foreach(request('selected_items', []) as $itemId)
+                                <input type="hidden" name="selected_items[]" value="{{ $itemId }}">
+                            @endforeach
                             <div id="address-fields">
                                 <div class="form-group row">
                                     <div class="col-md-12">
@@ -140,24 +145,20 @@
 
                             <div class="form-group mt-4">
                                 <label class="text-black fw-bold mb-2">Phương thức thanh toán <span class="text-danger">*</span></label>
-                                <div class="d-flex flex-column gap-2">
                                     <div class="payment-methods">
                                         <label class="payment-option">
-                                            <input type="radio" name="payment_method" id="pm_cod" value="cod" required>
+                                        <input type="radio" name="payment_method" id="pm_cod" value="cod" required checked>
                                             <span class="custom-radio"></span>
                                             <img src="{{ asset('/images/logo/cod.png') }}" alt="COD" class="payment-icon">
                                             <span class="payment-label">Thanh toán khi nhận hàng (COD)</span>
                                         </label>
                                         <label class="payment-option">
-                                            <input type="radio" name="payment_method"  id="pm_vnpay" value="vnpay" required>
+                                            <input type="radio" name="payment_method" id="pm_vnpay" value="vnpay" required>
                                             <span class="custom-radio"></span>
                                             <img src="{{ asset('/images/logo-primary.svg') }}" alt="VNPay" class="payment-icon">
                                             <span class="payment-label">Thanh toán qua VNPay</span>
                                         </label>
                                     </div>
-                                </div>
-                               
-                            
                             </div>
                             <div class="form-group mt-4">
                                 <button class="btn btn-black btn-lg py-3 btn-block w-100" type="submit" id="checkout-button">
@@ -208,7 +209,7 @@
                                                 return [];
                                             }
                                         @endphp
-                                        @if($variant)
+                                        @if(isset($variant))
                                             <tr>
                                                 <td style="vertical-align:middle;">
                                                     <div class="d-flex align-items-center gap-3">
@@ -247,7 +248,54 @@
                                                 <td class="text-black font-weight-bold"><strong>{{ number_format($variant->selling_price * $quantity, 0, ',', '.') }} VNĐ</strong></td>
                                             </tr>
                                         @else
-                                            <tr><td colspan="2">Không có sản phẩm nào trong đơn hàng.</td></tr>
+                                            @foreach($cartItems as $item)
+                                                <tr>
+                                                    <td style="vertical-align:middle;">
+                                                        <div class="d-flex align-items-center gap-3">
+                                                            @php
+                                                                $imageUrl = 'assets/images/default-product.png';
+                                                                if (!empty($item->variant) && !empty($item->variant->images)) {
+                                                                    $variantImages = getImagesArray($item->variant->images);
+                                                                    if (is_array($variantImages) && !empty($variantImages[0])) {
+                                                                        $imageUrl = $variantImages[0];
+                                                                    }
+                                                                } elseif (!empty($item->product) && !empty($item->product->images)) {
+                                                                    $productImages = getImagesArray($item->product->images);
+                                                                    if (is_array($productImages) && !empty($productImages[0])) {
+                                                                        $imageUrl = $productImages[0];
+                                                                    }
+                                                                }
+                                                            @endphp
+                                                            <img src="{{ asset($imageUrl) }}" alt="Ảnh sản phẩm" style="width:64px;height:64px;object-fit:cover;border-radius:8px;border:1px solid #eee;">
+                                                            <div>
+                                                                <div class="fw-bold">{{ $item->product->name }}</div>
+                                                                @if($item->variant)
+                                                                    <div class="small text-muted">
+                                                                        @foreach($item->variant->combinations as $comb)
+                                                                            <span class="badge bg-light text-dark border me-1">
+                                                                                {{ $comb->attributeValue->attributeType->name }}: 
+                                                                                {{ is_array($comb->attributeValue->value) ? $comb->attributeValue->value[0] : $comb->attributeValue->value }}
+                                                                            </span>
+                                                                        @endforeach
+                                                                    </div>
+                                                                @endif
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                    <td style="vertical-align:middle;">
+                                                        <span class="fw-bold">{{ number_format($item->variant ? $item->variant->selling_price : $item->product->selling_price, 0, ',', '.') }} VNĐ</span><br>
+                                                        <span class="text-muted small">x {{ $item->quantity }}</span>
+                                                    </td>
+                                                </tr>
+                                            @endforeach
+                                            <tr>
+                                                <td class="text-black font-weight-bold"><strong>Tổng tiền</strong></td>
+                                                <td class="text-black">{{ number_format($subtotal, 0, ',', '.') }} VNĐ</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="text-black font-weight-bold"><strong>Tổng đơn hàng</strong></td>
+                                                <td class="text-black font-weight-bold"><strong>{{ number_format($subtotal, 0, ',', '.') }} VNĐ</strong></td>
+                                            </tr>
                                         @endif
                                     </tbody>
                                 </table>
@@ -258,49 +306,22 @@
             </div>
         </div>
     </div>
-    <script>
+    {{-- <script>
         localStorage.removeItem('checkout_product');
-    </script>
+    </script> --}}
     <script>
     document.addEventListener('DOMContentLoaded', function() {
         const checkoutForm = document.getElementById('checkoutForm');
         const checkoutButton = document.getElementById('checkout-button');
-        const originalAction = checkoutForm.action; // Lưu action mặc định (VNPay)
-
+        const originalAction = checkoutForm.getAttribute('action');
         checkoutForm.addEventListener('submit', function(e) {
-            const paymentMethod = document.querySelector('input[name="payment_method"]:checked').value;
+            const paymentMethod = document.querySelector('input[name="payment_method"]:checked')?.value;
             if (paymentMethod === 'vnpay') {
-                checkoutForm.action = originalAction; // Gửi về VNPay
-                checkoutButton.disabled = true;
-                checkoutButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang xử lý...';
+                checkoutForm.setAttribute('action', "{{ isset($variant) ? route('vnpay.payment') : route('cart.checkout.vnpay') }}");
             } else {
-                // Gửi về route checkout.store (COD, bank_transfer)
-                checkoutForm.action = "{{ route('checkout.store') }}";
+                checkoutForm.setAttribute('action', "{{ isset($variant) ? route('checkout.store') : route('cart.checkout.store') }}");
             }
         });
-    });
-    </script>
-    <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const checkbox = document.getElementById('use_new_address');
-        const addressFields = document.getElementById('address-fields');
-        if (checkbox) {
-            checkbox.addEventListener('change', function() {
-                if (checkbox.checked) {
-                    // Xóa giá trị các trường để nhập mới
-                    addressFields.querySelectorAll('input').forEach(el => el.value = '');
-                } else {
-                    // Gán lại giá trị user
-                    @if(Auth::check())
-                        addressFields.querySelector('input[name="c_fname"]').value = "{{ explode(' ', Auth::user()->name)[0] }}";
-                        addressFields.querySelector('input[name="c_lname"]').value = "{{ explode(' ', Auth::user()->name)[1] ?? '' }}";
-                        addressFields.querySelector('input[name="c_address"]').value = "{{ Auth::user()->address }}";
-                        addressFields.querySelector('input[name="c_email_address"]').value = "{{ Auth::user()->email }}";
-                        addressFields.querySelector('input[name="c_phone"]').value = "{{ Auth::user()->phone }}";
-                    @endif
-                }
-            });
-        }
     });
     </script>
 @endsection

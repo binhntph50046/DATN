@@ -28,7 +28,7 @@
         <div class="status-tabs-container mb-4">
             <div class="status-tabs-wrapper">
                 <nav class="status-tabs">
-                    <a class="status-tab {{ request('status') == null ? 'active' : '' }}" 
+                    <a class="status-tab {{ request('status') === null ? 'active' : '' }}" 
                        href="{{ route('order.index') }}">
                         <i class="fas fa-list-ul"></i>
                         <span>Tất cả</span>
@@ -87,7 +87,7 @@
         </div>
 
         <!-- Alert Messages -->
-        @if(session('success'))
+        {{-- @if(session('success'))
             <div class="alert alert-success alert-modern alert-dismissible fade show" role="alert">
                 <div class="alert-icon">
                     <i class="fas fa-check-circle"></i>
@@ -111,7 +111,7 @@
                 </div>
                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>
-        @endif
+        @endif --}}
 
 
         @if(session('warning'))
@@ -192,7 +192,7 @@
                                         'completed' => 'success',
                                         'cancelled' => 'danger',
                                         'returned' => 'secondary',
-                                        'partially_returned' => 'secondary',
+                                        '' => 'secondary',
                                     ][$order->status] ?? 'secondary';
 
                                     $statusIcons = [
@@ -203,7 +203,7 @@
                                         'completed' => 'fa-circle-check',
                                         'cancelled' => 'fa-ban',
                                         'returned' => 'fa-undo',
-                                        'partially_returned' => 'fa-undo',
+                                        '' => 'fa-undo',
                                     ][$order->status] ?? 'fa-circle';
                                 @endphp
                                 <span class="status-badge status-{{ $statusClass }}">
@@ -255,7 +255,7 @@
                                                 'completed' => 'Đã giao',
                                                 'cancelled' => 'Đã hủy',
                                                 'returned' => 'Đã hoàn đơn',
-                                                'partially_returned' => 'Hoàn một phần',
+                                                '' => 'Hoàn một phần',
                                                 default => 'Tất cả trạng thái'
                                             };
                                         @endphp
@@ -715,7 +715,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             'completed': 'success',
                             'cancelled': 'danger',
                             'returned': 'secondary',
-                            'partially_returned': 'secondary',
+                            '': 'secondary',
                         };
                         const statusIconMap = {
                             'pending': 'fa-clock',
@@ -725,7 +725,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             'completed': 'fa-circle-check',
                             'cancelled': 'fa-ban',
                             'returned': 'fa-undo',
-                            'partially_returned': 'fa-undo',
+                            '': 'fa-undo',
                         };
                         statusBadge.className = `status-badge status-${statusClassMap[e.status] || 'secondary'}`;
                         statusBadge.innerHTML = `<i class="fas ${statusIconMap[e.status] || 'fa-circle'}"></i> ${e.status_text}`;
@@ -740,7 +740,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     );
 
                     // Nếu đơn hàng bị hủy hoặc hoàn trả, reload trang để cập nhật danh sách
-                    if (e.status === 'cancelled' || e.status === 'returned' || e.status === 'partially_returned') {
+                    if (e.status === 'cancelled' || e.status === 'returned' || e.status === '') {
                         setTimeout(() => {
                             window.location.reload();
                         }, 1000);

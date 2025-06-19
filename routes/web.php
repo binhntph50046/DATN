@@ -89,7 +89,12 @@ Route::delete('/cart/remove/{id}', [CartController::class, 'remove'])->name('car
 Route::delete('/cart/clear', [CartController::class, 'clear'])->name('cart.clear');
 Route::get('/cart', [CartController::class, 'index'])->name('cart');
 
-Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout');
+// Cart Checkout Routes
+Route::get('/cart/checkout', [CheckoutController::class, 'cartCheckout'])->name('cart.checkout');
+Route::post('/cart/checkout', [CheckoutController::class, 'processCartCheckout'])->name('cart.checkout.store');
+Route::post('/cart/checkout/vnpay', [PaymentController::class, 'cartVnPay'])->name('cart.checkout.vnpay');
+
+Route::match(['get', 'post'], '/checkout', [CheckoutController::class, 'index'])->name('checkout');
 Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
 Route::get('/checkout/vnpay/callback', [CheckoutController::class, 'vnpayCallback'])->name('checkout.vnpay.callback');
 
@@ -268,12 +273,12 @@ Route::prefix('admin')
             Route::get('/', [ProductController::class, 'index'])->name('index');
             Route::get('/create', [ProductController::class, 'create'])->name('create');
             Route::post('/', [ProductController::class, 'store'])->name('store');
+            Route::get('/trash', [ProductController::class, 'trash'])->name('trash');
+            Route::post('/{product}/restore', [ProductController::class, 'restore'])->name('restore');
             Route::get('/{product}', [ProductController::class, 'show'])->name('show');
             Route::get('/{product}/edit', [ProductController::class, 'edit'])->name('edit');
             Route::put('/{product}', [ProductController::class, 'update'])->name('update');
             Route::delete('/{product}', [ProductController::class, 'destroy'])->name('destroy');
-            Route::get('/trash', [ProductController::class, 'trash'])->name('trash');
-            Route::post('/{product}/restore', [ProductController::class, 'restore'])->name('restore');
         });
         Route::get('attributes/{id}/values', [ProductController::class, 'getAttributeValues']);
 

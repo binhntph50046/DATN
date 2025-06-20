@@ -66,72 +66,145 @@ class CheckoutController
     {
         try {
             DB::beginTransaction();
+            
             // Validate dữ liệu đầu vào
             $request->validate([
-                'variant_id' => 'required|exists:product_variants,id',
-                'quantity' => 'required|integer|min:1',
                 'c_fname' => 'required|string|max:255',
                 'c_email_address' => 'required|email|max:255',
                 'c_phone' => 'required|regex:/^([0-9\s\-\+\(\)]*)$/|min:10|max:11',
                 'c_address' => 'required|string|max:255',
-                'payment_method' => 'required|in:cod,bank_transfer,credit_card',
+                'payment_method' => 'required|in:cod,bank_transfer,credit_card,vnpay',
             ]);
 
-            // Lấy thông tin biến thể
-            $variant = ProductVariant::with('product')->findOrFail($request->variant_id);
+            // Nếu là mua ngay (có variant_id)
+            if ($request->has('variant_id')) {
+                $request->validate([
+                    'variant_id' => 'required|exists:product_variants,id',
+                    'quantity' => 'required|integer|min:1',
+                ]);
 
-            // Kiểm tra số lượng tồn kho
-            if ($variant->stock < $request->quantity) {
-                throw new \Exception('Số lượng sản phẩm trong kho không đủ!');
+                // Lấy thông tin biến thể
+                $variant = ProductVariant::with('product')->findOrFail($request->variant_id);
+
+                // Kiểm tra số lượng tồn kho
+                if ($variant->stock < $request->quantity) {
+                    throw new \Exception('Số lượng sản phẩm trong kho không đủ!');
+                }
+
+                // Tính toán giá trị đơn hàng
+                $price = $variant->selling_price;
+                $quantity = $request->quantity;
+                $subtotal = $price * $quantity;
+                $discount = 0; // Có thể tính giảm giá nếu có voucher
+                $shipping_fee = 0; // Có thể lấy từ phương thức vận chuyển
+                $total_price = $subtotal + $shipping_fee - $discount;
+
+                // Tạo đơn hàng mới
+                $order = Order::create([
+                    'user_id' => Auth::id(),
+                    'subtotal' => $subtotal,
+                    'discount' => $discount,
+                    'shipping_fee' => $shipping_fee,
+                    'total_price' => $total_price,
+                    'shipping_address' => $request->c_address,
+                    'shipping_name' => $request->c_fname,
+                    'shipping_phone' => $request->c_phone,
+                    'shipping_email' => $request->c_email_address,
+                    'payment_method' => $request->payment_method,
+                    'payment_status' => 'pending',
+                    'shipping_method_id' => null,
+                    'status' => 'pending',
+                    'is_paid' => 0,
+                    'notes' => $request->c_order_notes,
+                ]);
+
+                // Cập nhật mã đơn hàng sau khi có ID
+                $order->update([
+                    'order_code' => 'DH' . $order->id
+                ]);
+
+                // Tạo chi tiết đơn hàng (order_items)
+                OrderItem::create([
+                    'order_id' => $order->id,
+                    'product_id' => $variant->product->id,
+                    'product_variant_id' => $variant->id,
+                    'quantity' => $quantity,
+                    'price' => $price,
+                    'total' => $subtotal,
+                ]);
+
+                // Cập nhật số lượng tồn kho
+                $variant->decrement('stock', $quantity);
+            } else {
+                // Nếu là thanh toán từ giỏ hàng
+                $cart = \App\Models\Cart::where('user_id', Auth::id())->first();
+                if (!$cart) {
+                    throw new \Exception('Giỏ hàng của bạn đang trống!');
+                }
+
+                $cartItems = $cart->cartItems()->with(['product', 'variant'])->get();
+
+                if ($cartItems->isEmpty()) {
+                    throw new \Exception('Giỏ hàng của bạn đang trống!');
+                }
+
+                // Tính toán giá trị đơn hàng
+                $subtotal = 0;
+                foreach ($cartItems as $item) {
+                    $price = $item->variant ? $item->variant->selling_price : $item->product->selling_price;
+                    $subtotal += $price * $item->quantity;
+                }
+                $discount = 0; // Có thể tính giảm giá nếu có voucher
+                $shipping_fee = 0; // Có thể lấy từ phương thức vận chuyển
+                $total_price = $subtotal + $shipping_fee - $discount;
+
+                // Tạo đơn hàng mới
+                $order = Order::create([
+                    'user_id' => Auth::id(),
+                    'subtotal' => $subtotal,
+                    'discount' => $discount,
+                    'shipping_fee' => $shipping_fee,
+                    'total_price' => $total_price,
+                    'shipping_address' => $request->c_address,
+                    'shipping_name' => $request->c_fname,
+                    'shipping_phone' => $request->c_phone,
+                    'shipping_email' => $request->c_email_address,
+                    'payment_method' => $request->payment_method,
+                    'payment_status' => 'pending',
+                    'shipping_method_id' => null,
+                    'status' => 'pending',
+                    'is_paid' => 0,
+                    'notes' => $request->c_order_notes,
+                ]);
+
+                // Cập nhật mã đơn hàng sau khi có ID
+                $order->update([
+                    'order_code' => 'DH' . $order->id
+                ]);
+
+                // Tạo chi tiết đơn hàng và cập nhật tồn kho
+                foreach ($cartItems as $item) {
+                    $price = $item->variant ? $item->variant->selling_price : $item->product->selling_price;
+                    $total = $price * $item->quantity;
+
+                    OrderItem::create([
+                        'order_id' => $order->id,
+                        'product_id' => $item->product_id,
+                        'product_variant_id' => $item->variant_id,
+                        'quantity' => $item->quantity,
+                        'price' => $price,
+                        'total' => $total,
+                    ]);
+
+                    // Cập nhật số lượng tồn kho
+                    if ($item->variant) {
+                        $item->variant->decrement('stock', $item->quantity);
+                    }
+                }
+
+                // Xóa giỏ hàng sau khi đặt hàng thành công
+                $cartItems->each->delete();
             }
-
-            // Tính toán giá trị đơn hàng
-            $price = $variant->selling_price;
-            $quantity = $request->quantity;
-            $subtotal = $price * $quantity;
-            $discount = 0; // Có thể tính giảm giá nếu có voucher
-            $shipping_fee = 0; // Có thể lấy từ phương thức vận chuyển
-            $total_price = $subtotal + $shipping_fee - $discount;
-
-            // Map payment_method nếu chọn QR/VNPay trên giao diện (ví dụ: truyền bank_transfer)
-            $paymentMethod = $request->payment_method;
-
-            // Tạo đơn hàng mới
-            $order = Order::create([
-                'user_id' => Auth::id(),
-                'subtotal' => $subtotal,
-                'discount' => $discount,
-                'shipping_fee' => $shipping_fee,
-                'total_price' => $total_price,
-                'shipping_address' => $request->c_address,
-                'shipping_name' => $request->c_fname,
-                'shipping_phone' => $request->c_phone,
-                'shipping_email' => $request->c_email_address,
-                'payment_method' => $paymentMethod,
-                'payment_status' => 'pending',
-                'shipping_method_id' => null,
-                'status' => 'pending',
-                'is_paid' => 0,
-                'notes' => $request->c_order_notes,
-            ]);
-
-            // Cập nhật mã đơn hàng sau khi có ID
-            $order->update([
-                'order_code' => 'DH' . $order->id
-            ]);
-
-            // Tạo chi tiết đơn hàng (order_items)
-            OrderItem::create([
-                'order_id' => $order->id,
-                'product_id' => $variant->product->id,
-                'product_variant_id' => $variant->id,
-                'quantity' => $quantity,
-                'price' => $price,
-                'total' => $subtotal,
-            ]);
-
-            // Cập nhật số lượng tồn kho
-            $variant->decrement('stock', $quantity);
 
             // Sau khi tạo order và commit transaction
             if ($order->shipping_email) {
@@ -149,7 +222,7 @@ class CheckoutController
                 }
                 $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('admin.invoices.pdf', ['invoice' => $invoice]);
                 $pdfContent = $pdf->output();
-                \Mail::to($order->shipping_email)->send(new \App\Mail\InvoicePdfMail($invoice, $pdfContent));
+                Mail::to($order->shipping_email)->send(new \App\Mail\InvoicePdfMail($invoice, $pdfContent));
             }
 
             // Commit transaction nếu mọi thứ OK
@@ -207,5 +280,166 @@ class CheckoutController
         // Nếu là request trực tiếp với ID đơn hàng
         $order = Order::with(['items.product', 'items.variant'])->findOrFail($orderId);
         return view('client.order.tracking', compact('order'));
+    }
+
+    /**
+     * Hiển thị trang checkout cho giỏ hàng
+     */
+    public function cartCheckout(Request $request)
+    {
+        /** @var \App\Models\User|null $user */
+        $user = Auth::user();
+
+        // Kiểm tra nếu user là admin hoặc staff
+        if (Auth::check() && ($user && ($user->hasRole('admin') || $user->hasRole('staff')))) {
+            return redirect()->route('home')->with('error', 'Tài khoản admin và nhân viên không được phép mua hàng!');
+        }
+
+        // Lấy giỏ hàng của user
+        $cart = \App\Models\Cart::where('user_id', Auth::id())->first();
+        if (!$cart) {
+            return redirect()->route('cart')->with('error', 'Giỏ hàng của bạn đang trống!');
+        }
+
+        // Lấy các sản phẩm được chọn từ request
+        $selectedItems = $request->input('selected_items', []);
+        if (empty($selectedItems)) {
+            return redirect()->route('cart')->with('error', 'Vui lòng chọn ít nhất một sản phẩm để thanh toán!');
+        }
+
+        $cartItems = $cart->cartItems()
+            ->whereIn('id', $selectedItems)
+            ->with(['product', 'variant'])
+            ->get();
+
+        if ($cartItems->isEmpty()) {
+            return redirect()->route('cart')->with('error', 'Giỏ hàng của bạn đang trống!');
+        }
+
+        // Tính toán tổng tiền
+        $subtotal = 0;
+        foreach ($cartItems as $item) {
+            $price = $item->variant ? $item->variant->selling_price : $item->product->selling_price;
+            $subtotal += $price * $item->quantity;
+        }
+
+        return view('client.checkout.index', compact('cartItems', 'subtotal'));
+    }
+
+    /**
+     * Xử lý đặt hàng từ giỏ hàng
+     */
+    public function processCartCheckout(Request $request)
+    {
+        try {
+            DB::beginTransaction();
+
+            // Validate dữ liệu đầu vào
+            $request->validate([
+                'c_fname' => 'required|string|max:255',
+                'c_email_address' => 'required|email|max:255',
+                'c_phone' => 'required|regex:/^([0-9\s\-\+\(\)]*)$/|min:10|max:11',
+                'c_address' => 'required|string|max:255',
+                'payment_method' => 'required|in:cod,bank_transfer,credit_card,vnpay',
+                'selected_items' => 'required|array',
+            ]);
+
+            // Lấy giỏ hàng của user
+            $cart = \App\Models\Cart::where('user_id', Auth::id())->first();
+            if (!$cart) {
+                throw new \Exception('Giỏ hàng của bạn đang trống!');
+            }
+
+            // Lấy các sản phẩm được chọn
+            $cartItems = $cart->cartItems()
+                ->whereIn('id', $request->selected_items)
+                ->with(['product', 'variant'])
+                ->get();
+
+            if ($cartItems->isEmpty()) {
+                throw new \Exception('Giỏ hàng của bạn đang trống!');
+            }
+
+            // Tính toán giá trị đơn hàng
+            $subtotal = 0;
+            foreach ($cartItems as $item) {
+                $price = $item->variant ? $item->variant->selling_price : $item->product->selling_price;
+                $subtotal += $price * $item->quantity;
+            }
+            $discount = 0;
+            $shipping_fee = 0;
+            $total_price = $subtotal + $shipping_fee - $discount;
+
+            // Tạo đơn hàng mới
+            $order = Order::create([
+                'user_id' => Auth::id(),
+                'subtotal' => $subtotal,
+                'discount' => $discount,
+                'shipping_fee' => $shipping_fee,
+                'total_price' => $total_price,
+                'shipping_address' => $request->c_address,
+                'shipping_name' => $request->c_fname,
+                'shipping_phone' => $request->c_phone,
+                'shipping_email' => $request->c_email_address,
+                'payment_method' => $request->payment_method,
+                'payment_status' => 'pending',
+                'shipping_method_id' => null,
+                'status' => 'pending',
+                'is_paid' => 0,
+                'notes' => $request->c_order_notes,
+            ]);
+
+            // Cập nhật mã đơn hàng sau khi có ID
+            $order->update([
+                'order_code' => 'DH' . $order->id
+            ]);
+
+            // Tạo chi tiết đơn hàng và cập nhật tồn kho
+            foreach ($cartItems as $item) {
+                $price = $item->variant ? $item->variant->selling_price : $item->product->selling_price;
+                $total = $price * $item->quantity;
+
+                OrderItem::create([
+                    'order_id' => $order->id,
+                    'product_id' => $item->product_id,
+                    'product_variant_id' => $item->variant_id,
+                    'quantity' => $item->quantity,
+                    'price' => $price,
+                    'total' => $total,
+                ]);
+
+                // Cập nhật số lượng tồn kho
+                if ($item->variant) {
+                    $item->variant->decrement('stock', $item->quantity);
+                }
+            }
+
+            // Xóa các sản phẩm đã thanh toán khỏi giỏ hàng
+            $cartItems->each->delete();
+
+            // Gửi email hóa đơn
+            if ($order->shipping_email) {
+                $invoice = \App\Models\Invoice::create([
+                    'order_id' => $order->id,
+                    'invoice_code' => 'INV' . str_pad($order->id, 6, '0', STR_PAD_LEFT),
+                    'total' => $order->total_price,
+                    'issued_by' => null,
+                    'issued_at' => now(),
+                ]);
+
+                $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('admin.invoices.pdf', ['invoice' => $invoice]);
+                $pdfContent = $pdf->output();
+                Mail::to($order->shipping_email)->send(new \App\Mail\InvoicePdfMail($invoice, $pdfContent));
+            }
+
+            DB::commit();
+
+            return redirect()->route('order.index')
+                ->with('success', 'Đặt hàng thành công!');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->withErrors(['error' => $e->getMessage()]);
+        }
     }
 }

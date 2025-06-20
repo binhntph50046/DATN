@@ -633,19 +633,16 @@
                 const oldValues = $(this).data('old-values') || [];
                 const newValues = $(this).val() || [];
 
-                // Only show warning if we're changing existing values and there are variants
-                // AND the change wasn't triggered by attribute type change
-                if (attributeTypeId && oldValues.length > 0 && 
+                // Chỉ xử lý nếu có sự thay đổi giá trị
+                if (
+                    attributeTypeId && oldValues.length > 0 &&
                     JSON.stringify(oldValues.sort()) !== JSON.stringify(newValues.sort()) &&
                     $('#variantsContainer .variant-row').length > 0 &&
-                    !$(`#attribute_type_${index}`).data('changing')) {
-                    
+                    !$(`#attribute_type_${index}`).data('changing')
+                ) {
                     const confirmMessage = 'CẢNH BÁO: Thay đổi giá trị thuộc tính sẽ:\n\n' +
-                        '1. Xóa tất cả biến thể hiện tại\n' +
-                        '2. Xóa tất cả hình ảnh của các biến thể\n' +
-                        '3. Các biến thể và quan hệ sẽ được đánh dấu để xóa mềm khi cập nhật sản phẩm\n\n' +
-                        'Bạn sẽ cần tạo lại các biến thể mới.\n' +
-                        'Những thay đổi này sẽ có hiệu lực sau khi bạn nhấn Cập Nhật Sản Phẩm.\n\n' +
+                        '1. Chỉ các biến thể chứa giá trị bị loại bỏ mới bị xóa mềm\n' +
+                        '2. Các biến thể còn lại sẽ được giữ nguyên\n' +
                         'Bạn có chắc chắn muốn thay đổi giá trị thuộc tính?';
 
                     if (!confirm(confirmMessage)) {
@@ -653,27 +650,36 @@
                         return;
                     }
 
-                    // Store variants for soft deletion
+                    // Xác định các giá trị bị loại bỏ
+                    const removedValues = oldValues.filter(val => !newValues.includes(val));
+
+                    // Lưu các biến thể bị ảnh hưởng để xóa mềm
                     const variantsToDelete = [];
-                    $('#variantsContainer .variant-row input[name$="[id]"]').each(function() {
-                        if (this.value) {
-                            variantsToDelete.push(this.value);
+                    $('#variantsContainer .variant-row').each(function() {
+                        let shouldDelete = false;
+                        // Kiểm tra các input hidden attributes của biến thể này
+                        $(this).find('input[name^="variants"][name*="[attributes]"][name*="[selected_values]"]').each(function() {
+                            const attrValue = $(this).val();
+                            if (removedValues.includes(attrValue)) {
+                                shouldDelete = true;
+                            }
+                        });
+                        if (shouldDelete) {
+                            // Lấy id biến thể nếu có
+                            const variantId = $(this).find('input[name$="[id]"]').val();
+                            if (variantId) {
+                                variantsToDelete.push(variantId);
+                            }
+                            // Ẩn biến thể khỏi giao diện
+                            $(this).hide();
                         }
                     });
                     $('#variants_to_delete').val(JSON.stringify(variantsToDelete));
 
-                    // Store images for deletion
-                    const imagesToDelete = [];
-                    $('#variantsContainer .image-preview-wrapper img').each(function() {
-                        const imgSrc = $(this).attr('src').split('/').slice(-3).join('/');
-                        imagesToDelete.push(imgSrc);
-                    });
-                    $('#images_to_delete').val(JSON.stringify(imagesToDelete));
+                    // Không xóa toàn bộ, chỉ ẩn các biến thể bị ảnh hưởng
+                    // Không cần clear variantsContainer
 
-                    // Clear variants container since values changed
-                    $('#variantsContainer').empty();
-
-                    // Add hidden input to track attribute value changes
+                    // Add hidden input để track thay đổi
                     let attributeValueChangeInput = document.getElementById('attribute_value_changed');
                     if (!attributeValueChangeInput) {
                         attributeValueChangeInput = document.createElement('input');

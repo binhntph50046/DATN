@@ -12,16 +12,37 @@ class ShopController
 {
     public function index()
     {
+        // Get categories for the top menu, ordered by the 'order' column from admin
+        $topCategories = Category::where('type', 1)->where('status', 1)->orderBy('order', 'asc')->get();
+
         $categories = Category::with(['products' => function ($query) {
             $query->with('reviews')
                 ->where('status', 1)
                 ->orderBy('created_at', 'desc');
-        }])->where('status', 1)->get();
+        }])->where('type', 1)->where('status', 1)->get();
         // Flash Sale
         $flashSaleItems = $this->getActiveFlashSaleItems();
         $flashSaleTimeRange = $this->getFlashSaleTimeRange();
-        return view('client.shop.index', compact('categories', 'flashSaleItems', 'flashSaleTimeRange'));
+        return view('client.shop.index', compact('categories', 'flashSaleItems', 'flashSaleTimeRange', 'topCategories'));
     }
+
+    public function showCategory($slug)
+    {
+        $category = Category::where('slug', $slug)
+            ->where('type', 1)
+            ->where('status', 1)
+            ->firstOrFail();
+
+        $products = $category->products()
+            ->where('status', 1)
+            ->with(['variants' => function ($query) {
+                $query->with(['combinations.attributeValue.attributeType']);
+            }, 'reviews'])
+            ->paginate(12);
+
+        return view('client.shop.category', compact('category', 'products'));
+    }
+
     protected function getActiveFlashSaleItems()
     {
         $now = Carbon::now();

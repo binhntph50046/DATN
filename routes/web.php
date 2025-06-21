@@ -62,6 +62,7 @@ Route::post('/increment-view/{id}', [HomeController::class, 'incrementView'])->n
 
 // Shop Routes
 Route::get('/shop', [ShopController::class, 'index'])->name('shop');
+Route::get('/shop/{slug}', [ShopController::class, 'showCategory'])->name('shop.category');
 Route::get('/about', [AboutController::class, 'index'])->name('about');
 
 // Profile Routes

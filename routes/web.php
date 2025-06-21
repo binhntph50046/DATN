@@ -1,6 +1,8 @@
 <?php
 
 use App\Models\Invoice;
+use App\Http\Middleware\VerifyCsrfToken;
+
 // Admin
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\admin\FaqController;
@@ -20,8 +22,9 @@ use App\Http\Controllers\admin\ProductController;
 use App\Http\Controllers\admin\VoucherController;
 use App\Http\Controllers\auth\FacebookController;
 use App\Http\Controllers\admin\CategoryController;
-use App\Http\Controllers\client\ChatBotController;
 use App\Http\Controllers\client\ContactController;
+use App\Http\Controllers\client\SubscribeController;
+use App\Http\Controllers\client\ChatbotController;
 // Auth
 use App\Http\Controllers\client\PaymentController;
 use App\Http\Controllers\admin\DashboardController;
@@ -46,6 +49,7 @@ use App\Http\Controllers\client\OrderController as ClientOrderController;
 use App\Http\Controllers\client\ProductController as ClientProductController;
 use App\Http\Controllers\Admin\OrderReturnController as AdminOrderReturnController;
 use App\Http\Controllers\client\OrderReturnController as ClientOrderReturnController;
+use App\Http\Controllers\client\FaqsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -71,9 +75,31 @@ Route::get('/blog/{slug}', [ClientBlogController::class, 'show'])->name('blog.sh
 Route::get('/contact', [ContactController::class, 'index'])->name('contact');
 Route::post('/contact', [ContactController::class, 'store'])->name('contact.store');
 
+Route::get('/faq', [FaqsController::class, 'index'])->name('faq');
+
+//Location
+Route::get('/location', function () {
+    return view('client.location.index');
+})->name('location');
+
+// Chatbot Route
+Route::get('/chat', function () {
+    return view('chat');
+});
+
+Route::post('/chatbot/ask', [ChatbotController::class, 'ask'])->name('chatbot.ask');
+
 // Cart & Checkout Routes
 Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
 Route::put('/cart/update/{cartItemId}', [CartController::class, 'update'])->name('cart.update');
+Route::post('/cart/update-quantity', [CartController::class, 'updateQuantity'])->name('cart.updateQuantity');
+Route::delete('/cart/remove/{id}', [CartController::class, 'remove'])->name('cart.remove');
+Route::delete('/cart/clear', [CartController::class, 'clear'])->name('cart.clear');
+Route::get('/cart', [CartController::class, 'index'])->name('cart');
+
+Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout');
+Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
+Route::get('/checkout/vnpay/callback', [CheckoutController::class, 'vnpayCallback'])->name('checkout.vnpay.callback');
 
 // Payment Routes
 Route::post('/payment/vnpay', [PaymentController::class, 'vnPay'])->name('vnpay.payment');
@@ -86,7 +112,7 @@ Route::middleware(['auth'])->group(function () {
 });
 
 // Subscribe Route
-Route::post('/subscribe', [\App\Http\Controllers\client\SubscribeController::class, 'store'])->name('subscribe.store');
+Route::post('/subscribe', [SubscribeController::class, 'store'])->name('subscribe.store');
 
 // Order Routes (Client)
 Route::prefix('order')->name('order.')->middleware(['auth'])->group(function () {
@@ -148,6 +174,7 @@ Route::get('/forgot-password', [ForgotPasswordController::class, 'showLinkReques
 Route::post('/forgot-password', [ForgotPasswordController::class, 'sendResetLinkEmail'])->name('password.email');
 Route::get('/reset-password/{token}', [ResetPasswordController::class, 'showResetForm'])->name('password.reset');
 Route::post('/reset-password', [ResetPasswordController::class, 'reset'])->name('password.update');
+
 // Social Login Routes
 Route::get('/auth/google', [GoogleController::class, 'redirectToGoogle'])->name('auth.google.redirect');
 Route::get('/auth/google/callback', [GoogleController::class, 'handleGoogleCallback']);
@@ -166,6 +193,7 @@ Route::prefix('admin')
     ->group(function () {
         // Dashboard
         Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+
 
         // User Management
         Route::prefix('users')->name('users.')->middleware('permission:view users')->group(function () {
@@ -279,7 +307,7 @@ Route::prefix('admin')
             Route::get('/{order}', [OrderController::class, 'show'])->name('show');
             Route::put('/{order}/status', [OrderController::class, 'updateStatus'])->middleware('permission:edit orders')->name('updateStatus');
             Route::delete('/{order}', [OrderController::class, 'destroy'])->middleware('permission:delete orders')->name('destroy');
-          // Route::get('/trash', [OrderController::class, 'trash'])->name('trash');
+            // Route::get('/trash', [OrderController::class, 'trash'])->name('trash');
             // Route::post('/trash/restore/bulk', [OrderController::class, 'bulkRestore'])->middleware('permission:edit orders')->name('restore.bulk');
             // Route::post('/trash/force-delete/bulk', [OrderController::class, 'bulkForceDelete'])->middleware('permission:delete orders')->name('forceDelete.bulk');
             Route::get('/{order}/export-invoice', [OrderController::class, 'exportInvoice'])->name('export-invoice');

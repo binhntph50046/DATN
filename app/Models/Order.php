@@ -14,6 +14,7 @@ class Order extends Model
 
     protected $fillable = [
         'user_id',
+        'order_code',
         'subtotal',
         'discount',
         'shipping_fee',
@@ -76,15 +77,6 @@ class Order extends Model
     {
         return $query->where('status', 'cancelled');
     }
-
-    /**
-     * Lấy chi tiết đơn hàng
-     */
-    public function details()
-    {
-        return $this->hasMany(OrderItem::class);
-    }
-
     /**
      * Lấy trạng thái đơn hàng dạng text
      */
@@ -128,5 +120,15 @@ class Order extends Model
             'credit_card' => 'Thẻ tín dụng',
         ];
         return $methods[$this->payment_method] ?? $this->payment_method;
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($order) {
+            // Tạo mã đơn hàng theo format: ORD + YYYYMMDD + 4 số ngẫu nhiên
+            $order->order_code = 'DH' . str_pad(mt_rand(1, 9999), 4, '0', STR_PAD_LEFT);
+        });
     }
 }

@@ -164,62 +164,23 @@
 
 
             {{-- để danh mục ở đây 6 cái nhé  --}}
-            <div>
-                <ul class="choose-cate d-flex justify-content-between">
-                    <li class="box_category" data-aos="fade-up" data-aos-delay="100">
-                        <a href="/iphone">
-                            <div class="img-catesp cateiphone">
-                                <img src="https://cdnv2.tgdd.vn/webmwg/2024/tz/images/desktop/IP_Desk.png" alt=""
-                                    width="102" height="112">
-                            </div>
-                            <span>iPhone</span>
-                        </a>
-                    </li>
-                    <li class="box_category" data-aos="fade-up" data-aos-delay="100">
-                        <a href="/mac">
-                            <div class="img-catesp catemac">
-                                <img src="https://cdnv2.tgdd.vn/webmwg/2024/tz/images/desktop/Mac_Desk.png" alt=""
-                                    width="150" height="97">
-                            </div>
-                            <span>Mac</span>
-                        </a>
-                    </li>
-                    <li class="box_category" data-aos="fade-up" data-aos-delay="100">
-                        <a href="/ipad">
-                            <div class="img-catesp cateipad">
-                                <img src="https://cdnv2.tgdd.vn/webmwg/2024/tz/images/desktop/Ipad_Desk.png" alt=""
-                                    width="116" height="102">
-                            </div>
-                            <span>iPad</span>
-                        </a>
-                    </li>
-                    <li class="box_category" data-aos="fade-up" data-aos-delay="100">
-                        <a href="/apple-watch">
-                            <div class="img-catesp catewatch">
-                                <img src="https://cdnv2.tgdd.vn/webmwg/2024/tz/images/desktop/Watch_Desk.png" alt=""
-                                    width="169" height="110">
-                            </div>
-                            <span>Watch</span>
-                        </a>
-                    </li>
-                    <li class="box_category" data-aos="fade-up" data-aos-delay="100">
-                        <a href="/am-thanh">
-                            <div class="img-catesp cateisound">
-                                <img src="https://cdnv2.tgdd.vn/webmwg/2024/tz/images/desktop/Speaker_Desk.png"
-                                    alt="" width="169" height="124">
-                            </div>
-                            <span>Tai nghe, loa</span>
-                        </a>
-                    </li>
-                    <li class="box_category" data-aos="fade-up" data-aos-delay="100">
-                        <a href="/phu-kien">
-                            <div class="img-catesp catephukien">
-                                <img src="https://cdnv2.tgdd.vn/webmwg/2024/tz/images/desktop/Phukien_Desk.png"
-                                    alt="" width="71" height="100">
-                            </div>
-                            <span>Phụ kiện</span>
-                        </a>
-                    </li>
+            <div class="category-menu-container mb-5">
+                @php
+                    $topCategories = $topCategories ?? collect();
+                    $isSlider = $topCategories->count() > 6;
+                @endphp
+                <ul class="choose-cate {{ $isSlider ? 'category-menu-slider' : 'd-flex justify-content-center' }}">
+                    @foreach ($topCategories as $category)
+                        <li class="box_category" data-aos="fade-up" data-aos-delay="{{ $loop->index * 50 }}">
+                            <a href="{{ route('shop.category', ['slug' => $category->slug]) }}">
+                                <div class="img-catesp">
+                                    <img src="{{ asset($category->image) }}" alt="{{ $category->name }}"
+                                         style="width: 100px; height: 100px; object-fit: contain;">
+                                </div>
+                                <span>{{ $category->name }}</span>
+                            </a>
+                        </li>
+                    @endforeach
                 </ul>
             </div>
             <!-- Category Products -->
@@ -245,18 +206,38 @@
                                                         $defaultVariant = $product->variants->first();
 
                                                         if ($defaultVariant && $defaultVariant->images) {
-                                                            $images = json_decode($defaultVariant->images, true);
-                                                            if (!empty($images[0])) {
-                                                                $variantImage = asset($images[0]);
+                                                            $images = $defaultVariant->images;
+                                                            // Nếu là array, sử dụng trực tiếp
+                                                            if (is_array($images)) {
+                                                                if (!empty($images[0])) {
+                                                                    $variantImage = asset($images[0]);
+                                                                }
+                                                            } 
+                                                            // Nếu là string, thử decode
+                                                            else if (is_string($images)) {
+                                                                $decoded = json_decode($images, true);
+                                                                if (is_array($decoded) && !empty($decoded[0])) {
+                                                                    $variantImage = asset($decoded[0]);
+                                                                }
                                                             }
                                                         }
 
                                                         if (!$variantImage) {
                                                             $otherVariant = $product->variants->skip(1)->first();
                                                             if ($otherVariant && $otherVariant->images) {
-                                                                $images = json_decode($otherVariant->images, true);
-                                                                if (!empty($images[0])) {
-                                                                    $variantImage = asset($images[0]);
+                                                                $images = $otherVariant->images;
+                                                                // Nếu là array, sử dụng trực tiếp
+                                                                if (is_array($images)) {
+                                                                    if (!empty($images[0])) {
+                                                                        $variantImage = asset($images[0]);
+                                                                    }
+                                                                } 
+                                                                // Nếu là string, thử decode
+                                                                else if (is_string($images)) {
+                                                                    $decoded = json_decode($images, true);
+                                                                    if (is_array($decoded) && !empty($decoded[0])) {
+                                                                        $variantImage = asset($decoded[0]);
+                                                                    }
                                                                 }
                                                             }
                                                         }
@@ -325,18 +306,38 @@
                                                             $defaultVariant = $product->variants->first();
 
                                                             if ($defaultVariant && $defaultVariant->images) {
-                                                                $images = json_decode($defaultVariant->images, true);
-                                                                if (!empty($images[0])) {
-                                                                    $variantImage = asset($images[0]);
+                                                                $images = $defaultVariant->images;
+                                                                // Nếu là array, sử dụng trực tiếp
+                                                                if (is_array($images)) {
+                                                                    if (!empty($images[0])) {
+                                                                        $variantImage = asset($images[0]);
+                                                                    }
+                                                                } 
+                                                                // Nếu là string, thử decode
+                                                                else if (is_string($images)) {
+                                                                    $decoded = json_decode($images, true);
+                                                                    if (is_array($decoded) && !empty($decoded[0])) {
+                                                                        $variantImage = asset($decoded[0]);
+                                                                    }
                                                                 }
                                                             }
 
                                                             if (!$variantImage) {
                                                                 $otherVariant = $product->variants->skip(1)->first();
                                                                 if ($otherVariant && $otherVariant->images) {
-                                                                    $images = json_decode($otherVariant->images, true);
-                                                                    if (!empty($images[0])) {
-                                                                        $variantImage = asset($images[0]);
+                                                                    $images = $otherVariant->images;
+                                                                    // Nếu là array, sử dụng trực tiếp
+                                                                    if (is_array($images)) {
+                                                                        if (!empty($images[0])) {
+                                                                            $variantImage = asset($images[0]);
+                                                                        }
+                                                                    } 
+                                                                    // Nếu là string, thử decode
+                                                                    else if (is_string($images)) {
+                                                                        $decoded = json_decode($images, true);
+                                                                        if (is_array($decoded) && !empty($decoded[0])) {
+                                                                            $variantImage = asset($decoded[0]);
+                                                                        }
                                                                     }
                                                                 }
                                                             }
@@ -483,6 +484,48 @@
     <script src="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
     <script>
         $(document).ready(function() {
+            // Initialize category menu slider
+            if ($('.category-menu-slider').length) {
+                $('.category-menu-slider').slick({
+                    slidesToShow: 6,
+                    slidesToScroll: 2,
+                    autoplay: true,
+                    autoplaySpeed: 4000,
+                    arrows: true,
+                    dots: false,
+                    infinite: false,
+                    responsive: [{
+                            breakpoint: 1200,
+                            settings: {
+                                slidesToShow: 5,
+                                slidesToScroll: 2
+                            }
+                        },
+                        {
+                            breakpoint: 992,
+                            settings: {
+                                slidesToShow: 4,
+                                slidesToScroll: 2
+                            }
+                        },
+                        {
+                            breakpoint: 768,
+                            settings: {
+                                slidesToShow: 3,
+                                slidesToScroll: 1
+                            }
+                        },
+                        {
+                            breakpoint: 576,
+                            settings: {
+                                slidesToShow: 2,
+                                slidesToScroll: 1
+                            }
+                        }
+                    ]
+                });
+            }
+
             // Initialize flash sale slider
             $('.flash-sale-slider').slick({
                 slidesToShow: 4,
@@ -934,6 +977,10 @@
     </script>
 
     <style>
+        .choose-cate .box_category {
+            margin: 0 15px;
+        }
+
         /* CSS để xử lý hiển thị cho slider có ít sản phẩm */
         .category-slider.few-items {
             display: flex;
@@ -1312,7 +1359,6 @@
 
         #quickViewModal .selected-value {
             margin-left: 10px;
-            color: #666;
             font-weight: normal;
         }
     </style>

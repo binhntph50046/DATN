@@ -45,6 +45,7 @@ use App\Http\Controllers\client\ChatBotController;
 use App\Http\Controllers\client\ProductController as ClientProductController;
 use App\Http\Controllers\client\ProfileController;
 use App\Models\Invoice;
+use App\Http\Controllers\admin\ProductVariantController;
 
 /*
 |--------------------------------------------------------------------------
@@ -55,11 +56,13 @@ use App\Models\Invoice;
 // Home & Product Routes
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/product/{slug}', [ClientProductController::class, 'show'])->name('product.detail');
-Route::get('/api/products/{id}', [ClientProductController::class, 'getProductDetails']);
+Route::get('/api/products/{id}', [ClientProductController::class, 'getProductDetails'])->name('api.products.show');
+Route::get('/api/variants/{id}', [ClientProductController::class, 'getVariant'])->name('api.variants.show');
 Route::post('/increment-view/{id}', [HomeController::class, 'incrementView'])->name('increment.view');
 
 // Shop Routes
 Route::get('/shop', [ShopController::class, 'index'])->name('shop');
+Route::get('/shop/{slug}', [ShopController::class, 'showCategory'])->name('shop.category');
 Route::get('/about', [AboutController::class, 'index'])->name('about');
 
 // Profile Routes
@@ -87,7 +90,12 @@ Route::delete('/cart/remove/{id}', [CartController::class, 'remove'])->name('car
 Route::delete('/cart/clear', [CartController::class, 'clear'])->name('cart.clear');
 Route::get('/cart', [CartController::class, 'index'])->name('cart');
 
-Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout');
+// Cart Checkout Routes
+Route::get('/cart/checkout', [CheckoutController::class, 'cartCheckout'])->name('cart.checkout');
+Route::post('/cart/checkout', [CheckoutController::class, 'processCartCheckout'])->name('cart.checkout.store');
+Route::post('/cart/checkout/vnpay', [PaymentController::class, 'cartVnPay'])->name('cart.checkout.vnpay');
+
+Route::match(['get', 'post'], '/checkout', [CheckoutController::class, 'index'])->name('checkout');
 Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
 Route::get('/checkout/vnpay/callback', [CheckoutController::class, 'vnpayCallback'])->name('checkout.vnpay.callback');
 
@@ -108,13 +116,8 @@ Route::post('/subscribe', [\App\Http\Controllers\client\SubscribeController::cla
 Route::prefix('order')->name('order.')->group(function () {
     Route::get('/', [ClientOrderController::class, 'index'])->name('index'); // Danh sách đơn hàng
     Route::get('/tracking/{order}', [CheckoutController::class, 'tracking'])->name('tracking'); // Theo dõi đơn hàng
-
-    Route::get('/guest-tracking', [ClientOrderController::class, 'guestTracking'])->name('guest.tracking'); // Theo dõi đơn hàng cho khách không đăng nhập
+    Route::get('/guest-tracking/{order_code?}', [ClientOrderController::class, 'guestTracking'])->name('guest.tracking'); // Theo dõi đơn hàng cho khách không đăng nhập
     Route::post('/cancel/{order}', [ClientOrderController::class, 'cancel'])->name('cancel')->middleware('auth'); // Hủy đơn hàng
-    Route::post('/cancel/{order}', [ClientOrderController::class, 'cancel'])->name('cancel'); // Hủy đơn hàng
-    Route::get('/invoice/{order}', [CheckoutController::class, 'invoice'])->name('invoice'); // Xem hóa đơn
-    Route::get('/resend-invoice/{order}', [CheckoutController::class, 'resendInvoice'])->name('resend-invoice'); // Gửi lại hóa đơn (GET)
-    Route::post('/{id}/request-resend-invoice', [ClientOrderController::class, 'requestResendInvoice'])->name('request-resend-invoice'); // Yêu cầu gửi lại hóa đơn
     Route::get('/{order}/return', [ClientOrderReturnController::class, 'create'])->name('returns.create'); // Yêu cầu hoàn hàng (form)
     Route::post('/{order}/return', [ClientOrderReturnController::class, 'store'])->name('returns.store'); // Gửi yêu cầu hoàn hàng
 });
@@ -181,7 +184,7 @@ Route::get('/auth/facebook/callback', [FacebookController::class, 'handleFaceboo
 */
 
 Route::prefix('admin')
-    ->middleware(['auth'])
+    ->middleware(['auth', 'role:admin|staff'])
     ->name('admin.')
     ->group(function () {
         // Dashboard
@@ -271,12 +274,12 @@ Route::prefix('admin')
             Route::get('/', [ProductController::class, 'index'])->name('index');
             Route::get('/create', [ProductController::class, 'create'])->name('create');
             Route::post('/', [ProductController::class, 'store'])->name('store');
+            Route::get('/trash', [ProductController::class, 'trash'])->name('trash');
+            Route::post('/{product}/restore', [ProductController::class, 'restore'])->name('restore');
             Route::get('/{product}', [ProductController::class, 'show'])->name('show');
             Route::get('/{product}/edit', [ProductController::class, 'edit'])->name('edit');
             Route::put('/{product}', [ProductController::class, 'update'])->name('update');
             Route::delete('/{product}', [ProductController::class, 'destroy'])->name('destroy');
-            Route::get('/trash', [ProductController::class, 'trash'])->name('trash');
-            Route::post('/{product}/restore', [ProductController::class, 'restore'])->name('restore');
         });
         Route::get('attributes/{id}/values', [ProductController::class, 'getAttributeValues']);
 
@@ -345,13 +348,17 @@ Route::prefix('admin')
             Route::post('/{faq}/restore', [FaqController::class, 'restore'])->name('restore');
             Route::delete('/{faq}/forceDelete', [FaqController::class, 'forceDelete'])->name('forceDelete');
         });
-
-        // Resend Invoice Requests trong admin
-        Route::get('resend-invoice-requests', [ResendInvoiceRequestController::class, 'index'])->name('resend-invoice-requests.index');
-        Route::post('resend-invoice-requests/{id}/approve', [ResendInvoiceRequestController::class, 'approve'])->name('resend-invoice-requests.approve');
-        Route::post('resend-invoice-requests/{id}/reject', [ResendInvoiceRequestController::class, 'reject'])->name('resend-invoice-requests.reject');
-
         //Invoice Routes
         Route::resource('invoices', InvoiceController::class);
         Route::get('invoices/{invoice}/pdf', [InvoiceController::class, 'exportPdf'])->name('invoices.export-pdf');
+
+        // Product Variants
+        Route::get('variants', [ProductVariantController::class, 'index'])->name('variants.index');
+        Route::get('variants/trash', [ProductVariantController::class, 'trash'])->name('variants.trash');
+        Route::post('variants/{id}/restore', [ProductVariantController::class, 'restore'])->name('variants.restore');
+        Route::put('variants/{variant}', [ProductVariantController::class, 'update'])->name('variants.update');
+        Route::delete('variants/{variant}', [ProductVariantController::class, 'destroy'])->name('variants.destroy');
+
+        // New route for checking variant slug
+        Route::get('/admin/ajax/check-variant-slug', [ProductController::class, 'checkVariantSlug']);
     });

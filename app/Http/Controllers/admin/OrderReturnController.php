@@ -6,7 +6,7 @@ use Illuminate\Routing\Controller;
 use Illuminate\Http\Request;
 use App\Models\OrderReturn;
 use Illuminate\Support\Facades\Auth;
-
+use App\Events\OrderStatusUpdated;
 class OrderReturnController extends Controller
 {
     /**
@@ -54,6 +54,7 @@ class OrderReturnController extends Controller
             'admin_id' => Auth::id(),
             'processed_at' => now(),
         ]);
+        event(new OrderStatusUpdated($return->order));
 
         // Cập nhật số tiền đã hoàn vào đơn hàng
         $order = $return->order;
@@ -77,11 +78,10 @@ class OrderReturnController extends Controller
         }
         $order->save();
 
-        // TODO: Nếu tích hợp cổng thanh toán, gọi API hoàn tiền ở đây
+       
 
         return redirect()->route('admin.order-returns.index')->with('success', 'Đã duyệt yêu cầu hoàn hàng. Đã hoàn lại ' . number_format($refundAmount) . ' VNĐ cho khách.');
     }
-
     /**
      * Từ chối yêu cầu hoàn hàng
      */
@@ -95,4 +95,4 @@ class OrderReturnController extends Controller
         ]);
         return redirect()->route('admin.order-returns.index')->with('success', 'Đã từ chối yêu cầu hoàn hàng.');
     }
-} 
+}

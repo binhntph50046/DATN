@@ -47,7 +47,10 @@
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
 
     <!-- Toast Container -->
-    <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 1050;"></div>
+    <!-- (Remove this line and all custom alert code) -->
+
+    <!-- Custom Alert Container -->
+    <!-- (Remove this block) -->
 
     <!-- Start Why Choose Us Section -->
     <div class="why-choose-section" data-aos="fade-up">
@@ -126,33 +129,23 @@
                         @foreach ($mostViewedProducts as $product)
                             <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="{{ $loop->iteration * 100 }}">
                                 <a class="product-item" href="{{ route('product.detail', $product->slug) }}"
-                                    onclick="incrementView('{{ $product->id }}')">
+                                    onclick="incrementView('{{ $product->id }}')" data-product-id="{{ $product->id }}">
                                     <div class="product-thumbnail text-center">
                                         @php
-                                            $defaultImage = asset('uploads/default/default.jpg');
-                                            $variantImage = null;
-                                            $defaultVariant = $product->variants->first();
-
-                                            if ($defaultVariant && $defaultVariant->images) {
-                                                $images = json_decode($defaultVariant->images, true);
-                                                if (!empty($images[0])) {
-                                                    $variantImage = asset($images[0]);
-                                                }
+                                            $images = getImagesArray($product->images);
+                                            if (empty($images) && $product->variants->isNotEmpty()) {
+                                                $variant = $product->variants->first();
+                                                $images = getImagesArray($variant->images);
                                             }
-
-                                            if (!$variantImage) {
-                                                $otherVariant = $product->variants->skip(1)->first();
-                                                if ($otherVariant && $otherVariant->images) {
-                                                    $images = json_decode($otherVariant->images, true);
-                                                    if (!empty($images[0])) {
-                                                        $variantImage = asset($images[0]);
-                                                    }
-                                                }
+                                            $mainImage = $images[0] ?? 'uploads/default/default.jpg';
+                                            if (!empty($mainImage) && !str_starts_with($mainImage, 'uploads/')) {
+                                                $mainImage = 'uploads/products/' . $mainImage;
                                             }
                                         @endphp
 
-                                        <img src="{{ $variantImage ?? $defaultImage }}" class="img-fluid mx-auto"
-                                            alt="{{ $product->name }}" style="max-height: 200px; object-fit: contain;">
+                                        <img src="{{ asset($mainImage) }}" class="img-fluid mx-auto"
+                                            alt="{{ $product->name }}"
+                                            style="max-height: 200px; object-fit: contain;">
                                     </div>
                                     <h3 class="product-title text-center">{{ $product->name }}</h3>
                                     <div class="product-price-and-rating text-center">
@@ -170,7 +163,8 @@
                                                     class="product-price">{{ number_format($variant->selling_price) }}đ</strong>
                                             @endif
                                         @endif
-                                        <div class="product-rating d-flex justify-content-center align-items-center">
+                                        <div
+                                            class="product-rating d-flex justify-content-center align-items-center">
                                             <i class="fas fa-star"></i>
                                             <i class="fas fa-star"></i>
                                             <i class="fas fa-star"></i>
@@ -185,12 +179,13 @@
                                             <form action="{{ route('wishlist.toggle', $product) }}" method="POST"
                                                 style="display: none;" id="wishlist-form-{{ $product->id }}">
                                                 @csrf
-                                                <input type="hidden" name="product_name" value="{{ $product->name }}">
+                                                <input type="hidden" name="product_name"
+                                                    value="{{ $product->name }}">
                                             </form>
                                             <span
-                                                class="icon-heart icon-add-to-wishlist {{ in_array($product->id, $wishlistProductIds ?? []) ? 'in-wishlist' : '' }}"
+                                                class="icon-heart icon-add-to-wishlist {{ in_array($product->id, $wishlistProductIds) ? 'in-wishlist' : '' }}"
                                                 onclick="event.preventDefault(); toggleWishlist('{{ $product->id }}', '{{ route('wishlist.toggle', $product) }}', this)"
-                                                title="{{ in_array($product->id, $wishlistProductIds ?? []) ? 'Xóa khỏi yêu thích' : 'Thêm vào yêu thích' }}">
+                                                title="{{ in_array($product->id, $wishlistProductIds) ? 'Xóa khỏi yêu thích' : 'Thêm vào yêu thích' }}">
                                                 <i class="fas fa-heart"></i>
                                             </span>
                                         @else
@@ -240,7 +235,6 @@
                         <p><a href="{{ route('shop') }}" class="btn">Xem Tất Cả Sản Phẩm</a></p>
                     </div>
                 </div>
-
                 <!-- End Text Column -->
             </div>
         </div>
@@ -259,43 +253,31 @@
                         thiết bị – là tuyên ngôn phong cách sống số hiện đại.</p>
                     <p><a href="{{ route('shop') }}" class="btn">Khám Phá Ngay</a></p>
                 </div>
-
                 <!-- End Column 1 -->
 
                 <!-- Start Latest Products Column -->
                 <div class="col-lg-9">
                     <div class="product-slider">
                         @foreach ($latestProducts as $product)
-                            {{-- <div class="product-row"> --}}
                             <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="{{ $loop->iteration * 100 }}">
                                 <a class="product-item" href="{{ route('product.detail', $product->slug) }}"
-                                    onclick="incrementView('{{ $product->id }}')">
+                                    onclick="incrementView('{{ $product->id }}')" data-product-id="{{ $product->id }}">
                                     <div class="product-thumbnail text-center">
                                         @php
-                                            $defaultImage = asset('Uploads/default/default.jpg');
-                                            $variantImage = null;
-                                            $defaultVariant = $product->variants->first();
-
-                                            if ($defaultVariant && $defaultVariant->images) {
-                                                $images = json_decode($defaultVariant->images, true);
-                                                if (!empty($images[0])) {
-                                                    $variantImage = asset($images[0]);
-                                                }
+                                            $images = getImagesArray($product->images);
+                                            if (empty($images) && $product->variants->isNotEmpty()) {
+                                                $variant = $product->variants->first();
+                                                $images = getImagesArray($variant->images);
                                             }
-
-                                            if (!$variantImage) {
-                                                $otherVariant = $product->variants->skip(1)->first();
-                                                if ($otherVariant && $otherVariant->images) {
-                                                    $images = json_decode($otherVariant->images, true);
-                                                    if (!empty($images[0])) {
-                                                        $variantImage = asset($images[0]);
-                                                    }
-                                                }
+                                            $mainImage = $images[0] ?? 'uploads/default/default.jpg';
+                                            if (!empty($mainImage) && !str_starts_with($mainImage, 'uploads/')) {
+                                                $mainImage = 'uploads/products/' . $mainImage;
                                             }
                                         @endphp
 
-                                        <img src="{{ $variantImage ?? $defaultImage }}" class="img-fluid mx-auto"
-                                            alt="{{ $product->name }}" style="max-height: 200px; object-fit: contain;">
+                                        <img src="{{ asset($mainImage) }}" class="img-fluid mx-auto"
+                                            alt="{{ $product->name }}"
+                                            style="max-height: 200px; object-fit: contain;">
                                     </div>
                                     <h3 class="product-title text-center">{{ $product->name }}</h3>
                                     <div class="product-price-and-rating text-center">
@@ -313,7 +295,8 @@
                                                     class="product-price">{{ number_format($variant->selling_price) }}đ</strong>
                                             @endif
                                         @endif
-                                        <div class="product-rating d-flex justify-content-center align-items-center">
+                                        <div
+                                            class="product-rating d-flex justify-content-center align-items-center">
                                             <i class="fas fa-star"></i>
                                             <i class="fas fa-star"></i>
                                             <i class="fas fa-star"></i>
@@ -331,9 +314,9 @@
                                                 <input type="hidden" name="product_name" value="{{ $product->name }}">
                                             </form>
                                             <span
-                                                class="icon-heart icon-add-to-wishlist {{ in_array($product->id, $wishlistProductIds ?? []) ? 'in-wishlist' : '' }}"
+                                                class="icon-heart icon-add-to-wishlist {{ in_array($product->id, $wishlistProductIds) ? 'in-wishlist' : '' }}"
                                                 onclick="event.preventDefault(); toggleWishlist('{{ $product->id }}', '{{ route('wishlist.toggle', $product) }}', this)"
-                                                title="{{ in_array($product->id, $wishlistProductIds ?? []) ? 'Xóa khỏi yêu thích' : 'Thêm vào yêu thích' }}">
+                                                title="{{ in_array($product->id, $wishlistProductIds) ? 'Xóa khỏi yêu thích' : 'Thêm vào yêu thích' }}">
                                                 <i class="fas fa-heart"></i>
                                             </span>
                                         @else
@@ -350,7 +333,6 @@
                                 </a>
                             </div>
                         @endforeach
-                        {{-- </div> --}}
                     </div>
                 </div>
                 <!-- End Latest Products Column -->
@@ -358,136 +340,33 @@
                 <!-- JavaScript for Wishlist -->
                 <script>
                     // Định nghĩa các hàm toàn cục
-                    function showLoginPrompt() {
-                        console.log('Showing login prompt');
-                        showToast('Vui lòng đăng nhập để thêm sản phẩm vào danh sách yêu thích.', 'danger');
-                    }
-
-                    function addToWishlist(productId, url) {
-                        console.log('Adding to wishlist', {
-                            productId,
-                            url
-                        });
-                        const form = document.getElementById(`wishlist-form-${productId}`);
-                        if (!form) {
-                            console.error('Form not found for productId:', productId);
-                            showToast('Lỗi hệ thống, vui lòng thử lại!', 'danger');
-                            return;
-                        }
-
-                        const formData = new FormData(form);
-                        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
-                        if (!csrfToken) {
-                            console.error('CSRF token not found');
-                            showToast('Lỗi hệ thống, vui lòng thử lại!', 'danger');
-                            return;
-                        }
-
-                        fetch(url, {
-                                method: 'POST',
-                                body: formData,
-                                headers: {
-                                    'X-CSRF-TOKEN': csrfToken,
-                                    'Accept': 'application/json'
-                                }
-                            })
-                            .then(response => {
-                                console.log('Response status:', response.status);
-                                console.log('Response headers:', Object.fromEntries(response.headers));
-                                const contentType = response.headers.get('content-type');
-                                if (!contentType || !contentType.includes('application/json')) {
-                                    throw new Error('Invalid JSON response');
-                                }
-                                return response.json().catch(err => {
-                                    throw new Error('Failed to parse JSON: ' + err.message);
-                                });
-                            })
-                            .then(data => {
-                                console.log('Response data:', data);
-                                if (!data.status || !data.message || !data.type) {
-                                    throw new Error('Invalid response format');
-                                }
-                                showToast(data.message, data.type);
-                            })
-                            .catch(error => {
-                                console.error('Error:', error.message || error);
-                                showToast('Đã xảy ra lỗi, vui lòng thử lại! (' + (error.message || 'Unknown error') + ')',
-                                    'danger');
-                            });
-                    }
-
-                    function showToast(message, type) {
-                        console.log('Showing toast:', {
-                            message,
-                            type
-                        });
-                        const toastContainer = document.querySelector('.toast-container');
-                        if (!toastContainer) {
-                            console.error('Toast container not found');
-                            return;
-                        }
-
+                    function showCustomAlert(message, type = 'success') {
+                        const alertId = 'custom-alert-' + Date.now();
+                        const icon = type === 'success' ? 'fa-check-circle' : 'fa-times-circle';
+                        const alertDiv = document.createElement('div');
+                        alertDiv.className = `custom-alert ${type}`;
+                        alertDiv.id = alertId;
+                        alertDiv.innerHTML = `
+                            <div class="icon"><i class="fas ${icon}"></i></div>
+                            <div class="content">
+                                <strong>${type.toUpperCase()}</strong>
+                                <p>${message}</p>
+                            </div>
+                            <div class="close" onclick="this.parentElement.style.display='none';">&times;</div>
+                        `;
+                        document.body.appendChild(alertDiv);
                         setTimeout(() => {
-                            const toastEl = document.createElement('div');
-                            toastEl.className = `toast`;
-                            toastEl.setAttribute('role', 'alert');
-                            toastEl.setAttribute('aria-live', 'assertive');
-                            toastEl.setAttribute('aria-atomic', 'true');
-
-                            // Create toast header
-                            const toastHeader = document.createElement('div');
-                            toastHeader.className = 'toast-header';
-                            toastHeader.innerHTML = `
-                                <i class="fas ${type === 'success' ? 'fa-check-circle text-success' : 
-                                              type === 'danger' ? 'fa-exclamation-circle text-danger' : 
-                                              type === 'warning' ? 'fa-info-circle text-warning' : 
-                                              'fa-info-circle text-info'} me-2"></i>
-                                <strong class="me-auto">${type === 'success' ? 'Thành công' : 
-                                               type === 'danger' ? 'Lỗi' : 
-                                               type === 'warning' ? 'Thông báo' : 
-                                               'Thông tin'}</strong>
-                                <small>Vừa xong</small>
-                                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
-                            `;
-
-                            // Create toast body
-                            const toastBody = document.createElement('div');
-                            toastBody.className = 'toast-body';
-                            toastBody.textContent = message;
-
-                            // Append header and body to toast
-                            toastEl.appendChild(toastHeader);
-                            toastEl.appendChild(toastBody);
-
-                            // Add toast to container
-                            toastContainer.appendChild(toastEl);
-
-                            // Initialize and show toast
-                            const toast = new bootstrap.Toast(toastEl, {
-                                delay: 3000
-                            });
-                            toast.show();
-
-                            // Remove toast after it's hidden
-                            toastEl.addEventListener('hidden.bs.toast', () => {
-                                toastEl.remove();
-                            });
-                        }, 100);
+                            alertDiv.style.display = 'none';
+                        }, 3000);
                     }
 
                     // Function to toggle wishlist status
                     async function toggleWishlist(productId, url, iconElement) {
-                        console.log('Toggling wishlist', {
-                            productId,
-                            url
-                        });
                         const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
                         if (!csrfToken) {
-                            console.error('CSRF token not found');
-                            showToast('Lỗi hệ thống, vui lòng thử lại!', 'danger');
+                            showCustomAlert('Lỗi hệ thống, vui lòng thử lại!', 'error');
                             return;
                         }
-
                         try {
                             const response = await fetch(url, {
                                 method: 'POST',
@@ -496,116 +375,43 @@
                                     'Accept': 'application/json',
                                     'Content-Type': 'application/json'
                                 },
-                                body: JSON.stringify({
-                                    product_id: productId
-                                })
+                                body: JSON.stringify({ product_id: productId })
                             });
-
                             const contentType = response.headers.get('content-type');
                             if (!contentType || !contentType.includes('application/json')) {
                                 throw new Error('Invalid JSON response');
                             }
                             const data = await response.json();
-
                             if (data.status) {
-                                showToast(data.message, data.type);
+                                showCustomAlert(data.message, data.type);
                                 if (data.type === 'success') {
-                                    // Cập nhật trạng thái icon dựa trên response
-                                    if (data.in_wishlist) {
-                                        iconElement.classList.add('in-wishlist');
-                                        iconElement.title = 'Xóa khỏi yêu thích';
-                                    } else {
-                                        iconElement.classList.remove('in-wishlist');
-                                        iconElement.title = 'Thêm vào yêu thích';
-                                    }
+                                    // Cập nhật tất cả các trái tim của cùng một sản phẩm
+                                    const allHeartIcons = document.querySelectorAll(`.icon-heart[onclick*="toggleWishlist('${productId}'"]`);
+                                    allHeartIcons.forEach(icon => {
+                                        if (data.in_wishlist) {
+                                            icon.classList.add('in-wishlist');
+                                            icon.title = 'Xóa khỏi yêu thích';
+                                        } else {
+                                            icon.classList.remove('in-wishlist');
+                                            icon.title = 'Thêm vào yêu thích';
+                                        }
+                                    });
                                 }
                             } else {
-                                showToast(data.message || 'Đã xảy ra lỗi, vui lòng thử lại!', data.type || 'danger');
+                                showCustomAlert(data.message || 'Đã xảy ra lỗi, vui lòng thử lại!', 'error');
                             }
                         } catch (error) {
-                            console.error('Error toggling wishlist:', error.message || error);
-                            showToast('Đã xảy ra lỗi: ' + (error.message || 'Unknown error'), 'danger');
+                            showCustomAlert('Đã xảy ra lỗi: ' + (error.message || 'Unknown error'), 'error');
                         }
+                    }
+
+                    function showLoginPrompt() {
+                        showCustomAlert('Vui lòng đăng nhập để thêm sản phẩm vào danh sách yêu thích.', 'error');
                     }
                 </script>
 
                 <!-- CSRF Meta Tag -->
                 <meta name="csrf-token" content="{{ csrf_token() }}">
-
-                <!-- CSS for Toast and Heart Icon -->
-                <style>
-                    /* Toast Custom Style */
-                    .toast-container {
-                        z-index: 1100 !important;
-                        position: fixed !important;
-                        top: 80px !important;
-                        right: 20px !important;
-                    }
-
-                    .toast {
-                        background: white !important;
-                        border: none !important;
-                        border-radius: 8px !important;
-                        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
-                    }
-
-                    .toast-header-custom {
-                        border-bottom: none;
-                        padding: 12px 16px;
-                        background-color: transparent;
-                    }
-
-                    .toast-success {
-                        background: linear-gradient(135deg, #4CAF50, #2E7D32);
-                    }
-
-                    .toast-error {
-                        background: linear-gradient(135deg, #F44336, #C62828);
-                    }
-
-                    .toast-warning {
-                        background: linear-gradient(135deg, #FF9800, #EF6C00);
-                    }
-
-                    .toast-info {
-                        background: linear-gradient(135deg, #2196F3, #1565C0);
-                    }
-
-                    .toast-icon {
-                        font-size: 1.5rem;
-                        margin-right: 10px;
-                    }
-
-                    .toast-progress {
-                        height: 4px;
-                        background: rgba(255, 255, 255, 0.3);
-                        position: absolute;
-                        bottom: 0;
-                        left: 0;
-                        width: 100%;
-                    }
-
-                    .toast-progress-bar {
-                        height: 100%;
-                        background: white;
-                        animation: progressBar 3s linear forwards;
-                    }
-
-                    @keyframes progressBar {
-                        from {
-                            width: 100%;
-                        }
-
-                        to {
-                            width: 0%;
-                        }
-                    }
-
-                    /* Style for heart icon when product is in wishlist */
-                    .icon-heart.in-wishlist i {
-                        color: red;
-                    }
-                </style>
             </div>
         </div>
     </div>
@@ -880,64 +686,296 @@
         document.querySelectorAll('.product-item').forEach(item => {
             item.querySelector('.icon-add-to-cart').addEventListener('click', (e) => {
                 e.preventDefault();
-                showToast('Added to Cart: ' + item.querySelector('.product-title').textContent, 'success');
             });
 
             item.querySelector('.icon-quick-view').addEventListener('click', (e) => {
                 e.preventDefault();
-                const modal = new bootstrap.Modal(document.getElementById('quickViewModal'));
-
-                // Get product details
-                const productImage = item.querySelector('.product-thumbnail img').src;
-                const productTitle = item.querySelector('.product-title').textContent;
-                const productPrice = item.querySelector('.product-price').textContent;
-
-                // Update modal content
-                document.querySelector('.quick-view-image').src = productImage;
-                document.querySelector('.quick-view-title').textContent = productTitle;
-                document.querySelector('.quick-view-price').textContent = productPrice;
-
-                // Update thumbnails
-                const thumbnails = document.querySelectorAll('#quickViewModal .thumbnail');
-                thumbnails[0].src = productImage;
-                thumbnails[1].src = 'images/product-2.png';
-                thumbnails[2].src = 'images/product-3.png';
-                thumbnails[3].src = 'images/product-1.png';
-
-                // Show modal
-                modal.show();
+                const productId = item.dataset.productId;
+                showQuickView(productId);
             });
         });
 
-        // Quick View Modal Functionality
+        function showQuickView(productId) {
+            incrementView(productId);
+                const modal = new bootstrap.Modal(document.getElementById('quickViewModal'));
+
+            // Fetch product details from API
+            fetch(`/api/products/${productId}`)
+                .then(response => response.json())
+                .then(product => {
+                    if (!product) {
+                        showCustomAlert('Sản phẩm không tồn tại hoặc đã bị xóa', 'error');
+                        return;
+                    }
+
+                // Update modal content
+                    document.querySelector('.quick-view-title').textContent = product.name;
+
+                    // Hiển thị category và warranty
+                    document.querySelector('.quick-view-category').textContent = product.category?.name || '';
+                    document.querySelector('.quick-view-warranty').textContent = product.warranty ? product.warranty + ' months' : '';
+                    
+                    // Get first variant that is not deleted
+                    const activeVariant = product.variants.find(v => !v.deleted_at);
+                    if (!activeVariant) {
+                        showCustomAlert('Sản phẩm hiện không có phiên bản khả dụng', 'error');
+                        return;
+                    }
+
+                    // Update price
+                    const priceElement = document.querySelector('.quick-view-price');
+                    if (activeVariant.discount_price) {
+                        priceElement.innerHTML = `
+                            <span class="text-decoration-line-through text-muted">${activeVariant.selling_price.toLocaleString('vi-VN')}đ</span>
+                            <span class="text-danger ms-2">${activeVariant.discount_price.toLocaleString('vi-VN')}đ</span>
+                        `;
+                    } else {
+                        priceElement.textContent = `${activeVariant.selling_price.toLocaleString('vi-VN')}đ`;
+                    }
+
+                    // Update images
+                    let images = [];
+                    try {
+                        images = typeof activeVariant.images === 'string' 
+                            ? JSON.parse(activeVariant.images) 
+                            : (Array.isArray(activeVariant.images) ? activeVariant.images : []);
+                    } catch (e) {
+                        console.error('Error parsing images:', e);
+                        images = [];
+                    }
+
+                    if (images.length > 0) {
+                        const mainImage = document.querySelector('.quick-view-image');
+                        mainImage.src = images[0].startsWith('http') ? images[0] : `/${images[0]}`;
+
+                // Update thumbnails
+                        const thumbnailsContainer = document.querySelector('.thumbnail-images .row');
+                        thumbnailsContainer.innerHTML = '';
+                        images.forEach((img, index) => {
+                            const col = document.createElement('div');
+                            col.className = 'col-3';
+                            col.innerHTML = `
+                                <img src="${img.startsWith('http') ? img : `/${img}`}" 
+                                     class="img-fluid thumbnail ${index === 0 ? 'active' : ''}" 
+                                     alt="Thumbnail ${index + 1}"
+                                     onclick="changeMainImage(this)">
+                            `;
+                            thumbnailsContainer.appendChild(col);
+                        });
+                    }
+
+                    // Update variants
+                    const variantGroups = document.getElementById('quickViewVariantGroups');
+                    variantGroups.innerHTML = '';
+
+                    // Group variants by attribute type
+                    const attributeGroups = {};
+                    product.variants.forEach(variant => {
+                        if (variant.deleted_at) return; // Skip deleted variants
+                        
+                        variant.combinations.forEach(comb => {
+                            if (!comb.attribute_value || comb.attribute_value.deleted_at) return; // Skip deleted attribute values
+                            
+                            const typeName = comb.attribute_value.attribute_type?.name;
+                            if (!typeName) return;
+
+                            if (!attributeGroups[typeName]) {
+                                attributeGroups[typeName] = new Set();
+                            }
+
+                            let value = comb.attribute_value.value;
+                            let hex = comb.attribute_value.hex;
+
+                            try {
+                                if (typeof value === 'string') {
+                                    value = JSON.parse(value);
+                                }
+                                if (typeof hex === 'string') {
+                                    hex = JSON.parse(hex);
+                                }
+                            } catch (e) {
+                                console.error('Error parsing value/hex:', e);
+                            }
+
+                            attributeGroups[typeName].add(JSON.stringify({
+                                value: Array.isArray(value) ? value[0] : value,
+                                hex: Array.isArray(hex) ? hex[0] : hex,
+                                variantId: variant.id
+                            }));
+            });
+        });
+
+                    // Create HTML for each attribute group
+                    Object.entries(attributeGroups).forEach(([typeName, values]) => {
+                        const groupDiv = document.createElement('div');
+                        groupDiv.className = 'variant-group mb-4';
+                        
+                        const labelHtml = `
+                            <label class="variant-label">${typeName}:</label>
+                            <div class="variant-options"></div>
+                        `;
+                        
+                        const optionsDiv = document.createElement('div');
+                        optionsDiv.className = 'variant-options';
+                        
+                        values.forEach(item => {
+                            const value = JSON.parse(item);
+                            const isColor = typeName.toLowerCase().includes('color');
+                            
+                            if (isColor && value.hex) {
+                                optionsDiv.innerHTML += `
+                                    <div class="color-option ${value.variantId === activeVariant.id ? 'active' : ''}"
+                                         style="background-color: ${value.hex}"
+                                         data-variant-id="${value.variantId}"
+                                         data-attr-type="${typeName}"
+                                         onclick="selectVariant(${value.variantId}, '${value.value}', '${typeName}', this)">
+                                    </div>
+                                `;
+                            } else {
+                                optionsDiv.innerHTML += `
+                                    <button type="button"
+                                            class="variant-btn ${value.variantId === activeVariant.id ? 'active' : ''}"
+                                            data-variant-id="${value.variantId}"
+                                            data-attr-type="${typeName}"
+                                            onclick="selectVariant(${value.variantId}, '${value.value}', '${typeName}', this)">
+                                        ${value.value}
+                                    </button>
+                                `;
+                            }
+                        });
+
+                        groupDiv.innerHTML = labelHtml;
+                        groupDiv.appendChild(optionsDiv);
+                        variantGroups.appendChild(groupDiv);
+                    });
+
+                    // Show modal
+                    modal.show();
+                })
+                .catch(error => {
+                    console.error('Error fetching product:', error);
+                    showCustomAlert('Có lỗi xảy ra khi tải thông tin sản phẩm', 'error');
+                });
+        }
+
+        function changeMainImage(thumbnail) {
+            const mainImage = document.querySelector('.quick-view-image');
+            mainImage.src = thumbnail.src;
+            
+            // Update active state
+            document.querySelectorAll('.thumbnail').forEach(thumb => thumb.classList.remove('active'));
+            thumbnail.classList.add('active');
+        }
+
+        function selectVariant(variantId, value, typeName, element) {
+            // Remove active class from all options of this type
+            document.querySelectorAll(`[data-attr-type="${typeName}"]`).forEach(opt => {
+                opt.classList.remove('active');
+            });
+            
+            // Add active class to selected option
+            element.classList.add('active');
+            
+            // Fetch variant details
+            fetch(`/api/variants/${variantId}`)
+                .then(response => response.json())
+                .then(variant => {
+                    if (!variant || variant.deleted_at) {
+                        showCustomAlert('Phiên bản sản phẩm không khả dụng', 'error');
+                        return;
+                    }
+
+                    // Update price
+                    const priceElement = document.querySelector('.quick-view-price');
+                    if (variant.discount_price) {
+                        priceElement.innerHTML = `
+                            <span class="text-decoration-line-through text-muted">${variant.selling_price.toLocaleString('vi-VN')}đ</span>
+                            <span class="text-danger ms-2">${variant.discount_price.toLocaleString('vi-VN')}đ</span>
+                        `;
+                    } else {
+                        priceElement.textContent = `${variant.selling_price.toLocaleString('vi-VN')}đ`;
+                    }
+
+                    // Update images
+                    const images = JSON.parse(variant.images || '[]');
+                    if (images.length > 0) {
+                        const mainImage = document.querySelector('.quick-view-image');
+                        mainImage.src = images[0].startsWith('http') ? images[0] : `/${images[0]}`;
+                        
+                        // Update thumbnails
+                        const thumbnailsContainer = document.querySelector('.thumbnail-images .row');
+                        thumbnailsContainer.innerHTML = '';
+                        images.forEach((img, index) => {
+                            const col = document.createElement('div');
+                            col.className = 'col-3';
+                            col.innerHTML = `
+                                <img src="${img.startsWith('http') ? img : `/${img}`}" 
+                                     class="img-fluid thumbnail ${index === 0 ? 'active' : ''}" 
+                                     alt="Thumbnail ${index + 1}"
+                                     onclick="changeMainImage(this)">
+                            `;
+                            thumbnailsContainer.appendChild(col);
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching variant:', error);
+                    showCustomAlert('Có lỗi xảy ra khi tải thông tin phiên bản sản phẩm', 'error');
+                });
+        }
+
+        function buyNow() {
+            const variantId = document.querySelector('.variant-btn.active, .color-option.active')?.dataset.variantId;
+            const quantity = document.getElementById('quickViewQuantity').value;
+            
+            if (!variantId) {
+                showCustomAlert('Vui lòng chọn đầy đủ thuộc tính sản phẩm', 'error');
+                return;
+            }
+            
+            window.location.href = `/checkout?variant_id=${variantId}&quantity=${quantity}`;
+        }
+
+        function addToCart() {
+            const variantId = document.querySelector('.variant-btn.active, .color-option.active')?.dataset.variantId;
+            const quantity = document.getElementById('quickViewQuantity').value;
+            
+            if (!variantId) {
+                showCustomAlert('Vui lòng chọn đầy đủ thuộc tính sản phẩm', 'error');
+                return;
+            }
+            
+            fetch('/cart/add', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                },
+                body: JSON.stringify({
+                    variant_id: variantId,
+                    quantity: quantity
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showCustomAlert('Đã thêm sản phẩm vào giỏ hàng', 'success');
+                    // Update cart count if needed
+                    if (data.cart_count) {
+                        document.querySelector('.cart-count').textContent = data.cart_count;
+                    }
+                } else {
+                    showCustomAlert(data.message || 'Có lỗi xảy ra khi thêm vào giỏ hàng', 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error adding to cart:', error);
+                showCustomAlert('Có lỗi xảy ra khi thêm vào giỏ hàng', 'error');
+            });
+        }
+
+        // Initialize quantity controls
         document.addEventListener('DOMContentLoaded', function() {
-            // Thumbnail click handler
-            document.querySelectorAll('#quickViewModal .thumbnail').forEach(thumb => {
-                thumb.addEventListener('click', function() {
-                    const mainImage = document.querySelector('#quickViewModal .quick-view-image');
-                    mainImage.src = this.src;
-                });
-            });
-
-            // Color variant selection
-            document.querySelectorAll('#quickViewModal .color-option').forEach(option => {
-                option.addEventListener('click', function() {
-                    document.querySelectorAll('#quickViewModal .color-option').forEach(opt => opt
-                        .classList.remove('active'));
-                    this.classList.add('active');
-                });
-            });
-
-            // Storage option selection
-            document.querySelectorAll('#quickViewModal .storage-btn').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    document.querySelectorAll('#quickViewModal .storage-btn').forEach(b => b
-                        .classList.remove('active'));
-                    this.classList.add('active');
-                });
-            });
-
-            // Quantity controls
             const quantityInput = document.getElementById('quickViewQuantity');
             const minusBtn = document.querySelector('#quickViewModal .quantity-btn.minus');
             const plusBtn = document.querySelector('#quickViewModal .quantity-btn.plus');
@@ -953,40 +991,11 @@
                 const currentValue = parseInt(quantityInput.value);
                 quantityInput.value = currentValue + 1;
             });
-
-            // Add to cart button
-            document.querySelector('#quickViewModal .btn-outline-primary').addEventListener('click', function() {
-                const quantity = document.getElementById('quickViewQuantity').value;
-                const selectedColor = document.querySelector('#quickViewModal .color-option.active').dataset
-                    .color;
-                const selectedStorage = document.querySelector('#quickViewModal .storage-btn.active')
-                    .dataset.storage;
-
-                showToast(
-                    `Added to cart: Quantity: ${quantity}, Color: ${selectedColor}, Storage: ${selectedStorage}GB`,
-                    'success'
-                );
-            });
-
-            // Buy now button
-            document.querySelector('#quickViewModal .btn-primary').addEventListener('click', function() {
-                const quantity = document.getElementById('quickViewQuantity').value;
-                const selectedColor = document.querySelector('#quickViewModal .color-option.active').dataset
-                    .color;
-                const selectedStorage = document.querySelector('#quickViewModal .storage-btn.active')
-                    .dataset.storage;
-
-                showToast(
-                    `Proceeding to checkout: Quantity: ${quantity}, Color: ${selectedColor}, Storage: ${selectedStorage}GB`,
-                    'success'
-                );
-            });
         });
     </script>
 
     <!-- Quick View Modal -->
-    <div class="modal fade" id="quickViewModal" tabindex="-1" aria-labelledby="quickViewModalLabel"
-        aria-hidden="true">
+    <div class="modal fade" id="quickViewModal" tabindex="-1" aria-labelledby="quickViewModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
@@ -1001,76 +1010,29 @@
                                     <img src="" class="img-fluid quick-view-image" alt="Product Image">
                                 </div>
                                 <div class="thumbnail-images">
-                                    <div class="row">
-                                        <div class="col-3">
-                                            <img src="images/product-1.png" class="img-fluid thumbnail"
-                                                alt="Thumbnail 1">
+                                    <div class="row"></div>
                                         </div>
-                                        <div class="col-3">
-                                            <img src="images/product-2.png" class="img-fluid thumbnail"
-                                                alt="Thumbnail 2">
-                                        </div>
-                                        <div class="col-3">
-                                            <img src="images/product-3.png" class="img-fluid thumbnail"
-                                                alt="Thumbnail 3">
-                                        </div>
-                                        <div class="col-3">
-                                            <img src="images/product-1.png" class="img-fluid thumbnail"
-                                                alt="Thumbnail 4">
-                                        </div>
-                                    </div>
-                                </div>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <h3 class="quick-view-title"></h3>
-                            <p class="quick-view-price"></p>
-                            <p class="quick-view-description">Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                                Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
-
-                            <!-- Color Variants -->
-                            <div class="color-variants mb-4">
-                                <label class="form-label">Màu sắc:</label>
-                                <div class="color-options">
-                                    <div class="color-option active" data-color="purple"
-                                        style="background-color: #8A2BE2;"></div>
-                                    <div class="color-option" data-color="black" style="background-color: #000000;">
-                                    </div>
-                                    <div class="color-option" data-color="gold" style="background-color: #FFD700;">
-                                    </div>
-                                    <div class="color-option" data-color="silver" style="background-color: #C0C0C0;">
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Storage Options -->
-                            <div class="storage-options mb-4">
-                                <label class="form-label">Dung lượng:</label>
-                                <div class="storage-buttons">
-                                    <button class="storage-btn active" data-storage="128">128GB</button>
-                                    <button class="storage-btn" data-storage="256">256GB</button>
-                                    <button class="storage-btn" data-storage="512">512GB</button>
-                                    <button class="storage-btn" data-storage="1024">1TB</button>
-                                </div>
-                            </div>
-
-                            <!-- Quantity Selector -->
+                            <div class="mb-2"><strong>Category:</strong> <span class="quick-view-category"></span></div>
+                            <div class="mb-2"><strong>Warranty:</strong> <span class="quick-view-warranty"></span></div>
+                            <div class="quick-view-price mb-4"></div>
+                            <div id="quickViewVariantGroups"></div>
                             <div class="quantity-selector mb-4">
                                 <label class="form-label">Số lượng:</label>
                                 <div class="quantity-control">
                                     <button class="quantity-btn minus">-</button>
-                                    <input type="number" id="quickViewQuantity" class="form-control" value="1"
-                                        min="1" readonly>
+                                    <input type="number" id="quickViewQuantity" class="form-control" value="1" min="1" readonly>
                                     <button class="quantity-btn plus">+</button>
                                 </div>
                             </div>
-
-                            <!-- Action Buttons -->
-                            <div class="product-actions mb-4">
-                                <button class="btn btn-primary">
+                            <div class="product-actions">
+                                <button class="btn btn-primary" onclick="buyNow()">
                                     <i class="fas fa-bolt me-2"></i>Mua ngay
                                 </button>
-                                <button class="btn btn-outline-primary">
+                                <button class="btn btn-outline-primary" onclick="addToCart()">
                                     <i class="fas fa-cart-plus me-2"></i>Thêm vào giỏ
                                 </button>
                             </div>
@@ -1080,6 +1042,13 @@
             </div>
         </div>
     </div>
+
+    <script>
+        document.getElementById('quickViewModal').addEventListener('hidden.bs.modal', function () {
+            document.body.classList.remove('modal-open');
+            document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+        });
+    </script>
 
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script>
@@ -1106,69 +1075,6 @@
                     }
                 });
         }
-
-        function showQuickView(productId) {
-            incrementView(productId);
-            // Existing quick view logic
-        }
-
-        // Initialize product slider
-        // $(document).ready(function() {
-        //     $('.product-slider').slick({
-        //         dots: true,
-        //         infinite: true,
-        //         speed: 300,
-        //         slidesToShow: 1,
-        //         slidesToScroll: 1,
-        //         autoplay: true,
-        //         autoplaySpeed: 3000,
-        //         arrows: true,
-        //         responsive: [{
-        //                 breakpoint: 1024,
-        //                 settings: {
-        //                     slidesToShow: 1,
-        //                     slidesToScroll: 1
-        //                 }
-        //             },
-        //             {
-        //                 breakpoint: 600,
-        //                 settings: {
-        //                     slidesToShow: 1,
-        //                     slidesToScroll: 1
-        //                 }
-        //             }
-        //         ]
-        //     });
-        // });
-
-        // Initialize latest products slider
-        //     $(document).ready(function() {
-        //         $('.latest-products-slider').slick({
-        //             dots: true,
-        //             infinite: true,
-        //             speed: 300,
-        //             slidesToShow: 3,
-        //             slidesToScroll: 1,
-        //             autoplay: true,
-        //             autoplaySpeed: 3000,
-        //             arrows: true,
-        //             responsive: [{
-        //                     breakpoint: 1024,
-        //                     settings: {
-        //                         slidesToShow: 2,
-        //                         slidesToScroll: 1
-        //                     }
-        //                 },
-        //                 {
-        //                     breakpoint: 600,
-        //                     settings: {
-        //                         slidesToShow: 1,
-        //                         slidesToScroll: 1
-        //                     }
-        //                 }
-        //             ]
-        //         });
-        //     });
     </script>
 
 @section('scripts')
@@ -1366,10 +1272,48 @@
             justify-content: center;
         }
 
-        .col-md-4 {
-            width: 100%;
-            max-width: 300px;
+            .col-md-4 {
+                width: 100%;
+                max-width: 300px;
+            }
         }
+
+        .icon-heart {
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .icon-heart i {
+            color: #000000;
+            transition: all 0.3s ease;
+        }
+
+        .icon-heart.in-wishlist i {
+            color: #ff4d4d;
+        }
+
+        .icon-heart:hover i {
+            transform: scale(1.1);
+        }
+
+        .icon-heart:not(.in-wishlist):hover i {
+            color: #ffffff;
+        }
+    </style>
+
+@php
+    // Helper function to safely handle both JSON strings and arrays
+    function getImagesArray($images) {
+        if (is_array($images)) {
+            return $images;
+        }
+        if (is_string($images)) {
+            $decoded = json_decode($images, true);
+            return is_array($decoded) ? $decoded : [];
+        }
+        return [];
     }
-</style>
+@endphp
+
+{{-- @include('client.partials.quick-view-modal') --}}
 @endsection

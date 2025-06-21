@@ -3,7 +3,10 @@
 namespace App\Http\Controllers\client;
 
 use App\Models\Product;
+use App\Models\ProductView;
+use App\Models\ProductVariant;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Auth;
 
 class ProductController
 {
@@ -26,7 +29,12 @@ class ProductController
             ->where('slug', '!=', $slug)
             ->take(4)
             ->get();
-            
+        // Lưu dữ liệu xem sản phẩm
+        ProductView::create([
+            'user_id' => Auth::id(),
+            'product_id' => $product->id,
+        ]);
+
         return view('client.product.product-detail', compact('product', 'relatedProducts'));
     }
 
@@ -42,5 +50,19 @@ class ProductController
         ])->findOrFail($id);
 
         return response()->json($product);
+    }
+
+    public function getVariant($id): JsonResponse
+    {
+        $variant = ProductVariant::with(['combinations' => function($query) {
+            $query->with(['attributeValue' => function($query) {
+                $query->whereNull('deleted_at')
+                    ->with('attributeType');
+            }]);
+        }])
+        ->whereNull('deleted_at')
+        ->findOrFail($id);
+
+        return response()->json($variant);
     }
 }

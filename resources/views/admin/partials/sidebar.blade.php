@@ -47,6 +47,12 @@
                                 <span class="pc-mtext">Thông số kỹ thuật</span>
                             </a>
                         </li>
+                        <li class="pc-item">
+                            <a href="{{ route('admin.variants.index') }}" class="pc-link">
+                                <span class="pc-micon"><i class="ti ti-box-multiple"></i></span>
+                                <span class="pc-mtext">Biến thể sản phẩm</span>
+                            </a>
+                        </li>
                     </ul>
                 </li>
 

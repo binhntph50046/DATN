@@ -259,6 +259,11 @@
                         <li><a class="dropdown-item text-white" href="{{ route('register') }}">Đăng kí</a></li>
                         <li><a class="dropdown-item text-white" href="{{ route('login') }}">Đăng nhập</a></li>
                     @else
+                        @if(Auth::user()->hasRole(['admin', 'staff']))
+                            <li>
+                                <a class="dropdown-item text-white" href="{{ route('admin.dashboard') }}">Admin Dashboard</a>
+                            </li>
+                        @endif
                         <li><a class="dropdown-item text-white" href="{{ route('profile.index') }}">Trang cá nhân</a></li>
                         <li><a class="dropdown-item text-white" href="{{ route('order.index') }}">Lịch sử đơn hàng</a></li>
                         <li>

@@ -3,7 +3,7 @@
 @section('content')
 
     <!-- Start Product Detail Section -->
-    <div class="untree_co-section product-section">
+    <div class="untree_co-section product-section" style="margin-top: 70px">
         
         <div class="container">
             <!-- Hiển thị thông báo -->
@@ -35,13 +35,25 @@
                         <div class="main-image mb-4 position-relative">
                             <button id="prevImageBtn" class="image-nav-btn" style="display:none;" onclick="showPrevImage()"><i class="fas fa-chevron-left"></i></button>
                             @php
+                                // Helper function to safely handle both JSON strings and arrays
+                                function getImagesArray($images) {
+                                    if (is_array($images)) {
+                                        return $images;
+                                    }
+                                    if (is_string($images)) {
+                                        $decoded = json_decode($images, true);
+                                        return is_array($decoded) ? $decoded : [];
+                                    }
+                                    return [];
+                                }
+
                                 $defaultVariant = $product->defaultVariant;
-                                $images = $defaultVariant ? json_decode($defaultVariant->images, true) : [];
+                                $images = $defaultVariant ? getImagesArray($defaultVariant->images) : [];
                                 $mainImage = $images[0] ?? 'uploads/default/default.jpg';
                                 // Gom tất cả ảnh của mọi biến thể
                                 $allImages = [];
                                 foreach ($product->variants as $variant) {
-                                    $imgs = json_decode($variant->images, true) ?? [];
+                                    $imgs = getImagesArray($variant->images);
                                     foreach ($imgs as $img) {
                                         if (!in_array($img, $allImages)) {
                                             $allImages[] = $img;
@@ -92,6 +104,10 @@
                             $seenValues = []; // Mảng để theo dõi các giá trị đã xuất hiện
                             
                             foreach ($product->variants as $variant) {
+                                // Bỏ qua các biến thể đã bị xóa mềm
+                                if ($variant->deleted_at !== null) {
+                                    continue;
+                                }
                                 foreach ($variant->combinations as $combination) {
                                     $typeName = $combination->attributeValue->attributeType->name ?? null;
                                     if ($typeName) {
@@ -253,11 +269,13 @@
                                 <tbody>
                                     @if ($product->specifications && $product->specifications->isNotEmpty())
                                         @foreach ($product->specifications as $spec)
-                                            <tr>
-                                                <td class="text-secondary" style="width: 220px;">
-                                                    {{ $spec->specification->name }}</td>
-                                                <td>{{ $spec->value }}</td>
-                                            </tr>
+                                            @if($spec->specification)
+                                                <tr>
+                                                    <td class="text-secondary" style="width: 220px;">
+                                                        {{ $spec->specification->name }}</td>
+                                                    <td>{{ $spec->value }}</td>
+                                                </tr>
+                                            @endif
                                         @endforeach
                                     @else
                                         <tr>
@@ -628,14 +646,17 @@ hideAlert('error-alert');
 
             // Khởi tạo dữ liệu biến thể
             @foreach ($product->variants as $variant)
+                @if ($variant->deleted_at === null)
                 variantData[{{ $variant->id }}] = {
-                    images: {!! json_encode(json_decode($variant->images, true) ?? []) !!},
+                    images: {!! json_encode(getImagesArray($variant->images)) !!},
                     price: {{ $variant->selling_price }}
                 };
+                @endif
             @endforeach
 
             // Khởi tạo mapping attribute -> variant
             @foreach ($product->variants as $variant)
+                @if ($variant->deleted_at === null)
                 @php
                     $attrValues = [];
                     foreach ($variant->combinations as $comb) {
@@ -645,6 +666,7 @@ hideAlert('error-alert');
                     $key = implode('|', $attrValues);
                 @endphp
                 attributeToVariant["{{ $key }}"] = {{ $variant->id }};
+                @endif
             @endforeach
 
             // Lấy danh sách các loại thuộc tính bắt buộc

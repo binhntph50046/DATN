@@ -28,7 +28,7 @@
         <div class="status-tabs-container mb-4">
             <div class="status-tabs-wrapper">
                 <nav class="status-tabs">
-                    <a class="status-tab {{ request('status') == null ? 'active' : '' }}" 
+                    <a class="status-tab {{ request('status') === null ? 'active' : '' }}" 
                        href="{{ route('order.index') }}">
                         <i class="fas fa-list-ul"></i>
                         <span>Tất cả</span>
@@ -87,7 +87,7 @@
         </div>
 
         <!-- Alert Messages -->
-        @if(session('success'))
+        {{-- @if(session('success'))
             <div class="alert alert-success alert-modern alert-dismissible fade show" role="alert">
                 <div class="alert-icon">
                     <i class="fas fa-check-circle"></i>
@@ -111,7 +111,7 @@
                 </div>
                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>
-        @endif
+        @endif --}}
 
 
         @if(session('warning'))
@@ -150,8 +150,23 @@
                             <td>
                                 <div class="d-flex align-items-center">
                                     @php
+                                       // hiển thị ảnh sản phẩm theo array hoặc mảng
+                                        if (!function_exists('getImagesArray')) {
+                                            function getImagesArray($images) {
+                                                if (is_array($images)) {
+                                                    return $images;
+                                                }
+                                                if (is_string($images)) {
+                                                    $decoded = json_decode($images, true);
+                                                    return is_array($decoded) ? $decoded : [];
+                                                }
+                                                return [];
+                                            }
+                                        }
+                                    @endphp
+                                    @php
                                         $firstItem = $order->items->first();
-                                        $images = $firstItem && $firstItem->variant && $firstItem->variant->images ? json_decode($firstItem->variant->images, true) : [];
+                                        $images = $firstItem && $firstItem->variant && $firstItem->variant->images ? getImagesArray($firstItem->variant->images) : [];
                                         $imgSrc = isset($images[0]) ? asset($images[0]) : (isset($firstItem->product->image) ? asset($firstItem->product->image) : asset('uploads/default/default.jpg'));
                                     @endphp
                                     <img src="{{ $imgSrc }}" alt="Product Image" class="product-image me-3">
@@ -177,7 +192,7 @@
                                         'completed' => 'success',
                                         'cancelled' => 'danger',
                                         'returned' => 'secondary',
-                                        'partially_returned' => 'secondary',
+                                        '' => 'secondary',
                                     ][$order->status] ?? 'secondary';
 
                                     $statusIcons = [
@@ -188,7 +203,7 @@
                                         'completed' => 'fa-circle-check',
                                         'cancelled' => 'fa-ban',
                                         'returned' => 'fa-undo',
-                                        'partially_returned' => 'fa-undo',
+                                        '' => 'fa-undo',
                                     ][$order->status] ?? 'fa-circle';
                                 @endphp
                                 <span class="status-badge status-{{ $statusClass }}">
@@ -198,7 +213,28 @@
                             </td>
                             <td>
                                 <div class="order-actions" id="order-actions-{{ $order->id }}">
-                                    {{-- Nút chức năng sẽ được JS cập nhật --}}
+                                    <a href="{{ route('order.tracking', $order->id) }}" class="btn btn-action btn-primary" title="Xem chi tiết">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    @if(in_array($order->status, ['pending', 'confirmed']))
+                                        <form action="{{ route('order.cancel', $order->id) }}" method="POST" style="display:inline;">
+                                            @csrf
+                                            <button type="submit" class="btn btn-action btn-danger" title="Hủy đơn" onclick="return confirm('Bạn chắc chắn muốn hủy đơn này?')">
+                                                <i class="fas fa-times"></i>
+                                            </button>
+                                        </form>
+                                    @endif
+                                    @if($order->status == 'completed')
+                                        @php
+                                            $created = \Carbon\Carbon::parse($order->created_at);
+                                            $now = \Carbon\Carbon::now();
+                                        @endphp
+                                        @if($now->diffInDays($created) <= 7)
+                                            <a href="{{ route('order.returns.create', $order->id) }}" class="btn btn-action btn-warning" title="Yêu cầu hoàn hàng">
+                                                <i class="fas fa-undo"></i>
+                                            </a>
+                                        @endif
+                                    @endif
                                 </div>
                             </td>
                         </tr>
@@ -219,7 +255,7 @@
                                                 'completed' => 'Đã giao',
                                                 'cancelled' => 'Đã hủy',
                                                 'returned' => 'Đã hoàn đơn',
-                                                'partially_returned' => 'Hoàn một phần',
+                                                '' => 'Hoàn một phần',
                                                 default => 'Tất cả trạng thái'
                                             };
                                         @endphp
@@ -480,73 +516,6 @@
 }
 
 /* Responsive Design */
-@media (max-width: 992px) {
-    .table-responsive {
-        border-radius: 15px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-    }
-    
-    .table-modern {
-        box-shadow: none;
-    }
-    
-    .table-modern thead {
-        display: none;
-    }
-    
-    .table-modern tbody tr {
-        display: block;
-        margin-bottom: 1rem;
-        border: 1px solid #e9ecef;
-        border-radius: 10px;
-
-    }
-    
-    .table-modern td {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 0.75rem 1rem;
-        border: none;
-        border-bottom: 1px solid #e9ecef;
-    }
-    
-    .table-modern td:last-child {
-        border-bottom: none;
-    }
-    
-    .table-modern td::before {
-        content: attr(data-label);
-        font-weight: 600;
-        color: #495057;
-    }
-    
-    }
-    
-    .table-modern td {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 0.75rem 1rem;
-        border: none;
-        border-bottom: 1px solid #e9ecef;
-    }
-    
-    .table-modern td:last-child {
-        border-bottom: none;
-    }
-    
-    .table-modern td::before {
-        content: attr(data-label);
-        font-weight: 600;
-        color: #495057;
-    }
-
-    .order-actions {
-        justify-content: flex-end;
-    }
-}
-
 @media (max-width: 576px) {
     .header-section {
         padding: 1.5rem;
@@ -666,7 +635,7 @@ function renderOrderActions(orderId, status, createdAt) {
                 <i class='fas fa-eye'></i> 
             </a>`;
 
-    // Nút Hủy đơn: mở modal nhập lý do
+    // Nút Hủy đơn: chỉ hiện khi status là 'pending' hoặc 'confirmed'
     if (status === 'pending' || status === 'confirmed') {
         html += `
             <button type="button" class="btn btn-action btn-danger" data-bs-toggle="modal" data-bs-target="#cancelModal${orderId}">
@@ -697,7 +666,7 @@ function renderOrderActions(orderId, status, createdAt) {
             </div>
         `;
     }
-    // Nút hoàn hàng chỉ hiện nếu chưa quá 7 ngày kể từ ngày mua
+    // Nút hoàn hàng chỉ hiện nếu chưa quá 7 ngày kể từ ngày mua và status là 'completed'
     if (status === 'completed') {
         const created = new Date(createdAt);
         const now = new Date();
@@ -746,7 +715,7 @@ document.addEventListener('DOMContentLoaded', function() {
                             'completed': 'success',
                             'cancelled': 'danger',
                             'returned': 'secondary',
-                            'partially_returned': 'secondary',
+                            '': 'secondary',
                         };
                         const statusIconMap = {
                             'pending': 'fa-clock',
@@ -756,18 +725,22 @@ document.addEventListener('DOMContentLoaded', function() {
                             'completed': 'fa-circle-check',
                             'cancelled': 'fa-ban',
                             'returned': 'fa-undo',
-                            'partially_returned': 'fa-undo',
+                            '': 'fa-undo',
                         };
                         statusBadge.className = `status-badge status-${statusClassMap[e.status] || 'secondary'}`;
                         statusBadge.innerHTML = `<i class="fas ${statusIconMap[e.status] || 'fa-circle'}"></i> ${e.status_text}`;
 
                     }
 
-                    // Cập nhật lại nút chức năng
-                    renderOrderActions(orderId, e.status, card.getAttribute('data-created-at'));
+                    // Cập nhật lại nút thao tác với trạng thái mới
+                    renderOrderActions(
+                        orderId,
+                        e.status,
+                        card.getAttribute('data-created-at')
+                    );
 
                     // Nếu đơn hàng bị hủy hoặc hoàn trả, reload trang để cập nhật danh sách
-                    if (e.status === 'cancelled' || e.status === 'returned' || e.status === 'partially_returned') {
+                    if (e.status === 'cancelled' || e.status === 'returned' || e.status === '') {
                         setTimeout(() => {
                             window.location.reload();
                         }, 1000);
@@ -787,25 +760,6 @@ alerts.forEach(alert => {
         }, 500);
     }, 5000);
 });
-
-});
-
-
-                    }
-
-                    // Cập nhật lại nút chức năng
-                    renderOrderActions(orderId, e.status, card.getAttribute('data-created-at'));
-
-                    // Nếu đơn hàng bị hủy hoặc hoàn trả, reload trang để cập nhật danh sách
-                    if (e.status === 'cancelled' || e.status === 'returned' || e.status === 'partially_returned') {
-                        setTimeout(() => {
-                            window.location.reload();
-                        }, 1000);
-                    }
-                }
-            });
-    });
-},200);
 
 });
 

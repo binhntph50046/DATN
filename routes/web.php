@@ -45,6 +45,7 @@ use App\Http\Controllers\client\ChatBotController;
 use App\Http\Controllers\client\ProductController as ClientProductController;
 use App\Http\Controllers\client\ProfileController;
 use App\Models\Invoice;
+use App\Http\Controllers\admin\ProductVariantController;
 
 /*
 |--------------------------------------------------------------------------
@@ -55,11 +56,13 @@ use App\Models\Invoice;
 // Home & Product Routes
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/product/{slug}', [ClientProductController::class, 'show'])->name('product.detail');
-Route::get('/api/products/{id}', [ClientProductController::class, 'getProductDetails']);
+Route::get('/api/products/{id}', [ClientProductController::class, 'getProductDetails'])->name('api.products.show');
+Route::get('/api/variants/{id}', [ClientProductController::class, 'getVariant'])->name('api.variants.show');
 Route::post('/increment-view/{id}', [HomeController::class, 'incrementView'])->name('increment.view');
 
 // Shop Routes
 Route::get('/shop', [ShopController::class, 'index'])->name('shop');
+Route::get('/shop/{slug}', [ShopController::class, 'showCategory'])->name('shop.category');
 Route::get('/about', [AboutController::class, 'index'])->name('about');
 
 // Profile Routes
@@ -87,7 +90,12 @@ Route::delete('/cart/remove/{id}', [CartController::class, 'remove'])->name('car
 Route::delete('/cart/clear', [CartController::class, 'clear'])->name('cart.clear');
 Route::get('/cart', [CartController::class, 'index'])->name('cart');
 
-Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout');
+// Cart Checkout Routes
+Route::get('/cart/checkout', [CheckoutController::class, 'cartCheckout'])->name('cart.checkout');
+Route::post('/cart/checkout', [CheckoutController::class, 'processCartCheckout'])->name('cart.checkout.store');
+Route::post('/cart/checkout/vnpay', [PaymentController::class, 'cartVnPay'])->name('cart.checkout.vnpay');
+
+Route::match(['get', 'post'], '/checkout', [CheckoutController::class, 'index'])->name('checkout');
 Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
 Route::get('/checkout/vnpay/callback', [CheckoutController::class, 'vnpayCallback'])->name('checkout.vnpay.callback');
 
@@ -176,7 +184,7 @@ Route::get('/auth/facebook/callback', [FacebookController::class, 'handleFaceboo
 */
 
 Route::prefix('admin')
-    ->middleware(['auth'])
+    ->middleware(['auth', 'role:admin|staff'])
     ->name('admin.')
     ->group(function () {
         // Dashboard
@@ -266,12 +274,12 @@ Route::prefix('admin')
             Route::get('/', [ProductController::class, 'index'])->name('index');
             Route::get('/create', [ProductController::class, 'create'])->name('create');
             Route::post('/', [ProductController::class, 'store'])->name('store');
+            Route::get('/trash', [ProductController::class, 'trash'])->name('trash');
+            Route::post('/{product}/restore', [ProductController::class, 'restore'])->name('restore');
             Route::get('/{product}', [ProductController::class, 'show'])->name('show');
             Route::get('/{product}/edit', [ProductController::class, 'edit'])->name('edit');
             Route::put('/{product}', [ProductController::class, 'update'])->name('update');
             Route::delete('/{product}', [ProductController::class, 'destroy'])->name('destroy');
-            Route::get('/trash', [ProductController::class, 'trash'])->name('trash');
-            Route::post('/{product}/restore', [ProductController::class, 'restore'])->name('restore');
         });
         Route::get('attributes/{id}/values', [ProductController::class, 'getAttributeValues']);
 
@@ -343,4 +351,14 @@ Route::prefix('admin')
         //Invoice Routes
         Route::resource('invoices', InvoiceController::class);
         Route::get('invoices/{invoice}/pdf', [InvoiceController::class, 'exportPdf'])->name('invoices.export-pdf');
+
+        // Product Variants
+        Route::get('variants', [ProductVariantController::class, 'index'])->name('variants.index');
+        Route::get('variants/trash', [ProductVariantController::class, 'trash'])->name('variants.trash');
+        Route::post('variants/{id}/restore', [ProductVariantController::class, 'restore'])->name('variants.restore');
+        Route::put('variants/{variant}', [ProductVariantController::class, 'update'])->name('variants.update');
+        Route::delete('variants/{variant}', [ProductVariantController::class, 'destroy'])->name('variants.destroy');
+
+        // New route for checking variant slug
+        Route::get('/admin/ajax/check-variant-slug', [ProductController::class, 'checkVariantSlug']);
     });

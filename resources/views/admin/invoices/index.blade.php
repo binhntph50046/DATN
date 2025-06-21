@@ -31,7 +31,7 @@
                                         <th>Mã hóa đơn</th>
                                         <th>Mã đơn hàng</th>
                                         <th>Tổng tiền</th>
-                                        <th>Người xuất</th>
+                                      
                                         <th>Ngày xuất</th>
                                         <th>Thao tác</th>
                                     </tr>
@@ -42,7 +42,7 @@
                                         <td>{{ $invoice->invoice_code }}</td>
                                         <td>#{{ $invoice->order_id }}</td>
                                         <td>{{ number_format($invoice->total) }} VNĐ</td>
-                                        <td>{{ optional($invoice->issued_by ? App\Models\User::find($invoice->issued_by) : null)->name ?? '-' }}</td>
+                                    
                                         <td>{{ $invoice->issued_at ? $invoice->issued_at->format('d/m/Y H:i') : '' }}</td>
                                         <td>
                                             <a href="{{ route('admin.invoices.show', $invoice->id) }}" class="btn btn-primary btn-sm">Xem</a>

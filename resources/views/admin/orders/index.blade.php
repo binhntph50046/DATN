@@ -98,6 +98,8 @@
                                                         'shipping' => 'bg-warning text-dark',
                                                         'completed' => 'bg-success',
                                                         'cancelled' => 'bg-danger',
+                                                        'returned' => 'bg-secondary',
+                                                        'partially_returned' => 'bg-secondary',
                                                     ][$order->status] ?? 'bg-light';
                                                 $statusText =
                                                     [
@@ -107,6 +109,8 @@
                                                         'shipping' => 'Đang giao hàng',
                                                         'completed' => 'Hoàn thành',
                                                         'cancelled' => 'Đã hủy',
+                                                        'returned' => 'Đã hoàn đơn',
+                                                        'partially_returned' => 'Hoàn một phần',
                                                     ][$order->status] ?? ucfirst($order->status);
                                             @endphp
                                             <span

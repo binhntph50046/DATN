@@ -91,9 +91,24 @@ input[type="checkbox"] {
         @csrf
         <div class="mb-3">
             <label class="form-label">Chọn sản phẩm muốn hoàn:</label>
+            @php
+                // Helper function to safely handle both JSON strings and arrays
+                if (!function_exists('getImagesArray')) {
+                    function getImagesArray($images) {
+                        if (is_array($images)) {
+                            return $images;
+                        }
+                        if (is_string($images)) {
+                            $decoded = json_decode($images, true);
+                            return is_array($decoded) ? $decoded : [];
+                        }
+                        return [];
+                    }
+                }
+            @endphp
             @foreach($order->items as $item)
                 @php
-                    $images = $item->variant && $item->variant->images ? json_decode($item->variant->images, true) : [];
+                    $images = $item->variant && $item->variant->images ? getImagesArray($item->variant->images) : [];
                     $imgSrc = isset($images[0]) ? asset($images[0]) : (isset($item->product->image) ? asset($item->product->image) : asset('uploads/default/default.jpg'));
                 @endphp
                 <div class="form-check mb-2 d-flex align-items-center" style="gap: 10px;">

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\client;
 use App\Models\Product;
 use App\Models\ProductView;
 use App\Services\Product\ProductSuggestionService;
+use App\Models\ProductVariant;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
 
@@ -55,5 +56,19 @@ class ProductController
         ])->findOrFail($id);
 
         return response()->json($product);
+    }
+
+    public function getVariant($id): JsonResponse
+    {
+        $variant = ProductVariant::with(['combinations' => function($query) {
+            $query->with(['attributeValue' => function($query) {
+                $query->whereNull('deleted_at')
+                    ->with('attributeType');
+            }]);
+        }])
+        ->whereNull('deleted_at')
+        ->findOrFail($id);
+
+        return response()->json($variant);
     }
 }

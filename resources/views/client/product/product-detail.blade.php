@@ -277,6 +277,7 @@
                     </div>
                 </div>
             </div>
+            @include('client.product.suggestions', ['suggestions' => $suggestions]);
         </div>
     </div>
     <!-- End Product Detail Section -->

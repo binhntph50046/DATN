@@ -69,5 +69,14 @@ class ProductSuggestionService
 
         return Product::whereIn('id', $productIds)->get();
     }
+    public function getAllSuggestions(Product $product, $userId = null)
+    {
+        return [
+            'by_price' => $this->suggestByPrice($product),
+            'by_view' => $this->suggestByViewHistory($userId),
+            'by_search' => $this->suggestBySearchHistory($userId),
+            'trending' => $this->suggestTrendingThisWeek(),
+        ];
+    }
 }
 // This service class provides methods to suggest products based on various criteria such as price, view history, search history, and trending products.

@@ -87,7 +87,7 @@
 
                 <div class="col-md-12 col-xl-8">
                     <div class="d-flex align-items-center justify-content-between mb-3">
-                        <h5 class="mb-0">Khách truy cập duy nhất</h5>
+                        <h5 class="mb-0">Khách truy cập</h5>
                         <ul class="nav nav-pills justify-content-end mb-0" id="chart-tab-tab" role="tablist">
                             <li class="nav-item" role="presentation">
                                 <button class="nav-link" id="chart-tab-home-tab" data-bs-toggle="pill"
@@ -128,7 +128,7 @@
                 </div>
 
                 <div class="col-md-12 col-xl-8">
-                    <h5 class="mb-3">Recent Orders</h5>
+                    <h5 class="mb-3">Đơn hàng gần đây</h5>
                     <div class="card tbl-card">
                         <div class="card-body">
                             <div class="table-responsive">
@@ -173,30 +173,31 @@
                                         @foreach ($recentOrders as $order)
                                             @foreach ($order->items as $item)
                                                 <tr>
-                                                    <td><a href="{{ route('admin.orders.show', $order->id) }}" class="text-muted">{{ $order->id }}</a></td>
+                                                    <td><a href="{{ route('admin.orders.show', $order->id) }}"
+                                                            class="text-muted">{{ $order->id }}</a></td>
                                                     <td>{{ $item->product->name ?? 'N/A' }}</td>
                                                     <td>{{ $item->quantity }}</td>
                                                     <td>
                                                         @php
                                                             $statusColors = [
-                                                                'pending'            => 'text-secondary',
-                                                                'confirmed'          => 'text-primary',
-                                                                'preparing'          => 'text-warning',
-                                                                'shipping'           => 'text-info',
-                                                                'completed'          => 'text-success',
-                                                                'cancelled'          => 'text-danger',
-                                                                'returned'           => 'text-muted',
+                                                                'pending' => 'text-secondary',
+                                                                'confirmed' => 'text-primary',
+                                                                'preparing' => 'text-warning',
+                                                                'shipping' => 'text-info',
+                                                                'completed' => 'text-success',
+                                                                'cancelled' => 'text-danger',
+                                                                'returned' => 'text-muted',
                                                                 'partially_returned' => 'text-dark',
                                                             ];
 
                                                             $statusLabels = [
-                                                                'pending'            => 'Chờ xử lý',
-                                                                'confirmed'          => 'Đã xác nhận',
-                                                                'preparing'          => 'Đang chuẩn bị',
-                                                                'shipping'           => 'Đang giao hàng',
-                                                                'completed'          => 'Hoàn thành',
-                                                                'cancelled'          => 'Đã hủy',
-                                                                'returned'           => 'Đã trả hàng',
+                                                                'pending' => 'Chờ xử lý',
+                                                                'confirmed' => 'Đã xác nhận',
+                                                                'preparing' => 'Đang chuẩn bị',
+                                                                'shipping' => 'Đang giao hàng',
+                                                                'completed' => 'Hoàn thành',
+                                                                'cancelled' => 'Đã hủy',
+                                                                'returned' => 'Đã trả hàng',
                                                                 'partially_returned' => 'Trả hàng một phần',
                                                             ];
 
@@ -205,7 +206,8 @@
                                                             $label = $statusLabels[$status] ?? 'Không rõ';
                                                         @endphp
                                                         <span class="d-flex align-items-center gap-2">
-                                                            <i class="fas fa-circle f-10 m-r-5 {{ $colorClass }}"></i> {{ $label }}
+                                                            <i class="fas fa-circle f-10 m-r-5 {{ $colorClass }}"></i>
+                                                            {{ $label }}
                                                         </span>
                                                     </td>
                                                     <td class="text-end">{{ number_format($order->total_price) }} VNĐ</td>
@@ -220,21 +222,74 @@
                     </div>
                 </div>
                 <div class="col-md-12 col-xl-4">
-                    <h5 class="mb-3">Analytics Report</h5>
+                    <h5 class="mb-3">Sản phẩm đã bán theo danh mục</h5>
+                    <div class="card">
+                        <div class="card-body px-2">
+                            <div id="analytics-report-chart" data-category-labels='@json($categoryLabels)'
+                                data-category-data='@json($categoryData)'>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-12 col-xl-8">
+                    <h5 class="mb-3">Top 5 sản phẩm bán chạy nhất</h5>
+                    <div class="card tbl-card">
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-hover table-borderless mb-0">
+                                    <thead>
+                                        <tr>
+                                            <th>ID.</th>
+                                            <th>SẢN PHẨM</th>
+                                            <th>SỐ LƯỢNG</th>
+                                            <th class="text-end">TỔNG TIỀN</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach ($topVariants as $item)
+                                            <tr>
+                                                <td>{{ $item->variant->id }}</td>
+                                                <td>
+                                                    @if ($item->variant && $item->variant->product)
+                                                        {{ $item->variant->product->name }} - {{ $item->variant->name }}
+                                                    @elseif ($item->product)
+                                                        {{ $item->product->name }}
+                                                    @else
+                                                        Không rõ
+                                                    @endif
+                                                </td>
+                                                <td>{{ $item->total_quantity }}</td>
+                                                <td class="text-end">{{ number_format($item->total_revenue) }} VNĐ</td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-12 col-xl-4">
+                    <h5 class="mb-3">Sản phẩm sắp hết hàng</h5>
                     <div class="card">
                         <div class="list-group list-group-flush">
-                            <a href="#"
-                                class="list-group-item list-group-item-action d-flex align-items-center justify-content-between">Company
-                                Finance Growth<span class="h5 mb-0">+45.14%</span></a>
-                            <a href="#"
-                                class="list-group-item list-group-item-action d-flex align-items-center justify-content-between">Company
-                                Expenses Ratio<span class="h5 mb-0">0.58%</span></a>
-                            <a href="#"
-                                class="list-group-item list-group-item-action d-flex align-items-center justify-content-between">Business
-                                Risk Cases<span class="h5 mb-0">Low</span></a>
+                            @forelse ($lowStockProducts as $variant)
+                                <div class="list-group-item d-flex flex-column">
+                                    <strong>{{ $variant->product->name ?? 'Sản phẩm không xác định' }}</strong>
+                                    <div class="d-flex justify-content-between mt-1">
+                                        <span>Biến thể: {{ $variant->name ?? 'Không có' }}</span>
+                                        <span class="badge bg-warning text-dark">Tồn kho: {{ $variant->stock }}</span>
+                                    </div>
+                                </div>
+                            @empty
+                                <div class="list-group-item text-muted">Không có sản phẩm sắp hết hàng.</div>
+                            @endforelse
                         </div>
-                        <div class="card-body px-2">
-                            <div id="analytics-report-chart"></div>
+                        <div class="card-body px-3">
+                            <a href="{{ route('admin.products.index') }}" class="btn btn-sm btn-primary w-25"
+                                style="border-radius: 5px">Quản lý
+                                kho</a>
                         </div>
                     </div>
                 </div>

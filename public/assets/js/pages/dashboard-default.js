@@ -22,10 +22,11 @@ function floatchart() {
         toolbar: { show: false }
       },
       dataLabels: { enabled: false },
-      colors: ['#1890ff', '#13c2c2'],
+      colors: ['#1890ff', '#13c2c2', '#ff4d4f'],
       series: [
         { name: 'Lượt xem trang', data: weeklyData.pageViews },
-        { name: 'Sessions', data: weeklyData.sessions }
+        { name: 'Lượt truy cập', data: weeklyData.sessions },
+        { name: 'Người dùng', data: weeklyData.users }
       ],
       stroke: { curve: 'smooth', width: 2 },
       xaxis: {
@@ -47,10 +48,11 @@ function floatchart() {
         toolbar: { show: false }
       },
       dataLabels: { enabled: false },
-      colors: ['#1890ff', '#13c2c2'],
+      colors: ['#1890ff', '#13c2c2', '#ff4d4f'],
       series: [
         { name: 'Lượt xem trang', data: monthlyData.pageViews },
-        { name: 'Sessions', data: monthlyData.sessions }
+        { name: 'Lượt truy cập', data: monthlyData.sessions },
+        { name: 'Người dùng', data: monthlyData.users }
       ],
       stroke: { curve: 'smooth', width: 2 },
       xaxis: {
@@ -126,6 +128,65 @@ function floatchart() {
     var chart = new ApexCharts(chartEl, options);
     chart.render();
   })();
+
+  (function () {
+    const el = document.querySelector('#analytics-report-chart');
+    const labels = JSON.parse(el.dataset.categoryLabels || '[]');
+    const data = JSON.parse(el.dataset.categoryData || '[]');
+
+    const options = {
+      chart: {
+        type: 'bar',
+        height: 340,
+        toolbar: { show: false }
+      },
+      colors: ['#faad14'],
+      plotOptions: {
+        bar: {
+          borderRadius: 4,
+          horizontal: false,
+          columnWidth: '30%',
+        }
+      },
+      dataLabels: {
+        enabled: true,
+        formatter: val => val.toLocaleString('vi-VN')
+      },
+      stroke: {
+        curve: 'smooth',
+        width: 2
+      },
+      grid: {
+        strokeDashArray: 4
+      },
+      series: [{
+        name: 'Sản phẩm đã bán',
+        data: data
+      }],
+      xaxis: {
+        categories: labels,
+        labels: {
+          style: {
+            fontSize: '13px'
+          }
+        }
+      },
+      yaxis: {
+        show: true,
+        labels: {
+          formatter: val => val.toLocaleString('vi-VN')
+        }
+      },
+      tooltip: {
+        y: {
+          formatter: val => val.toLocaleString('vi-VN') + ' sản phẩm'
+        }
+      }
+    };
+
+    new ApexCharts(el, options).render();
+  })();
+
 
 
   // (function () {

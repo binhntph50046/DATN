@@ -124,7 +124,7 @@ class ProductController
             $product->update([
                 'name' => $request->name,
                 'slug' => Str::slug($request->name) . '-' . time(),
-                'category_id' => $request->category_id,
+                // 'category_id' => $request->category_id,
                 'warranty_months' => $request->warranty_months ?? 12,
                 'description' => $request->description,
                 'content' => $request->content,

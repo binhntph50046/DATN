@@ -156,13 +156,13 @@
                                                 @endif
                                             </td>
                                             <td class="text-center align-middle">
-                                                <button type="button" class="btn btn-warning btn-sm me-1" data-bs-toggle="modal" data-bs-target="#editVariantModal{{ $variant->id }}">
-                                                    <i class="ti ti-edit"></i> Sửa
+                                                <button type="button" class="btn btn-warning btn-sm me-1" data-bs-toggle="modal" data-bs-target="#editVariantModal{{ $variant->id }}" title="Sửa">
+                                                    <i class="ti ti-edit"></i>
                                                 </button>
                                                 <form action="{{ route('admin.variants.destroy', $variant->id) }}" method="POST" style="display:inline-block" onsubmit="return confirm('Bạn có chắc muốn xóa biến thể này?');">
                                                     @csrf
                                                     @method('DELETE')
-                                                    <button type="submit" class="btn btn-danger btn-sm"><i class="ti ti-trash"></i> Xóa</button>
+                                                    <button type="submit" class="btn btn-danger btn-sm" title="Xóa"><i class="ti ti-trash"></i></button>
                                                 </form>
                                                 <!-- Modal Sửa Biến Thể -->
                                                 <div class="modal fade" id="editVariantModal{{ $variant->id }}" tabindex="-1" aria-labelledby="editVariantModalLabel{{ $variant->id }}" aria-hidden="true">

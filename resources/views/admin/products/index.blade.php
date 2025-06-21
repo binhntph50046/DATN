@@ -112,7 +112,6 @@
                                         <th>Hình ảnh</th>
                                         <th class="text-nowrap">Tên sản phẩm</th>
                                         <th class="text-nowrap">Danh mục</th>
-                                        <th class="text-nowrap">Giá</th>
                                         <th class="text-nowrap">Kho</th>
                                         <th class="text-nowrap">Trạng thái</th>
                                         <th class="text-nowrap">Nổi bật</th>
@@ -140,20 +139,6 @@
                                                 {{ $product->name }}
                                             </td>
                                             <td class="text-nowrap">{{ $product->category ? $product->category->name : 'N/A' }}</td>
-                                            <td class="text-nowrap">
-                                                @php
-                                                    $variant = $product->variants->first();
-                                                    $price = $variant ? $variant->selling_price : 0;
-                                                    $discountPrice = $variant ? $variant->discount_price : 0;
-                                                @endphp
-                                                @if ($discountPrice > 0 && $discountPrice < $price)
-                                                    <span class="text-decoration-line-through text-muted">{{ number_format($price, 0, ',', '.') }} VNĐ</span>
-                                                    <br>
-                                                    <span class="text-danger fw-bold">{{ number_format($discountPrice, 0, ',', '.') }} VNĐ</span>
-                                                @else
-                                                    <span class="text-success fw-bold">{{ number_format($price, 0, ',', '.') }} VNĐ</span>
-                                                @endif
-                                            </td>
                                             <td class="text-nowrap">{{ $product->variants->sum('stock') }}</td>
                                             <td class="text-nowrap">
                                                 <span class="badge {{ $product->status === 'active' ? 'bg-success' : 'bg-danger' }}">

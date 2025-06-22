@@ -253,6 +253,14 @@
             placeholder: "Select categories"
         });
 
+        // Add existing values to the form when page loads
+        $('.value-row').each(function() {
+            const valueId = $(this).data('value-id');
+            if (valueId) {
+                $(this).append(`<input type="hidden" name="existing_values[]" value="${valueId}">`);
+            }
+        });
+
         // Handle Add Value Button
         $('#addValue').click(function() {
             const index = Date.now(); // Use timestamp as unique index

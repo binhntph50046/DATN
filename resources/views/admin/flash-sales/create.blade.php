@@ -14,7 +14,8 @@
                             </div>
                             <ul class="breadcrumb">
                                 <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Home</a></li>
-                                <li class="breadcrumb-item"><a href="{{ route('admin.flash-sales.index') }}">Flash Sales</a></li>
+                                <li class="breadcrumb-item"><a href="{{ route('admin.flash-sales.index') }}">Flash Sales</a>
+                                </li>
                                 <li class="breadcrumb-item" aria-current="page">Create</li>
                             </ul>
                         </div>
@@ -45,23 +46,25 @@
                                 <div class="row">
                                     <div class="col-md-6 mb-3">
                                         <label for="name" class="form-label">Flash Sale Name</label>
-                                        <input type="text" class="form-control" id="name" name="name" required>
+                                        <input type="text" class="form-control" id="name" name="name"
+                                            placeholder="Enter flash sale name" value="{{ old('name') }}">
                                     </div>
 
                                     <div class="col-md-3 mb-3">
                                         <label for="start_time" class="form-label">Start Time</label>
-                                        <input type="datetime-local" class="form-control" id="start_time" name="start_time" required>
+                                        <input type="datetime-local" class="form-control" id="start_time" name="start_time"
+                                            value="{{ old('start_time') }}">
                                     </div>
 
                                     <div class="col-md-3 mb-3">
                                         <label for="end_time" class="form-label">End Time</label>
-                                        <input type="datetime-local" class="form-control" id="end_time" name="end_time" required>
+                                        <input type="datetime-local" class="form-control" id="end_time" name="end_time"
+                                            value="{{ old('end_time') }}">
                                     </div>
 
                                     <div class="col-md-12 mb-3">
                                         <label class="form-label">Status</label>
-                                        <select name="status" class="form-select">
-                                            <option value="1" selected>Active</option>
+                                        <select name="status" class="form-select" disabled>
                                             <option value="0">Inactive</option>
                                         </select>
                                     </div>
@@ -69,7 +72,7 @@
 
                                 <hr>
 
-                                <div id="flash-sale-items-container">
+                                {{-- <div id="flash-sale-items-container">
                                     <h6>Flash Sale Items</h6>
 
                                     <div class="flash-sale-item row align-items-end g-2 mb-2">
@@ -111,10 +114,66 @@
                                             <button type="button" class="btn btn-danger btn-sm remove-item">X</button>
                                         </div>
                                     </div>
+                                </div> --}}
+                                <div id="flash-sale-items-container">
+                                    <h6>Flash Sale Items</h6>
+
+                                    <div class="flash-sale-item row align-items-end g-2 mb-2">
+                                        <div class="col-md-3">
+                                            <label for="product_id_0" class="form-label">Sản phẩm</label>
+                                            <select id="product_id_0" name="items[0][product_id]"
+                                                class="form-select product-select" required>
+                                                <option value="">-- Choose Product --</option>
+                                                @foreach ($products as $product)
+                                                    <option value="{{ $product->id }}">{{ $product->name }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+
+                                        <div class="col-md-2">
+                                            <label for="variant_id_0" class="form-label">Biến thể</label>
+                                            <select id="variant_id_0" name="items[0][product_variant_id]"
+                                                class="form-select variant-select" required>
+                                                <option value="">-- Choose Variant --</option>
+                                            </select>
+                                        </div>
+
+                                        <div class="col-md-1">
+                                            <label for="discount_0" class="form-label">Giảm giá</label>
+                                            <input id="discount_0" type="number" step="0.01" name="items[0][discount]"
+                                                class="form-control" placeholder="Discount" required>
+                                        </div>
+
+                                        <div class="col-md-1">
+                                            <label for="discount_type_0" class="form-label">Loại</label>
+                                            <select id="discount_type_0" name="items[0][discount_type]" class="form-select">
+                                                <option value="percent">%</option>
+                                                <option value="fixed">₫</option>
+                                            </select>
+                                        </div>
+
+                                        <div class="col-md-1">
+                                            <label for="count_0" class="form-label">Số lượng</label>
+                                            <input id="count_0" type="number" name="items[0][count]" class="form-control"
+                                                value="1" placeholder="Qty" required>
+                                        </div>
+
+                                        <div class="col-md-1">
+                                            <label for="buy_limit_0" class="form-label">Giới hạn</label>
+                                            <input id="buy_limit_0" type="number" name="items[0][buy_limit]"
+                                                class="form-control" value="1" placeholder="Limit" required>
+                                        </div>
+
+                                        <div class="col-md-1 d-flex align-items-end">
+                                            <button type="button" class="btn btn-danger btn-sm remove-item">X</button>
+                                        </div>
+                                    </div>
                                 </div>
 
+
                                 <div class="mb-3">
-                                    <button type="button" class="btn btn-outline-primary" id="add-item">+ Add Item</button>
+                                    <button type="button" class="btn btn-outline-primary" id="add-item">+ Add
+                                        Item</button>
                                 </div>
 
                                 <div class="mb-3">
@@ -139,7 +198,7 @@
         <script>
             let itemIndex = 1;
 
-            $(document).ready(function () {
+            $(document).ready(function() {
                 $('.product-select').select2({
                     placeholder: "-- Choose Product --",
                     allowClear: true,
@@ -148,11 +207,11 @@
             });
 
             // Load variant khi chọn product
-            $(document).on('change', '.product-select', function () {
+            $(document).on('change', '.product-select', function() {
                 const productId = $(this).val();
                 const variantSelect = $(this).closest('.flash-sale-item').find('.variant-select');
 
-                $.get('/admin/ajax/product-variants/' + productId, function (variants) {
+                $.get('/admin/ajax/product-variants/' + productId, function(variants) {
                     variantSelect.html('<option value="">-- Choose Variant --</option>');
                     variants.forEach(v => {
                         variantSelect.append(`<option value="${v.id}">${v.name} (${v.sku})</option>`);
@@ -161,7 +220,7 @@
             });
 
             // Thêm dòng mới
-            $('#add-item').click(function () {
+            $('#add-item').click(function() {
                 const newItem = `
                 <div class="flash-sale-item row align-items-end g-2 mb-2">
                     <div class="col-md-3">
@@ -216,7 +275,7 @@
             });
 
             // Xoá dòng
-            $(document).on('click', '.remove-item', function () {
+            $(document).on('click', '.remove-item', function() {
                 $(this).closest('.flash-sale-item').remove();
             });
         </script>

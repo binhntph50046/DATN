@@ -3,21 +3,31 @@
 @section('content')
 
     <!-- Start Product Detail Section -->
-    <div class="untree_co-section product-section">
-
+    <div class="untree_co-section product-section" style="margin-top: 70px">
+        
         <div class="container">
             <!-- Hiển thị thông báo -->
             @if (session('success'))
-                <div class="alert alert-success">
-                    {{ session('success') }}
-                </div>
-            @endif
+        <div class="custom-alert success" id="success-alert">
+            <div class="icon"><i class="fas fa-check-circle"></i></div>
+            <div class="content">
+                <strong>SUCCESS</strong>
+                <p>{{ session('success') }}</p>
+            </div>
+            <div class="close" onclick="this.parentElement.style.display='none';">&times;</div>
+        </div>
+    @endif
 
-            @if (session('error'))
-                <div class="alert alert-danger">
-                    {{ session('error') }}
-                </div>
-            @endif
+    @if (session('error'))
+        <div class="custom-alert error" id="error-alert">
+            <div class="icon"><i class="fas fa-times-circle"></i></div>
+            <div class="content">
+                <strong>ERROR</strong>
+                <p>{{ session('error') }}</p>
+            </div>
+            <div class="close" onclick="this.parentElement.style.display='none';">&times;</div>
+        </div>
+    @endif
             <div class="row">
                 <!-- Product Images -->
                 <div class="col-lg-6 mb-5">
@@ -25,13 +35,25 @@
                         <div class="main-image mb-4 position-relative">
                             <button id="prevImageBtn" class="image-nav-btn" style="display:none;" onclick="showPrevImage()"><i class="fas fa-chevron-left"></i></button>
                             @php
+                                // Helper function to safely handle both JSON strings and arrays
+                                function getImagesArray($images) {
+                                    if (is_array($images)) {
+                                        return $images;
+                                    }
+                                    if (is_string($images)) {
+                                        $decoded = json_decode($images, true);
+                                        return is_array($decoded) ? $decoded : [];
+                                    }
+                                    return [];
+                                }
+
                                 $defaultVariant = $product->defaultVariant;
-                                $images = $defaultVariant ? json_decode($defaultVariant->images, true) : [];
+                                $images = $defaultVariant ? getImagesArray($defaultVariant->images) : [];
                                 $mainImage = $images[0] ?? 'uploads/default/default.jpg';
                                 // Gom tất cả ảnh của mọi biến thể
                                 $allImages = [];
                                 foreach ($product->variants as $variant) {
-                                    $imgs = json_decode($variant->images, true) ?? [];
+                                    $imgs = getImagesArray($variant->images);
                                     foreach ($imgs as $img) {
                                         if (!in_array($img, $allImages)) {
                                             $allImages[] = $img;
@@ -82,6 +104,10 @@
                             $seenValues = []; // Mảng để theo dõi các giá trị đã xuất hiện
                             
                             foreach ($product->variants as $variant) {
+                                // Bỏ qua các biến thể đã bị xóa mềm
+                                if ($variant->deleted_at !== null) {
+                                    continue;
+                                }
                                 foreach ($variant->combinations as $combination) {
                                     $typeName = $combination->attributeValue->attributeType->name ?? null;
                                     if ($typeName) {
@@ -243,11 +269,13 @@
                                 <tbody>
                                     @if ($product->specifications && $product->specifications->isNotEmpty())
                                         @foreach ($product->specifications as $spec)
-                                            <tr>
-                                                <td class="text-secondary" style="width: 220px;">
-                                                    {{ $spec->specification->name }}</td>
-                                                <td>{{ $spec->value }}</td>
-                                            </tr>
+                                            @if($spec->specification)
+                                                <tr>
+                                                    <td class="text-secondary" style="width: 220px;">
+                                                        {{ $spec->specification->name }}</td>
+                                                    <td>{{ $spec->value }}</td>
+                                                </tr>
+                                            @endif
                                         @endforeach
                                     @else
                                         <tr>
@@ -267,11 +295,91 @@
                     </div>
                 </div>
             </div>
+            @include('client.product.suggestions', ['suggestions' => $suggestions]);
         </div>
     </div>
     <!-- End Product Detail Section -->
 
     <style>
+         .custom-alert {
+        display: flex;
+        align-items: center;
+        background-color: #fff;
+        border-left: 5px solid;
+        border-radius: 4px;
+        padding: 16px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        margin: 10px auto;
+        width: 360px;
+        position: relative;
+        animation: slideIn 0.3s ease;
+    }
+
+    .custom-alert .icon {
+        font-size: 20px;
+        margin-right: 12px;
+    }
+
+    .custom-alert .content {
+        flex-grow: 1;
+    }
+
+    .custom-alert .content strong {
+        display: block;
+        font-weight: bold;
+        color: #333;
+    }
+
+    .custom-alert .content p {
+        margin: 0;
+        color: #666;
+    }
+
+    .custom-alert .close {
+        font-size: 38px;
+        cursor: pointer;
+        color: #333;
+        margin-left: 10px;
+        margin-top: -32px;
+    }
+
+    .custom-alert.success {
+        border-color: #28a745;
+        background-color: #ffffff;
+    }
+
+    .custom-alert.success .icon {
+        color: #28a745;
+    }
+
+    .custom-alert.error {
+        border-color: #dc3545;
+        background-color: #ffffff;
+    }
+
+    .custom-alert.error .icon {
+        color: #dc3545;
+    }
+
+    @keyframes slideIn {
+        from {
+            transform: translateY(-10px);
+            opacity: 0;
+        }
+
+        to {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+
+    .custom-alert {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 9999;
+    }
+
         .color-variants {
             margin-bottom: 2rem;
         }
@@ -493,6 +601,18 @@
     </style>
 
     <script>
+
+function hideAlert(alertId) {
+    const alert = document.getElementById(alertId);
+    if (alert) {
+        setTimeout(() => {
+            alert.style.display = 'none';
+        }, 3000);
+    }
+}
+
+hideAlert('success-alert');
+hideAlert('error-alert');
         // Khai báo biến toàn cục
         let selectedValues = {};
         let selectedVariants = {};
@@ -526,14 +646,17 @@
 
             // Khởi tạo dữ liệu biến thể
             @foreach ($product->variants as $variant)
+                @if ($variant->deleted_at === null)
                 variantData[{{ $variant->id }}] = {
-                    images: {!! json_encode(json_decode($variant->images, true) ?? []) !!},
+                    images: {!! json_encode(getImagesArray($variant->images)) !!},
                     price: {{ $variant->selling_price }}
                 };
+                @endif
             @endforeach
 
             // Khởi tạo mapping attribute -> variant
             @foreach ($product->variants as $variant)
+                @if ($variant->deleted_at === null)
                 @php
                     $attrValues = [];
                     foreach ($variant->combinations as $comb) {
@@ -543,6 +666,7 @@
                     $key = implode('|', $attrValues);
                 @endphp
                 attributeToVariant["{{ $key }}"] = {{ $variant->id }};
+                @endif
             @endforeach
 
             // Lấy danh sách các loại thuộc tính bắt buộc

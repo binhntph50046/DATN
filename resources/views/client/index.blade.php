@@ -938,29 +938,30 @@
 
     function goToCompare() {
         if (compareSelected.length === 2) {
-            const formData = new FormData();
-            formData.append('products[]', compareSelected[0]);
-            formData.append('products[]', compareSelected[1]);
+            // Lưu sản phẩm vào session storage
+            sessionStorage.setItem('compareProducts', JSON.stringify(compareSelected));
             
-            fetch('/compare', {
-                method: 'POST',
-                headers: {
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                },
-                body: formData
-            })
-            .then(response => {
-                if (response.ok) {
-                    // Redirect đến URL trực tiếp thay vì dùng route name
-                    window.location.href = '/compare?products=' + compareSelected.join(',');
-                } else {
-                    showCustomAlert('Có lỗi xảy ra khi so sánh sản phẩm!', 'error');
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                showCustomAlert('Có lỗi xảy ra khi xử lý yêu cầu!', 'error');
+            // Tạo form ẩn và submit
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '/compare';
+            
+            const csrfToken = document.createElement('input');
+            csrfToken.type = 'hidden';
+            csrfToken.name = '_token';
+            csrfToken.value = '{{ csrf_token() }}';
+            
+            compareSelected.forEach(id => {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'products[]';
+                input.value = id;
+                form.appendChild(input);
             });
+            
+            form.appendChild(csrfToken);
+            document.body.appendChild(form);
+            form.submit();
         } else {
             showCustomAlert('Vui lòng chọn đủ 2 sản phẩm để so sánh!', 'error');
         }

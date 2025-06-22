@@ -1,5 +1,5 @@
 @extends('admin.layouts.app')
-@section('title', 'Products Trash')
+@section('title', 'Thùng rác sản phẩm')
 
 <style>
     .custom-shadow {
@@ -31,12 +31,12 @@
                 <div class="row align-items-center">
                     <div class="col-md-12">
                         <div class="page-header-title">
-                            <h5 class="m-b-10">Products Trash</h5>
+                            <h5 class="m-b-10">Thùng rác sản phẩm</h5>
                         </div>
                         <ul class="breadcrumb">
-                            <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Dashboard</a></li>
-                            <li class="breadcrumb-item"><a href="{{ route('admin.products.index') }}">Products</a></li>
-                            <li class="breadcrumb-item active" aria-current="page">Trash</li>
+                            <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Trang chủ</a></li>
+                            <li class="breadcrumb-item"><a href="{{ route('admin.products.index') }}">Sản phẩm</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">Thùng rác</li>
                         </ul>
                     </div>
                 </div>
@@ -49,10 +49,10 @@
             <div class="col-12">
                 <div class="card">
                     <div class="card-header">
-                        <h5>Deleted Products List</h5>
+                        <h5>Danh sách sản phẩm đã xóa</h5>
                         <div class="card-header-right">
                             <a href="{{ route('admin.products.index') }}" class="btn btn-secondary btn-sm rounded-3">
-                                <i class="ti ti-arrow-left"></i> Back to Product List
+                                <i class="ti ti-arrow-left"></i> Quay lại danh sách
                             </a>
                         </div>
                     </div>
@@ -67,14 +67,14 @@
                                 <thead>
                                     <tr>
                                         <th class="text-nowrap">ID</th>
-                                        <th>Image</th>
-                                        <th class="text-nowrap">Name</th>
-                                        <th class="text-nowrap">Category</th>
-                                        <th class="text-nowrap">Price</th>
-                                        <th class="text-nowrap">Stock</th>
-                                        <th class="text-nowrap">Status</th>
-                                        <th class="text-nowrap">Featured</th>
-                                        <th class="text-center text-nowrap">Actions</th>
+                                        <th>Hình ảnh</th>
+                                        <th class="text-nowrap">Tên sản phẩm</th>
+                                        <th class="text-nowrap">Danh mục</th>
+                                        <th class="text-nowrap">Giá</th>
+                                        <th class="text-nowrap">Kho</th>
+                                        <th class="text-nowrap">Trạng thái</th>
+                                        <th class="text-nowrap">Nổi bật</th>
+                                        <th class="text-center text-nowrap">Thao tác</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -89,7 +89,7 @@
                                                          style="width: 100px; height: 100px; object-fit: cover; border-radius: 8px;">
                                                 @else
                                                     <img src="{{ asset('uploads/default/default.jpg') }}"
-                                                         alt="default image"
+                                                         alt="Ảnh mặc định"
                                                          class="product-img-thumb"
                                                          style="width: 100px; height: 100px; object-fit: cover; border-radius: 8px;">
                                                 @endif
@@ -115,28 +115,28 @@
                                             <td class="text-nowrap">{{ $product->variants->sum('stock') }}</td>
                                             <td class="text-nowrap">
                                                 <span class="badge {{ $product->status === 'active' ? 'bg-success' : 'bg-danger' }}">
-                                                    {{ ucfirst($product->status) }}
+                                                    {{ $product->status === 'active' ? 'Hoạt động' : 'Không hoạt động' }}
                                                 </span>
                                             </td>
                                             <td class="text-nowrap">
                                                 @if ($product->is_featured)
-                                                    <span class="badge bg-info">Featured</span>
+                                                    <span class="badge bg-info">Nổi bật</span>
                                                 @else
-                                                    <span class="badge bg-secondary">Normal</span>
+                                                    <span class="badge bg-secondary">Bình thường</span>
                                                 @endif
                                             </td>
                                             <td class="text-center text-nowrap">
-                                                <form action="{{ route('admin.products.restore', $product->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to restore this product?');">
+                                                <form action="{{ route('admin.products.restore', $product->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Bạn có chắc chắn muốn khôi phục sản phẩm này?');">
                                                     @csrf
-                                                    <button type="submit" class="btn btn-success btn-sm rounded-3" title="Restore">
-                                                        <i class="ti ti-arrow-back-up"></i> Restore
+                                                    <button type="submit" class="btn btn-success btn-sm rounded-3" title="Khôi phục">
+                                                        <i class="ti ti-arrow-back-up"></i> Khôi phục
                                                     </button>
                                                 </form>
                                             </td>
                                         </tr>
                                     @empty
                                         <tr>
-                                            <td colspan="9" class="text-center">No deleted products found.</td>
+                                            <td colspan="9" class="text-center">Không có sản phẩm nào trong thùng rác.</td>
                                         </tr>
                                     @endforelse
                                 </tbody>

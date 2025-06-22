@@ -1,4 +1,5 @@
 @extends('client.layouts.app')
+@section('title', 'Đơn hàng - Apple Store')
 
 @section('content')
 <div class="order-management">
@@ -27,7 +28,7 @@
         <div class="status-tabs-container mb-4">
             <div class="status-tabs-wrapper">
                 <nav class="status-tabs">
-                    <a class="status-tab {{ request('status') == null ? 'active' : '' }}" 
+                    <a class="status-tab {{ request('status') === null ? 'active' : '' }}" 
                        href="{{ route('order.index') }}">
                         <i class="fas fa-list-ul"></i>
                         <span>Tất cả</span>
@@ -86,7 +87,7 @@
         </div>
 
         <!-- Alert Messages -->
-        @if(session('success'))
+        {{-- @if(session('success'))
             <div class="alert alert-success alert-modern alert-dismissible fade show" role="alert">
                 <div class="alert-icon">
                     <i class="fas fa-check-circle"></i>
@@ -110,165 +111,167 @@
                 </div>
                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>
+        @endif --}}
+
+
+        @if(session('warning'))
+            <div class="alert alert-warning alert-modern alert-dismissible fade show" role="alert">
+                <div class="alert-icon">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <div class="alert-content">
+                    <strong>Lưu ý!</strong>
+                    <div class="mb-0">{!! session('warning') !!}</div>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
         @endif
 
-        <!-- Modern Orders Grid -->
-        <div class="orders-container">
-            @forelse($orders as $order)
-                <div class="order-card" data-order-id="{{ $order->id }}">
-                    <div class="order-header">
-                        <div class="order-id">
-                            <span class="order-number">#{{ $order->id }}</span>
-                            <span class="order-date">{{ $order->created_at->format('d/m/Y H:i') }}</span>
-                        </div>
-                        <div class="order-status">
-                            @php
-                                $statusClass = [
-                                    'pending' => 'warning',
-                                    'confirmed' => 'info',
-                                    'preparing' => 'primary',
-                                    'shipping' => 'info',
-                                    'completed' => 'success',
-                                    'cancelled' => 'danger',
-                                    'returned' => 'secondary',
-                                    'partially_returned' => 'secondary',
-                                ][$order->status] ?? 'secondary';
 
-                                $statusIcons = [
-                                    'pending' => 'fa-clock',
-                                    'confirmed' => 'fa-circle-check',
-                                    'preparing' => 'fa-box',
-                                    'shipping' => 'fa-truck',
-                                    'completed' => 'fa-circle-check',
-                                    'cancelled' => 'fa-ban',
-                                    'returned' => 'fa-undo',
-                                    'partially_returned' => 'fa-undo',
-                                ][$order->status] ?? 'fa-circle';
-                            @endphp
-                            <span class="status-badge status-{{ $statusClass }}">
-                                <i class="fas {{ $statusIcons }}"></i>
-                                {{ $order->getStatusTextAttribute() }}
-                            </span>
-                        </div>
-                    </div>
-
-                    <div class="order-body">
-                        <div class="order-image">
-                            @php
-                                $firstItem = $order->items->first();
-                                $images = $firstItem && $firstItem->variant && $firstItem->variant->images ? json_decode($firstItem->variant->images, true) : [];
-                                $imgSrc = isset($images[0]) ? asset($images[0]) : (isset($firstItem->product->image) ? asset($firstItem->product->image) : asset('uploads/default/default.jpg'));
-                            @endphp
-                            <img src="{{ $imgSrc }}" alt="Product Image" class="product-image">
-                            @if($order->items->count() > 1)
-                                <div class="item-count">+{{ $order->items->count() - 1 }}</div>
-                            @endif
-                        </div>
-
-                        <div class="order-details">
-                            <div class="order-items">
-                                <h6 class="item-name">{{ $firstItem->product->name ?? 'Sản phẩm' }}</h6>
-                                @if($order->items->count() > 1)
-                                    <p class="item-more">và {{ $order->items->count() - 1 }} sản phẩm khác</p>
-                                @endif
-                            </div>
-                            <div class="order-price">
-                                <span class="price-amount">{{ number_format($order->total_price) }} VNĐ</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="order-actions">
-                        <a href="{{ route('order.tracking', $order->id) }}" 
-                           class="btn btn-action btn-primary">
-                            <i class="fas fa-eye"></i>
-                            Chi tiết
-                        </a>
-                        
-                        @if(in_array($order->status, ['pending', 'confirmed']))
-                            <button type="button" 
-                                class="btn btn-action btn-danger" 
-                                data-bs-toggle="modal" 
-                                data-bs-target="#cancelModal{{ $order->id }}">
-                                <i class="fas fa-times"></i>
-                                Hủy đơn
-                            </button>
-                        @endif
-                        
-                        @if($order->status === 'completed')
-                            <a href="{{ route('order.returns.create', $order->id) }}" 
-                               class="btn btn-action btn-warning">
-                                <i class="fas fa-undo"></i>
-                                Hoàn hàng
-                            </a>
-                        @endif
-                    </div>
-                   
-                    <!-- Cancel Modal -->
-                    <div class="modal fade" id="cancelModal{{ $order->id }}" tabindex="-1">
-                        <div class="modal-dialog modal-dialog-centered">
-                            <div class="modal-content modal-modern">
-                                <div class="modal-header">
-                                    <div class="modal-icon">
-                                        <i class="fas fa-exclamation-triangle text-warning"></i>
+        <!-- Modern Orders Table -->
+        <div class="table-responsive">
+            <table class="table table-modern">
+                <thead>
+                    <tr>
+                        <th>Mã đơn</th>
+                        <th>Sản phẩm</th>
+                        <th>Ngày đặt</th>
+                        <th>Tổng tiền</th>
+                        <th>Trạng thái</th>
+                        <th>Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse($orders as $order)
+                        <tr data-order-id="{{ $order->id }}" data-status="{{ $order->status }}" data-created-at="{{ $order->created_at->format('Y-m-d\\TH:i:sP') }}">
+                            <td>
+                                <span class="order-number">#{{ $order->id }}</span>
+                            </td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    @php
+                                       // hiển thị ảnh sản phẩm theo array hoặc mảng
+                                        if (!function_exists('getImagesArray')) {
+                                            function getImagesArray($images) {
+                                                if (is_array($images)) {
+                                                    return $images;
+                                                }
+                                                if (is_string($images)) {
+                                                    $decoded = json_decode($images, true);
+                                                    return is_array($decoded) ? $decoded : [];
+                                                }
+                                                return [];
+                                            }
+                                        }
+                                    @endphp
+                                    @php
+                                        $firstItem = $order->items->first();
+                                        $images = $firstItem && $firstItem->variant && $firstItem->variant->images ? getImagesArray($firstItem->variant->images) : [];
+                                        $imgSrc = isset($images[0]) ? asset($images[0]) : (isset($firstItem->product->image) ? asset($firstItem->product->image) : asset('uploads/default/default.jpg'));
+                                    @endphp
+                                    <img src="{{ $imgSrc }}" alt="Product Image" class="product-image me-3">
+                                    <div>
+                                        <h6 class="mb-0">{{ $firstItem->product->name ?? 'Sản phẩm' }}</h6>
+                                        @if($order->items->count() > 1)
+                                            <small class="text-muted">+{{ $order->items->count() - 1 }} sản phẩm khác</small>
+                                        @endif
                                     </div>
-                                    <h5 class="modal-title">Hủy đơn hàng #{{ $order->id }}</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                                 </div>
-                                <form action="{{ route('order.cancel', $order->id) }}" method="POST">
-                                    @csrf
-                                    <div class="modal-body">
-                                        <div class="form-group">
-                                            <label class="form-label">Lý do hủy đơn hàng</label>
-                                            <textarea class="form-control form-control-modern" 
-                                                                          name="cancellation_reason" 
-                                                                          rows="4" 
-                                                                          required
-                                                      placeholder="Vui lòng cho chúng tôi biết lý do bạn muốn hủy đơn hàng này..."></textarea>
-                                        </div>
+                            </td>
+                            <td>{{ $order->created_at->format('d/m/Y H:i') }}</td>
+                            <td>
+                                <span class="price-amount">{{ number_format($order->total_price) }} VNĐ</span>
+                            </td>
+                            <td>
+                                @php
+                                    $statusClass = [
+                                        'pending' => 'warning',
+                                        'confirmed' => 'info',
+                                        'preparing' => 'primary',
+                                        'shipping' => 'info',
+                                        'completed' => 'success',
+                                        'cancelled' => 'danger',
+                                        'returned' => 'secondary',
+                                        '' => 'secondary',
+                                    ][$order->status] ?? 'secondary';
+
+                                    $statusIcons = [
+                                        'pending' => 'fa-clock',
+                                        'confirmed' => 'fa-circle-check',
+                                        'preparing' => 'fa-box',
+                                        'shipping' => 'fa-truck',
+                                        'completed' => 'fa-circle-check',
+                                        'cancelled' => 'fa-ban',
+                                        'returned' => 'fa-undo',
+                                        '' => 'fa-undo',
+                                    ][$order->status] ?? 'fa-circle';
+                                @endphp
+                                <span class="status-badge status-{{ $statusClass }}">
+                                    <i class="fas {{ $statusIcons }}"></i>
+                                    {{ $order->getStatusTextAttribute() }}
+                                </span>
+                            </td>
+                            <td>
+                                <div class="order-actions" id="order-actions-{{ $order->id }}">
+                                    <a href="{{ route('order.tracking', $order->id) }}" class="btn btn-action btn-primary" title="Xem chi tiết">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    @if(in_array($order->status, ['pending', 'confirmed']))
+                                        <form action="{{ route('order.cancel', $order->id) }}" method="POST" style="display:inline;">
+                                            @csrf
+                                            <button type="submit" class="btn btn-action btn-danger" title="Hủy đơn" onclick="return confirm('Bạn chắc chắn muốn hủy đơn này?')">
+                                                <i class="fas fa-times"></i>
+                                            </button>
+                                        </form>
+                                    @endif
+                                    @if($order->status == 'completed')
+                                        @php
+                                            $created = \Carbon\Carbon::parse($order->created_at);
+                                            $now = \Carbon\Carbon::now();
+                                        @endphp
+                                        @if($now->diffInDays($created) <= 7)
+                                            <a href="{{ route('order.returns.create', $order->id) }}" class="btn btn-action btn-warning" title="Yêu cầu hoàn hàng">
+                                                <i class="fas fa-undo"></i>
+                                            </a>
+                                        @endif
+                                    @endif
+                                </div>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="6">
+                                <div class="empty-state">
+                                    <div class="empty-icon">
+                                        <i class="fas fa-box-open text-secondary"></i>
                                     </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                                            Đóng
-                                        </button>
-                                        <button type="submit" class="btn btn-danger">
-                                            <i class="fas fa-check me-2"></i>
-                                            Xác nhận hủy
-                                        </button>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            @empty
-                <div class="empty-state">
-                    <div class="empty-icon">
-                        <i class="fas fa-box-open text-secondary"></i>
-                    </div>
-                    <h3>
-                        @php
-                            $statusText = match(request('status')) {
-                                'pending' => 'Chưa thanh toán',
-                                'confirmed' => 'Chờ xác nhận',
-                                'preparing' => 'Đang chuẩn bị',
-                                'shipping' => 'Đang giao',
-                                'completed' => 'Đã giao',
-                                'cancelled' => 'Đã hủy',
-                                'returned' => 'Đã hoàn đơn',
-                                'partially_returned' => 'Hoàn một phần',
-                                default => 'Tất cả trạng thái'
-                            };
-                        @endphp
-                        Không có đơn hàng nào ở trạng thái: <span class="text-primary">{{ $statusText }}</span>
-                    </h3>
-                    <p>Bạn chưa có đơn hàng nào thuộc trạng thái này.</p>
-                    <a href="#" class="btn btn-primary btn-lg">
-                        <i class="fas fa-shopping-cart me-2"></i>
-                        Mua sắm ngay
-                    </a>
-                </div>
-            @endforelse
+                                    <h3>
+                                        @php
+                                            $statusText = match(request('status')) {
+                                                'pending' => 'Chưa thanh toán',
+                                                'confirmed' => 'Chờ xác nhận',
+                                                'preparing' => 'Đang chuẩn bị',
+                                                'shipping' => 'Đang giao',
+                                                'completed' => 'Đã giao',
+                                                'cancelled' => 'Đã hủy',
+                                                'returned' => 'Đã hoàn đơn',
+                                                '' => 'Hoàn một phần',
+                                                default => 'Tất cả trạng thái'
+                                            };
+                                        @endphp
+                                        Không có đơn hàng nào ở trạng thái: <span class="text-primary">{{ $statusText }}</span>
+                                    </h3>
+                                    <p>Bạn chưa có đơn hàng nào thuộc trạng thái này.</p>
+                                    <a href="#" class="btn btn-primary btn-lg">
+                                        <i class="fas fa-shopping-cart me-2"></i>
+                                        Mua sắm ngay
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
         </div>
 
         <!-- Pagination -->
@@ -380,72 +383,60 @@
     width: 80%;
 }
 
-/* Alert Messages */
-.alert-modern {
-    border: none;
-    border-radius: 15px;
-    padding: 1.5rem;
-    display: flex;
-    align-items: flex-start;
-    gap: 1rem;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-    backdrop-filter: blur(10px);
-}
-
-.alert-icon {
-    font-size: 1.5rem;
-    flex-shrink: 0;
-}
-
-.alert-content strong {
-    display: block;
-    margin-bottom: 0.25rem;
-}
-
-/* Orders Container */
-.orders-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
-    gap: 1.5rem;
-    margin-bottom: 2rem;
-}
-
-/* Order Card */
-.order-card {
+/* Table Styling */
+.table-modern {
     background: white;
-    border-radius: 20px;
-    padding: 1.5rem;
+    border-radius: 15px;
+    overflow: hidden;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+}
+
+.table-modern thead th {
+    background: #f8f9fa;
+    border-bottom: 2px solid #e9ecef;
+    color: #495057;
+    font-weight: 600;
+    padding: 1rem;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
+}
+
+.table-modern tbody tr {
     transition: all 0.3s ease;
-    border: 1px solid rgba(0, 0, 0, 0.05);
+
 }
 
-.order-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+.table-modern tbody tr:hover {
+    background: #f8f9fa;
 }
 
-/* Order Header */
-.order-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 1rem;
-    padding-bottom: 1rem;
-    border-bottom: 1px solid #eee;
+.table-modern td {
+    padding: 1rem;
+    vertical-align: middle;
+    border-bottom: 1px solid #e9ecef;
 }
 
-.order-number {
-    font-weight: bold;
-    font-size: 1.1rem;
-    color: #2c3e50;
+
 }
 
-.order-date {
-    display: block;
-    font-size: 0.9rem;
-    color: #6c757d;
-    margin-top: 0.25rem;
+.table-modern tbody tr:hover {
+    background: #f8f9fa;
+}
+
+.table-modern td {
+    padding: 1rem;
+    vertical-align: middle;
+    border-bottom: 1px solid #e9ecef;
+}
+
+/* Product Image */
+.product-image {
+    width: 50px;
+    height: 50px;
+    border-radius: 10px;
+    object-fit: cover;
+    border: 2px solid #f8f9fa;
 }
 
 /* Status Badge */
@@ -466,142 +457,31 @@
 .status-danger { background: #f8d7da; color: #721c24; }
 .status-secondary { background: #e2e3e5; color: #383d41; }
 
-/* Order Body */
-.order-body {
-    display: flex;
-    gap: 1rem;
-    margin-bottom: 1rem;
-}
-
-.order-image {
-    position: relative;
-    flex-shrink: 0;
-}
-
-.product-image {
-    width: 80px;
-    height: 80px;
-    border-radius: 15px;
-    object-fit: cover;
-    border: 2px solid #f8f9fa;
-}
-
-.item-count {
-    position: absolute;
-    top: -5px;
-    right: -5px;
-    background: #667eea;
-    color: white;
-    border-radius: 50%;
-    width: 24px;
-    height: 24px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 0.75rem;
-    font-weight: bold;
-}
-
-.order-details {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-}
-
-.item-name {
-    font-weight: 600;
-    color: #2c3e50;
-    margin-bottom: 0.25rem;
-    line-height: 1.3;
-}
-
-.item-more {
-    font-size: 0.9rem;
-    color: #6c757d;
-    margin: 0;
-}
-
-.price-amount {
-    font-size: 1.2rem;
-    font-weight: bold;
-    color: #667eea;
-}
-
 /* Order Actions */
 .order-actions {
     display: flex;
     gap: 0.5rem;
-    flex-wrap: wrap;
 }
 
 .btn-action {
-    flex: 1;
-    padding: 0.75rem 1rem;
-    border-radius: 10px;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
     font-weight: 600;
     font-size: 0.9rem;
-    display: flex;
+    display: inline-flex;
     align-items: center;
-    justify-content: center;
     gap: 0.5rem;
     transition: all 0.3s ease;
-    min-width: 120px;
 }
 
 .btn-action:hover {
     transform: translateY(-2px);
 }
 
-/* Modal Styling */
-.modal-modern .modal-content {
-    border: none;
-    border-radius: 20px;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
-}
-
-.modal-modern .modal-header {
-    border: none;
-    padding: 2rem 2rem 1rem;
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-}
-
-.modal-icon {
-    font-size: 2rem;
-    flex-shrink: 0;
-}
-
-.modal-modern .modal-body {
-    padding: 1rem 2rem;
-}
-
-.modal-modern .modal-footer {
-    border: none;
-    padding: 1rem 2rem 2rem;
-}
-
-.form-control-modern {
-    border: 2px solid #e9ecef;
-    border-radius: 10px;
-    padding: 0.75rem 1rem;
-    transition: all 0.3s ease;
-}
-
-.form-control-modern:focus {
-    border-color: #667eea;
-    box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
-}
-
 /* Empty State */
 .empty-state {
-    grid-column: 1 / -1;
     text-align: center;
     padding: 4rem 2rem;
-    background: white;
-    border-radius: 20px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
 }
 
 .empty-icon {
@@ -636,24 +516,7 @@
 }
 
 /* Responsive Design */
-@media (max-width: 768px) {
-    .orders-container {
-        grid-template-columns: 1fr;
-        gap: 1rem;
-    }
-    
-    .order-card {
-        padding: 1rem;
-    }
-    
-    .order-actions {
-        flex-direction: column;
-    }
-    
-    .btn-action {
-        min-width: auto;
-    }
-    
+@media (max-width: 576px) {
     .header-section {
         padding: 1.5rem;
     }
@@ -665,13 +528,6 @@
     .header-section .col-md-4 {
         margin-top: 1rem;
     }
-}
-
-@media (max-width: 576px) {
-    .container-fluid {
-        padding-left: 1rem;
-        padding-right: 1rem;
-    }
     
     .status-tabs {
         gap: 0.25rem;
@@ -681,116 +537,233 @@
         padding: 0.5rem 0.75rem;
         font-size: 0.9rem;
     }
-    
-    .order-body {
-        flex-direction: column;
-        gap: 0.75rem;
+
+}
+
+/* Alert Styling */
+.alert-modern {
+    border: none;
+    border-radius: 15px;
+    padding: 1.25rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    animation: slideIn 0.5s ease-out;
+}
+
+.alert-modern .alert-icon {
+    font-size: 1.5rem;
+    flex-shrink: 0;
+}
+
+.alert-modern .alert-content {
+    flex-grow: 1;
+}
+
+.alert-modern .alert-content strong {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-size: 1.1rem;
+}
+
+.alert-modern .btn-close {
+    padding: 1rem;
+    margin: -1rem -1rem -1rem 0;
+    opacity: 0.5;
+    transition: opacity 0.3s ease;
+}
+
+.alert-modern .btn-close:hover {
+    opacity: 1;
+}
+
+.alert-success {
+    background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+    color: #155724;
+}
+
+.alert-danger {
+    background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+    color: #721c24;
+}
+
+.alert-warning {
+    background: linear-gradient(135deg, #fff3cd 0%, #ffeeba 100%);
+    color: #856404;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateY(-20px);
+        opacity: 0;
     }
-    
-    .product-image {
-        width: 60px;
-        height: 60px;
+    to {
+        transform: translateY(0);
+        opacity: 1;
     }
+}
+
+@keyframes slideOut {
+    from {
+        transform: translateY(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateY(-20px);
+        opacity: 0;
+    }
+
+
+}
+
+.alert-hide {
+    animation: slideOut 0.5s ease-out forwards;
 }
 </style>
 
 @section('scripts')
 <script>
-// Real-time order status updates
-    setTimeout(() => {
+function renderOrderActions(orderId, status, createdAt) {
+    const actionsDiv = document.getElementById('order-actions-' + orderId);
+    if (!actionsDiv) return;
+
+    let html = '';
+    // Nút chi tiết luôn có
+    html += `<a href="/order/tracking/${orderId}" class="btn btn-action btn-primary">
+                <i class='fas fa-eye'></i> 
+            </a>`;
+
+    // Nút Hủy đơn: chỉ hiện khi status là 'pending' hoặc 'confirmed'
+    if (status === 'pending' || status === 'confirmed') {
+        html += `
+            <button type="button" class="btn btn-action btn-danger" data-bs-toggle="modal" data-bs-target="#cancelModal${orderId}">
+                <i class="fas fa-times"></i> <span>Hủy đơn</span>
+            </button>
+            <div class="modal fade" id="cancelModal${orderId}" tabindex="-1" aria-labelledby="cancelModalLabel${orderId}" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <form action="/order/cancel/${orderId}" method="POST">
+                            <input type="hidden" name="_token" value="${window.Laravel.csrfToken}">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="cancelModalLabel${orderId}"><i class="fas fa-times text-danger me-2"></i>Hủy đơn hàng #${orderId}</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="mb-3">
+                                    <label for="cancellation_reason_${orderId}" class="form-label">Lý do hủy đơn</label>
+                                    <input type="text" class="form-control" name="cancellation_reason" id="cancellation_reason_${orderId}" required placeholder="Nhập lý do hủy đơn...">
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                                <button type="submit" class="btn btn-danger"><i class="fas fa-times me-2"></i>Xác nhận hủy</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+    // Nút hoàn hàng chỉ hiện nếu chưa quá 7 ngày kể từ ngày mua và status là 'completed'
+    if (status === 'completed') {
+        const created = new Date(createdAt);
+        const now = new Date();
+        const diffTime = now - created;
+        const diffDays = diffTime / (1000 * 60 * 60 * 24);
+        if (diffDays <= 7) {
+            html += `<a href="/order/${orderId}/return" class="btn btn-action btn-warning">
+                        <i class='fas fa-undo'></i> 
+                    </a>`;
+        }
+    }
+
+    actionsDiv.innerHTML = html;
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Khởi tạo các nút chức năng ban đầu
+    document.querySelectorAll('tr[data-order-id]').forEach(row => {
+        renderOrderActions(
+            row.getAttribute('data-order-id'),
+            row.getAttribute('data-status'),
+            row.getAttribute('data-created-at')
+        );
+    });
+
+    // Lắng nghe sự kiện cập nhật trạng thái realtime
+   setTimeout(() => {
     let orderIds = @json($orders->pluck('id'));
     orderIds.forEach(orderId => {
         window.Echo.channel('orderStatus.' + orderId)
             .listen('.OrderStatusUpdated', (e) => {
-                console.log('Đã nhận event:', orderId, e);
-                const orderCard = document.querySelector(`[data-order-id="${orderId}"]`);
-                if (orderCard) {
-                    const statusBadge = orderCard.querySelector('.status-badge');
+                const card = document.querySelector(`[data-order-id="${orderId}"]`);
+                if (card) {
+                    // Cập nhật trạng thái data-status
+                    card.setAttribute('data-status', e.status);
+
+                    // Cập nhật lại badge trạng thái
+                    const statusBadge = card.querySelector('.status-badge');
                     if (statusBadge) {
-                        statusBadge.innerHTML = `<i class="fas ${getStatusIcon(e.status)}"></i>${e.status_text}`;
-                        statusBadge.className = `status-badge status-${getStatusClass(e.status)}`;
+                        // Map trạng thái sang class và icon
+                        const statusClassMap = {
+                            'pending': 'warning',
+                            'confirmed': 'info',
+                            'preparing': 'primary',
+                            'shipping': 'info',
+                            'completed': 'success',
+                            'cancelled': 'danger',
+                            'returned': 'secondary',
+                            '': 'secondary',
+                        };
+                        const statusIconMap = {
+                            'pending': 'fa-clock',
+                            'confirmed': 'fa-circle-check',
+                            'preparing': 'fa-box',
+                            'shipping': 'fa-truck',
+                            'completed': 'fa-circle-check',
+                            'cancelled': 'fa-ban',
+                            'returned': 'fa-undo',
+                            '': 'fa-undo',
+                        };
+                        statusBadge.className = `status-badge status-${statusClassMap[e.status] || 'secondary'}`;
+                        statusBadge.innerHTML = `<i class="fas ${statusIconMap[e.status] || 'fa-circle'}"></i> ${e.status_text}`;
+
+                    }
+
+                    // Cập nhật lại nút thao tác với trạng thái mới
+                    renderOrderActions(
+                        orderId,
+                        e.status,
+                        card.getAttribute('data-created-at')
+                    );
+
+                    // Nếu đơn hàng bị hủy hoặc hoàn trả, reload trang để cập nhật danh sách
+                    if (e.status === 'cancelled' || e.status === 'returned' || e.status === '') {
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 1000);
                     }
                 }
             });
-            });
-    }, 200);
+    });
+},200);
 
-function getStatusIcon(status) {
-    const statusIcons = {
-        'pending': 'fa-clock',
-        'confirmed': 'fa-circle-check',
-        'preparing': 'fa-box',
-        'shipping': 'fa-truck',
-        'completed': 'fa-circle-check',
-        'cancelled': 'fa-ban',
-        'returned': 'fa-undo',
-        'partially_returned': 'fa-undo'
-    };
-    return statusIcons[status] || 'fa-circle';
-}
-
-function getStatusClass(status) {
-    const statusClasses = {
-        'pending': 'warning',
-        'confirmed': 'info',
-        'preparing': 'primary',
-        'shipping': 'info',
-        'completed': 'success',
-        'cancelled': 'danger',
-        'returned': 'secondary',
-        'partially_returned': 'secondary'
-    };
-    return statusClasses[status] || 'secondary';
-}
-
-// Initialize tooltips and auto-hide alerts
-document.addEventListener('DOMContentLoaded', function() {
-    // Initialize tooltips
-    const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
-    const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
-
-    // Auto-hide alerts after 5 seconds
-    const alerts = document.querySelectorAll('.alert');
-    alerts.forEach(alert => {
+// Auto hide alerts after 5 seconds
+const alerts = document.querySelectorAll('.alert-modern');
+alerts.forEach(alert => {
+    setTimeout(() => {
+        alert.classList.add('alert-hide');
         setTimeout(() => {
-            const bsAlert = new bootstrap.Alert(alert);
-            bsAlert.close();
-        }, 5000);
-    });
-
-    // Add smooth scrolling to status tabs
-    const statusTabs = document.querySelectorAll('.status-tab');
-    statusTabs.forEach(tab => {
-        tab.addEventListener('click', function(e) {
-            // Add loading state
-            const loader = document.createElement('div');
-            loader.className = 'spinner-border spinner-border-sm me-2';
-            loader.setAttribute('role', 'status');
-            this.prepend(loader);
-            
-            setTimeout(() => {
-                if (loader.parentNode) {
-                    loader.remove();
-                }
-            }, 1000);
-        });
-    });
+            alert.remove();
+        }, 500);
+    }, 5000);
 });
 
-// Add loading animation for order actions
-document.querySelectorAll('.btn-action').forEach(btn => {
-    btn.addEventListener('click', function() {
-        if (!this.classList.contains('btn-danger')) { // Skip for modal buttons
-            const icon = this.querySelector('i');
-            const originalClass = icon.className;
-            icon.className = 'fas fa-spinner fa-spin';
-            
-            setTimeout(() => {
-                icon.className = originalClass;
-            }, 2000);
-        }
-    });
 });
+
+
+
 </script>
-@endsection
 @endsection

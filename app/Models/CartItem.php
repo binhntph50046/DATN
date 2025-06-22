@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class CartItem extends Model
 {
-    public $timestamps = false; 
+    public $timestamps = false;
     use HasFactory;
 
     protected $fillable = ['cart_id', 'product_id', 'variant_id', 'quantity'];
@@ -24,6 +24,7 @@ class CartItem extends Model
 
     public function variant()
     {
-        return $this->belongsTo(ProductVariant::class, 'variant_id');
+        // Dùng withTrashed() để vẫn load ra biến thể đã bị soft delete
+        return $this->belongsTo(ProductVariant::class, 'variant_id')->withTrashed();
     }
 }

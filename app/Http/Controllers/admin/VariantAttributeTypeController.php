@@ -165,9 +165,15 @@ class VariantAttributeTypeController
             // Get existing value IDs that should be kept
             $existingValueIds = $request->input('existing_values', []);
             
-            // Delete values that are not in the existing_values array
+            // Get IDs of values that are being updated
+            $updatingValueIds = collect($request->input('values', []))
+                ->pluck('id')
+                ->filter()
+                ->toArray();
+
+            // Delete values that are not in either existing_values or being updated
             VariantAttributeValue::where('attribute_type_id', $attributeType->id)
-                ->whereNotIn('id', $existingValueIds)
+                ->whereNotIn('id', array_merge($existingValueIds, $updatingValueIds))
                 ->delete();
 
             // Handle attribute values updates

@@ -1,6 +1,17 @@
 @extends('admin.layouts.app')
 @section('title', 'User Management')
 
+<style>
+    .custom-shadow {
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+        border-radius: 12px;
+        background-color: #fff;
+        padding: 16px;
+    }
+    .table th, .table td { padding: 0.35rem 0.5rem; }
+    .table .text-nowrap { white-space: nowrap; }
+</style>
+
 @section('content')
     <div class="pc-container">
         <div class="pc-content">
@@ -25,16 +36,16 @@
             <div class="row">
                 <div class="col-12">
                     <div class="card">
-                        <div class="card-header d-flex justify-content-between align-items-center">
+                        <div class="card-header">
                             <h5>User List</h5>
-                            <div>
+                            <div class="card-header-right">
                                 @can('create users')
-                                    <a href="{{ route('admin.users.create') }}" class="btn btn-primary btn-sm me-2">
+                                    <a href="{{ route('admin.users.create') }}" class="btn btn-primary btn-sm rounded-3 me-2">
                                         <i class="ti ti-plus"></i> Add New User
                                     </a>
                                 @endcan
                                 @can('view users')
-                                    <a href="{{ route('admin.users.trash') }}" class="btn btn-danger btn-sm">
+                                    <a href="{{ route('admin.users.trash') }}" class="btn btn-danger btn-sm rounded-3">
                                         <i class="ti ti-trash"></i> Trash
                                     </a>
                                 @endcan
@@ -47,45 +58,44 @@
                             @endif
 
                             <!-- Filter -->
-                            <div class="custom-shadow mb-4">
-                                <form method="GET" action="{{ route('admin.users.index') }}" class="row g-3">
-                                    <div class="col-md-3">
-                                        <label class="form-label">Role</label>
-                                        <select name="role" class="form-select">
-                                            <option value="">All Roles</option>
-                                            @foreach ($roles as $role)
-                                                <option value="{{ $role }}"
-                                                    {{ request('role') == $role ? 'selected' : '' }}>
-                                                    {{ ucfirst($role) }}
+                            <div class="card shadow-sm mb-4">
+                                <div class="card-body">
+                                    <form method="GET" action="{{ route('admin.users.index') }}" class="row g-3 mb-3">
+                                        <div class="col-md-3">
+                                            <input type="text" name="search" class="form-control" placeholder="Search by name..."
+                                                value="{{ request('search') }}">
+                                        </div>
+                                        <div class="col-md-3">
+                                            <select name="role" class="form-select">
+                                                <option value="">-- Filter by Role --</option>
+                                                @foreach ($roles as $role)
+                                                    <option value="{{ $role }}"
+                                                        {{ request('role') == $role ? 'selected' : '' }}>
+                                                        {{ ucfirst($role) }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <select name="status" class="form-select">
+                                                <option value="">-- Filter by Status --</option>
+                                                <option value="active" {{ request('status') == 'active' ? 'selected' : '' }}>Active
                                                 </option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                    <div class="col-md-3">
-                                        <label class="form-label">Status</label>
-                                        <select name="status" class="form-select">
-                                            <option value="">All Status</option>
-                                            <option value="active" {{ request('status') == 'active' ? 'selected' : '' }}>Active
-                                            </option>
-                                            <option value="inactive" {{ request('status') == 'inactive' ? 'selected' : '' }}>
-                                                Inactive</option>
-                                        </select>
-                                    </div>
-                                    <div class="col-md-3">
-                                        <label class="form-label">Search</label>
-                                        <input type="text" name="search" class="form-control" placeholder="Name or Email"
-                                            value="{{ request('search') }}">
-                                    </div>
-                                    <div class="col-md-3 d-flex align-items-end">
-                                        <button type="submit" class="btn btn-primary btn-sm me-2">Filter</button>
-                                        <a href="{{ route('admin.users.index') }}" class="btn btn-secondary btn-sm">Reset</a>
-                                    </div>
-                                </form>
+                                                <option value="inactive" {{ request('status') == 'inactive' ? 'selected' : '' }}>
+                                                    Inactive</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-12 mt-3">
+                                            <button type="submit" class="btn btn-primary btn-sm me-2">Filter</button>
+                                            <a href="{{ route('admin.users.index') }}" class="btn btn-secondary btn-sm">Reset</a>
+                                        </div>
+                                    </form>
+                                </div>
                             </div>
 
                             <!-- Table -->
                             <div class="table custom-shadow">
-                                <table class="table table-hover table-borderless">
+                                <table class="table table-hover table-borderless align-middle" style="font-size: 14px;">
                                     <thead>
                                         <tr>
                                             <th>ID</th>
@@ -104,7 +114,7 @@
                                                 <td>
                                                     @if ($user->avatar)
                                                         <img src="{{ asset($user->avatar) }}" alt="Avatar"
-                                                            class="img-thumbnail" style="max-width: 60px;">
+                                                            style="max-height: 80px;">
                                                     @else
                                                         <span class="text-muted">No avatar</span>
                                                     @endif
@@ -119,35 +129,29 @@
                                                     </span>
                                                 </td>
                                                 <td class="text-center">
-                                                    @can('view users')
-                                                        <a href="{{ route('admin.users.show', $user->id) }}"
-                                                            class="btn btn-primary btn-sm me-1" title="View Details">
-                                                            <i class="ti ti-eye"></i>
-                                                        </a>
-                                                    @endcan
-                                                    @can('edit users')
                                                         <a href="{{ route('admin.users.edit', $user->id) }}"
-                                                            class="btn btn-info btn-sm me-1" title="Edit">
-                                                            <i class="ti ti-edit"></i>
+                                                            class="btn btn-info btn-sm rounded-3" title="Edit">
+                                                            <i class="ti ti-edit"></i> Edit
                                                         </a>
-                                                    @endcan
-                                                    @can('addrole')
-                                                        <a href="{{ route('admin.roles.edit', $user->id) }}"
-                                                            class="btn btn-warning btn-sm me-1" title="Assign Role">
-                                                            <i class="ti ti-user-check"></i>
-                                                        </a>
-                                                    @endcan
-                                                    @can('delete users')
+
+                                                    @if(auth()->user()->hasRole('admin'))
+                                                        @can('addrole')
+                                                            <a href="{{ route('admin.roles.edit', $user->id) }}"
+                                                                class="btn btn-warning btn-sm rounded-3" title="Assign Role">
+                                                                <i class="ti ti-user-check"></i> Assign Role
+                                                            </a>
+                                                        @endcan
+                                                    @endif
+
                                                         <form action="{{ route('admin.users.destroy', $user->id) }}"
                                                             method="POST" class="d-inline">
                                                             @csrf
                                                             @method('DELETE')
-                                                            <button type="submit" class="btn btn-danger btn-sm"
-                                                                onclick="return confirm('Are you sure?')" title="Delete">
-                                                                <i class="ti ti-trash"></i>
+                                                            <button type="submit" class="btn btn-danger btn-sm rounded-3"
+                                                                onclick="return confirm('Are you sure you want to delete this user?')" title="Delete">
+                                                                <i class="ti ti-trash"></i> Delete
                                                             </button>
                                                         </form>
-                                                    @endcan
                                                 </td>
                                             </tr>
                                         @empty
@@ -173,16 +177,13 @@
 <style>
     .custom-shadow {
         box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
-        border-radius: 12px;
+        border-radius: 12px !important;
         background-color: #fff;
         padding: 16px;
     }
     .badge {
         font-size: 0.85em;
         padding: 0.35em 0.65em;
-    }
-    .btn-group .btn {
-        padding: 0.25rem 0.5rem;
     }
     .table td {
         vertical-align: middle;

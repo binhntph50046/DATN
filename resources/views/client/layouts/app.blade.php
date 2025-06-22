@@ -36,8 +36,6 @@
     @yield('content')
     @include('client.partials.chat')
     @include('client.partials.footer')
-
-    <!-- jQuery (tải một lần duy nhất) -->
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <!-- Bootstrap Bundle + Popper -->
     <script src="{{ asset('js/bootstrap.bundle.min.js') }}"></script>

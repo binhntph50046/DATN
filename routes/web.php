@@ -51,6 +51,7 @@ use App\Http\Controllers\auth\FacebookController;
 use App\Http\Controllers\auth\GoogleController;
 use App\Http\Controllers\auth\ForgotPasswordController;
 use App\Http\Controllers\auth\ResetPasswordController;
+use App\Http\Controllers\client\CompareController;
 
 /*
 |--------------------------------------------------------------------------
@@ -64,6 +65,7 @@ Route::get('/product/{slug}', [ClientProductController::class, 'show'])->name('p
 Route::get('/api/products/{id}', [ClientProductController::class, 'getProductDetails'])->name('api.products.show');
 Route::get('/api/variants/{id}', [ClientProductController::class, 'getVariant'])->name('api.variants.show');
 Route::post('/increment-view/{id}', [HomeController::class, 'incrementView'])->name('increment.view');
+Route::post('/compare', [CompareController::class, 'index'])->name('compare.products');
 
 // Shop Routes
 Route::get('/shop', [ShopController::class, 'index'])->name('shop');

@@ -1,22 +1,18 @@
 <?php
 
-use App\Models\Invoice;
+use Illuminate\Support\Facades\Route;
 use App\Http\Middleware\VerifyCsrfToken;
 
-// Admin
-use Illuminate\Support\Facades\Route;
-// Admin
+// Models
+use App\Models\Invoice;
+
+// Admin Controllers
 use App\Http\Controllers\admin\BlogController;
 use App\Http\Controllers\admin\UserController;
 use App\Http\Controllers\admin\OrderController;
 use App\Http\Controllers\admin\BannerController;
 use App\Http\Controllers\admin\ProductController;
 use App\Http\Controllers\admin\CategoryController;
-use App\Http\Controllers\client\ContactController;
-use App\Http\Controllers\client\SubscribeController;
-use App\Http\Controllers\client\ChatbotController;
-// Auth
-use App\Http\Controllers\client\PaymentController;
 use App\Http\Controllers\admin\DashboardController;
 use App\Http\Controllers\admin\VariantAttributeTypeController;
 use App\Http\Controllers\admin\RoleController;
@@ -24,24 +20,14 @@ use App\Http\Controllers\admin\SpecificationController;
 use App\Http\Controllers\admin\VoucherController;
 use App\Http\Controllers\admin\FlashSaleController;
 use App\Http\Controllers\admin\SubcriberController;
-use App\Http\Controllers\client\CheckoutController;
-// Client 
-use App\Http\Controllers\client\WishlistController;
-use App\Http\Controllers\Admin\OrderReturnController;
 use App\Http\Controllers\admin\AdminContactController;
 use App\Http\Controllers\admin\FlashSaleItemController;
 use App\Http\Controllers\admin\FaqController;
+use App\Http\Controllers\admin\ProductVariantController;
 use App\Http\Controllers\Admin\InvoiceController;
-use App\Http\Controllers\client\OrderReturnController as ClientOrderReturnController;
-use App\Http\Controllers\admin\OrderReturnController as AdminOrderReturnController;
-use App\Http\Controllers\admin\ResendInvoiceRequestController;
-// Auth
-use App\Http\Controllers\auth\AuthController;
-use App\Http\Controllers\auth\FacebookController;
-use App\Http\Controllers\auth\GoogleController;
-use App\Http\Controllers\auth\ForgotPasswordController;
-use App\Http\Controllers\auth\ResetPasswordController;
-// Client 
+use App\Http\Controllers\Admin\OrderReturnController as AdminOrderReturnController;
+
+// Client Controllers
 use App\Http\Controllers\client\HomeController;
 use App\Http\Controllers\client\ShopController;
 use App\Http\Controllers\client\AboutController;
@@ -52,12 +38,20 @@ use App\Http\Controllers\client\PaymentController;
 use App\Http\Controllers\client\OrderController as ClientOrderController;
 use App\Http\Controllers\client\ChatBotController;
 use App\Http\Controllers\client\ProductController as ClientProductController;
-use App\Http\Controllers\Admin\OrderReturnController as AdminOrderReturnController;
 use App\Http\Controllers\client\OrderReturnController as ClientOrderReturnController;
 use App\Http\Controllers\client\FaqsController;
 use App\Http\Controllers\client\ProfileController;
-use App\Models\Invoice;
-use App\Http\Controllers\admin\ProductVariantController;
+use App\Http\Controllers\client\WishlistController;
+use App\Http\Controllers\client\CheckoutController;
+use App\Http\Controllers\client\SubscribeController;
+
+// Auth Controllers
+use App\Http\Controllers\auth\AuthController;
+use App\Http\Controllers\auth\FacebookController;
+use App\Http\Controllers\auth\GoogleController;
+use App\Http\Controllers\auth\ForgotPasswordController;
+use App\Http\Controllers\auth\ResetPasswordController;
+
 /*
 |--------------------------------------------------------------------------
 | Client Routes
@@ -105,7 +99,7 @@ Route::get('/chat', function () {
     return view('chat');
 });
 
-Route::post('/chatbot/ask', [ChatbotController::class, 'ask'])->name('chatbot.ask');
+Route::post('/chatbot/ask', [ChatBotController::class, 'ask'])->name('chatbot.ask');
 
 // Cart & Checkout Routes
 Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
@@ -154,14 +148,6 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('order-returns/{id}', [AdminOrderReturnController::class, 'show'])->name('order-returns.show');
     Route::post('order-returns/{id}/approve', [AdminOrderReturnController::class, 'approve'])->name('order-returns.approve');
     Route::post('order-returns/{id}/reject', [AdminOrderReturnController::class, 'reject'])->name('order-returns.reject');
-});
-
-// Route cho admin quản lý hoàn hàng
-Route::prefix('admin')->name('admin.')->group(function () {
-    Route::get('order-returns', [OrderReturnController::class, 'index'])->name('order-returns.index');
-    Route::get('order-returns/{id}', [OrderReturnController::class, 'show'])->name('order-returns.show');
-    Route::post('order-returns/{id}/approve', [OrderReturnController::class, 'approve'])->name('order-returns.approve');
-    Route::post('order-returns/{id}/reject', [OrderReturnController::class, 'reject'])->name('order-returns.reject');
 });
 
 // Route cho khách gửi yêu cầu hoàn hàng
@@ -215,7 +201,6 @@ Route::prefix('admin')
     ->group(function () {
         // Dashboard
         Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
-
 
         // User Management
         Route::prefix('users')->name('users.')->middleware('permission:view users')->group(function () {
@@ -329,9 +314,6 @@ Route::prefix('admin')
             Route::get('/{order}', [OrderController::class, 'show'])->name('show');
             Route::put('/{order}/status', [OrderController::class, 'updateStatus'])->middleware('permission:edit orders')->name('updateStatus');
             Route::delete('/{order}', [OrderController::class, 'destroy'])->middleware('permission:delete orders')->name('destroy');
-            // Route::get('/trash', [OrderController::class, 'trash'])->name('trash');
-            // Route::post('/trash/restore/bulk', [OrderController::class, 'bulkRestore'])->middleware('permission:edit orders')->name('restore.bulk');
-            // Route::post('/trash/force-delete/bulk', [OrderController::class, 'bulkForceDelete'])->middleware('permission:delete orders')->name('forceDelete.bulk');
             Route::get('/{order}/export-invoice', [OrderController::class, 'exportInvoice'])->name('export-invoice');
         });
 
@@ -375,7 +357,8 @@ Route::prefix('admin')
             Route::post('/{faq}/restore', [FaqController::class, 'restore'])->name('restore');
             Route::delete('/{faq}/forceDelete', [FaqController::class, 'forceDelete'])->name('forceDelete');
         });
-        //Invoice Routes
+
+        // Invoice Routes
         Route::resource('invoices', InvoiceController::class);
         Route::get('invoices/{invoice}/pdf', [InvoiceController::class, 'exportPdf'])->name('invoices.export-pdf');
 

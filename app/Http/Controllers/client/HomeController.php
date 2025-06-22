@@ -8,6 +8,8 @@ use App\Models\Wishlist;
 use App\Models\ProductVariant;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
 
 class HomeController
 {
@@ -46,13 +48,17 @@ class HomeController
                 ->toArray();
         }
             
+        $products = Product::where('status', 'active')->get();
+
         return view('client.index', [
             'banners' => $banners,
             'mostViewedProducts' => $mostViewedProducts,
             'latestProducts' => $latestProducts,
-            'wishlistProductIds' => $wishlistProductIds
+            'wishlistProductIds' => $wishlistProductIds,
+            'products' => $products
         ]);
     }
+    
 
     public function incrementView($id)
     {
@@ -60,7 +66,7 @@ class HomeController
         $product->increment('views');
         return response()->json(['success' => true, 'views' => $product->views]);
     }
-
+    
     public function getProduct($id)
     {
         $product = Product::with(['variants' => function($query) {

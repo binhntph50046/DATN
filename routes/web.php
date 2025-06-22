@@ -46,6 +46,8 @@ use App\Http\Controllers\client\ProductController as ClientProductController;
 use App\Http\Controllers\client\ProfileController;
 use App\Models\Invoice;
 use App\Http\Controllers\admin\ProductVariantController;
+use App\Http\Controllers\client\CompareController;
+use App\Models\Product;
 
 /*
 |--------------------------------------------------------------------------
@@ -59,7 +61,8 @@ Route::get('/product/{slug}', [ClientProductController::class, 'show'])->name('p
 Route::get('/api/products/{id}', [ClientProductController::class, 'getProductDetails'])->name('api.products.show');
 Route::get('/api/variants/{id}', [ClientProductController::class, 'getVariant'])->name('api.variants.show');
 Route::post('/increment-view/{id}', [HomeController::class, 'incrementView'])->name('increment.view');
-
+Route::post('/compare', [CompareController::class, 'index'])->name('compare.products');
+Route::get('/compare', [CompareController::class, 'index'])->name('compare.products.get');
 // Shop Routes
 Route::get('/shop', [ShopController::class, 'index'])->name('shop');
 Route::get('/about', [AboutController::class, 'index'])->name('about');
@@ -353,3 +356,5 @@ Route::prefix('admin')
         Route::put('variants/{variant}', [ProductVariantController::class, 'update'])->name('variants.update');
         Route::delete('variants/{variant}', [ProductVariantController::class, 'destroy'])->name('variants.destroy');
     });
+
+$products = Product::where('status', 'active')->get();

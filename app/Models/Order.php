@@ -77,15 +77,6 @@ class Order extends Model
     {
         return $query->where('status', 'cancelled');
     }
-
-    /**
-     * Lấy chi tiết đơn hàng
-     */
-    public function details()
-    {
-        return $this->hasMany(OrderItem::class);
-    }
-
     /**
      * Lấy trạng thái đơn hàng dạng text
      */
@@ -137,7 +128,7 @@ class Order extends Model
 
         static::creating(function ($order) {
             // Tạo mã đơn hàng theo format: ORD + YYYYMMDD + 4 số ngẫu nhiên
-            $order->order_code = 'ORD' . date('Ymd') . str_pad(mt_rand(1, 9999), 4, '0', STR_PAD_LEFT);
+            $order->order_code = 'DH' . str_pad(mt_rand(1, 9999), 4, '0', STR_PAD_LEFT);
         });
     }
 }

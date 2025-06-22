@@ -11,11 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('search_histories', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('user_id')->nullable()->constrained('users')->nullOnDelete();
-            $table->string('keyword');
-            $table->timestamps();
+        Schema::table('page_views', function (Blueprint $table) {
+            $table->string('session_id')->nullable()->after('id');
         });
     }
 
@@ -24,6 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('search_histories');
+        Schema::table('page_views', function (Blueprint $table) {
+            $table->dropColumn('session_id');
+        });
     }
 };

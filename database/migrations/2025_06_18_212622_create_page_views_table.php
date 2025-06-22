@@ -11,8 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('variant_combinations', function (Blueprint $table) {
-            $table->softDeletes();
+        Schema::create('page_views', function (Blueprint $table) {
+            $table->id();
+            $table->string('url'); // trang được xem
+            $table->ipAddress('ip_address')->nullable();
+            $table->string('user_agent')->nullable();
+            $table->timestamps(); 
         });
     }
 
@@ -21,8 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('variant_combinations', function (Blueprint $table) {
-            $table->dropSoftDeletes();
-        });
+        Schema::dropIfExists('page_views');
     }
 };

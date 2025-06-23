@@ -294,6 +294,7 @@ Route::prefix('admin')
             Route::get('/{product}/edit', [ProductController::class, 'edit'])->name('edit');
             Route::put('/{product}', [ProductController::class, 'update'])->name('update');
             Route::delete('/{product}', [ProductController::class, 'destroy'])->name('destroy');
+            Route::post('/check-duplicate-variants', [ProductController::class, 'checkDuplicateVariants'])->name('checkDuplicateVariants');
         });
         Route::get('attributes/{id}/values', [ProductController::class, 'getAttributeValues']);
 

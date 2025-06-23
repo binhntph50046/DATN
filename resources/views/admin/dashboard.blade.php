@@ -247,22 +247,31 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @foreach ($topVariants as $item)
+                                        @if ($topVariants->count())
+                                            @foreach ($topVariants as $item)
+                                                <tr>
+                                                    <td>{{ $item->variant->id ?? 'N/A' }}</td>
+                                                    <td>
+                                                        @if ($item->variant && $item->variant->product)
+                                                            {{ $item->variant->product->name }} -
+                                                            {{ $item->variant->name }}
+                                                        @elseif ($item->product)
+                                                            {{ $item->product->name }}
+                                                        @else
+                                                            Không rõ
+                                                        @endif
+                                                    </td>
+                                                    <td>{{ $item->total_quantity }}</td>
+                                                    <td class="text-end">{{ number_format($item->total_revenue) }} VNĐ
+                                                    </td>
+                                                </tr>
+                                            @endforeach
+                                        @else
                                             <tr>
-                                                <td>{{ $item->variant->id }}</td>
-                                                <td>
-                                                    @if ($item->variant && $item->variant->product)
-                                                        {{ $item->variant->product->name }} - {{ $item->variant->name }}
-                                                    @elseif ($item->product)
-                                                        {{ $item->product->name }}
-                                                    @else
-                                                        Không rõ
-                                                    @endif
-                                                </td>
-                                                <td>{{ $item->total_quantity }}</td>
-                                                <td class="text-end">{{ number_format($item->total_revenue) }} VNĐ</td>
+                                                <td colspan="4" class="text-center text-muted">Không có sản phẩm nào được
+                                                    bán chạy nhất</td>
                                             </tr>
-                                        @endforeach
+                                        @endif
                                     </tbody>
                                 </table>
                             </div>

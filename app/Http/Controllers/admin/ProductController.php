@@ -844,4 +844,51 @@ class ProductController
         $product->load(['category', 'variants', 'specifications.specification']);
         return view('admin.products.show', compact('product'));
     }
+
+    public function checkDuplicateVariants(\Illuminate\Http\Request $request)
+    {
+        $productId = $request->input('product_id');
+        $variantCombinations = $request->input('variant_combinations', []);
+
+        $duplicates = [];
+
+        // Lấy tất cả giá trị id liên quan để map sang tên
+        $allValueIds = collect($variantCombinations)->flatten()->unique()->toArray();
+        $valueMap = VariantAttributeValue::withTrashed()->whereIn('id', $allValueIds)->get()->keyBy('id');
+
+        foreach ($variantCombinations as $index => $combination) {
+            $valueIds = array_map('intval', $combination);
+            sort($valueIds);
+
+            // Chỉ kiểm tra trong phạm vi sản phẩm hiện tại
+            $query = \App\Models\ProductVariant::withTrashed()
+                ->where('product_id', $productId)
+                ->whereHas('combinations', function ($q) use ($valueIds) {
+                    $q->whereIn('attribute_value_id', $valueIds);
+                }, '=', count($valueIds))
+                ->whereHas('combinations', function ($q) use ($valueIds) {
+                    $q->whereNotIn('attribute_value_id', $valueIds);
+                }, '=', 0);
+
+            $existingVariant = $query->first();
+
+            if ($existingVariant) {
+                // Lấy tên giá trị
+                $valueNames = collect($valueIds)->map(function($id) use ($valueMap) {
+                    $v = $valueMap[$id] ?? null;
+                    if (!$v) return $id;
+                    if (is_array($v->value)) return implode(', ', $v->value);
+                    return $v->value;
+                })->toArray();
+                $duplicates[] = [
+                    'index' => $index,
+                    'combination' => $valueNames,
+                    'variant_name' => $existingVariant->name,
+                    'is_soft_deleted' => $existingVariant->trashed(),
+                ];
+            }
+        }
+
+        return response()->json(['duplicates' => $duplicates]);
+    }
 }

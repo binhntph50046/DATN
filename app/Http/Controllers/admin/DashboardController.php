@@ -126,6 +126,12 @@ class DashboardController
 
         // Top 5 variant bán chạy nhất
         $topVariants = OrderItem::with(['variant', 'product'])
+            ->whereHas('variant', function ($query) {
+                $query->whereNull('deleted_at');
+            })
+            ->whereHas('product', function ($query) {
+                $query->whereNull('deleted_at');
+            })
             ->whereHas('order', function ($query) {
                 $query->where('status', 'completed')
                     ->where('payment_status', 'paid');

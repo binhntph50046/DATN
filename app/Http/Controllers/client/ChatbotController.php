@@ -50,8 +50,8 @@ class ChatbotController
         $api_key = "AIzaSyC7bDHaBORo63DHUPL-PiILtmul8YQiOaU";
         $url = "https://generativelanguage.googleapis.com/v1/models/gemini-2.0-flash:generateContent?key=$api_key";
         $prompt = "Bạn là nhân viên tư vấn chuyên nghiệp, luôn đặt nhu cầu khách hàng lên hàng đầu. Khi trả lời, hãy luôn bắt đầu bằng 'Dạ thưa anh/chị,' hoặc 'Dạ vâng, thưa anh/chị,' và trả lời thật lịch sự, chu đáo. 
-Dữ liệu:\n$all_data_text\n
-Hãy trả lời NGẮN GỌN, trực tiếp cho câu hỏi sau: \"$msg\". Chỉ trả lời nội dung, không cần giải thích, không cần nhắc lại câu hỏi, không nói dựa vào bảng nào.";
+                    Dữ liệu:\n$all_data_text\n
+                    Hãy trả lời NGẮN GỌN, trực tiếp cho câu hỏi sau: \"$msg\". Chỉ trả lời nội dung, không cần giải thích, không cần nhắc lại câu hỏi, không nói dựa vào bảng nào.";
         $data = [
             "contents" => [
                 [

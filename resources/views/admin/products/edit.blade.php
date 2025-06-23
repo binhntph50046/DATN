@@ -943,7 +943,7 @@
                                 (dup.is_soft_deleted ? '<span class="badge bg-warning text-dark">(Đã xóa mềm)</span>' : '<span class="badge bg-success">(Đang hoạt động)</span>') +
                                 `</li>`;
                         });
-                        html += `</ul>Vui lòng chỉnh sửa lại giá trị thuộc tính để không trùng với biến thể đã có.</div>`;
+                        html += `</ul>Vui lòng vào phần Quản lý biến thể để chỉnh sửa biến thể đã có hoặc tạo biến thể mới không trùng.</div>`;
                         // Thêm vào trước variantsContainer
                         const variantsContainer = document.getElementById('variantsContainer');
                         variantsContainer.insertAdjacentHTML('beforebegin', html);

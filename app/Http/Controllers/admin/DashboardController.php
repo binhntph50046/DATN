@@ -144,8 +144,9 @@ class DashboardController
 
         // Sản phẩm sắp hết hàng dưới 5 sản phẩm
         $lowStockProducts = ProductVariant::with('product')
-            ->where('stock', '<', 5)
+            ->where('stock', '<', 10)
             ->orderBy('stock', 'asc')
+            ->take(10)
             ->get();
 
         // Truy vấn số lượng sản phẩm đã bán theo danh mục

@@ -36,12 +36,6 @@
                             </a>
                         </li>
                         <li class="pc-item">
-                            <a href="{{ route('admin.categories.index') }}" class="pc-link">
-                                <span class="pc-micon"><i class="ti ti-layout-grid"></i></span>
-                                <span class="pc-mtext">Danh mục</span>
-                            </a>
-                        </li>
-                        <li class="pc-item">
                             <a href="{{ route('admin.attributes.index') }}" class="pc-link">
                                 <span class="pc-micon"><i class="ti ti-list"></i></span>
                                 <span class="pc-mtext">Thuộc tính</span>
@@ -57,6 +51,23 @@
                             <a href="{{ route('admin.variants.index') }}" class="pc-link">
                                 <span class="pc-micon"><i class="ti ti-box-multiple"></i></span>
                                 <span class="pc-mtext">Biến thể sản phẩm</span>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
+                <!-- Quản lý danh mục bài viết + sản phẩm -->
+                <li class="pc-item pc-hasmenu" data-pc-parent="multiple">
+                    <a class="pc-link">
+                        <span class="pc-micon"><i class="ti ti-list"></i></span>
+                        <span class="pc-mtext">Quản lý danh mục</span>
+                        <span class="pc-arrow"><i data-feather="chevron-right"></i></span>
+                    </a>
+                    <ul class="pc-submenu">
+                        <li class="pc-item">
+                            <a href="{{ route('admin.categories.index') }}" class="pc-link">
+                                <span class="pc-micon"><i class="ti ti-layout-grid"></i></span>
+                                <span class="pc-mtext">Danh mục</span>
                             </a>
                         </li>
                     </ul>

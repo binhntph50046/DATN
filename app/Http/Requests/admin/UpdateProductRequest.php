@@ -38,7 +38,7 @@ class UpdateProductRequest extends FormRequest
             ],
             'description' => ['nullable', 'string'],
             'content' => ['nullable', 'string'],
-            'category_id' => ['required', 'exists:categories,id'],
+            'category_id' => ['nullable', 'exists:categories,id'],
             'warranty_months' => ['required', 'integer', 'min:0'],
             'is_featured' => ['nullable', 'boolean'],
             'status' => ['required', Rule::in(['active', 'inactive'])],

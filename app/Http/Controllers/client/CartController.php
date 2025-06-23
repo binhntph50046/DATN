@@ -25,7 +25,7 @@ class CartController
             return redirect()->route('login')
                 ->with('error', 'Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng');
         }
-        
+
         $request->validate([
             'product_id' => 'required|exists:products,id',
             'variant_id' => 'nullable|exists:product_variants,id',
@@ -203,15 +203,29 @@ class CartController
      */
     public function index()
     {
+        // Bắt buộc user login
         if (!Auth::check()) {
             return redirect()->route('login');
         }
+
         $user = Auth::user();
+
+        // Load giỏ hàng + product + variant (kèm withTrashed ở CartItem model)
         $cart = Cart::with(['items.product', 'items.variant'])
             ->where('user_id', $user->id)
             ->first();
+
+        // Nếu chưa có giỏ hàng thì items là collection rỗng
         $cartItems = $cart ? $cart->items : collect();
+
+        //  Gắn cờ is_invalid cho mỗi item nếu variant đã xóa mềm
+        $cartItems->each(function ($item) {
+            $item->is_invalid = $item->variant && $item->variant->trashed();
+        });
+
+        // Log ra để debug
         Log::info('Cart Data:', ['cart' => $cart ? $cart->toArray() : null]);
+
         return view('client.cart.index', compact('cartItems'));
     }
 

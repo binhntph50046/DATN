@@ -129,25 +129,20 @@
                                                     </span>
                                                 </td>
                                                 <td class="text-center">
-                                                    @can('view users')
-                                                        {{-- <a href="{{ route('admin.users.show', $user->id) }}"
-                                                            class="btn btn-primary btn-sm me-1" title="View Details">
-                                                            <i class="ti ti-eye"></i>
-                                                        </a> --}}
-                                                    @endcan
-                                                    @can('edit users')
                                                         <a href="{{ route('admin.users.edit', $user->id) }}"
                                                             class="btn btn-info btn-sm rounded-3" title="Edit">
                                                             <i class="ti ti-edit"></i> Edit
                                                         </a>
-                                                    @endcan
-                                                    @can('addrole')
-                                                        <a href="{{ route('admin.roles.edit', $user->id) }}"
-                                                            class="btn btn-warning btn-sm rounded-3" title="Assign Role">
-                                                            <i class="ti ti-user-check"></i> Assign Role
-                                                        </a>
-                                                    @endcan
-                                                    @can('delete users')
+
+                                                    @if(auth()->user()->hasRole('admin'))
+                                                        @can('addrole')
+                                                            <a href="{{ route('admin.roles.edit', $user->id) }}"
+                                                                class="btn btn-warning btn-sm rounded-3" title="Assign Role">
+                                                                <i class="ti ti-user-check"></i> Assign Role
+                                                            </a>
+                                                        @endcan
+                                                    @endif
+
                                                         <form action="{{ route('admin.users.destroy', $user->id) }}"
                                                             method="POST" class="d-inline">
                                                             @csrf
@@ -157,7 +152,6 @@
                                                                 <i class="ti ti-trash"></i> Delete
                                                             </button>
                                                         </form>
-                                                    @endcan
                                                 </td>
                                             </tr>
                                         @empty

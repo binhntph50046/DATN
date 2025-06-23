@@ -146,6 +146,15 @@
                 gap: 1rem;
             }
         }
+
+        .text-danger {
+            color: #dc3545 !important;
+        }
+        
+        .order-summary-table tfoot tr:not(.order-total-row) td {
+            padding: 8px;
+            font-size: 1rem;
+        }
     </style>
     <div class="order-detail-container">
         <div class="order-detail-header">
@@ -236,6 +245,22 @@
                     @endforeach
                 </tbody>
                 <tfoot>
+                    <tr>
+                        <td colspan="5" class="text-end">Tạm tính:</td>
+                        <td>{{ number_format($order->subtotal) }} VNĐ</td>
+                    </tr>
+                    @if($order->discount > 0)
+                    <tr>
+                        <td colspan="5" class="text-end">Giảm giá:</td>
+                        <td class="text-danger">-{{ number_format($order->discount) }} VNĐ</td>
+                    </tr>
+                    @endif
+                    @if($order->shipping_fee > 0)
+                    <tr>
+                        <td colspan="5" class="text-end">Phí vận chuyển:</td>
+                        <td>{{ number_format($order->shipping_fee) }} VNĐ</td>
+                    </tr>
+                    @endif
                     <tr class="order-total-row">
                         <td colspan="5" class="text-end">Tổng tiền:</td>
                         <td>{{ number_format($order->total_price) }} VNĐ</td>

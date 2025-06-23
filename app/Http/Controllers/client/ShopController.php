@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Category;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class ShopController
 {
@@ -43,30 +44,41 @@ class ShopController
             )
             ->get();
 
-
-        $flashSaleItems->transform(function ($item) {
-            $images = $item->variant_images;
-
-            // Decode 2 lần nếu cần
-            $decoded = json_decode($images, true);
-            if (is_string($decoded)) {
-                $decoded = json_decode($decoded, true);
+        $result = [];
+        foreach ($flashSaleItems as $item) {
+            $firstImage = null;
+            
+            // Xử lý variant_images
+            if (!empty($item->variant_images)) {
+                try {
+                    // Nếu là array, sử dụng trực tiếp
+                    if (is_array($item->variant_images)) {
+                        $images = $item->variant_images;
+                    } 
+                    // Nếu là string, thử decode
+                    else if (is_string($item->variant_images)) {
+                        $images = json_decode($item->variant_images, true);
+                        // Nếu decode ra string, thử decode lần nữa
+                        if (is_string($images)) {
+                            $images = json_decode($images, true);
+                        }
+                    }
+                    
+                    // Lấy ảnh đầu tiên nếu có
+                    if (is_array($images) && !empty($images[0])) {
+                        $firstImage = str_replace('\\', '/', $images[0]);
+                    }
+                } catch (\Exception $e) {
+                    // Log lỗi nếu cần
+                    \Log::error('Error processing variant images: ' . $e->getMessage());
+                }
             }
 
-            // Nếu ra mảng, lấy ảnh đầu tiên
-            if (is_array($decoded) && isset($decoded[0])) {
-                // Đảm bảo path không có dấu \
-                $item->first_image = str_replace('\\', '/', $decoded[0]);
-            } else {
-                $item->first_image = null;
-            }
+            $item->first_image = $firstImage;
+            $result[] = $item;
+        }
 
-            return $item;
-        });
-
-        // dd($flashSaleItems);
-
-        return $flashSaleItems;
+        return collect($result);
     }
     protected function getFlashSaleTimeRange()
     {

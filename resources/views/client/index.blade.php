@@ -129,7 +129,7 @@
                         @foreach ($mostViewedProducts as $product)
                             <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="{{ $loop->iteration * 100 }}">
                                 <a class="product-item" href="{{ route('product.detail', $product->slug) }}"
-                                    onclick="incrementView('{{ $product->id }}')">
+                                    onclick="incrementView('{{ $product->id }}')" data-product-id="{{ $product->id }}">
                                     <div class="product-thumbnail text-center">
                                         @php
                                             $images = getImagesArray($product->images);
@@ -235,7 +235,6 @@
                         <p><a href="{{ route('shop') }}" class="btn">Xem Tất Cả Sản Phẩm</a></p>
                     </div>
                 </div>
-
                 <!-- End Text Column -->
             </div>
         </div>
@@ -254,7 +253,6 @@
                         thiết bị – là tuyên ngôn phong cách sống số hiện đại.</p>
                     <p><a href="{{ route('shop') }}" class="btn">Khám Phá Ngay</a></p>
                 </div>
-
                 <!-- End Column 1 -->
 
                 <!-- Start Latest Products Column -->
@@ -263,7 +261,7 @@
                         @foreach ($latestProducts as $product)
                             <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="{{ $loop->iteration * 100 }}">
                                 <a class="product-item" href="{{ route('product.detail', $product->slug) }}"
-                                    onclick="incrementView('{{ $product->id }}')">
+                                    onclick="incrementView('{{ $product->id }}')" data-product-id="{{ $product->id }}">
                                     <div class="product-thumbnail text-center">
                                         @php
                                             $images = getImagesArray($product->images);
@@ -692,59 +690,292 @@
 
             item.querySelector('.icon-quick-view').addEventListener('click', (e) => {
                 e.preventDefault();
-                const modal = new bootstrap.Modal(document.getElementById('quickViewModal'));
-
-                // Get product details
-                const productImage = item.querySelector('.product-thumbnail img').src;
-                const productTitle = item.querySelector('.product-title').textContent;
-                const productPrice = item.querySelector('.product-price').textContent;
-
-                // Update modal content
-                document.querySelector('.quick-view-image').src = productImage;
-                document.querySelector('.quick-view-title').textContent = productTitle;
-                document.querySelector('.quick-view-price').textContent = productPrice;
-
-                // Update thumbnails
-                const thumbnails = document.querySelectorAll('#quickViewModal .thumbnail');
-                thumbnails[0].src = productImage;
-                thumbnails[1].src = 'images/product-2.png';
-                thumbnails[2].src = 'images/product-3.png';
-                thumbnails[3].src = 'images/product-1.png';
-
-                // Show modal
-                modal.show();
+                const productId = item.dataset.productId;
+                showQuickView(productId);
             });
         });
 
-        // Quick View Modal Functionality
+        function showQuickView(productId) {
+            incrementView(productId);
+                const modal = new bootstrap.Modal(document.getElementById('quickViewModal'));
+
+            // Fetch product details from API
+            fetch(`/api/products/${productId}`)
+                .then(response => response.json())
+                .then(product => {
+                    if (!product) {
+                        showCustomAlert('Sản phẩm không tồn tại hoặc đã bị xóa', 'error');
+                        return;
+                    }
+
+                // Update modal content
+                    document.querySelector('.quick-view-title').textContent = product.name;
+
+                    // Hiển thị category và warranty
+                    document.querySelector('.quick-view-category').textContent = product.category?.name || '';
+                    document.querySelector('.quick-view-warranty').textContent = product.warranty ? product.warranty + ' months' : '';
+                    
+                    // Get first variant that is not deleted
+                    const activeVariant = product.variants.find(v => !v.deleted_at);
+                    if (!activeVariant) {
+                        showCustomAlert('Sản phẩm hiện không có phiên bản khả dụng', 'error');
+                        return;
+                    }
+
+                    // Update price
+                    const priceElement = document.querySelector('.quick-view-price');
+                    if (activeVariant.discount_price) {
+                        priceElement.innerHTML = `
+                            <span class="text-decoration-line-through text-muted">${activeVariant.selling_price.toLocaleString('vi-VN')}đ</span>
+                            <span class="text-danger ms-2">${activeVariant.discount_price.toLocaleString('vi-VN')}đ</span>
+                        `;
+                    } else {
+                        priceElement.textContent = `${activeVariant.selling_price.toLocaleString('vi-VN')}đ`;
+                    }
+
+                    // Update images
+                    let images = [];
+                    try {
+                        images = typeof activeVariant.images === 'string' 
+                            ? JSON.parse(activeVariant.images) 
+                            : (Array.isArray(activeVariant.images) ? activeVariant.images : []);
+                    } catch (e) {
+                        console.error('Error parsing images:', e);
+                        images = [];
+                    }
+
+                    if (images.length > 0) {
+                        const mainImage = document.querySelector('.quick-view-image');
+                        mainImage.src = images[0].startsWith('http') ? images[0] : `/${images[0]}`;
+
+                // Update thumbnails
+                        const thumbnailsContainer = document.querySelector('.thumbnail-images .row');
+                        thumbnailsContainer.innerHTML = '';
+                        images.forEach((img, index) => {
+                            const col = document.createElement('div');
+                            col.className = 'col-3';
+                            col.innerHTML = `
+                                <img src="${img.startsWith('http') ? img : `/${img}`}" 
+                                     class="img-fluid thumbnail ${index === 0 ? 'active' : ''}" 
+                                     alt="Thumbnail ${index + 1}"
+                                     onclick="changeMainImage(this)">
+                            `;
+                            thumbnailsContainer.appendChild(col);
+                        });
+                    }
+
+                    // Update variants
+                    const variantGroups = document.getElementById('quickViewVariantGroups');
+                    variantGroups.innerHTML = '';
+
+                    // Group variants by attribute type
+                    const attributeGroups = {};
+                    product.variants.forEach(variant => {
+                        if (variant.deleted_at) return; // Skip deleted variants
+                        
+                        variant.combinations.forEach(comb => {
+                            if (!comb.attribute_value || comb.attribute_value.deleted_at) return; // Skip deleted attribute values
+                            
+                            const typeName = comb.attribute_value.attribute_type?.name;
+                            if (!typeName) return;
+
+                            if (!attributeGroups[typeName]) {
+                                attributeGroups[typeName] = new Set();
+                            }
+
+                            let value = comb.attribute_value.value;
+                            let hex = comb.attribute_value.hex;
+
+                            try {
+                                if (typeof value === 'string') {
+                                    value = JSON.parse(value);
+                                }
+                                if (typeof hex === 'string') {
+                                    hex = JSON.parse(hex);
+                                }
+                            } catch (e) {
+                                console.error('Error parsing value/hex:', e);
+                            }
+
+                            attributeGroups[typeName].add(JSON.stringify({
+                                value: Array.isArray(value) ? value[0] : value,
+                                hex: Array.isArray(hex) ? hex[0] : hex,
+                                variantId: variant.id
+                            }));
+            });
+        });
+
+                    // Create HTML for each attribute group
+                    Object.entries(attributeGroups).forEach(([typeName, values]) => {
+                        const groupDiv = document.createElement('div');
+                        groupDiv.className = 'variant-group mb-4';
+                        
+                        const labelHtml = `
+                            <label class="variant-label">${typeName}:</label>
+                            <div class="variant-options"></div>
+                        `;
+                        
+                        const optionsDiv = document.createElement('div');
+                        optionsDiv.className = 'variant-options';
+                        
+                        values.forEach(item => {
+                            const value = JSON.parse(item);
+                            const isColor = typeName.toLowerCase().includes('color');
+                            
+                            if (isColor && value.hex) {
+                                optionsDiv.innerHTML += `
+                                    <div class="color-option ${value.variantId === activeVariant.id ? 'active' : ''}"
+                                         style="background-color: ${value.hex}"
+                                         data-variant-id="${value.variantId}"
+                                         data-attr-type="${typeName}"
+                                         onclick="selectVariant(${value.variantId}, '${value.value}', '${typeName}', this)">
+                                    </div>
+                                `;
+                            } else {
+                                optionsDiv.innerHTML += `
+                                    <button type="button"
+                                            class="variant-btn ${value.variantId === activeVariant.id ? 'active' : ''}"
+                                            data-variant-id="${value.variantId}"
+                                            data-attr-type="${typeName}"
+                                            onclick="selectVariant(${value.variantId}, '${value.value}', '${typeName}', this)">
+                                        ${value.value}
+                                    </button>
+                                `;
+                            }
+                        });
+
+                        groupDiv.innerHTML = labelHtml;
+                        groupDiv.appendChild(optionsDiv);
+                        variantGroups.appendChild(groupDiv);
+                    });
+
+                    // Show modal
+                    modal.show();
+                })
+                .catch(error => {
+                    console.error('Error fetching product:', error);
+                    showCustomAlert('Có lỗi xảy ra khi tải thông tin sản phẩm', 'error');
+                });
+        }
+
+        function changeMainImage(thumbnail) {
+            const mainImage = document.querySelector('.quick-view-image');
+            mainImage.src = thumbnail.src;
+            
+            // Update active state
+            document.querySelectorAll('.thumbnail').forEach(thumb => thumb.classList.remove('active'));
+            thumbnail.classList.add('active');
+        }
+
+        function selectVariant(variantId, value, typeName, element) {
+            // Remove active class from all options of this type
+            document.querySelectorAll(`[data-attr-type="${typeName}"]`).forEach(opt => {
+                opt.classList.remove('active');
+            });
+            
+            // Add active class to selected option
+            element.classList.add('active');
+            
+            // Fetch variant details
+            fetch(`/api/variants/${variantId}`)
+                .then(response => response.json())
+                .then(variant => {
+                    if (!variant || variant.deleted_at) {
+                        showCustomAlert('Phiên bản sản phẩm không khả dụng', 'error');
+                        return;
+                    }
+
+                    // Update price
+                    const priceElement = document.querySelector('.quick-view-price');
+                    if (variant.discount_price) {
+                        priceElement.innerHTML = `
+                            <span class="text-decoration-line-through text-muted">${variant.selling_price.toLocaleString('vi-VN')}đ</span>
+                            <span class="text-danger ms-2">${variant.discount_price.toLocaleString('vi-VN')}đ</span>
+                        `;
+                    } else {
+                        priceElement.textContent = `${variant.selling_price.toLocaleString('vi-VN')}đ`;
+                    }
+
+                    // Update images
+                    const images = JSON.parse(variant.images || '[]');
+                    if (images.length > 0) {
+                        const mainImage = document.querySelector('.quick-view-image');
+                        mainImage.src = images[0].startsWith('http') ? images[0] : `/${images[0]}`;
+                        
+                        // Update thumbnails
+                        const thumbnailsContainer = document.querySelector('.thumbnail-images .row');
+                        thumbnailsContainer.innerHTML = '';
+                        images.forEach((img, index) => {
+                            const col = document.createElement('div');
+                            col.className = 'col-3';
+                            col.innerHTML = `
+                                <img src="${img.startsWith('http') ? img : `/${img}`}" 
+                                     class="img-fluid thumbnail ${index === 0 ? 'active' : ''}" 
+                                     alt="Thumbnail ${index + 1}"
+                                     onclick="changeMainImage(this)">
+                            `;
+                            thumbnailsContainer.appendChild(col);
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching variant:', error);
+                    showCustomAlert('Có lỗi xảy ra khi tải thông tin phiên bản sản phẩm', 'error');
+                });
+        }
+
+        function buyNow() {
+            const variantId = document.querySelector('.variant-btn.active, .color-option.active')?.dataset.variantId;
+            const quantity = document.getElementById('quickViewQuantity').value;
+            
+            if (!variantId) {
+                showCustomAlert('Vui lòng chọn đầy đủ thuộc tính sản phẩm', 'error');
+                return;
+            }
+            
+            window.location.href = `/checkout?variant_id=${variantId}&quantity=${quantity}`;
+        }
+
+        function addToCart() {
+            const variantId = document.querySelector('.variant-btn.active, .color-option.active')?.dataset.variantId;
+            const quantity = document.getElementById('quickViewQuantity').value;
+            
+            if (!variantId) {
+                showCustomAlert('Vui lòng chọn đầy đủ thuộc tính sản phẩm', 'error');
+                return;
+            }
+            
+            fetch('/cart/add', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                },
+                body: JSON.stringify({
+                    variant_id: variantId,
+                    quantity: quantity
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showCustomAlert('Đã thêm sản phẩm vào giỏ hàng', 'success');
+                    // Update cart count if needed
+                    if (data.cart_count) {
+                        document.querySelector('.cart-count').textContent = data.cart_count;
+                    }
+                } else {
+                    showCustomAlert(data.message || 'Có lỗi xảy ra khi thêm vào giỏ hàng', 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error adding to cart:', error);
+                showCustomAlert('Có lỗi xảy ra khi thêm vào giỏ hàng', 'error');
+            });
+        }
+
+        // Initialize quantity controls
         document.addEventListener('DOMContentLoaded', function() {
-            // Thumbnail click handler
-            document.querySelectorAll('#quickViewModal .thumbnail').forEach(thumb => {
-                thumb.addEventListener('click', function() {
-                    const mainImage = document.querySelector('#quickViewModal .quick-view-image');
-                    mainImage.src = this.src;
-                });
-            });
-
-            // Color variant selection
-            document.querySelectorAll('#quickViewModal .color-option').forEach(option => {
-                option.addEventListener('click', function() {
-                    document.querySelectorAll('#quickViewModal .color-option').forEach(opt => opt
-                        .classList.remove('active'));
-                    this.classList.add('active');
-                });
-            });
-
-            // Storage option selection
-            document.querySelectorAll('#quickViewModal .storage-btn').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    document.querySelectorAll('#quickViewModal .storage-btn').forEach(b => b
-                        .classList.remove('active'));
-                    this.classList.add('active');
-                });
-            });
-
-            // Quantity controls
             const quantityInput = document.getElementById('quickViewQuantity');
             const minusBtn = document.querySelector('#quickViewModal .quantity-btn.minus');
             const plusBtn = document.querySelector('#quickViewModal .quantity-btn.plus');
@@ -760,30 +991,11 @@
                 const currentValue = parseInt(quantityInput.value);
                 quantityInput.value = currentValue + 1;
             });
-
-            // Add to cart button
-            document.querySelector('#quickViewModal .btn-outline-primary').addEventListener('click', function() {
-                const quantity = document.getElementById('quickViewQuantity').value;
-                const selectedColor = document.querySelector('#quickViewModal .color-option.active').dataset
-                    .color;
-                const selectedStorage = document.querySelector('#quickViewModal .storage-btn.active')
-                    .dataset.storage;
-            });
-
-            // Buy now button
-            document.querySelector('#quickViewModal .btn-primary').addEventListener('click', function() {
-                const quantity = document.getElementById('quickViewQuantity').value;
-                const selectedColor = document.querySelector('#quickViewModal .color-option.active').dataset
-                    .color;
-                const selectedStorage = document.querySelector('#quickViewModal .storage-btn.active')
-                    .dataset.storage;
-            });
         });
     </script>
 
     <!-- Quick View Modal -->
-    <div class="modal fade" id="quickViewModal" tabindex="-1" aria-labelledby="quickViewModalLabel"
-        aria-hidden="true">
+    <div class="modal fade" id="quickViewModal" tabindex="-1" aria-labelledby="quickViewModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
@@ -798,76 +1010,29 @@
                                     <img src="" class="img-fluid quick-view-image" alt="Product Image">
                                 </div>
                                 <div class="thumbnail-images">
-                                    <div class="row">
-                                        <div class="col-3">
-                                            <img src="images/product-1.png" class="img-fluid thumbnail"
-                                                alt="Thumbnail 1">
+                                    <div class="row"></div>
                                         </div>
-                                        <div class="col-3">
-                                            <img src="images/product-2.png" class="img-fluid thumbnail"
-                                                alt="Thumbnail 2">
-                                        </div>
-                                        <div class="col-3">
-                                            <img src="images/product-3.png" class="img-fluid thumbnail"
-                                                alt="Thumbnail 3">
-                                        </div>
-                                        <div class="col-3">
-                                            <img src="images/product-1.png" class="img-fluid thumbnail"
-                                                alt="Thumbnail 4">
-                                        </div>
-                                    </div>
-                                </div>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <h3 class="quick-view-title"></h3>
-                            <p class="quick-view-price"></p>
-                            <p class="quick-view-description">Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                                Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
-
-                            <!-- Color Variants -->
-                            <div class="color-variants mb-4">
-                                <label class="form-label">Màu sắc:</label>
-                                <div class="color-options">
-                                    <div class="color-option active" data-color="purple"
-                                        style="background-color: #8A2BE2;"></div>
-                                    <div class="color-option" data-color="black" style="background-color: #000000;">
-                                    </div>
-                                    <div class="color-option" data-color="gold" style="background-color: #FFD700;">
-                                    </div>
-                                    <div class="color-option" data-color="silver" style="background-color: #C0C0C0;">
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Storage Options -->
-                            <div class="storage-options mb-4">
-                                <label class="form-label">Dung lượng:</label>
-                                <div class="storage-buttons">
-                                    <button class="storage-btn active" data-storage="128">128GB</button>
-                                    <button class="storage-btn" data-storage="256">256GB</button>
-                                    <button class="storage-btn" data-storage="512">512GB</button>
-                                    <button class="storage-btn" data-storage="1024">1TB</button>
-                                </div>
-                            </div>
-
-                            <!-- Quantity Selector -->
+                            <div class="mb-2"><strong>Category:</strong> <span class="quick-view-category"></span></div>
+                            <div class="mb-2"><strong>Warranty:</strong> <span class="quick-view-warranty"></span></div>
+                            <div class="quick-view-price mb-4"></div>
+                            <div id="quickViewVariantGroups"></div>
                             <div class="quantity-selector mb-4">
                                 <label class="form-label">Số lượng:</label>
                                 <div class="quantity-control">
                                     <button class="quantity-btn minus">-</button>
-                                    <input type="number" id="quickViewQuantity" class="form-control" value="1"
-                                        min="1" readonly>
+                                    <input type="number" id="quickViewQuantity" class="form-control" value="1" min="1" readonly>
                                     <button class="quantity-btn plus">+</button>
                                 </div>
                             </div>
-
-                            <!-- Action Buttons -->
-                            <div class="product-actions mb-4">
-                                <button class="btn btn-primary">
+                            <div class="product-actions">
+                                <button class="btn btn-primary" onclick="buyNow()">
                                     <i class="fas fa-bolt me-2"></i>Mua ngay
                                 </button>
-                                <button class="btn btn-outline-primary">
+                                <button class="btn btn-outline-primary" onclick="addToCart()">
                                     <i class="fas fa-cart-plus me-2"></i>Thêm vào giỏ
                                 </button>
                             </div>
@@ -877,6 +1042,13 @@
             </div>
         </div>
     </div>
+
+    <script>
+        document.getElementById('quickViewModal').addEventListener('hidden.bs.modal', function () {
+            document.body.classList.remove('modal-open');
+            document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+        });
+    </script>
 
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script>
@@ -903,69 +1075,6 @@
                     }
                 });
         }
-
-        function showQuickView(productId) {
-            incrementView(productId);
-            // Existing quick view logic
-        }
-
-        // Initialize product slider
-        // $(document).ready(function() {
-        //     $('.product-slider').slick({
-        //         dots: true,
-        //         infinite: true,
-        //         speed: 300,
-        //         slidesToShow: 1,
-        //         slidesToScroll: 1,
-        //         autoplay: true,
-        //         autoplaySpeed: 3000,
-        //         arrows: true,
-        //         responsive: [{
-        //                 breakpoint: 1024,
-        //                 settings: {
-        //                     slidesToShow: 1,
-        //                     slidesToScroll: 1
-        //                 }
-        //             },
-        //             {
-        //                 breakpoint: 600,
-        //                 settings: {
-        //                     slidesToShow: 1,
-        //                     slidesToScroll: 1
-        //                 }
-        //             }
-        //         ]
-        //     });
-        // });
-
-        // Initialize latest products slider
-        //     $(document).ready(function() {
-        //         $('.latest-products-slider').slick({
-        //             dots: true,
-        //             infinite: true,
-        //             speed: 300,
-        //             slidesToShow: 3,
-        //             slidesToScroll: 1,
-        //             autoplay: true,
-        //             autoplaySpeed: 3000,
-        //             arrows: true,
-        //             responsive: [{
-        //                     breakpoint: 1024,
-        //                     settings: {
-        //                         slidesToShow: 2,
-        //                         slidesToScroll: 1
-        //                     }
-        //                 },
-        //                 {
-        //                     breakpoint: 600,
-        //                     settings: {
-        //                         slidesToShow: 1,
-        //                         slidesToScroll: 1
-        //                     }
-        //                 }
-        //             ]
-        //         });
-        //     });
     </script>
 
 @section('scripts')
@@ -1191,7 +1300,6 @@
             color: #ffffff;
         }
     </style>
-@endsection
 
 @php
     // Helper function to safely handle both JSON strings and arrays
@@ -1206,3 +1314,6 @@
         return [];
     }
 @endphp
+
+{{-- @include('client.partials.quick-view-modal') --}}
+@endsection

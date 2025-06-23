@@ -2417,3 +2417,58 @@ textarea {
   justify-content: space-between;
   align-items: stretch;
 }
+
+/* Error Pages */
+.error-page {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 80vh;
+    text-align: center;
+    padding: 20px;
+}
+
+.error-content {
+    max-width: 600px;
+}
+
+.error-image {
+    margin-bottom: 30px;
+}
+
+.error-image img {
+    max-width: 100%;
+    height: auto;
+}
+
+.error-page h1 {
+    font-size: 72px;
+    color: #dc3545;
+    margin: 0;
+    line-height: 1;
+}
+
+.error-page h2 {
+    font-size: 24px;
+    color: #333;
+    margin: 10px 0 20px;
+}
+
+.error-page p {
+    font-size: 18px;
+    color: #666;
+    margin-bottom: 30px;
+}
+
+.error-page .btn {
+    padding: 12px 30px;
+    font-size: 16px;
+    border-radius: 5px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.error-page .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}

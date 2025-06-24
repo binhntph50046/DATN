@@ -6,6 +6,7 @@ use App\Models\Product;
 use App\Models\ProductSpecification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
 class CompareController
 {
@@ -18,19 +19,38 @@ class CompareController
             $productIds = explode(',', $productIds);
         }
         
-        if (count($productIds) !== 2) {
+        // Kiểm tra số lượng sản phẩm (2-4 sản phẩm)
+        if (count($productIds) < 2 || count($productIds) > 4) {
             return view('client.compare.index', [
                 'comparison' => [
                     'products' => collect([]),
                     'specs' => []
                 ],
-                'aiAdvice' => 'Vui lòng chọn chính xác 2 sản phẩm để so sánh.'
+                'aiAdvice' => 'Vui lòng chọn từ 2 đến 4 sản phẩm để so sánh.'
             ]);
         }
 
         $products = Product::with(['specifications.specification', 'variants'])
             ->whereIn('id', $productIds)
             ->get();
+
+        // Validate category
+        if ($products->count() > 1) {
+            $firstCategory = $products->first()->category_id;
+            $allSameCategory = $products->every(function ($product) use ($firstCategory) {
+                return $product->category_id === $firstCategory;
+            });
+
+            if (!$allSameCategory) {
+                return view('client.compare.index', [
+                    'comparison' => [
+                        'products' => collect([]),
+                        'specs' => []
+                    ],
+                    'aiAdvice' => 'Vui lòng chỉ so sánh các sản phẩm trong cùng một danh mục.'
+                ]);
+            }
+        }
 
         // Lấy tất cả các loại thông số kỹ thuật liên quan
         $allSpecs = ProductSpecification::whereIn('product_id', $productIds)
@@ -61,10 +81,21 @@ class CompareController
 
     private function buildPrompt($products, $specs)
     {
-        $prompt = "Tôi muốn so sánh hai sản phẩm sau dựa trên các thông số kỹ thuật. Hãy phân tích ưu nhược điểm từng sản phẩm và đưa ra lời khuyên ngắn gọn khoảng 2-3 câu nên mua sản phẩm nào phù hợp nhất cho khách hàng phổ thông.\n\n";
+        $prompt = "Tôi muốn so sánh " . count($products) . " sản phẩm sau dựa trên các thông số kỹ thuật. Hãy phân tích ưu nhược điểm từng sản phẩm và đưa ra lời khuyên ngắn gọn khoảng 2-3 câu nên mua sản phẩm nào phù hợp nhất cho khách hàng phổ thông, nên mua sản phẩm này vì điều gì...\n\n";
         foreach ($products as $index => $product) {
             $prompt .= "**Sản phẩm " . ($index + 1) . ": {$product->name}**\n";
-            $prompt .= "Giá: " . number_format($product->price, 0, ',', '.') . " VNĐ\n";
+            
+            // Lấy giá chính xác từ biến thể sản phẩm, ưu tiên giá khuyến mãi
+            $price = 0;
+            if ($product->variants->isNotEmpty()) {
+                $variant = $product->variants->firstWhere('is_default', true) ?? $product->variants->first();
+                if ($variant) {
+                    $price = $variant->discount_price ?: $variant->selling_price;
+                }
+            }
+            
+            $prompt .= "Giá: " . number_format($price, 0, ',', '.') . " VNĐ\n";
+            
             foreach ($specs as $specName => $values) {
                 $value = $values[$product->id] ?? 'N/A';
                 $prompt .= "- {$specName}: {$value}\n";
@@ -77,27 +108,47 @@ class CompareController
 
     private function callGemini($prompt)
     {
-        $apiKey = env('GEMINI_API_KEY');
-        $url = 'https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=' . $apiKey;
-        $response = Http::withHeaders([
-            'Content-Type' => 'application/json'
-        ])->timeout(30)->post($url, [
-            'contents' => [
-                [
-                    'parts' => [
-                        ['text' => $prompt]
+        try {
+            $apiKey = env('GEMINI_API_KEY');
+            $url = 'https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=' . $apiKey;
+            $response = Http::withHeaders([
+                'Content-Type' => 'application/json'
+            ])->timeout(30)->post($url, [
+                'contents' => [
+                    [
+                        'parts' => [
+                            ['text' => $prompt]
+                        ]
                     ]
+                ],
+                'generationConfig' => [
+                    'maxOutputTokens' => 500,
+                    'temperature' => 0.7
                 ]
-            ],
-            'generationConfig' => [
-                'maxOutputTokens' => 500,
-                'temperature' => 0.7
-            ]
-        ]);
-        if ($response->successful()) {
-            $result = $response->json();
-            return $result['candidates'][0]['content']['parts'][0]['text'] ?? 'Không có phản hồi từ Gemini.';
+            ]);
+
+            if ($response->successful()) {
+                $result = $response->json();
+                return $result['candidates'][0]['content']['parts'][0]['text'] ?? $this->getDefaultAdvice();
+            }
+
+            // Nếu API trả về lỗi, trả về lời khuyên mặc định
+            return $this->getDefaultAdvice();
+
+        } catch (\Exception $e) {
+            // Log lỗi nếu cần
+            Log::error('Gemini API Error: ' . $e->getMessage());
+            return $this->getDefaultAdvice();
         }
-        return 'Gemini API failed: ' . $response->body();
+    }
+
+    private function getDefaultAdvice()
+    {
+        return "Dựa trên thông số kỹ thuật, bạn nên cân nhắc các yếu tố sau khi lựa chọn sản phẩm:
+                \n- Cấu hình và hiệu năng
+                \n- Giá cả và khuyến mãi
+                \n- Thời gian bảo hành
+                \n- Đánh giá từ người dùng
+                \nHãy so sánh kỹ các thông số bên trên và chọn sản phẩm phù hợp nhất với nhu cầu sử dụng và ngân sách của bạn.";
     }
 }

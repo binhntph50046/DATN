@@ -169,9 +169,9 @@
                                     </div>
                                     <div class="product-icons">
                                         <span class="icon-compare"
-                                            onclick="event.preventDefault(); addToCompare('{{ $product->id }}', '{{ $product->name }}')"
+                                            onclick="event.preventDefault(); addToCompare('{{ $product->id }}', '{{ $product->name }}', '{{ $product->category_id }}')"
                                             title="Thêm vào so sánh">
-                                            <i class="fas fa-balance-scale"></i>
+                                            <i class="fa-solid fa-code-compare"></i>
                                         </span>
                                         @auth
                                             <form action="{{ route('wishlist.toggle', $product) }}" method="POST"
@@ -297,9 +297,9 @@
                                     </div>
                                     <div class="product-icons">
                                         <span class="icon-compare"
-                                            onclick="event.preventDefault(); addToCompare('{{ $product->id }}', '{{ $product->name }}')"
+                                            onclick="event.preventDefault(); addToCompare('{{ $product->id }}', '{{ $product->name }}', '{{ $product->category_id }}')"
                                             title="Thêm vào so sánh">
-                                            <i class="fas fa-balance-scale"></i>
+                                            <i class="fa-solid fa-code-compare"></i>
                                         </span>
                                         @auth
                                             <form action="{{ route('wishlist.toggle', $product) }}" method="POST"
@@ -455,15 +455,15 @@
     <!-- Nút FAB và Panel Chat -->
     <div x-data="{ open: false, selected: [] }" x-init="if (window.innerWidth > 768) open = false" @resize.window="if (window.innerWidth > 768) open = false">
         <!-- Form ẩn trong panel chat -->
-        <form id="compareForm" action="{{ route('compare.products') }}" method="POST" x-show="open"
+        <form id="compareForm" action="{{ route('compare.index') }}" method="GET" x-show="open"
+            x-ref="compareForm"
             @click.away="open = false"
             class="fixed bottom-20 right-4 w-72 bg-white border border-gray-200 rounded-lg shadow-lg p-4 z-50 transform transition-transform duration-300"
             :class="{ 'translate-y-full': !open, 'translate-y-0': open }">
-            @csrf
             <div class="mb-2">
-                <label class="block text-sm font-medium text-gray-700">Chọn 2 sản phẩm:</label>
+                <label class="block text-sm font-medium text-gray-700">Chọn từ 2-4 sản phẩm:</label>
                 <select multiple name="products[]" x-model="selected"
-                    @change="if (selected.length === 2) $refs.compareForm.submit()" class="w-full border p-2 rounded mt-1"
+                    @change="if (selected.length >= 2 && selected.length <= 4) $refs.compareForm.submit()" class="w-full border p-2 rounded mt-1"
                     required>
                     @foreach ($products as $product)
                         <option value="{{ $product->id }}">{{ $product->name }}</option>
@@ -471,9 +471,9 @@
                 </select>
             </div>
             @if (count($errors) > 0)
-                <p class="text-red-500 text-xs mt-1">Vui lòng chọn chính xác 2 sản phẩm.</p>
+                <p class="text-red-500 text-xs mt-1">Vui lòng chọn từ 2 đến 4 sản phẩm.</p>
             @endif
-            <p class="text-xs text-gray-500 mt-1">Chọn 2 sản phẩm để so sánh tự động.</p>
+            <p class="text-xs text-gray-500 mt-1">Chọn từ 2-4 sản phẩm để so sánh tự động.</p>
         </form>
 
         <!-- Nút FAB -->
@@ -893,23 +893,43 @@
 <script>
     let compareSelected = [];
     let compareNames = [];
-    
-    function addToCompare(productId, productName) {
-        if (compareSelected.includes(productId)) {
-            // Nếu sản phẩm đã được chọn, bỏ chọn
+    let compareCategory = null;
+
+    function addToCompare(productId, productName, categoryId) {
+        const isAlreadySelected = compareSelected.includes(productId);
+
+        if (isAlreadySelected) {
+            // Remove product
             const index = compareSelected.indexOf(productId);
             compareSelected.splice(index, 1);
             compareNames.splice(index, 1);
             showCustomAlert('Đã bỏ chọn ' + productName + ' khỏi so sánh', 'info');
-        } else {
-            // Nếu chưa chọn và chưa đủ 2 sản phẩm
-            if (compareSelected.length < 2) {
-                compareSelected.push(productId);
-                compareNames.push(productName);
-                showCustomAlert('Đã thêm ' + productName + ' vào so sánh', 'success');
-            } else {
-                showCustomAlert('Chỉ được chọn tối đa 2 sản phẩm để so sánh!', 'error');
+            
+            // If the list becomes empty, reset the category
+            if (compareSelected.length === 0) {
+                compareCategory = null;
             }
+        } else {
+            // Add product
+            if (compareSelected.length >= 4) {
+                showCustomAlert('Chỉ được chọn tối đa 4 sản phẩm để so sánh!', 'error');
+                return;
+            }
+
+            // Check category
+            if (compareSelected.length > 0 && compareCategory != categoryId) {
+                showCustomAlert('Vui lòng chỉ chọn các sản phẩm trong cùng một danh mục!', 'error');
+                return;
+            }
+
+            compareSelected.push(productId);
+            compareNames.push(productName);
+            
+            // Set category if it's the first product being added
+            if (compareSelected.length === 1) {
+                compareCategory = categoryId;
+            }
+            showCustomAlert('Đã thêm ' + productName + ' vào so sánh', 'success');
         }
         
         // Cập nhật hiển thị nút so sánh
@@ -924,7 +944,7 @@
         if (compareSelected.length > 0) {
             button.style.display = 'block';
             count.textContent = compareSelected.length;
-            if (compareSelected.length === 2) {
+            if (compareSelected.length >= 2) {
                 text.textContent = 'So sánh ngay';
                 button.style.background = '#28a745';
             } else {
@@ -937,33 +957,22 @@
     }
 
     function goToCompare() {
-        if (compareSelected.length === 2) {
-            // Lưu sản phẩm vào session storage
-            sessionStorage.setItem('compareProducts', JSON.stringify(compareSelected));
-            
+        if (compareSelected.length >= 2 && compareSelected.length <= 4) {
             // Tạo form ẩn và submit
             const form = document.createElement('form');
-            form.method = 'POST';
-            form.action = '/compare';
+            form.method = 'GET';
+            form.action = '{{ route('compare.index') }}';
             
-            const csrfToken = document.createElement('input');
-            csrfToken.type = 'hidden';
-            csrfToken.name = '_token';
-            csrfToken.value = '{{ csrf_token() }}';
+            const productsInput = document.createElement('input');
+            productsInput.type = 'hidden';
+            productsInput.name = 'products';
+            productsInput.value = compareSelected.join(',');
+            form.appendChild(productsInput);
             
-            compareSelected.forEach(id => {
-                const input = document.createElement('input');
-                input.type = 'hidden';
-                input.name = 'products[]';
-                input.value = id;
-                form.appendChild(input);
-            });
-            
-            form.appendChild(csrfToken);
             document.body.appendChild(form);
             form.submit();
         } else {
-            showCustomAlert('Vui lòng chọn đủ 2 sản phẩm để so sánh!', 'error');
+            showCustomAlert('Vui lòng chọn từ 2 đến 4 sản phẩm để so sánh!', 'error');
         }
     }
 
@@ -972,7 +981,7 @@
 
     <!-- Nút So sánh nổi -->
     <div id="compareButton" style="display:none; position:fixed; bottom:80px; right:30px; z-index:9999; background:#007bff; color:white; padding:15px 25px; border-radius:25px; box-shadow:0 4px 12px rgba(0,123,255,0.3); cursor:pointer; transition:all 0.3s ease;" onclick="goToCompare()">
-        <i class="fas fa-balance-scale me-2"></i>
+        <i class="fa-solid fa-code-compare me-2"></i>
         <span id="compareButtonText">So sánh ngay</span>
         <span id="compareCount" class="badge bg-light text-dark ms-2">0</span>
     </div>

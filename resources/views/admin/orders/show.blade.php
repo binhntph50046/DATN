@@ -600,6 +600,10 @@
                                         <div class="item-detail-label">Đơn giá</div>
                                         <div class="item-detail-value">{{ number_format($item->price) }} VNĐ</div>
                                     </div>
+                                    {{-- <div class="item-detail">
+                                        <div class="item-detail-label">Giảm giá</div>
+                                        <div class="item-detail-value">-{{ number_format($item->discount) }} VNĐ</div>
+                                    </div> --}}
                                     <div class="item-detail">
                                         <div class="item-detail-label">Thành tiền</div>
                                         <div class="item-detail-value">{{ number_format($item->total) }} VNĐ</div>

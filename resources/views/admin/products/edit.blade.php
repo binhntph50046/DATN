@@ -877,42 +877,13 @@
 
             // Handle variant generation
             document.getElementById('generate-variants').addEventListener('click', function() {
+                // Xóa thông báo lỗi cũ nếu có
+                let duplicateAlert = document.getElementById('duplicate-variant-alert');
+                if (duplicateAlert) duplicateAlert.remove();
+
                 if (!validateAllAttributes()) {
                     alert('Vui lòng kiểm tra lại các lựa chọn thuộc tính.');
                     return;
-                }
-
-                // Check if there are existing variants
-                if ($('#variantsContainer .variant-row').length > 0) {
-                    const confirmMessage = 'CẢNH BÁO: Tạo biến thể mới sẽ:\n\n' +
-                        '1. Xóa tất cả biến thể hiện tại\n' +
-                        '2. Xóa tất cả hình ảnh của các biến thể\n' +
-                        '3. Tạo lại biến thể mới dựa trên các thuộc tính đã chọn\n\n' +
-                        'Bạn có chắc chắn muốn tiếp tục?';
-
-                    if (!confirm(confirmMessage)) {
-                        return;
-                    }
-
-                    // Store existing variants for deletion
-                    const variantsToDelete = [];
-                    $('#variantsContainer .variant-row input[name$="[id]"]').each(function() {
-                        if (this.value) {
-                            variantsToDelete.push(this.value);
-                        }
-                    });
-                    $('#variants_to_delete').val(JSON.stringify(variantsToDelete));
-
-                    // Store images for deletion
-                    const imagesToDelete = [];
-                    $('#variantsContainer .image-preview-wrapper img').each(function() {
-                        const imgSrc = $(this).attr('src');
-                        const relativePath = imgSrc.includes('/uploads/') ?
-                            imgSrc.split('/uploads/')[1] :
-                            imgSrc.split('/').slice(-3).join('/');
-                        imagesToDelete.push('uploads/' + relativePath);
-                    });
-                    $('#images_to_delete').val(JSON.stringify(imagesToDelete));
                 }
 
                 // Collect attribute data
@@ -923,16 +894,13 @@
                 selects.forEach((select, idx) => {
                     if (select && select.value) {
                         const valueSelect = valueSelects[idx];
-                        if (valueSelect && $(valueSelect).val() && $(valueSelect).val().length >
-                            0) {
-                            const selectedValues = Array.from(valueSelect.selectedOptions).map(
-                                opt => ({
-                                    id: parseInt(opt.value),
-                                    value: opt.text,
-                                    attribute_type_id: parseInt(select.value),
-                                    hex: opt.getAttribute('data-hex')
-                                }));
-
+                        if (valueSelect && $(valueSelect).val() && $(valueSelect).val().length > 0) {
+                            const selectedValues = Array.from(valueSelect.selectedOptions).map(opt => ({
+                                id: parseInt(opt.value),
+                                value: opt.text,
+                                attribute_type_id: parseInt(select.value),
+                                hex: opt.getAttribute('data-hex')
+                            }));
                             if (selectedValues.length > 0) {
                                 attributeData.push({
                                     attribute_type_id: parseInt(select.value),
@@ -943,30 +911,97 @@
                     }
                 });
 
-                // Generate variants
+                // Generate combinations (giống logic cũ)
                 const combinations = generateCombinations(attributeData);
-                const variantsContainer = document.getElementById('variantsContainer');
-                const productName = document.getElementById('name').value;
+                // Chuyển combinations thành mảng các mảng id giá trị thuộc tính
+                const variantCombinations = combinations.map(comb => comb.map(item => item.id));
 
-                // Clear and regenerate variants
-                variantsContainer.innerHTML = '';
-                combinations.forEach((combination, index) => {
-                    const variantValues = combination.map(item => item.value).filter(Boolean);
-                    const variantName = productName + (variantValues.length > 0 ? ' - ' +
-                        variantValues.join(' - ') : '');
-                    const variantSlug = variantName
-                        .toLowerCase()
-                        .normalize('NFD')
-                        .replace(/[\u0300-\u036f]/g, '')
-                        .replace(/[^a-z0-9]+/g, '-')
-                        .replace(/^-+|-+$/g, '');
+                // Lấy product_id từ input hidden hoặc biến blade
+                const productId = {{ $product->id }};
 
-                    const variantHtml = generateVariantHtml(index, variantName, variantSlug,
-                        combination);
-                    variantsContainer.insertAdjacentHTML('beforeend', variantHtml);
+                // Gửi AJAX check duplicate trước khi tạo
+                fetch("{{ route('admin.products.checkDuplicateVariants') }}", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value
+                    },
+                    body: JSON.stringify({
+                        product_id: productId,
+                        variant_combinations: variantCombinations
+                    })
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.duplicates && data.duplicates.length > 0) {
+                        // Có biến thể trùng, hiển thị thông báo chi tiết
+                        let html = `<div id="duplicate-variant-alert" class="alert alert-danger mt-3">`;
+                        html += `<strong>Phát hiện biến thể trùng:</strong><ul>`;
+                        data.duplicates.forEach(dup => {
+                            html += `<li>Biến thể <b>${dup.index + 1}</b> (${dup.combination.join(' - ')}) ` +
+                                `đã tồn tại với tên: <b>${dup.variant_name}</b> ` +
+                                (dup.is_soft_deleted ? '<span class="badge bg-warning text-dark">(Đã xóa mềm)</span>' : '<span class="badge bg-success">(Đang hoạt động)</span>') +
+                                `</li>`;
+                        });
+                        html += `</ul>Vui lòng chỉnh sửa lại giá trị thuộc tính để không trùng với biến thể đã có.</div>`;
+                        // Thêm vào trước variantsContainer
+                        const variantsContainer = document.getElementById('variantsContainer');
+                        variantsContainer.insertAdjacentHTML('beforebegin', html);
+                        // Không tạo biến thể
+                        return;
+                    }
+                    // Nếu không trùng, tiếp tục luồng tạo biến thể như cũ
+                    // ... existing code ...
+                    // Check if there are existing variants
+                    if ($('#variantsContainer .variant-row').length > 0) {
+                        const confirmMessage = 'CẢNH BÁO: Tạo biến thể mới sẽ:\n\n' +
+                            '1. Xóa tất cả biến thể hiện tại\n' +
+                            '2. Xóa tất cả hình ảnh của các biến thể\n' +
+                            '3. Tạo lại biến thể mới dựa trên các thuộc tính đã chọn\n\n' +
+                            'Bạn có chắc chắn muốn tiếp tục?';
+                        if (!confirm(confirmMessage)) {
+                            return;
+                        }
+                        // Store existing variants for deletion
+                        const variantsToDelete = [];
+                        $('#variantsContainer .variant-row input[name$="[id]"]').each(function() {
+                            if (this.value) {
+                                variantsToDelete.push(this.value);
+                            }
+                        });
+                        $('#variants_to_delete').val(JSON.stringify(variantsToDelete));
+                        // Store images for deletion
+                        const imagesToDelete = [];
+                        $('#variantsContainer .image-preview-wrapper img').each(function() {
+                            const imgSrc = $(this).attr('src');
+                            const relativePath = imgSrc.includes('/uploads/') ?
+                                imgSrc.split('/uploads/')[1] :
+                                imgSrc.split('/').slice(-3).join('/');
+                            imagesToDelete.push('uploads/' + relativePath);
+                        });
+                        $('#images_to_delete').val(JSON.stringify(imagesToDelete));
+                    }
+                    // Clear and regenerate variants
+                    const variantsContainer = document.getElementById('variantsContainer');
+                    const productName = document.getElementById('name').value;
+                    variantsContainer.innerHTML = '';
+                    combinations.forEach((combination, index) => {
+                        const variantValues = combination.map(item => item.value).filter(Boolean);
+                        const variantName = productName + (variantValues.length > 0 ? ' - ' + variantValues.join(' - ') : '');
+                        const variantSlug = variantName
+                            .toLowerCase()
+                            .normalize('NFD')
+                            .replace(/[^a-z0-9]+/g, '-')
+                            .replace(/^-+|-+$/g, '');
+                        const variantHtml = generateVariantHtml(index, variantName, variantSlug, combination);
+                        variantsContainer.insertAdjacentHTML('beforeend', variantHtml);
+                    });
+                    initializeVariantListeners();
+                })
+                .catch(err => {
+                    alert('Lỗi kiểm tra biến thể trùng!');
+                    console.error(err);
                 });
-
-                initializeVariantListeners();
             });
 
             function generateVariantHtml(index, variantName, variantSlug, combination) {

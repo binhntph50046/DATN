@@ -86,6 +86,10 @@
         .chatbot-message.bot {
             align-items: flex-start;
         }
+        .chatbot-message.bot.loading .chatbot-bubble {
+            color: #888;
+            font-style: italic;
+        }
         .chatbot-bubble {
             max-width: 80%;
             padding: 10px 14px;
@@ -181,6 +185,22 @@
             input.value = '';
             input.focus();
 
+            // Thêm hiệu ứng "đang trả lời..." động
+            const messages = document.getElementById('chatbotMessages');
+            const loadingDiv = document.createElement('div');
+            loadingDiv.className = 'chatbot-message bot loading';
+            loadingDiv.innerHTML = `<div class="chatbot-bubble"><span id="typing-dots">.</span></div>`;
+            messages.appendChild(loadingDiv);
+            messages.scrollTop = messages.scrollHeight;
+
+            // Hiệu ứng động cho dấu ba chấm
+            let dotCount = 1;
+            const typingDots = loadingDiv.querySelector('#typing-dots');
+            const dotsInterval = setInterval(() => {
+                dotCount = (dotCount % 3) + 1;
+                typingDots.textContent = '.'.repeat(dotCount);
+            }, 400);
+            
             // Gửi AJAX lên server (dùng route giống chatbot.blade.php)
             fetch('{{ route("chatbot.ask") }}', {
                 method: 'POST',
@@ -192,9 +212,14 @@
             })
             .then(res => res.json())
             .then(data => {
+                clearInterval(dotsInterval); // Dừng hiệu ứng
+                // Xóa hiệu ứng "đang trả lời..."
+                loadingDiv.remove();
                 appendMessage('bot', data.answer || 'Xin lỗi, tôi chưa hiểu rõ câu hỏi.');
             })
             .catch(() => {
+                clearInterval(dotsInterval); // Dừng hiệu ứng
+                loadingDiv.remove();
                 appendMessage('bot', 'Có lỗi xảy ra, vui lòng thử lại sau.');
             });
 

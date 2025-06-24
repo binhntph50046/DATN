@@ -126,6 +126,12 @@ class DashboardController
 
         // Top 5 variant bán chạy nhất
         $topVariants = OrderItem::with(['variant', 'product'])
+            ->whereHas('variant', function ($query) {
+                $query->whereNull('deleted_at');
+            })
+            ->whereHas('product', function ($query) {
+                $query->whereNull('deleted_at');
+            })
             ->whereHas('order', function ($query) {
                 $query->where('status', 'completed')
                     ->where('payment_status', 'paid');
@@ -138,8 +144,9 @@ class DashboardController
 
         // Sản phẩm sắp hết hàng dưới 5 sản phẩm
         $lowStockProducts = ProductVariant::with('product')
-            ->where('stock', '<', 5)
+            ->where('stock', '<', 10)
             ->orderBy('stock', 'asc')
+            ->take(10)
             ->get();
 
         // Truy vấn số lượng sản phẩm đã bán theo danh mục

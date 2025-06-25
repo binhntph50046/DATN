@@ -491,31 +491,55 @@ class ProductController
                 foreach ($variant->combinations as $comb) {
                     $typeId = $comb->attributeValue->attribute_type_id;
                     $valueId = $comb->attribute_value_id;
-                    
                     if (!isset($attributeMap[$typeId])) {
                         $attributeMap[$typeId] = [
                             'attribute_type_id' => $typeId,
                             'selected_values' => []
                         ];
                     }
-                    
                     if (!in_array($valueId, $attributeMap[$typeId]['selected_values'])) {
                         $attributeMap[$typeId]['selected_values'][] = $valueId;
                     }
                 }
             }
-            
-            // Sort by attribute type ID to ensure consistent order
             ksort($attributeMap);
             $attributeValues = array_values($attributeMap);
         }
+
+        // Prepare variants with attributes for Blade
+        $variants = $product->variants->whereNull('deleted_at')->map(function($variant) {
+            // Chuyển combinations thành attributes
+            $attributes = [];
+            foreach ($variant->combinations as $comb) {
+                $typeId = $comb->attributeValue->attribute_type_id;
+                $valueId = $comb->attribute_value_id;
+                $found = false;
+                foreach ($attributes as &$attr) {
+                    if ($attr['attribute_type_id'] == $typeId) {
+                        $attr['selected_values'][] = $valueId;
+                        $found = true;
+                        break;
+                    }
+                }
+                if (!$found) {
+                    $attributes[] = [
+                        'attribute_type_id' => $typeId,
+                        'selected_values' => [$valueId]
+                    ];
+                }
+            }
+            $arr = $variant->toArray();
+            $arr['attributes'] = $attributes;
+            return $arr;
+        })->values()->toArray();
 
         // Log the prepared data for debugging
         Log::info('Edit product data:', [
             'product_id' => $product->id,
             'specifications' => $specificationsData->toArray(),
             'attribute_values' => $attributeValues,
-            'attribute_types' => $attributeTypes->toArray()
+            'attribute_types' => $attributeTypes->toArray(),
+            'variants' => $variants
         ]);
 
         return view('admin.products.edit', compact(
@@ -523,7 +547,8 @@ class ProductController
             'categories',
             'attributeTypes',
             'specificationsData',
-            'attributeValues'
+            'attributeValues',
+            'variants'
         ));
     }
 

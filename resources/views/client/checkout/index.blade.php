@@ -107,6 +107,9 @@
                             @foreach(request('selected_items', []) as $itemId)
                                 <input type="hidden" name="selected_items[]" value="{{ $itemId }}">
                             @endforeach
+                            <input type="hidden" name="voucher_code" id="voucher_code_input">
+                            <input type="hidden" name="voucher_id" id="voucher_id_input">
+                            <input type="hidden" name="discount_amount" id="discount_amount_input">
                             <div id="address-fields">
                                 <div class="form-group row">
                                     <div class="col-md-12">
@@ -175,14 +178,10 @@
                             <div class="p-3 p-lg-5 border bg-white">
                                 <label for="c_code" class="text-black mb-3">Nhập mã giảm giá nếu bạn có</label>
                                 <div class="input-group w-75 couponcode-wrap">
-                                    <input type="text" class="form-control me-2" id="c_code"
-                                        placeholder="Mã giảm giá" aria-label="Mã giảm giá"
-                                        aria-describedby="button-addon2">
-                                    <div class="input-group-append">
-                                        <button class="btn btn-black btn-sm" type="button"
-                                            id="button-addon2">Áp dụng</button>
-                                    </div>
+                                    <input type="text" class="form-control" id="c_code"
+                                        placeholder="Mã giảm giá" aria-label="Mã giảm giá">
                                 </div>
+                                <div id="voucher-message" style="display: none;"></div>
                             </div>
                         </div>
                     </div>
@@ -240,12 +239,18 @@
                                                 </td>
                                             </tr>
                                             <tr>
-                                                <td class="text-black font-weight-bold"><strong>Tổng tiền</strong></td>
+                                                <td class="text-black font-weight-bold"><strong>Tạm tính</strong></td>
                                                 <td class="text-black">{{ number_format($variant->selling_price * $quantity, 0, ',', '.') }} VNĐ</td>
                                             </tr>
+                                            <tr id="voucher-discount-row" style="display: none;">
+                                                <td class="text-black font-weight-bold"><strong>Giảm giá</strong></td>
+                                                <td class="text-black text-success">-<span id="voucher-discount-amount">0</span> VNĐ</td>
+                                            </tr>
                                             <tr>
-                                                <td class="text-black font-weight-bold"><strong>Tổng đơn hàng</strong></td>
-                                                <td class="text-black font-weight-bold"><strong>{{ number_format($variant->selling_price * $quantity, 0, ',', '.') }} VNĐ</strong></td>
+                                                <td class="text-black font-weight-bold"><strong>Tổng cộng</strong></td>
+                                                <td class="text-black font-weight-bold">
+                                                    <strong id="final-total">{{ number_format($variant->selling_price * $quantity, 0, ',', '.') }} VNĐ</strong>
+                                                </td>
                                             </tr>
                                         @else
                                             @foreach($cartItems as $item)
@@ -289,12 +294,18 @@
                                                 </tr>
                                             @endforeach
                                             <tr>
-                                                <td class="text-black font-weight-bold"><strong>Tổng tiền</strong></td>
+                                                <td class="text-black font-weight-bold"><strong>Tạm tính</strong></td>
                                                 <td class="text-black">{{ number_format($subtotal, 0, ',', '.') }} VNĐ</td>
                                             </tr>
+                                            <tr id="voucher-discount-row" style="display: none;">
+                                                <td class="text-black font-weight-bold"><strong>Giảm giá</strong></td>
+                                                <td class="text-black text-success">-<span id="voucher-discount-amount">0</span> VNĐ</td>
+                                            </tr>
                                             <tr>
-                                                <td class="text-black font-weight-bold"><strong>Tổng đơn hàng</strong></td>
-                                                <td class="text-black font-weight-bold"><strong>{{ number_format($subtotal, 0, ',', '.') }} VNĐ</strong></td>
+                                                <td class="text-black font-weight-bold"><strong>Tổng cộng</strong></td>
+                                                <td class="text-black font-weight-bold">
+                                                    <strong id="final-total">{{ number_format($subtotal, 0, ',', '.') }} VNĐ</strong>
+                                                </td>
                                             </tr>
                                         @endif
                                     </tbody>
@@ -313,14 +324,116 @@
     document.addEventListener('DOMContentLoaded', function() {
         const checkoutForm = document.getElementById('checkoutForm');
         const checkoutButton = document.getElementById('checkout-button');
-        const originalAction = checkoutForm.getAttribute('action');
+        
         checkoutForm.addEventListener('submit', function(e) {
             const paymentMethod = document.querySelector('input[name="payment_method"]:checked')?.value;
+            
+            // Thêm input ẩn để truyền thông tin voucher và giá đã giảm
+            const finalTotalElement = document.getElementById('final-total');
+            const finalTotalText = finalTotalElement.innerText;
+            const finalTotalValue = parseInt(finalTotalText.replace(/[^\d]/g, '')); // Lấy số tiền cuối cùng
+            
+            const hiddenInput = document.createElement('input');
+            hiddenInput.type = 'hidden';
+            hiddenInput.name = 'final_total';
+            hiddenInput.value = finalTotalValue;
+            checkoutForm.appendChild(hiddenInput);
+
             if (paymentMethod === 'vnpay') {
                 checkoutForm.setAttribute('action', "{{ isset($variant) ? route('vnpay.payment') : route('cart.checkout.vnpay') }}");
             } else {
                 checkoutForm.setAttribute('action', "{{ isset($variant) ? route('checkout.store') : route('cart.checkout.store') }}");
             }
+        });
+    });
+    </script>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const voucherInput = document.getElementById('c_code');
+        const voucherMsg = document.getElementById('voucher-message');
+        const voucherDiscountRow = document.getElementById('voucher-discount-row');
+        const voucherDiscountAmount = document.getElementById('voucher-discount-amount');
+        const finalTotal = document.getElementById('final-total');
+        const voucherCodeInput = document.getElementById('voucher_code_input');
+        const voucherIdInput = document.getElementById('voucher_id_input');
+        const discountAmountInput = document.getElementById('discount_amount_input');
+        let debounceTimer;
+
+        // Lấy tạm tính (subtotal) từ view
+        let subtotal = {{ (isset($variant) ? $variant->selling_price * ($quantity ?? 1) : (isset($subtotal) ? $subtotal : 0)) }};
+
+        const checkVoucher = () => {
+            const code = voucherInput.value.trim();
+
+            // Reset khi không có mã
+            if (!code) {
+                voucherMsg.style.display = 'none';
+                voucherDiscountRow.style.display = 'none';
+                finalTotal.innerText = subtotal.toLocaleString('vi-VN') + ' VNĐ';
+                voucherCodeInput.value = '';
+                voucherIdInput.value = '';
+                discountAmountInput.value = '';
+                return;
+            }
+
+            // Gọi API kiểm tra mã
+            fetch('{{ route('voucher.check') }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Accept': 'application/json'
+                },
+                credentials: 'same-origin',
+                body: JSON.stringify({
+                    voucher_code: code,
+                    subtotal: subtotal,
+                    email: document.getElementById('c_email_address').value
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                voucherMsg.style.display = 'block';
+                if (data.success) {
+                    voucherMsg.className = 'alert alert-success mt-2';
+                    voucherMsg.innerText = data.message;
+                    voucherDiscountRow.style.display = 'table-row';
+                    voucherDiscountAmount.innerText = data.voucher.discount_amount.toLocaleString('vi-VN');
+                    finalTotal.innerText = data.voucher.final_total.toLocaleString('vi-VN') + ' VNĐ';
+                    
+                    // Cập nhật các input hidden
+                    voucherCodeInput.value = data.voucher.code;
+                    voucherIdInput.value = data.voucher.id;
+                    discountAmountInput.value = data.voucher.discount_amount;
+                } else {
+                    voucherMsg.className = 'alert alert-danger mt-2';
+                    voucherMsg.innerText = data.message;
+                    voucherDiscountRow.style.display = 'none';
+                    finalTotal.innerText = subtotal.toLocaleString('vi-VN') + ' VNĐ';
+                    
+                    // Reset các input hidden
+                    voucherCodeInput.value = '';
+                    voucherIdInput.value = '';
+                    discountAmountInput.value = '';
+                }
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+                voucherMsg.style.display = 'block';
+                voucherMsg.className = 'alert alert-danger mt-2';
+                voucherMsg.innerText = 'Có lỗi xảy ra, vui lòng thử lại!';
+                
+                // Reset các input hidden trong trường hợp lỗi
+                voucherCodeInput.value = '';
+                voucherIdInput.value = '';
+                discountAmountInput.value = '';
+            });
+        };
+
+        // Tự động kiểm tra khi người dùng nhập
+        voucherInput.addEventListener('input', function() {
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(checkVoucher, 500);
         });
     });
     </script>

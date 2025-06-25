@@ -295,7 +295,7 @@
 
                 @php
                     // Ưu tiên lấy dữ liệu vừa nhập khi validate lỗi
-                    $variants = old('variants') ?? $product->variants->whereNull('deleted_at')->toArray();
+                    $variants = old('variants') ?? $variants;
                     $attributes = old('attributes') ?? $attributeValues;
                 @endphp
 
@@ -785,33 +785,44 @@
                     // Xác định các giá trị bị loại bỏ
                     const removedValues = oldValues.filter(val => !newValues.includes(val));
 
+                    console.log('oldValues:', oldValues, 'newValues:', newValues, 'removedValues:', removedValues);
+
                     // Lưu các biến thể bị ảnh hưởng để xóa mềm
                     const variantsToDelete = [];
-                    $('#variantsContainer .variant-row').each(function() {
+                    const softDeletedVariantsInfo = [];
+                    $('#variantsContainer .variant-row').each(function(idx) {
                         let shouldDelete = false;
-                        // Kiểm tra các input hidden attributes của biến thể này
+                        let allAttrValues = [];
                         $(this).find(
                             'input[name^="variants"][name*="[attributes]"][name*="[selected_values]"]'
-                            ).each(function() {
+                        ).each(function() {
                             const attrValue = $(this).val();
-                            if (removedValues.includes(attrValue)) {
+                            let attrValuesArr = String(attrValue).split(',').map(v => v.trim());
+                            allAttrValues.push(attrValuesArr);
+                            if (attrValuesArr.some(val => removedValues.includes(val))) {
                                 shouldDelete = true;
                             }
                         });
+                        console.log('Biến thể', idx, 'có các giá trị thuộc tính:', allAttrValues, '| removedValues:', removedValues);
                         if (shouldDelete) {
-                            // Lấy id biến thể nếu có
                             const variantId = $(this).find('input[name$="[id]"]').val();
+                            const variantName = $(this).find('input[name$="[name]"]').val();
                             if (variantId) {
                                 variantsToDelete.push(variantId);
                             }
-                            // Ẩn biến thể khỏi giao diện
-                            $(this).hide();
+                            $(this).hide().addClass('soft-deleted-variant');
+                            softDeletedVariantsInfo.push({
+                                index: idx,
+                                id: variantId || null,
+                                name: variantName || null
+                            });
                         }
                     });
                     $('#variants_to_delete').val(JSON.stringify(variantsToDelete));
 
-                    // Không xóa toàn bộ, chỉ ẩn các biến thể bị ảnh hưởng
-                    // Không cần clear variantsContainer
+                    // Log ra console tất cả biến thể bị ẩn (cả mới và cũ)
+                    console.log('Tất cả biến thể bị xóa mềm (ẩn):', softDeletedVariantsInfo);
+                    console.log('Các biến thể bị xóa mềm (ẩn, có id):', variantsToDelete);
 
                     // Add hidden input để track thay đổi
                     let attributeValueChangeInput = document.getElementById('attribute_value_changed');
@@ -986,6 +997,7 @@
                     const productName = document.getElementById('name').value;
                     variantsContainer.innerHTML = '';
                     combinations.forEach((combination, index) => {
+                        console.log('Render variant', index, 'combination:', combination);
                         const variantValues = combination.map(item => item.value).filter(Boolean);
                         const variantName = productName + (variantValues.length > 0 ? ' - ' + variantValues.join(' - ') : '');
                         const variantSlug = variantName

@@ -44,6 +44,7 @@ use App\Http\Controllers\client\ProfileController;
 use App\Http\Controllers\client\WishlistController;
 use App\Http\Controllers\client\CheckoutController;
 use App\Http\Controllers\client\SubscribeController;
+use App\Http\Controllers\client\VoucherController as ClientVoucherController;
 
 // Auth Controllers
 use App\Http\Controllers\auth\AuthController;
@@ -375,3 +376,5 @@ Route::prefix('admin')
         // New route for checking variant slug
         Route::get('/admin/ajax/check-variant-slug', [ProductController::class, 'checkVariantSlug']);
     });
+
+Route::post('/voucher/check', [ClientVoucherController::class, 'check'])->name('voucher.check');

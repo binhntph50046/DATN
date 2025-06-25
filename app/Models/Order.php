@@ -27,7 +27,9 @@ class Order extends Model
         'payment_status',
         'shipping_method_id',
         'status',
-        
+        'voucher_id',
+        'voucher_code',
+        'discount_amount',
         'is_paid',
         'notes',
         'cancel_reason',
@@ -39,6 +41,7 @@ class Order extends Model
         'discount' => 'decimal:2',
         'shipping_fee' => 'decimal:2',
         'total_price' => 'decimal:2',
+        'discount_amount' => 'decimal:2',
     ];
 
     // Relationships
@@ -130,5 +133,10 @@ class Order extends Model
             // Tạo mã đơn hàng theo format: ORD + YYYYMMDD + 4 số ngẫu nhiên
             $order->order_code = 'DH' . str_pad(mt_rand(1, 9999), 4, '0', STR_PAD_LEFT);
         });
+    }
+
+    public function voucher()
+    {
+        return $this->belongsTo(Voucher::class);
     }
 }

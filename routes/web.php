@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\admin\ActivityController;
 use Illuminate\Support\Facades\Route;
 // Admin
 use App\Http\Controllers\admin\BlogController;
@@ -302,7 +303,7 @@ Route::prefix('admin')
             Route::get('/{order}', [OrderController::class, 'show'])->name('show');
             Route::put('/{order}/status', [OrderController::class, 'updateStatus'])->middleware('permission:edit orders')->name('updateStatus');
             Route::delete('/{order}', [OrderController::class, 'destroy'])->middleware('permission:delete orders')->name('destroy');
-          // Route::get('/trash', [OrderController::class, 'trash'])->name('trash');
+            // Route::get('/trash', [OrderController::class, 'trash'])->name('trash');
             // Route::post('/trash/restore/bulk', [OrderController::class, 'bulkRestore'])->middleware('permission:edit orders')->name('restore.bulk');
             // Route::post('/trash/force-delete/bulk', [OrderController::class, 'bulkForceDelete'])->middleware('permission:delete orders')->name('forceDelete.bulk');
             Route::get('/{order}/export-invoice', [OrderController::class, 'exportInvoice'])->name('export-invoice');
@@ -335,6 +336,12 @@ Route::prefix('admin')
             Route::patch('/restore/{id}', [SubcriberController::class, 'restore'])->name('restore');
         });
 
+        // Activity Management
+        Route::prefix('activities')->name('activities.')->group(function () {
+            Route::get('/', [ActivityController::class, 'index'])->name('index');
+            Route::get('/user/{id}', [ActivityController::class, 'show'])->name('show');
+        });
+        
         // FAQ Management
         Route::prefix('faqs')->name('faqs.')->group(function () {
             Route::get('/', [FaqController::class, 'index'])->name('index');

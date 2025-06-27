@@ -1,5 +1,5 @@
 @extends('admin.layouts.app')
-@section('title', 'User Activity Log')
+@section('title', 'Nhật ký hoạt động người dùng')
 
 <style>
     .custom-shadow {
@@ -54,9 +54,9 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @forelse($pageViews as $view)
+                                    @forelse($pageViews as $index => $view)
                                         <tr>
-                                            <td>{{ $view->id }}</td>
+                                            <td>{{ $index+1 }}</td>
                                             {{-- <td>{{ $view->session_id }}</td> --}}
                                             <td style="max-width:200px;overflow:auto;">{{ $view->url }}</td>
                                             <td>{{ $view->ip_address }}</td>

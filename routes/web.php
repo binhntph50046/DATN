@@ -47,12 +47,15 @@ use App\Http\Controllers\client\ProductController as ClientProductController;
 use App\Http\Controllers\client\ProfileController;
 use App\Models\Invoice;
 use App\Http\Controllers\admin\ProductVariantController;
+use App\Http\Controllers\client\UserActivityController;
 
 /*
 |--------------------------------------------------------------------------
 | Client Routes
 |--------------------------------------------------------------------------
 */
+Route::post('/track/start', [UserActivityController::class, 'start']);
+Route::post('/track/stop', [UserActivityController::class, 'stop']);
 
 // Home & Product Routes
 Route::get('/', [HomeController::class, 'index'])->name('home');

@@ -19,7 +19,7 @@ class ThankYouMail extends Mailable
     public function build()
     {
         return $this->subject('Cảm ơn bạn đã liên hệ')
-        ->view('client.contact.thank-you')
+        ->view('emails.thank-you')
         ->with(['contact' => $this->contact]);;
     }
 }

@@ -19,12 +19,12 @@
                 <div class="row align-items-center">
                     <div class="col-md-12">
                         <div class="page-header-title">
-                            <h5 class="m-b-10">User Activity Log</h5>
+                            <h5 class="m-b-10">Nhật ký hoạt động người dùng</h5>
                         </div>
                         <ul class="breadcrumb">
-                            <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Home</a></li>
-                            <li class="breadcrumb-item"><a href="{{ route('admin.activities.index') }}">Activity Log</a></li>
-                            <li class="breadcrumb-item active" aria-current="page">User #{{ $userId }}</li>
+                            <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Trang chủ</a></li>
+                            <li class="breadcrumb-item"><a href="{{ route('admin.activities.index') }}">Nhật ký hoạt động</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">Người dùng #{{ $userId }}</li>
                         </ul>
                     </div>
                 </div>
@@ -37,7 +37,7 @@
             <div class="col-12">
                 <div class="card">
                     <div class="card-header">
-                        <h5>Activity of User #{{ $userId }}</h5>
+                        <h5>Hoạt động của người dùng #{{ $userId }}</h5>
                     </div>
                     <div class="card-body">
                         <div class="table custom-shadow ">
@@ -49,8 +49,8 @@
                                         <th>URL</th>
                                         <th>IP Address</th>
                                         {{-- <th>User Agent</th> --}}
-                                        <th>Duration (s)</th>
-                                        <th>Created At</th>
+                                        <th>Khoảng thời gian (s)</th>
+                                        <th>Ngày tạo</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -77,7 +77,7 @@
                                         </tr>
                                     @empty
                                         <tr>
-                                            <td colspan="7" class="text-center">No activity found for this user.</td>
+                                            <td colspan="7" class="text-center">Không có hoạt động nào của người dùng này.</td>
                                         </tr>
                                     @endforelse
                                 </tbody>

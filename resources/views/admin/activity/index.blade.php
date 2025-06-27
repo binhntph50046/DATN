@@ -19,11 +19,11 @@
                 <div class="row align-items-center">
                     <div class="col-md-12">
                         <div class="page-header-title">
-                            <h5 class="m-b-10">Activity Users</h5>
+                            <h5 class="m-b-10">Hoạt động người dùng</h5>
                         </div>
                         <ul class="breadcrumb">
-                            <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Home</a></li>
-                            <li class="breadcrumb-item" aria-current="page">Activity Users</li>
+                            <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Trang chủ</a></li>
+                            <li class="breadcrumb-item" aria-current="page">Hoạt động người dùng</li>
                         </ul>
                     </div>
                 </div>
@@ -36,18 +36,18 @@
             <div class="col-12">
                 <div class="card">
                     <div class="card-header">
-                        <h5>User List with Activity</h5>
+                        <h5>Danh sách người dùng có hoạt động</h5>
                     </div>
                     <div class="card-body">
                         <div class="table custom-shadow ">
                             <table class="table table-hover table-borderless">
                                 <thead>
                                     <tr>
-                                        <th>User ID</th>
-                                        <th>Name</th>
+                                        <th>ID</th>
+                                        <th>Họ và tên</th>
                                         <th>Email</th>
-                                        <th>Avatar</th>
-                                        <th class="text-center">Actions</th>
+                                        <th>Ảnh đại diện</th>
+                                        <th class="text-center">Hành động</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -61,16 +61,16 @@
                                                 @if($user && $user->avatar)
                                                     <img src="{{ asset($user->avatar) }}" alt="Avatar" style="max-height: 60px;">
                                                 @else
-                                                    <span class="text-muted">No avatar</span>
+                                                    <span class="text-muted">Không có ảnh</span>
                                                 @endif
                                             </td>
                                             <td class="text-center">
-                                                <a href="{{ route('admin.activities.show', $row->user_id) }}" class="btn btn-info btn-sm rounded-3">View Activity</a>
+                                                <a href="{{ route('admin.activities.show', $row->user_id) }}" class="btn btn-info btn-sm rounded-3">Xem hoạt động</a>
                                             </td>
                                         </tr>
                                     @empty
                                         <tr>
-                                            <td colspan="5" class="text-center">No users found.</td>
+                                            <td colspan="5" class="text-center">Không có người dùng nào.</td>
                                         </tr>
                                     @endforelse
                                 </tbody>

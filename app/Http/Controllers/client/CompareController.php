@@ -108,38 +108,28 @@ class CompareController
 
     private function callGemini($prompt)
     {
-        try {
-            $apiKey = env('GEMINI_API_KEY');
-            $url = 'https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=' . $apiKey;
-            $response = Http::withHeaders([
-                'Content-Type' => 'application/json'
-            ])->timeout(30)->post($url, [
-                'contents' => [
-                    [
-                        'parts' => [
-                            ['text' => $prompt]
-                        ]
+        $apiKey = env('GEMINI_API_KEY');
+        $url = 'https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=' . $apiKey;
+        $response = Http::withHeaders([
+            'Content-Type' => 'application/json'
+        ])->timeout(30)->post($url, [
+            'contents' => [
+                [
+                    'parts' => [
+                        ['text' => $prompt]
                     ]
-                ],
-                'generationConfig' => [
-                    'maxOutputTokens' => 500,
-                    'temperature' => 0.7
                 ]
-            ]);
-
-            if ($response->successful()) {
-                $result = $response->json();
-                return $result['candidates'][0]['content']['parts'][0]['text'] ?? $this->getDefaultAdvice();
-            }
-
-            // Nếu API trả về lỗi, trả về lời khuyên mặc định
-            return $this->getDefaultAdvice();
-
-        } catch (\Exception $e) {
-            // Log lỗi nếu cần
-            Log::error('Gemini API Error: ' . $e->getMessage());
-            return $this->getDefaultAdvice();
+            ],
+            'generationConfig' => [
+                'maxOutputTokens' => 500,
+                'temperature' => 0.7
+            ]
+        ]);
+        if ($response->successful()) {
+            $result = $response->json();
+            return $result['candidates'][0]['content']['parts'][0]['text'] ?? 'Không có phản hồi từ Gemini.';
         }
+        return 'Không có phản hồi từ Gemini.';
     }
 
     private function getDefaultAdvice()

@@ -26,6 +26,7 @@ use App\Http\Controllers\admin\FaqController;
 use App\Http\Controllers\admin\ProductVariantController;
 use App\Http\Controllers\Admin\InvoiceController;
 use App\Http\Controllers\Admin\OrderReturnController as AdminOrderReturnController;
+use App\Http\Controllers\Admin\AdminProfileController;
 
 // Client Controllers
 use App\Http\Controllers\client\HomeController;
@@ -378,3 +379,11 @@ Route::prefix('admin')
     });
 
 Route::post('/voucher/check', [ClientVoucherController::class, 'check'])->name('voucher.check');
+
+// Admin Profile Routes
+Route::prefix('admin/profile')->name('admin.profile.')->middleware('auth','role:admin|staff')->group(function () {
+    Route::get('/', [AdminProfileController::class, 'edit'])->name('index');
+    Route::put('/', [AdminProfileController::class, 'update'])->name('update');
+    Route::get('/password', [AdminProfileController::class, 'password'])->name('password');
+    Route::put('/password', [AdminProfileController::class, 'updatePassword'])->name('update-password');
+});

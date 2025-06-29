@@ -476,11 +476,7 @@
             <p class="text-xs text-gray-500 mt-1">Chọn từ 2-4 sản phẩm để so sánh tự động.</p>
         </form>
 
-        <!-- Nút FAB -->
-        <button x-on:click="open = !open"
-            class="fixed bottom-4 right-4 bg-blue-500 text-white rounded-full w-14 h-14 flex items-center justify-center text-2xl shadow-lg hover:bg-blue-600 focus:outline-none z-50">
-            <span>+</span>
-        </button>
+       
     </div>
 
     <!-- JavaScript for Wishlist and Quick View -->
@@ -793,9 +789,13 @@
         transition: all 0.3s ease;
     }
 
+    .icon-compare:hover {
+        background-color: #007bff;
+    }
+
     .icon-compare:hover i {
         transform: scale(1.1);
-        color: #007bff;
+        color: #ffffff;
     }
 
     /* Style cho FAB và Panel Chat */

@@ -931,7 +931,7 @@
             }
             showCustomAlert('Đã thêm ' + productName + ' vào so sánh', 'success');
         }
-        
+
         // Cập nhật hiển thị nút so sánh
         updateCompareButton();
     }
@@ -940,7 +940,7 @@
         const button = document.getElementById('compareButton');
         const count = document.getElementById('compareCount');
         const text = document.getElementById('compareButtonText');
-        
+
         if (compareSelected.length > 0) {
             button.style.display = 'block';
             count.textContent = compareSelected.length;

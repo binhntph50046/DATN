@@ -1,4 +1,5 @@
 @extends('admin.layouts.app')
+@section('title', 'Dashboard')
 
 @section('content')
     <div class="pc-container">
@@ -14,7 +15,6 @@
                             <ul class="breadcrumb">
                                 <li class="breadcrumb-item"><a href="dashboard/index.html">Trang chủ</a></li>
                                 <li class="breadcrumb-item"><a href="javascript: void(0)">Bảng điều khiển</a></li>
-                                <li class="breadcrumb-item" aria-current="page">Trang chủ</li>
                             </ul>
                         </div>
                     </div>

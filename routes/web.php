@@ -7,6 +7,7 @@ use App\Http\Middleware\VerifyCsrfToken;
 use App\Models\Invoice;
 
 // Admin Controllers
+use App\Http\Controllers\admin\ActivityController;
 use App\Http\Controllers\admin\BlogController;
 use App\Http\Controllers\admin\UserController;
 use App\Http\Controllers\admin\OrderController;
@@ -42,10 +43,12 @@ use App\Http\Controllers\client\ProductController as ClientProductController;
 use App\Http\Controllers\client\OrderReturnController as ClientOrderReturnController;
 use App\Http\Controllers\client\FaqsController;
 use App\Http\Controllers\client\ProfileController;
+use App\Http\Controllers\client\UserActivityController;
 use App\Http\Controllers\client\WishlistController;
 use App\Http\Controllers\client\CheckoutController;
 use App\Http\Controllers\client\SubscribeController;
 use App\Http\Controllers\client\VoucherController as ClientVoucherController;
+use App\Http\Controllers\client\CompareController;
 
 // Auth Controllers
 use App\Http\Controllers\auth\AuthController;
@@ -53,13 +56,15 @@ use App\Http\Controllers\auth\FacebookController;
 use App\Http\Controllers\auth\GoogleController;
 use App\Http\Controllers\auth\ForgotPasswordController;
 use App\Http\Controllers\auth\ResetPasswordController;
-use App\Http\Controllers\client\CompareController;
 
 /*
 |--------------------------------------------------------------------------
 | Client Routes
 |--------------------------------------------------------------------------
 */
+// User Activity
+Route::post('/track/start', [UserActivityController::class, 'start']);
+Route::post('/track/stop', [UserActivityController::class, 'stop']);
 
 // Home & Product Routes
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -349,6 +354,12 @@ Route::prefix('admin')
             Route::patch('/restore/{id}', [SubcriberController::class, 'restore'])->name('restore');
         });
 
+        // Activity Management
+        Route::prefix('activities')->name('activities.')->group(function () {
+            Route::get('/', [ActivityController::class, 'index'])->name('index');
+            Route::get('/user/{id}', [ActivityController::class, 'show'])->name('show');
+        });
+        
         // FAQ Management
         Route::prefix('faqs')->name('faqs.')->group(function () {
             Route::get('/', [FaqController::class, 'index'])->name('index');

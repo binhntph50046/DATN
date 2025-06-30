@@ -1,5 +1,7 @@
 <?php
 
+
+
 use Illuminate\Support\Facades\Route;
 // Admin
 use App\Http\Controllers\admin\BlogController;
@@ -44,8 +46,10 @@ use App\Http\Controllers\client\OrderController as ClientOrderController;
 use App\Http\Controllers\client\ChatBotController;
 use App\Http\Controllers\client\ProductController as ClientProductController;
 use App\Http\Controllers\client\ProfileController;
+use App\Http\Controllers\client\ProductReviewController;
 use App\Models\Invoice;
 use App\Http\Controllers\admin\ProductVariantController;
+use App\Models\ProductReview;
 
 /*
 |--------------------------------------------------------------------------
@@ -153,6 +157,15 @@ Route::get('/order/resend-invoice/{order}', [CheckoutController::class, 'resendI
 Route::prefix('order')->name('order.')->group(function () {
     Route::post('{id}/request-resend-invoice', [ClientOrderController::class, 'requestResendInvoice'])->name('request-resend-invoice');
 });
+
+// Product Review
+
+// Route 1: Xem lịch sử đánh giá 1 biến thể
+Route::get('{order}/review/{variant}/history', [ProductReviewController::class, 'history'])->name('order.review.history');
+Route::get('order/{order}/review', [ProductReviewController::class, 'create'])->name('order.review');
+Route::post('order/{order}/review/{variant}', [ProductReviewController::class, 'store'])->name('order.review.store');
+// Route 2: Xem lịch sử đánh giá toàn bộ đơn hàng
+Route::get('order/{order}/review/history', [ProductReviewController::class, 'historyAll'])->name('order.review.history.all');
 
 /*
 |--------------------------------------------------------------------------
@@ -301,7 +314,7 @@ Route::prefix('admin')
             Route::get('/{order}', [OrderController::class, 'show'])->name('show');
             Route::put('/{order}/status', [OrderController::class, 'updateStatus'])->middleware('permission:edit orders')->name('updateStatus');
             Route::delete('/{order}', [OrderController::class, 'destroy'])->middleware('permission:delete orders')->name('destroy');
-          // Route::get('/trash', [OrderController::class, 'trash'])->name('trash');
+            // Route::get('/trash', [OrderController::class, 'trash'])->name('trash');
             // Route::post('/trash/restore/bulk', [OrderController::class, 'bulkRestore'])->middleware('permission:edit orders')->name('restore.bulk');
             // Route::post('/trash/force-delete/bulk', [OrderController::class, 'bulkForceDelete'])->middleware('permission:delete orders')->name('forceDelete.bulk');
             Route::get('/{order}/export-invoice', [OrderController::class, 'exportInvoice'])->name('export-invoice');

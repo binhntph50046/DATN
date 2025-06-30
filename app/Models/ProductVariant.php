@@ -49,6 +49,6 @@ class ProductVariant extends Model
 
     public function reviews()
     {
-        return $this->hasMany(ProductReview::class, 'variant_id')->where('status', 'active');
+        return $this->hasMany(ProductReview::class, 'variant_id');
     }
 }

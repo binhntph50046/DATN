@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\client;
 
 use App\Models\ProductReview;
 use App\Models\Product;
@@ -13,47 +13,29 @@ use Illuminate\Support\Facades\Storage;
 
 class ProductReviewController
 {
-    public function store(Request $request, Product $product, ProductVariant $variant)
+    public function store(Request $request, Order $order, $variantId)
     {
-        // Kiểm tra đăng nhập
-        if (!Auth::check()) {
-            return redirect()->route('login')->with('error', 'Vui lòng đăng nhập để đánh giá sản phẩm.');
+        if ($order->user_id !== Auth::id() || $order->status !== 'completed') {
+            abort(403);
         }
 
-        // Kiểm tra biến thể có thuộc sản phẩm không
-        if ($variant->product_id !== $product->id) {
-            return back()->with('error', 'Biến thể không hợp lệ.');
-        }
+        $variant = ProductVariant::withTrashed()->findOrFail($variantId);
 
-        // Kiểm tra đơn hàng hoàn thành
-        $hasPurchased = Order::where('user_id', Auth::id())
-            ->where('status', 'completed')
-            ->whereHas('items', function ($query) use ($variant) {
-                $query->where('variant_id', $variant->id);
-            })
-            ->exists();
-
-        if (!$hasPurchased) {
-            return back()->with('error', 'Bạn cần mua và nhận sản phẩm này để đánh giá.');
-        }
-
-        // Validate dữ liệu
-        $request->validate([
-            'rating' => 'required|integer|between:1,5',
-            'review' => 'nullable|string|max:1000',
-            'images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Tối đa 2MB mỗi ảnh
-        ]);
-
-        // Kiểm tra đã đánh giá biến thể này chưa
         $existingReview = ProductReview::where('user_id', Auth::id())
-                                      ->where('variant_id', $variant->id)
-                                      ->first();
+            ->where('order_id', $order->id)
+            ->where('variant_id', $variant->id)
+            ->first();
 
         if ($existingReview) {
             return back()->with('error', 'Bạn đã đánh giá biến thể này rồi.');
         }
 
-        // Xử lý upload ảnh
+        $request->validate([
+            'rating' => 'required|integer|between:1,5',
+            'review' => 'nullable|string|max:1000',
+            'images.*' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ]);
+
         $imagePaths = [];
         if ($request->hasFile('images')) {
             foreach ($request->file('images') as $image) {
@@ -62,15 +44,14 @@ class ProductReviewController
             }
         }
 
-        // Tạo đánh giá
         ProductReview::create([
             'user_id' => Auth::id(),
-            'product_id' => $product->id,
+            'order_id' => $order->id,
+            'product_id' => $variant->product_id,
             'variant_id' => $variant->id,
             'rating' => $request->rating,
             'review' => $request->review,
             'images' => $imagePaths,
-            'status' => 'active', // Hoặc 'inactive' nếu cần kiểm duyệt
         ]);
 
         return back()->with('success', 'Đánh giá của bạn đã được gửi thành công.');
@@ -91,5 +72,54 @@ class ProductReviewController
         $review->update(['status' => $request->status]);
 
         return back()->with('success', 'Cập nhật trạng thái đánh giá thành công.');
+    }
+
+    public function create(Order $order)
+    {
+        if ($order->user_id !== Auth::id() || $order->status !== 'completed') {
+            abort(403);
+        }
+
+        // Lấy tất cả item (biến thể) của đơn hàng, kể cả đã xóa mềm
+        $items = $order->items()->with(['variant' => function($q) {
+            $q->withTrashed();
+        }, 'product'])->get();
+
+        // Lấy các review đã có của user cho đơn này
+        $reviews = ProductReview::where('user_id', Auth::id())
+            ->where('order_id', $order->id)
+            ->with(['product', 'variant'])
+            ->get()
+            ->keyBy('variant_id');
+
+        return view('client.review.create', compact('order', 'items', 'reviews'));
+    }
+
+    // Thêm hàm xem lịch sử đánh giá nếu chưa có
+    public function history(Order $order, ProductVariant $variant)
+    {
+        $review = ProductReview::where('user_id', Auth::id())
+            ->where('order_id', $order->id)
+            ->where('variant_id', $variant->id)
+            ->firstOrFail();
+
+        $product = $variant->product;
+
+        return view('client.review.history', compact('review', 'order', 'product', 'variant'));
+    }
+
+    public function historyAll(Order $order)
+    {
+        if ($order->user_id !== Auth::id()) {
+            abort(403);
+        }
+
+        // Lấy tất cả review của user cho đơn này
+        $reviews = ProductReview::where('user_id', Auth::id())
+            ->where('order_id', $order->id)
+            ->with(['product', 'variant'])
+            ->get();
+
+        return view('client.review.history', compact('order', 'reviews'));
     }
 }

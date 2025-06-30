@@ -893,7 +893,7 @@
 <script>
     let compareSelected = [];
     let compareNames = [];
-    
+
     function addToCompare(productId, productName) {
         if (compareSelected.includes(productId)) {
             // Nếu sản phẩm đã được chọn, bỏ chọn
@@ -911,7 +911,7 @@
                 showCustomAlert('Chỉ được chọn tối đa 2 sản phẩm để so sánh!', 'error');
             }
         }
-        
+
         // Cập nhật hiển thị nút so sánh
         updateCompareButton();
     }
@@ -920,7 +920,7 @@
         const button = document.getElementById('compareButton');
         const count = document.getElementById('compareCount');
         const text = document.getElementById('compareButtonText');
-        
+
         if (compareSelected.length > 0) {
             button.style.display = 'block';
             count.textContent = compareSelected.length;
@@ -940,17 +940,17 @@
         if (compareSelected.length === 2) {
             // Lưu sản phẩm vào session storage
             sessionStorage.setItem('compareProducts', JSON.stringify(compareSelected));
-            
+
             // Tạo form ẩn và submit
             const form = document.createElement('form');
             form.method = 'POST';
             form.action = '/compare';
-            
+
             const csrfToken = document.createElement('input');
             csrfToken.type = 'hidden';
             csrfToken.name = '_token';
             csrfToken.value = '{{ csrf_token() }}';
-            
+
             compareSelected.forEach(id => {
                 const input = document.createElement('input');
                 input.type = 'hidden';
@@ -958,7 +958,7 @@
                 input.value = id;
                 form.appendChild(input);
             });
-            
+
             form.appendChild(csrfToken);
             document.body.appendChild(form);
             form.submit();
@@ -970,11 +970,12 @@
     // ... (các hàm khác giữ nguyên như trước)
 </script>
 
-    <!-- Nút So sánh nổi -->
-    <div id="compareButton" style="display:none; position:fixed; bottom:80px; right:30px; z-index:9999; background:#007bff; color:white; padding:15px 25px; border-radius:25px; box-shadow:0 4px 12px rgba(0,123,255,0.3); cursor:pointer; transition:all 0.3s ease;" onclick="goToCompare()">
-        <i class="fas fa-balance-scale me-2"></i>
-        <span id="compareButtonText">So sánh ngay</span>
-        <span id="compareCount" class="badge bg-light text-dark ms-2">0</span>
-    </div>
+<!-- Nút So sánh nổi -->
+<div id="compareButton"
+    style="display: none;position: fixed;bottom: 30px;left: 50%;transform: translateX(-50%);z-index: 9999;background: #007bff;color: white;padding: 15px 25px;border-radius: 25px;box-shadow: 0 4px 12px rgba(0,123,255,0.3);cursor: pointer;transition: all 0.3s ease;"onclick="goToCompare()">
+    <i class="fas fa-balance-scale me-2"></i>
+    <span id="compareButtonText">So sánh ngay</span>
+    <span id="compareCount" class="badge bg-light text-dark ms-2">0</span>
+</div>
 
 @endsection

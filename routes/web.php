@@ -27,6 +27,7 @@ use App\Http\Controllers\admin\FaqController;
 use App\Http\Controllers\admin\ProductVariantController;
 use App\Http\Controllers\Admin\InvoiceController;
 use App\Http\Controllers\Admin\OrderReturnController as AdminOrderReturnController;
+use App\Http\Controllers\Admin\AdminProfileController;
 
 // Client Controllers
 use App\Http\Controllers\client\HomeController;
@@ -71,7 +72,7 @@ Route::get('/product/{slug}', [ClientProductController::class, 'show'])->name('p
 Route::get('/api/products/{id}', [ClientProductController::class, 'getProductDetails'])->name('api.products.show');
 Route::get('/api/variants/{id}', [ClientProductController::class, 'getVariant'])->name('api.variants.show');
 Route::post('/increment-view/{id}', [HomeController::class, 'incrementView'])->name('increment.view');
-Route::post('/compare', [CompareController::class, 'index'])->name('compare.products');
+Route::get('/compare', [CompareController::class, 'index'])->name('compare.index');
 
 // Shop Routes
 Route::get('/shop', [ShopController::class, 'index'])->name('shop');
@@ -389,3 +390,11 @@ Route::prefix('admin')
     });
 
 Route::post('/voucher/check', [ClientVoucherController::class, 'check'])->name('voucher.check');
+
+// Admin Profile Routes
+Route::prefix('admin/profile')->name('admin.profile.')->middleware('auth','role:admin|staff')->group(function () {
+    Route::get('/', [AdminProfileController::class, 'edit'])->name('index');
+    Route::put('/', [AdminProfileController::class, 'update'])->name('update');
+    Route::get('/password', [AdminProfileController::class, 'password'])->name('password');
+    Route::put('/password', [AdminProfileController::class, 'updatePassword'])->name('update-password');
+});

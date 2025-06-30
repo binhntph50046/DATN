@@ -189,18 +189,16 @@
                 <i class="fas fa-bars me-2 text-white"></i> <span class="category-btn-text">Danh mục</span>
             </button>
             <ul class="dropdown-menu dropdown-menu-bg" style="margin-left: 5px" aria-labelledby="categoryDropdown">
-                <li><a class="dropdown-item text-white" href="#"><i class="fa-brands fa-apple"></i> iPhone</a>
-                </li>
-                <li><a class="dropdown-item text-white" href="#"><i class="fa-solid fa-laptop"></i> Mac</a></li>
-                <li><a class="dropdown-item text-white" href="#"><i class="fa-solid fa-tablet-screen-button"></i>
-                        iPad</a></li>
-                <li><a class="dropdown-item text-white" href="#"><i class="fa-regular fa-clock"></i> Watch</a>
-                </li>
-                <li><a class="dropdown-item text-white" href="#"><i class="fa-solid fa-headphones"></i> Tai nghe,
-                        Loa</a></li>
-                <li><a class="dropdown-item text-white" href="#"><i class="fa-solid fa-plug"></i> Phụ kiện</a>
-                </li>
-
+                @foreach($categories as $category)
+                    <li>
+                        <a class="dropdown-item text-white" href="{{ route('shop.category', $category->slug) }}">
+                            @if($category->icon)
+                                <i class="{{ $category->icon }}"></i>
+                            @endif
+                            {{ $category->name }}
+                        </a>
+                    </li>
+                @endforeach
             </ul>
         </div>
         <!-- Search -->

@@ -26,6 +26,7 @@
     <!-- [Feather Icons] https://feathericons.com -->
     <link rel="stylesheet" href="{{ asset('assets/fonts/feather.css') }}">
     <!-- [Font Awesome Icons] https://fontawesome.com/icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" referrerpolicy="no-referrer" />
     <link rel="stylesheet" href="{{ asset('assets/fonts/fontawesome.css') }}">
     <!-- [Material Icons] https://fonts.google.com/icons -->
     <link rel="stylesheet" href="{{ asset('assets/fonts/material.css') }}">

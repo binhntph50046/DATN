@@ -1,9 +1,13 @@
 <?php
 
-
-
 use Illuminate\Support\Facades\Route;
-// Admin
+use App\Http\Middleware\VerifyCsrfToken;
+
+// Models
+use App\Models\Invoice;
+
+// Admin Controllers
+use App\Http\Controllers\admin\ActivityController;
 use App\Http\Controllers\admin\BlogController;
 use App\Http\Controllers\admin\UserController;
 use App\Http\Controllers\admin\OrderController;
@@ -17,24 +21,15 @@ use App\Http\Controllers\admin\SpecificationController;
 use App\Http\Controllers\admin\VoucherController;
 use App\Http\Controllers\admin\FlashSaleController;
 use App\Http\Controllers\admin\SubcriberController;
-use App\Http\Controllers\client\CheckoutController;
-// Client 
-use App\Http\Controllers\client\WishlistController;
-use App\Http\Controllers\Admin\OrderReturnController;
 use App\Http\Controllers\admin\AdminContactController;
 use App\Http\Controllers\admin\FlashSaleItemController;
 use App\Http\Controllers\admin\FaqController;
+use App\Http\Controllers\admin\ProductVariantController;
 use App\Http\Controllers\Admin\InvoiceController;
-use App\Http\Controllers\client\OrderReturnController as ClientOrderReturnController;
-use App\Http\Controllers\admin\OrderReturnController as AdminOrderReturnController;
-use App\Http\Controllers\admin\ResendInvoiceRequestController;
-// Auth
-use App\Http\Controllers\auth\AuthController;
-use App\Http\Controllers\auth\FacebookController;
-use App\Http\Controllers\auth\GoogleController;
-use App\Http\Controllers\auth\ForgotPasswordController;
-use App\Http\Controllers\auth\ResetPasswordController;
-// Client 
+use App\Http\Controllers\Admin\OrderReturnController as AdminOrderReturnController;
+use App\Http\Controllers\Admin\AdminProfileController;
+
+// Client Controllers
 use App\Http\Controllers\client\HomeController;
 use App\Http\Controllers\client\ShopController;
 use App\Http\Controllers\client\AboutController;
@@ -45,17 +40,33 @@ use App\Http\Controllers\client\PaymentController;
 use App\Http\Controllers\client\OrderController as ClientOrderController;
 use App\Http\Controllers\client\ChatBotController;
 use App\Http\Controllers\client\ProductController as ClientProductController;
+use App\Http\Controllers\client\OrderReturnController as ClientOrderReturnController;
+use App\Http\Controllers\client\FaqsController;
 use App\Http\Controllers\client\ProfileController;
+use App\Http\Controllers\client\UserActivityController;
+use App\Http\Controllers\client\WishlistController;
+use App\Http\Controllers\client\CheckoutController;
+use App\Http\Controllers\client\SubscribeController;
+use App\Http\Controllers\client\VoucherController as ClientVoucherController;
+use App\Http\Controllers\client\CompareController;
+
+// Auth Controllers
+use App\Http\Controllers\auth\AuthController;
+use App\Http\Controllers\auth\FacebookController;
+use App\Http\Controllers\auth\GoogleController;
+use App\Http\Controllers\auth\ForgotPasswordController;
+use App\Http\Controllers\auth\ResetPasswordController;
 use App\Http\Controllers\client\ProductReviewController;
-use App\Models\Invoice;
-use App\Http\Controllers\admin\ProductVariantController;
-use App\Models\ProductReview;
+
 
 /*
 |--------------------------------------------------------------------------
 | Client Routes
 |--------------------------------------------------------------------------
 */
+// User Activity
+Route::post('/track/start', [UserActivityController::class, 'start']);
+Route::post('/track/stop', [UserActivityController::class, 'stop']);
 
 // Home & Product Routes
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -63,9 +74,11 @@ Route::get('/product/{slug}', [ClientProductController::class, 'show'])->name('p
 Route::get('/api/products/{id}', [ClientProductController::class, 'getProductDetails'])->name('api.products.show');
 Route::get('/api/variants/{id}', [ClientProductController::class, 'getVariant'])->name('api.variants.show');
 Route::post('/increment-view/{id}', [HomeController::class, 'incrementView'])->name('increment.view');
+Route::get('/compare', [CompareController::class, 'index'])->name('compare.index');
 
 // Shop Routes
 Route::get('/shop', [ShopController::class, 'index'])->name('shop');
+Route::get('/shop/{slug}', [ShopController::class, 'showCategory'])->name('shop.category');
 Route::get('/about', [AboutController::class, 'index'])->name('about');
 
 // Profile Routes
@@ -85,6 +98,20 @@ Route::get('/blog/{slug}', [ClientBlogController::class, 'show'])->name('blog.sh
 Route::get('/contact', [ContactController::class, 'index'])->name('contact');
 Route::post('/contact', [ContactController::class, 'store'])->name('contact.store');
 
+Route::get('/faq', [FaqsController::class, 'index'])->name('faq');
+
+//Location
+Route::get('/location', function () {
+    return view('client.location.index');
+})->name('location');
+
+// Chatbot Route
+Route::get('/chat', function () {
+    return view('chat');
+});
+
+Route::post('/chatbot/ask', [ChatBotController::class, 'ask'])->name('chatbot.ask');
+
 // Cart & Checkout Routes
 Route::post('/cart/add', [CartController::class, 'add'])->name('cart.add');
 Route::put('/cart/update/{cartItemId}', [CartController::class, 'update'])->name('cart.update');
@@ -93,6 +120,7 @@ Route::delete('/cart/remove/{id}', [CartController::class, 'remove'])->name('car
 Route::delete('/cart/clear', [CartController::class, 'clear'])->name('cart.clear');
 Route::get('/cart', [CartController::class, 'index'])->name('cart');
 
+Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout');
 // Cart Checkout Routes
 Route::get('/cart/checkout', [CheckoutController::class, 'cartCheckout'])->name('cart.checkout');
 Route::post('/cart/checkout', [CheckoutController::class, 'processCartCheckout'])->name('cart.checkout.store');
@@ -113,7 +141,7 @@ Route::middleware(['auth'])->group(function () {
 });
 
 // Subscribe Route
-Route::post('/subscribe', [\App\Http\Controllers\client\SubscribeController::class, 'store'])->name('subscribe.store');
+Route::post('/subscribe', [SubscribeController::class, 'store'])->name('subscribe.store');
 
 // Order Routes (Client)
 Route::prefix('order')->name('order.')->group(function () {
@@ -131,14 +159,6 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('order-returns/{id}', [AdminOrderReturnController::class, 'show'])->name('order-returns.show');
     Route::post('order-returns/{id}/approve', [AdminOrderReturnController::class, 'approve'])->name('order-returns.approve');
     Route::post('order-returns/{id}/reject', [AdminOrderReturnController::class, 'reject'])->name('order-returns.reject');
-});
-
-// Route cho admin quản lý hoàn hàng
-Route::prefix('admin')->name('admin.')->group(function () {
-    Route::get('order-returns', [OrderReturnController::class, 'index'])->name('order-returns.index');
-    Route::get('order-returns/{id}', [OrderReturnController::class, 'show'])->name('order-returns.show');
-    Route::post('order-returns/{id}/approve', [OrderReturnController::class, 'approve'])->name('order-returns.approve');
-    Route::post('order-returns/{id}/reject', [OrderReturnController::class, 'reject'])->name('order-returns.reject');
 });
 
 // Route cho khách gửi yêu cầu hoàn hàng
@@ -292,6 +312,7 @@ Route::prefix('admin')
             Route::get('/{product}/edit', [ProductController::class, 'edit'])->name('edit');
             Route::put('/{product}', [ProductController::class, 'update'])->name('update');
             Route::delete('/{product}', [ProductController::class, 'destroy'])->name('destroy');
+            Route::post('/check-duplicate-variants', [ProductController::class, 'checkDuplicateVariants'])->name('checkDuplicateVariants');
         });
         Route::get('attributes/{id}/values', [ProductController::class, 'getAttributeValues']);
 
@@ -314,9 +335,6 @@ Route::prefix('admin')
             Route::get('/{order}', [OrderController::class, 'show'])->name('show');
             Route::put('/{order}/status', [OrderController::class, 'updateStatus'])->middleware('permission:edit orders')->name('updateStatus');
             Route::delete('/{order}', [OrderController::class, 'destroy'])->middleware('permission:delete orders')->name('destroy');
-            // Route::get('/trash', [OrderController::class, 'trash'])->name('trash');
-            // Route::post('/trash/restore/bulk', [OrderController::class, 'bulkRestore'])->middleware('permission:edit orders')->name('restore.bulk');
-            // Route::post('/trash/force-delete/bulk', [OrderController::class, 'bulkForceDelete'])->middleware('permission:delete orders')->name('forceDelete.bulk');
             Route::get('/{order}/export-invoice', [OrderController::class, 'exportInvoice'])->name('export-invoice');
         });
 
@@ -347,6 +365,12 @@ Route::prefix('admin')
             Route::patch('/restore/{id}', [SubcriberController::class, 'restore'])->name('restore');
         });
 
+        // Activity Management
+        Route::prefix('activities')->name('activities.')->group(function () {
+            Route::get('/', [ActivityController::class, 'index'])->name('index');
+            Route::get('/user/{id}', [ActivityController::class, 'show'])->name('show');
+        });
+        
         // FAQ Management
         Route::prefix('faqs')->name('faqs.')->group(function () {
             Route::get('/', [FaqController::class, 'index'])->name('index');
@@ -360,7 +384,8 @@ Route::prefix('admin')
             Route::post('/{faq}/restore', [FaqController::class, 'restore'])->name('restore');
             Route::delete('/{faq}/forceDelete', [FaqController::class, 'forceDelete'])->name('forceDelete');
         });
-        //Invoice Routes
+
+        // Invoice Routes
         Route::resource('invoices', InvoiceController::class);
         Route::get('invoices/{invoice}/pdf', [InvoiceController::class, 'exportPdf'])->name('invoices.export-pdf');
 
@@ -370,4 +395,17 @@ Route::prefix('admin')
         Route::post('variants/{id}/restore', [ProductVariantController::class, 'restore'])->name('variants.restore');
         Route::put('variants/{variant}', [ProductVariantController::class, 'update'])->name('variants.update');
         Route::delete('variants/{variant}', [ProductVariantController::class, 'destroy'])->name('variants.destroy');
+
+        // New route for checking variant slug
+        Route::get('/admin/ajax/check-variant-slug', [ProductController::class, 'checkVariantSlug']);
     });
+
+Route::post('/voucher/check', [ClientVoucherController::class, 'check'])->name('voucher.check');
+
+// Admin Profile Routes
+Route::prefix('admin/profile')->name('admin.profile.')->middleware('auth','role:admin|staff')->group(function () {
+    Route::get('/', [AdminProfileController::class, 'edit'])->name('index');
+    Route::put('/', [AdminProfileController::class, 'update'])->name('update');
+    Route::get('/password', [AdminProfileController::class, 'password'])->name('password');
+    Route::put('/password', [AdminProfileController::class, 'updatePassword'])->name('update-password');
+});

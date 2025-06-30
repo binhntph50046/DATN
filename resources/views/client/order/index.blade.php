@@ -9,7 +9,7 @@
             <div class="row align-items-center">
                 <div class="col-md-8">
                     <div class="header-content">
-                        <h1 class="display-6 fw-bold text-gray mb-2">Quản lý đơn hàng</h1>
+                        <h1 class="display-6 fw-bold text-gray mb-2">Đơn hàng của tôi</h1>
                         <p class="text-gray-50 mb-0 fs-5">Theo dõi và quản lý tất cả đơn hàng của bạn một cách dễ dàng</p>
                     </div>
                 </div>

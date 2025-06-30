@@ -42,7 +42,26 @@ class PaymentController
             $price = $variant->selling_price;
             $quantity = $request->quantity;
             $subtotal = $price * $quantity;
-            $discount = 0; // Có thể tính giảm giá nếu có voucher
+            $discount = 0;
+
+            // Xử lý voucher nếu có
+            if ($request->filled('voucher_code')) {
+                $voucher = \App\Models\Voucher::where('code', $request->voucher_code)
+                    ->where('is_active', 1)
+                    ->where('expires_at', '>', now())
+                    ->first();
+                
+                if ($voucher) {
+                    // Tính số tiền giảm giá
+                    $discount = $voucher->type == 'percentage' 
+                        ? round(($subtotal * $voucher->value) / 100) 
+                        : $voucher->value;
+
+                    // Đảm bảo số tiền giảm không vượt quá tổng đơn hàng
+                    $discount = min($discount, $subtotal);
+                }
+            }
+
             $shipping_fee = 0; // Có thể lấy từ phương thức vận chuyển
             $total_price = $subtotal + $shipping_fee - $discount;
 
@@ -63,6 +82,8 @@ class PaymentController
                 'status' => 'pending',
                 'is_paid' => 0,
                 'notes' => $request->c_order_notes,
+                'voucher_code' => $request->voucher_code,
+                'voucher_id' => $voucher->id ?? null,
             ]);
 
             // Tạo chi tiết đơn hàng
@@ -90,7 +111,7 @@ class PaymentController
             $vnp_TxnRef = $order->id; //Mã đơn hàng
             $vnp_OrderInfo = 'Thanh toan don hang #' . $order->id;
             $vnp_OrderType = 'billpayment';
-            $vnp_Amount = $total_price * 100; // Số tiền * 100
+            $vnp_Amount = $total_price * 100; // Số tiền * 100 (đã bao gồm giảm giá)
             $vnp_Locale = 'vn';
             $vnp_IpAddr = $request->ip();
             $vnp_CreateDate = date('YmdHis');
@@ -276,6 +297,25 @@ class PaymentController
                 $subtotal += $price * $item->quantity;
             }
             $discount = 0;
+
+            // Xử lý voucher nếu có
+            if ($request->filled('voucher_code')) {
+                $voucher = \App\Models\Voucher::where('code', $request->voucher_code)
+                    ->where('is_active', 1)
+                    ->where('expires_at', '>', now())
+                    ->first();
+                
+                if ($voucher) {
+                    // Tính số tiền giảm giá
+                    $discount = $voucher->type == 'percentage' 
+                        ? round(($subtotal * $voucher->value) / 100) 
+                        : $voucher->value;
+
+                    // Đảm bảo số tiền giảm không vượt quá tổng đơn hàng
+                    $discount = min($discount, $subtotal);
+                }
+            }
+
             $shipping_fee = 0;
             $total_price = $subtotal + $shipping_fee - $discount;
 
@@ -296,6 +336,8 @@ class PaymentController
                 'status' => 'pending',
                 'is_paid' => 0,
                 'notes' => $request->c_order_notes,
+                'voucher_code' => $request->voucher_code,
+                'voucher_id' => $voucher->id ?? null,
             ]);
 
             // Cập nhật mã đơn hàng sau khi có ID
@@ -335,7 +377,7 @@ class PaymentController
             $vnp_TxnRef = $order->order_code;
             $vnp_OrderInfo = 'Thanh toan don hang ' . $order->order_code;
             $vnp_OrderType = 'billpayment';
-            $vnp_Amount = $total_price * 100;
+            $vnp_Amount = $total_price * 100; // Số tiền * 100 (đã bao gồm giảm giá)
             $vnp_Locale = 'vn';
             $vnp_IpAddr = request()->ip();
             $vnp_CreateDate = date('YmdHis');

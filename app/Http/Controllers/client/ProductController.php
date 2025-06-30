@@ -4,6 +4,7 @@ namespace App\Http\Controllers\client;
 
 use App\Models\Product;
 use App\Models\ProductView;
+use App\Services\Product\ProductSuggestionService;
 use App\Models\ProductVariant;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
@@ -35,7 +36,12 @@ class ProductController
             'product_id' => $product->id,
         ]);
 
-        return view('client.product.product-detail', compact('product', 'relatedProducts'));
+        // Gợi ý sản phẩm
+        $suggestionService = new ProductSuggestionService();
+        $suggestions = $suggestionService->getAllSuggestions($product, Auth::id());
+        // dd($suggestions);
+
+        return view('client.product.product-detail', compact('product', 'relatedProducts', 'suggestions'));
     }
 
     public function getProductDetails($id): JsonResponse

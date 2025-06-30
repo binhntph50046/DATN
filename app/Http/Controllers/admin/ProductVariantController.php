@@ -106,6 +106,8 @@ class ProductVariantController
         try {
             DB::beginTransaction();
 
+            $productId = $variant->product_id;
+
             // Kiểm tra xem biến thể này có phải là mặc định không
             if ($variant->is_default) {
                 // Tìm một biến thể khác còn tồn tại của cùng sản phẩm
@@ -123,6 +125,19 @@ class ProductVariantController
             // Xóa mềm các combinations và biến thể
             $variant->combinations()->delete();
             $variant->delete();
+
+            // Kiểm tra nếu không còn biến thể nào của sản phẩm này (chỉ tính biến thể chưa bị xóa mềm)
+            $remainingVariants = ProductVariant::where('product_id', $productId)
+                ->whereNull('deleted_at')
+                ->count();
+
+            if ($remainingVariants === 0) {
+                // Xóa mềm luôn sản phẩm
+                $product = Product::find($productId);
+                if ($product) {
+                    $product->delete();
+                }
+            }
 
             DB::commit();
             return redirect()->route('admin.variants.index')

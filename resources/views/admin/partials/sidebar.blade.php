@@ -181,6 +181,12 @@
                                 <span class="pc-mtext">Email đăng ký</span>
                             </a>
                         </li>
+                        <li class="pc-item">
+                            <a href="{{ route('admin.activities.index') }}" class="pc-link">
+                                <span class="pc-micon"><i class="ti ti-clock"></i></span>
+                                <span class="pc-mtext">Hoạt động</span>
+                            </a>
+                        </li>
                     </ul>
                 </li>
 

@@ -28,6 +28,8 @@ use App\Http\Controllers\admin\ProductVariantController;
 use App\Http\Controllers\Admin\InvoiceController;
 use App\Http\Controllers\Admin\OrderReturnController as AdminOrderReturnController;
 use App\Http\Controllers\Admin\AdminProfileController;
+use App\Http\Controllers\Admin\SitemapController;
+use App\Http\Controllers\Admin\RobotController;
 
 // Client Controllers
 use App\Http\Controllers\client\HomeController;
@@ -396,6 +398,19 @@ Route::prefix('admin')
         Route::post('variants/{id}/restore', [ProductVariantController::class, 'restore'])->name('variants.restore');
         Route::put('variants/{variant}', [ProductVariantController::class, 'update'])->name('variants.update');
         Route::delete('variants/{variant}', [ProductVariantController::class, 'destroy'])->name('variants.destroy');
+
+        // Sitemap Management
+        Route::prefix('sitemap')->name('sitemap.')->group(function () {
+            Route::get('/', [SitemapController::class, 'index'])->name('index');
+            Route::post('/generate', [SitemapController::class, 'generate'])->name('generate');
+            Route::get('/view', [SitemapController::class, 'view'])->name('view');
+        });
+
+        // Robots Management
+        Route::prefix('robots')->name('robots.')->group(function () {
+            Route::get('/', [RobotController::class, 'index'])->name('index');
+            Route::post('/update', [RobotController::class, 'update'])->name('update');
+        });
 
         // New route for checking variant slug
         Route::get('/admin/ajax/check-variant-slug', [ProductController::class, 'checkVariantSlug']);

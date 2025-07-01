@@ -126,7 +126,7 @@
                                                         class="btn btn-info btn-sm" title="Edit">
                                                         <i class="ti ti-edit"></i>
                                                     </a>
-                                                    <form action="{{ route('admin.flash-sales.destroy', $flashSale->id) }}"
+                                                    {{-- <form action="{{ route('admin.flash-sales.destroy', $flashSale->id) }}"
                                                         method="POST" class="d-inline">
                                                         @csrf
                                                         @method('DELETE')
@@ -134,23 +134,7 @@
                                                             onclick="return confirm('Are you sure you want to delete this flash sale?')">
                                                             <i class="ti ti-trash"></i>
                                                         </button>
-                                                    </form>
-                                                    {{-- <a href="{{ route('admin.flash-sales.show', $flashSale->id) }}"
-                                                        class="btn btn-primary btn-sm" title="View">
-                                                        <i class="ti ti-eye"></i>
-                                                    </a> --}}
-                                                    {{-- Nút Hoàn trả stock chỉ hiện khi trạng thái là Ended (2) --}}
-                                                    @if ($flashSale->status == 0)
-                                                        <form
-                                                            action="{{ route('admin.flash-sales.return-stock', $flashSale->id) }}"
-                                                            method="POST" style="display:inline-block;">
-                                                            @csrf
-                                                            <button type="submit" class="btn btn-sm btn-warning"
-                                                                onclick="return confirm('Bạn có chắc muốn hoàn trả stock cho Flash Sale này?');">
-                                                                Hoàn trả stock
-                                                            </button>
-                                                        </form>
-                                                    @endif
+                                                    </form> --}}
                                                 </td>
                                             </tr>
                                         @endforeach

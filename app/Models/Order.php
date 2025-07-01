@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\OrderItem;
+use App\Models\OrderReturn;
 
 class Order extends Model
 {
@@ -13,6 +14,7 @@ class Order extends Model
 
     protected $fillable = [
         'user_id',
+        'order_code',
         'subtotal',
         'discount',
         'shipping_fee',
@@ -25,6 +27,9 @@ class Order extends Model
         'payment_status',
         'shipping_method_id',
         'status',
+        'voucher_id',
+        'voucher_code',
+        'discount_amount',
         'is_paid',
         'notes',
         'cancel_reason',
@@ -36,6 +41,7 @@ class Order extends Model
         'discount' => 'decimal:2',
         'shipping_fee' => 'decimal:2',
         'total_price' => 'decimal:2',
+        'discount_amount' => 'decimal:2',
     ];
 
     // Relationships
@@ -51,7 +57,12 @@ class Order extends Model
 
     public function items()
     {
-        return $this->hasMany(OrderItem::class, 'order_id');
+        return $this->hasMany(OrderItem::class);
+    }
+
+    public function returns()
+    {
+        return $this->hasMany(OrderReturn::class);
     }
 
     // Scopes
@@ -69,15 +80,6 @@ class Order extends Model
     {
         return $query->where('status', 'cancelled');
     }
-
-    /**
-     * Lấy chi tiết đơn hàng
-     */
-    public function details()
-    {
-        return $this->hasMany(OrderItem::class);
-    }
-
     /**
      * Lấy trạng thái đơn hàng dạng text
      */
@@ -90,6 +92,8 @@ class Order extends Model
             'shipping' => 'Đang giao hàng',
             'completed' => 'Đã hoàn thành',
             'cancelled' => 'Đã hủy',
+            'returned' => 'Đã hoàn đơn',
+            'partially_returned' => 'Hoàn một phần',
         ];
         return $statuses[$this->status] ?? $this->status;
     }
@@ -119,5 +123,20 @@ class Order extends Model
             'credit_card' => 'Thẻ tín dụng',
         ];
         return $methods[$this->payment_method] ?? $this->payment_method;
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($order) {
+            // Tạo mã đơn hàng theo format: ORD + YYYYMMDD + 4 số ngẫu nhiên
+            $order->order_code = 'DH' . str_pad(mt_rand(1, 9999), 4, '0', STR_PAD_LEFT);
+        });
+    }
+
+    public function voucher()
+    {
+        return $this->belongsTo(Voucher::class);
     }
 }

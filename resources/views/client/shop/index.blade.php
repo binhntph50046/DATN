@@ -1,4 +1,5 @@
 @extends('client.layouts.app')
+@section('title', 'Cửa hàng - Apple Store')
 
 @section('content')
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
@@ -27,135 +28,171 @@
     <div class="untree_co-section product-section">
         <div class="container">
             <!-- Flash Sale Section -->
-            <div class="row mb-5" data-aos="fade-up" style="background: rgb(211, 211, 211);border-radius: 10px">
-                <div class="col-12">
-                    <div class="section-header d-flex justify-content-between align-items-center">
-                        <div class="flash-sale-image col-5">
-                            <img src="https://cdnv2.tgdd.vn/webmwg/2024/tz/images/icon-fs.png" alt="Flash Sale"
-                                class="img-fluid">
+            @if ($flashSaleItems->count() && $flashSaleTimeRange)
+                @php
+                    $startTime = $flashSaleTimeRange['start_time'];
+                    $endTime = $flashSaleTimeRange['end_time'];
+                @endphp
+
+                <!-- Flash Sale Section -->
+                {{-- <div class="row mb-5" data-aos="fade-up" style="background: rgb(211, 211, 211);border-radius: 10px">
+                    <div class="col-12">
+                        <div class="section-header d-flex justify-content-between align-items-center flex-wrap">
+                            <div class="flash-sale-image col-md-4 col-sm-12 mb-2">
+                                <img src="https://cdnv2.tgdd.vn/webmwg/2024/tz/images/icon-fs.png" alt="Flash Sale"
+                                    class="img-fluid">
+                            </div>
+
+                            <div class="countdown-timer col-md-2 col-sm-6 mb-2">
+                                <h5 class="time">KẾT THÚC TRONG:</h5>
+                                <h3 id="countdown">00:00:00</h3>
+                            </div>
+
+                            <div class="ongoing-time col-md-3 col-sm-6 mb-2">
+                                <h5 class="time">Đang diễn ra:</h5>
+                                <h4 style="white-space: nowrap;">
+                                    {{ $startTime->format('d/m/Y H:i') }} - {{ $endTime->format('d/m/Y H:i') }}
+                                </h4>
+                            </div> --}}
+                <div class="row mb-5" data-aos="fade-up" style="background: rgb(211, 211, 211);border-radius: 10px">
+                    <div class="col-12">
+                        <div class="row section-header align-items-center">
+
+                            <div class="flash-sale-image col-md-4 col-sm-12 mb-2">
+                                <img src="https://cdnv2.tgdd.vn/webmwg/2024/tz/images/icon-fs.png" alt="Flash Sale"
+                                    class="img-fluid">
+                            </div>
+
+                            <div class="countdown-timer col-md-3 col-sm-6 mb-2">
+                                <h5 class="time">KẾT THÚC TRONG:</h5>
+                                <h4 id="countdown" style="white-space: nowrap;">00:00:00</h3>
+                            </div>
+
+                            <div class="ongoing-time col-md-3 col-sm-6 mb-2">
+                                <h5 class="time">ĐANG DIỄN RA:</h5>
+                                <h4 style="white-space: nowrap;">
+                                    {{ $startTime->format('d/m/Y H:i') }} - {{ $endTime->format('d/m/Y H:i') }}
+                                </h4>
+                            </div>
+
+
+                            {{-- <div class="extra-info col-md-2 col-sm-6 mb-2">
+                                <h5 class="time">Ngày:</h5>
+                                <h4>{{ $startTime->format('d/m/Y') }}</h4>
+                            </div> --}}
                         </div>
-                        <div class="countdown-timer col-2 d-flex flex-wrap">
-                            <h5 class="time">KẾT THÚC TRONG:</h5>
-                            <h3>00:00:00</h3>
-                        </div>
-                        <div class="ongoing-time col-2">
-                            <h5 class="time">Đang diễn ra:</h5>
-                            <h4>08:00 - 23:59</h4>
-                        </div>
-                        <div class="extra-info col-2">
-                            <h5 class="time">Ngày mai:</h5>
-                            <h4>08:00 - 23:59</h4>
+
+                        <div class="col-12">
+                            <div class="product-slider flash-sale-slider">
+                                @foreach ($flashSaleItems as $item)
+                                    <div class="product-item product-carousel" data-aos="fade-up" data-aos-delay="100">
+                                        <a href="{{ route('product.detail', ['slug' => $item->product_slug]) }}">
+                                            <div class="product-thumbnail">
+                                                <img src="{{ asset($item->first_image) }}" class="img-fluid"
+                                                    alt="{{ $item->variant_name }}">
+                                                <div class="discount-badge">
+                                                    @if ($item->discount_type == 'percent')
+                                                        -{{ $item->discount }}%
+                                                    @else
+                                                        -{{ number_format($item->discount, 0) }}đ
+                                                    @endif
+                                                </div>
+                                            </div>
+                                            <h3 class="product-title">{{ $item->variant_name }}</h3>
+                                            <h6>Count: {{ $item->count }}</h5>
+                                            <div class="product-price-and-rating">
+                                                <div class="price-wrapper">
+                                                    @php
+                                                        $original = $item->selling_price;
+                                                        $discount =
+                                                            $item->discount_type === 'percent'
+                                                                ? $original * (1 - $item->discount / 100)
+                                                                : $original - $item->discount;
+                                                    @endphp
+                                                    <strong
+                                                        class="product-price">{{ number_format($discount, 0) }}$</strong>
+                                                    <span
+                                                        class="old-price"><del>{{ number_format($original, 0) }}$</del></span>
+                                                </div>
+                                                <div class="product-rating">
+                                                    <i class="fas fa-star"></i><i class="fas fa-star"></i>
+                                                    <i class="fas fa-star"></i><i class="fas fa-star"></i>
+                                                    <i class="fas fa-star"></i><span>(4.9)</span>
+                                                </div>
+                                            </div>
+                                            <div class="product-icons">
+                                                <span class="icon-add-to-cart"><i class="fas fa-cart-plus"></i></span>
+                                                <span class="icon-heart"><i class="fas fa-heart"></i></span>
+                                                <span class="icon-quick-view"><i class="fas fa-eye"></i></span>
+                                            </div>
+                                        </a>
+                                    </div>
+                                @endforeach
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="col-12">
-                    <div class="product-slider flash-sale-slider">
-                        <!-- Flash Sale Products -->
-                        @for ($i = 0; $i < 8; $i++)
-                            <div class="product-item product-carousel" data-aos="fade-up" data-aos-delay="100">
-                                <a href="product-detail.html">
-                                    <div class="product-thumbnail">
-                                        <img src="https://cdn.tgdd.vn/Products/Images/9118/328721/s16/apple-tv-4k-wifi-64gb-thumb-650x650.png"
-                                            class="img-fluid" alt="Product">
-                                        <div class="discount-badge">-20%</div>
-                                    </div>
-                                    <h3 class="product-title">Product Name</h3>
-                                    <div class="product-price-and-rating">
-                                        <div class="price-wrapper">
-                                            <strong class="product-price">$50.00</strong>
-                                            <span class="old-price"><del>$60.00</del></span>
-                                        </div>
-                                        <div class="product-rating">
-                                            <i class="fas fa-star"></i>
-                                            <i class="fas fa-star"></i>
-                                            <i class="fas fa-star"></i>
-                                            <i class="fas fa-star"></i>
-                                            <i class="fas fa-star"></i>
-                                            <span>(4.9)</span>
-                                        </div>
-                                    </div>
-                                    <div class="product-icons">
-                                        <span class="icon-add-to-cart"><i class="fas fa-cart-plus"></i></span>
-                                        <span class="icon-heart"><i class="fas fa-heart"></i></span>
-                                        <span class="icon-quick-view"><i class="fas fa-eye"></i></span>
-                                    </div>
-                                </a>
-                            </div>
-                        @endfor
-                    </div>
-                </div>
-            </div>
+                <!-- Countdown Script -->
+                <script>
+                    const endTime = new Date("{{ $endTime->toIso8601String() }}").getTime();
+                    const countdownElement = document.getElementById('countdown');
+
+                    const countdownInterval = setInterval(() => {
+                        const now = new Date().getTime();
+                        const distance = endTime - now;
+
+                        if (distance < 0) {
+                            clearInterval(countdownInterval);
+                            countdownElement.innerHTML = "Đã kết thúc";
+                            return;
+                        }
+
+                        const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                        const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+                        countdownElement.innerHTML =
+                            (days > 0 ? days + ' ngày ' : '') +
+                            String(hours).padStart(2, '0') + ':' +
+                            String(minutes).padStart(2, '0') + ':' +
+                            String(seconds).padStart(2, '0');
+                    }, 1000);
+                </script>
+            @endif
+
 
             {{-- để danh mục ở đây 6 cái nhé  --}}
-            <div>
-                <ul class="choose-cate d-flex justify-content-between">
-                    <li class="box_category" data-aos="fade-up" data-aos-delay="100">
-                        <a href="/iphone">
-                            <div class="img-catesp cateiphone">
-                                <img src="https://cdnv2.tgdd.vn/webmwg/2024/tz/images/desktop/IP_Desk.png" alt=""
-                                    width="102" height="112">
-                            </div>
-                            <span>iPhone</span>
-                        </a>
-                    </li>
-                    <li class="box_category" data-aos="fade-up" data-aos-delay="100">
-                        <a href="/mac">
-                            <div class="img-catesp catemac">
-                                <img src="https://cdnv2.tgdd.vn/webmwg/2024/tz/images/desktop/Mac_Desk.png" alt=""
-                                    width="150" height="97">
-                            </div>
-                            <span>Mac</span>
-                        </a>
-                    </li>
-                    <li class="box_category" data-aos="fade-up" data-aos-delay="100">
-                        <a href="/ipad">
-                            <div class="img-catesp cateipad">
-                                <img src="https://cdnv2.tgdd.vn/webmwg/2024/tz/images/desktop/Ipad_Desk.png" alt=""
-                                    width="116" height="102">
-                            </div>
-                            <span>iPad</span>
-                        </a>
-                    </li>
-                    <li class="box_category" data-aos="fade-up" data-aos-delay="100">
-                        <a href="/apple-watch">
-                            <div class="img-catesp catewatch">
-                                <img src="https://cdnv2.tgdd.vn/webmwg/2024/tz/images/desktop/Watch_Desk.png" alt=""
-                                    width="169" height="110">
-                            </div>
-                            <span>Watch</span>
-                        </a>
-                    </li>
-                    <li class="box_category" data-aos="fade-up" data-aos-delay="100">
-                        <a href="/am-thanh">
-                            <div class="img-catesp cateisound">
-                                <img src="https://cdnv2.tgdd.vn/webmwg/2024/tz/images/desktop/Speaker_Desk.png"
-                                    alt="" width="169" height="124">
-                            </div>
-                            <span>Tai nghe, loa</span>
-                        </a>
-                    </li>
-                    <li class="box_category" data-aos="fade-up" data-aos-delay="100">
-                        <a href="/phu-kien">
-                            <div class="img-catesp catephukien">
-                                <img src="https://cdnv2.tgdd.vn/webmwg/2024/tz/images/desktop/Phukien_Desk.png"
-                                    alt="" width="71" height="100">
-                            </div>
-                            <span>Phụ kiện</span>
-                        </a>
-                    </li>
+            <div class="category-menu-container mb-5">
+                @php
+                    $topCategories = $topCategories ?? collect();
+                    $isSlider = $topCategories->count() > 6;
+                @endphp
+                <ul class="choose-cate {{ $isSlider ? 'category-menu-slider' : 'd-flex justify-content-center' }}">
+                    @foreach ($topCategories as $category)
+                        <li class="box_category" data-aos="fade-up" data-aos-delay="{{ $loop->index * 50 }}">
+                            <a href="{{ route('shop.category', ['slug' => $category->slug]) }}">
+                                <div class="img-catesp">
+                                    <img src="{{ asset($category->image) }}" alt="{{ $category->name }}"
+                                         style="width: 100px; height: 100px; object-fit: contain;">
+                                </div>
+                                <span>{{ $category->name }}</span>
+                            </a>
+                        </li>
+                    @endforeach
                 </ul>
             </div>
             <!-- Category Products -->
             @foreach ($categories as $category)
                 @if ($category->products->count() > 0)
-            <div class="row mb-5" data-aos="fade-up">
-                <div class="col-12">
+                    <div class="row mb-5" data-aos="fade-up">
+                        <div class="col-12">
                             <h2 class="section-title text-center mb-3 mt-5">
                                 <i class="fa-brands fa-apple"></i>{{ $category->name }}
                             </h2>
-                </div>
-                <div class="col-12">
+                        </div>
+                        <div class="col-12">
                             @if ($category->products->count() >= 4)
                                 <div class="product-slider category-slider">
                                     @foreach ($category->products as $product)
@@ -169,18 +206,38 @@
                                                         $defaultVariant = $product->variants->first();
 
                                                         if ($defaultVariant && $defaultVariant->images) {
-                                                            $images = json_decode($defaultVariant->images, true);
-                                                            if (!empty($images[0])) {
-                                                                $variantImage = asset($images[0]);
+                                                            $images = $defaultVariant->images;
+                                                            // Nếu là array, sử dụng trực tiếp
+                                                            if (is_array($images)) {
+                                                                if (!empty($images[0])) {
+                                                                    $variantImage = asset($images[0]);
+                                                                }
+                                                            } 
+                                                            // Nếu là string, thử decode
+                                                            else if (is_string($images)) {
+                                                                $decoded = json_decode($images, true);
+                                                                if (is_array($decoded) && !empty($decoded[0])) {
+                                                                    $variantImage = asset($decoded[0]);
+                                                                }
                                                             }
                                                         }
 
                                                         if (!$variantImage) {
                                                             $otherVariant = $product->variants->skip(1)->first();
                                                             if ($otherVariant && $otherVariant->images) {
-                                                                $images = json_decode($otherVariant->images, true);
-                                                                if (!empty($images[0])) {
-                                                                    $variantImage = asset($images[0]);
+                                                                $images = $otherVariant->images;
+                                                                // Nếu là array, sử dụng trực tiếp
+                                                                if (is_array($images)) {
+                                                                    if (!empty($images[0])) {
+                                                                        $variantImage = asset($images[0]);
+                                                                    }
+                                                                } 
+                                                                // Nếu là string, thử decode
+                                                                else if (is_string($images)) {
+                                                                    $decoded = json_decode($images, true);
+                                                                    if (is_array($decoded) && !empty($decoded[0])) {
+                                                                        $variantImage = asset($decoded[0]);
+                                                                    }
                                                                 }
                                                             }
                                                         }
@@ -189,9 +246,9 @@
                                                     <img src="{{ $variantImage ?? $defaultImage }}"
                                                         class="img-fluid mx-auto" alt="{{ $product->name }}"
                                                         style="max-height: 200px; object-fit: contain;">
-                                    </div>
+                                                </div>
                                                 <h3 class="product-title">{{ $product->name }}</h3>
-                                    <div class="product-price-and-rating">
+                                                <div class="product-price-and-rating">
                                                     <div class="price-wrapper">
                                                         @if ($product->discount_price)
                                                             <strong
@@ -203,7 +260,7 @@
                                                                 class="product-price">{{ number_format($product->price) }}đ</strong>
                                                         @endif
                                                     </div>
-                                        <div class="product-rating">
+                                                    <div class="product-rating">
                                                         @php
                                                             $rating = $product->reviews->avg('rating') ?? 0;
                                                             $fullStars = floor($rating);
@@ -211,7 +268,7 @@
                                                         @endphp
                                                         @for ($i = 1; $i <= 5; $i++)
                                                             @if ($i <= $fullStars)
-                                            <i class="fas fa-star"></i>
+                                                                <i class="fas fa-star"></i>
                                                             @elseif($i == $fullStars + 1 && $halfStar)
                                                                 <i class="fas fa-star-half-alt"></i>
                                                             @else
@@ -219,9 +276,9 @@
                                                             @endif
                                                         @endfor
                                                         <span>({{ number_format($product->views) }} lượt xem)</span>
-                                        </div>
-                                    </div>
-                                    <div class="product-icons">
+                                                    </div>
+                                                </div>
+                                                <div class="product-icons">
                                                     <span class="icon-add-to-cart" data-product-id="{{ $product->id }}">
                                                         <i class="fas fa-cart-plus"></i>
                                                     </span>
@@ -231,11 +288,11 @@
                                                     <span class="icon-quick-view" data-product-id="{{ $product->id }}">
                                                         <i class="fas fa-eye"></i>
                                                     </span>
-                                    </div>
-                                </a>
+                                                </div>
+                                            </a>
                                         </div>
                                     @endforeach
-                                    </div>
+                                </div>
                             @else
                                 <div class="row product-grid">
                                     @foreach ($category->products as $product)
@@ -249,18 +306,38 @@
                                                             $defaultVariant = $product->variants->first();
 
                                                             if ($defaultVariant && $defaultVariant->images) {
-                                                                $images = json_decode($defaultVariant->images, true);
-                                                                if (!empty($images[0])) {
-                                                                    $variantImage = asset($images[0]);
+                                                                $images = $defaultVariant->images;
+                                                                // Nếu là array, sử dụng trực tiếp
+                                                                if (is_array($images)) {
+                                                                    if (!empty($images[0])) {
+                                                                        $variantImage = asset($images[0]);
+                                                                    }
+                                                                } 
+                                                                // Nếu là string, thử decode
+                                                                else if (is_string($images)) {
+                                                                    $decoded = json_decode($images, true);
+                                                                    if (is_array($decoded) && !empty($decoded[0])) {
+                                                                        $variantImage = asset($decoded[0]);
+                                                                    }
                                                                 }
                                                             }
 
                                                             if (!$variantImage) {
                                                                 $otherVariant = $product->variants->skip(1)->first();
                                                                 if ($otherVariant && $otherVariant->images) {
-                                                                    $images = json_decode($otherVariant->images, true);
-                                                                    if (!empty($images[0])) {
-                                                                        $variantImage = asset($images[0]);
+                                                                    $images = $otherVariant->images;
+                                                                    // Nếu là array, sử dụng trực tiếp
+                                                                    if (is_array($images)) {
+                                                                        if (!empty($images[0])) {
+                                                                            $variantImage = asset($images[0]);
+                                                                        }
+                                                                    } 
+                                                                    // Nếu là string, thử decode
+                                                                    else if (is_string($images)) {
+                                                                        $decoded = json_decode($images, true);
+                                                                        if (is_array($decoded) && !empty($decoded[0])) {
+                                                                            $variantImage = asset($decoded[0]);
+                                                                        }
                                                                     }
                                                                 }
                                                             }
@@ -269,9 +346,9 @@
                                                         <img src="{{ $variantImage ?? $defaultImage }}"
                                                             class="img-fluid mx-auto" alt="{{ $product->name }}"
                                                             style="max-height: 200px; object-fit: contain;">
-                </div>
+                                                    </div>
                                                     <h3 class="product-title">{{ $product->name }}</h3>
-                                    <div class="product-price-and-rating">
+                                                    <div class="product-price-and-rating">
                                                         <div class="price-wrapper">
                                                             @if ($product->discount_price)
                                                                 <strong
@@ -282,8 +359,8 @@
                                                                 <strong
                                                                     class="product-price">{{ number_format($product->price) }}đ</strong>
                                                             @endif
-                                    </div>
-                                        <div class="product-rating">
+                                                        </div>
+                                                        <div class="product-rating">
                                                             @php
                                                                 $rating = $product->reviews->avg('rating') ?? 0;
                                                                 $fullStars = floor($rating);
@@ -291,17 +368,17 @@
                                                             @endphp
                                                             @for ($i = 1; $i <= 5; $i++)
                                                                 @if ($i <= $fullStars)
-                                            <i class="fas fa-star"></i>
+                                                                    <i class="fas fa-star"></i>
                                                                 @elseif($i == $fullStars + 1 && $halfStar)
                                                                     <i class="fas fa-star-half-alt"></i>
                                                                 @else
                                                                     <i class="far fa-star"></i>
                                                                 @endif
-                        @endfor
+                                                            @endfor
                                                             <span>({{ number_format($product->views) }} lượt xem)</span>
-                                        </div>
-                                    </div>
-                                    <div class="product-icons">
+                                                        </div>
+                                                    </div>
+                                                    <div class="product-icons">
                                                         <span class="icon-add-to-cart"
                                                             data-product-id="{{ $product->id }}">
                                                             <i class="fas fa-cart-plus"></i>
@@ -313,14 +390,14 @@
                                                             data-product-id="{{ $product->id }}">
                                                             <i class="fas fa-eye"></i>
                                                         </span>
-                                    </div>
-                                </a>
-                            </div>
+                                                    </div>
+                                                </a>
+                                            </div>
                                         </div>
                                     @endforeach
                                 </div>
                             @endif
-                            </div>
+                        </div>
                     </div>
                 @endif
             @endforeach
@@ -341,14 +418,24 @@
                         <div class="col-md-6">
                             <div class="product-gallery">
                                 <div class="main-image mb-4 position-relative">
-                                    <button id="quickViewPrevImageBtn" class="image-nav-btn" style="display:none;"><i class="fas fa-chevron-left"></i></button>
-                                    <img src="" class="img-fluid quick-view-image" id="quickViewMainImage" alt="Product Image">
-                                    <button id="quickViewNextImageBtn" class="image-nav-btn" style="display:none;"><i class="fas fa-chevron-right"></i></button>
+                                    <button id="quickViewPrevImageBtn" class="image-nav-btn" style="display:none;"><i
+                                            class="fas fa-chevron-left"></i></button>
+                                    <img src="" class="img-fluid quick-view-image" id="quickViewMainImage"
+                                        alt="Product Image">
+                                    <button id="quickViewNextImageBtn" class="image-nav-btn" style="display:none;"><i
+                                            class="fas fa-chevron-right"></i></button>
                                 </div>
                                 <div class="thumbnail-slider position-relative">
-                                    <button id="quickViewThumbPrevBtn" class="image-nav-btn" style="left:0;top:50%;transform:translateY(-50%);" onclick="quickViewScrollThumbnails(-1)"><i class="fas fa-chevron-left"></i></button>
-                                    <div class="row flex-nowrap overflow-auto" id="quickViewThumbnailsRow" style="scroll-behavior:smooth; margin:0 48px;"></div>
-                                    <button id="quickViewThumbNextBtn" class="image-nav-btn" style="right:0;top:50%;transform:translateY(-50%);" onclick="quickViewScrollThumbnails(1)"><i class="fas fa-chevron-right"></i></button>
+                                    <button id="quickViewThumbPrevBtn" class="image-nav-btn"
+                                        style="left:0;top:50%;transform:translateY(-50%);"
+                                        onclick="quickViewScrollThumbnails(-1)"><i
+                                            class="fas fa-chevron-left"></i></button>
+                                    <div class="row flex-nowrap overflow-auto" id="quickViewThumbnailsRow"
+                                        style="scroll-behavior:smooth; margin:0 48px;"></div>
+                                    <button id="quickViewThumbNextBtn" class="image-nav-btn"
+                                        style="right:0;top:50%;transform:translateY(-50%);"
+                                        onclick="quickViewScrollThumbnails(1)"><i
+                                            class="fas fa-chevron-right"></i></button>
                                 </div>
                             </div>
                         </div>
@@ -372,7 +459,8 @@
                                 <label class="form-label">Quantity:</label>
                                 <div class="quantity-control">
                                     <button class="quantity-btn minus">-</button>
-                                    <input type="number" id="quickViewQuantity" class="form-control" value="1" min="1" readonly>
+                                    <input type="number" id="quickViewQuantity" class="form-control" value="1"
+                                        min="1" readonly>
                                     <button class="quantity-btn plus">+</button>
                                 </div>
                             </div>
@@ -396,6 +484,48 @@
     <script src="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
     <script>
         $(document).ready(function() {
+            // Initialize category menu slider
+            if ($('.category-menu-slider').length) {
+                $('.category-menu-slider').slick({
+                    slidesToShow: 6,
+                    slidesToScroll: 2,
+                    autoplay: true,
+                    autoplaySpeed: 4000,
+                    arrows: true,
+                    dots: false,
+                    infinite: false,
+                    responsive: [{
+                            breakpoint: 1200,
+                            settings: {
+                                slidesToShow: 5,
+                                slidesToScroll: 2
+                            }
+                        },
+                        {
+                            breakpoint: 992,
+                            settings: {
+                                slidesToShow: 4,
+                                slidesToScroll: 2
+                            }
+                        },
+                        {
+                            breakpoint: 768,
+                            settings: {
+                                slidesToShow: 3,
+                                slidesToScroll: 1
+                            }
+                        },
+                        {
+                            breakpoint: 576,
+                            settings: {
+                                slidesToShow: 2,
+                                slidesToScroll: 1
+                            }
+                        }
+                    ]
+                });
+            }
+
             // Initialize flash sale slider
             $('.flash-sale-slider').slick({
                 slidesToShow: 4,
@@ -431,30 +561,30 @@
             });
 
             // Initialize blog slider
-                $('.blog-slider').slick({
+            $('.blog-slider').slick({
                 dots: false,
-                    infinite: true,
-                    speed: 300,
-                    slidesToShow: 3,
-                    slidesToScroll: 3,
-                    arrows: true,
+                infinite: true,
+                speed: 300,
+                slidesToShow: 3,
+                slidesToScroll: 3,
+                arrows: true,
                 variableWidth: false,
-                    responsive: [{
-                            breakpoint: 1024,
-                            settings: {
-                                slidesToShow: 2,
+                responsive: [{
+                        breakpoint: 1024,
+                        settings: {
+                            slidesToShow: 2,
                             slidesToScroll: 2
-                            }
-                        },
-                        {
-                            breakpoint: 600,
-                            settings: {
-                                slidesToShow: 1,
-                                slidesToScroll: 1
-                            }
                         }
-                    ]
-                });
+                    },
+                    {
+                        breakpoint: 600,
+                        settings: {
+                            slidesToShow: 1,
+                            slidesToScroll: 1
+                        }
+                    }
+                ]
+            });
 
             // Initialize all product category sliders
             $('.category-slider').each(function() {
@@ -498,7 +628,7 @@
                 if (slideCount < 4) {
                     $slider.addClass('few-items');
                 }
-                });
+            });
 
             // Countdown Timer for Flash Sale
             function updateCountdown() {
@@ -512,13 +642,13 @@
                 e.stopPropagation();
 
                 const productId = $(this).data('product-id');
-                
+
                 try {
                     const response = await fetch(`/api/products/${productId}`);
                     const product = await response.json();
-                    
+
                     currentQuickViewProduct = product;
-                    
+
                     // Reset previous data
                     quickViewVariantData = {};
                     quickViewAttributeToVariant = {};
@@ -531,7 +661,7 @@
                     $('.quick-view-title').text(product.name);
                     $('.quick-view-category').text(product.category ? product.category.name : 'N/A');
                     $('.quick-view-warranty').text(`${product.warranty_months || 'N/A'} months`);
-                    
+
                     // Setup variant data
                     product.variants.forEach(variant => {
                         quickViewVariantData[variant.id] = {
@@ -542,7 +672,8 @@
                         // Create attribute mapping
                         const attrValues = variant.combinations.map(comb => {
                             const value = comb.attribute_value.value;
-                            return Array.isArray(value) ? value[0] : (typeof value === 'string' ? value : value[0]);
+                            return Array.isArray(value) ? value[0] : (typeof value ===
+                                'string' ? value : value[0]);
                         });
                         quickViewAttributeToVariant[attrValues.join('|')] = variant.id;
                     });
@@ -572,25 +703,27 @@
                     Object.entries(attributeGroups).forEach(([typeName, valuesSet]) => {
                         const values = Array.from(valuesSet).map(v => JSON.parse(v));
                         const hasHex = values.some(v => v.hex && v.hex[0]);
-                        
+
                         const groupDiv = document.createElement('div');
                         groupDiv.className = 'variant-group mb-4';
-                        
+
                         const labelHtml = `
                             <label class="form-label variant-label">
                                 ${typeName}
                                 ${hasHex ? `<span id="quickview-selected-${typeName}-value" class="selected-value"></span>` : ''}
                             </label>
                         `;
-                        
+
                         const optionsDiv = document.createElement('div');
                         optionsDiv.className = 'variant-options';
-                        
+
                         if (hasHex) {
                             values.forEach(item => {
-                                const value = Array.isArray(item.value) ? item.value[0] : item.value;
-                                const hex = Array.isArray(item.hex) ? item.hex[0] : item.hex;
-                                
+                                const value = Array.isArray(item.value) ? item.value[
+                                    0] : item.value;
+                                const hex = Array.isArray(item.hex) ? item.hex[0] : item
+                                    .hex;
+
                                 optionsDiv.innerHTML += `
                                     <div class="color-option"
                                         title="${value}"
@@ -604,7 +737,8 @@
                             });
                         } else {
                             values.forEach(item => {
-                                const value = Array.isArray(item.value) ? item.value[0] : item.value;
+                                const value = Array.isArray(item.value) ? item.value[
+                                    0] : item.value;
                                 optionsDiv.innerHTML += `
                                     <button type="button"
                                         class="variant-btn"
@@ -616,21 +750,22 @@
                                 `;
                             });
                         }
-                        
+
                         groupDiv.innerHTML = labelHtml;
                         groupDiv.appendChild(optionsDiv);
                         variantGroups.appendChild(groupDiv);
                     });
 
                     // Set initial variant
-                    const defaultVariant = product.variants.find(v => v.is_default) || product.variants[0];
+                    const defaultVariant = product.variants.find(v => v.is_default) || product.variants[
+                        0];
                     if (defaultVariant) {
                         quickViewSelectAllAttributesOfVariant(defaultVariant.id);
                     }
 
                     // Show modal
                     $('#quickViewModal').modal('show');
-                    
+
                 } catch (error) {
                     console.error('Error fetching product details:', error);
                 }
@@ -670,7 +805,8 @@
                     alert('Vui lòng chọn đầy đủ thuộc tính sản phẩm trước khi đặt hàng!');
                     return;
                 }
-                window.location.href = '/checkout?variant_id=' + variantId + '&quantity=' + quantity + '&image=' + encodeURIComponent(mainImage);
+                window.location.href = '/checkout?variant_id=' + variantId + '&quantity=' + quantity +
+                    '&image=' + encodeURIComponent(mainImage);
             });
 
             // Image navigation buttons
@@ -701,10 +837,11 @@
         }
 
         function updateQuickViewImageNavButtons() {
-            document.getElementById('quickViewPrevImageBtn').style.display = 
+            document.getElementById('quickViewPrevImageBtn').style.display =
                 (quickViewCurrentImages.length > 1 && quickViewCurrentImageIndex > 0) ? '' : 'none';
-            document.getElementById('quickViewNextImageBtn').style.display = 
-                (quickViewCurrentImages.length > 1 && quickViewCurrentImageIndex < quickViewCurrentImages.length - 1) ? '' : 'none';
+            document.getElementById('quickViewNextImageBtn').style.display =
+                (quickViewCurrentImages.length > 1 && quickViewCurrentImageIndex < quickViewCurrentImages.length - 1) ? '' :
+                'none';
         }
 
         function quickViewShowPrevImage() {
@@ -727,7 +864,8 @@
             images.forEach((img, idx) => {
                 const div = document.createElement('div');
                 div.className = 'col-3';
-                div.innerHTML = `<img src="${img}" class="img-fluid thumbnail${idx===0?' active':''}" alt="Thumbnail" onclick="quickViewChangeMainImageByIndex(${idx})">`;
+                div.innerHTML =
+                    `<img src="${img}" class="img-fluid thumbnail${idx===0?' active':''}" alt="Thumbnail" onclick="quickViewChangeMainImageByIndex(${idx})">`;
                 container.appendChild(div);
             });
             updateQuickViewMainImageByIndex(0);
@@ -740,12 +878,15 @@
         function quickViewScrollThumbnails(direction) {
             const row = document.getElementById('quickViewThumbnailsRow');
             const scrollAmount = 120;
-            row.scrollBy({ left: direction * scrollAmount, behavior: 'smooth' });
+            row.scrollBy({
+                left: direction * scrollAmount,
+                behavior: 'smooth'
+            });
         }
 
         function quickViewSelectAllAttributesOfVariant(variantId) {
             if (!currentQuickViewProduct) return;
-            
+
             const selectedVariant = currentQuickViewProduct.variants.find(v => v.id === variantId);
             if (selectedVariant) {
                 document.querySelectorAll('#quickViewModal .color-option, #quickViewModal .variant-btn')
@@ -753,10 +894,15 @@
 
                 selectedVariant.combinations.forEach(comb => {
                     const typeName = comb.attribute_value.attribute_type.name.trim();
-                    const matchedType = quickViewRequiredTypes.find(t => t.toLowerCase() === typeName.toLowerCase()) || typeName;
+                    const matchedType = quickViewRequiredTypes.find(t => t.toLowerCase() === typeName
+                    .toLowerCase()) || typeName;
                     let value = comb.attribute_value.value;
                     if (typeof value === 'string') {
-                        try { value = JSON.parse(value); } catch { value = [value]; }
+                        try {
+                            value = JSON.parse(value);
+                        } catch {
+                            value = [value];
+                        }
                     }
                     value = Array.isArray(value) ? value[0] : value;
 
@@ -769,7 +915,7 @@
                             el.classList.add('active');
                         }
                     });
-                    
+
                     const labelSpan = document.getElementById('quickview-selected-' + typeName + '-value');
                     if (labelSpan) labelSpan.textContent = value;
                 });
@@ -780,7 +926,7 @@
                         const images = quickViewVariantData[variantId].images.map(img => baseUrl + img);
                         updateQuickViewThumbnails(images);
                     }
-                    document.querySelector('#quickViewModal .quick-view-price').textContent = 
+                    document.querySelector('#quickViewModal .quick-view-price').textContent =
                         quickViewVariantData[variantId].price.toLocaleString('vi-VN') + ' VNĐ';
                 }
             }
@@ -812,7 +958,7 @@
                     const images = quickViewVariantData[matchedVariantId].images.map(img => baseUrl + img);
                     updateQuickViewThumbnails(images);
                 }
-                document.querySelector('#quickViewModal .quick-view-price').textContent = 
+                document.querySelector('#quickViewModal .quick-view-price').textContent =
                     quickViewVariantData[matchedVariantId].price.toLocaleString('vi-VN') + ' VNĐ';
             }
         }
@@ -831,6 +977,10 @@
     </script>
 
     <style>
+        .choose-cate .box_category {
+            margin: 0 15px;
+        }
+
         /* CSS để xử lý hiển thị cho slider có ít sản phẩm */
         .category-slider.few-items {
             display: flex;
@@ -879,7 +1029,7 @@
         #quickViewModal .modal-content {
             border: none;
             border-radius: 12px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
 
         #quickViewModal .modal-body {
@@ -907,7 +1057,7 @@
             border-bottom: 1px solid #eee;
         }
 
-        #quickViewModal .product-meta > div {
+        #quickViewModal .product-meta>div {
             margin-bottom: 15px;
             display: flex;
             align-items: center;
@@ -925,85 +1075,196 @@
         }
 
         #quickViewModal .color-option {
-            width: 45px;
-            height: 45px;
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
             cursor: pointer;
-            border: 2px solid #fff;
-            box-shadow: 0 0 0 1px #ddd;
-            transition: all 0.2s ease;
+            border: 2px solid #ddd;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        #quickViewModal .color-option:not([data-hex]) {
+            border-radius: 4px;
+            background-color: #f8f9fa;
             position: relative;
         }
 
+        #quickViewModal .color-option:not([data-hex])::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 20px;
+            height: 20px;
+            background-color: #fff;
+            border: 1px solid #ddd;
+        }
+
         #quickViewModal .color-option.active {
-            border-color: #fff;
-            box-shadow: 0 0 0 2px #0071e3;
+            border-color: #007bff !important;
+            box-shadow: 0 0 0 2px #007bff33;
+            position: relative;
         }
 
         #quickViewModal .color-option:hover {
-            transform: scale(1.1);
-        }
-
-        #quickViewModal .variant-options {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 25px;
+            transform: scale(1.08);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
+            z-index: 2;
         }
 
         #quickViewModal .variant-btn {
-            padding: 10px 20px;
+            padding: 8px 16px;
+            margin-right: 10px;
             border: 1px solid #ddd;
             background: #fff;
-            border-radius: 8px;
+            border-radius: 4px;
             cursor: pointer;
-            transition: all 0.2s ease;
-            font-size: 14px;
-            color: #333;
+            transition: all 0.3s ease;
         }
 
         #quickViewModal .variant-btn.active {
-            border-color: #0071e3;
-            background: #0071e3;
-            color: #fff;
+            background: #fff !important;
+            color: #000 !important;
+            border: 2px solid #007bff !important;
+            box-shadow: 0 0 0 2px #007bff33;
         }
 
         #quickViewModal .variant-btn:hover {
-            border-color: #0071e3;
+            border-color: #007bff;
         }
 
         #quickViewModal .quantity-control {
             display: flex;
             align-items: center;
-            gap: 12px;
-            margin: 25px 0;
+            max-width: 150px;
         }
 
         #quickViewModal .quantity-btn {
-            width: 40px;
-            height: 40px;
+            padding: 8px 12px;
             border: 1px solid #ddd;
             background: #fff;
-            border-radius: 8px;
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
             display: flex;
             align-items: center;
             justify-content: center;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            font-size: 18px;
         }
 
-        #quickViewModal .quantity-btn:hover {
-            border-color: #0071e3;
-            color: #0071e3;
-        }
-
-        #quickViewModal #quickViewQuantity {
+        #quickViewModal .quantity-control input {
+            text-align: center;
+            border-left: none;
+            border-right: none;
+            border-radius: 0;
             width: 70px;
             height: 40px;
-            text-align: center;
-            border: 1px solid #ddd;
+        }
+
+        #quickViewModal .product-gallery {
+            background: #fff;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        #quickViewModal .main-image {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        #quickViewModal .main-image img {
+            width: 100%;
+            height: auto;
+            object-fit: contain;
             border-radius: 8px;
-            font-size: 16px;
+        }
+
+        #quickViewModal .image-nav-btn {
+            width: 48px;
+            height: 48px;
+            background: rgba(0,0,0,0.18);
+            border: none;
+            border-radius: 50%;
+            color: #fff;
+            font-size: 2rem;
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 3;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+        }
+
+        #quickViewModal .image-nav-btn:hover {
+            background: rgba(0,0,0,0.35);
+        }
+
+        #quickViewModal #quickViewPrevImageBtn { left: 12px; }
+        #quickViewModal #quickViewNextImageBtn { right: 12px; }
+
+        #quickViewModal .thumbnail-slider {
+            position: relative;
+            padding: 0 48px;
+        }
+
+        #quickViewModal #quickViewThumbPrevBtn,
+        #quickViewModal #quickViewThumbNextBtn {
+            width: 36px;
+            height: 36px;
+            background: rgba(0,0,0,0.18);
+            border: none;
+            border-radius: 50%;
+            color: #fff;
+            font-size: 1.3rem;
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 2;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+        }
+
+        #quickViewModal #quickViewThumbPrevBtn:hover,
+        #quickViewModal #quickViewThumbNextBtn:hover {
+            background: rgba(0,0,0,0.35);
+        }
+
+        #quickViewModal #quickViewThumbnailsRow {
+            margin: 0 48px;
+            overflow-x: auto;
+            flex-wrap: nowrap !important;
+            white-space: nowrap;
+            scroll-behavior: smooth;
+        }
+
+        #quickViewModal #quickViewThumbnailsRow .col-3 {
+            flex: 0 0 auto;
+            width: 80px;
+            max-width: 80px;
+            padding: 0 4px;
+        }
+
+        #quickViewModal #quickViewThumbnailsRow img.thumbnail {
+            border-radius: 8px;
+            border: 2px solid transparent;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        #quickViewModal #quickViewThumbnailsRow img.thumbnail.active {
+            border-color: #007bff;
+        }
+
+        #quickViewModal #quickViewThumbnailsRow img.thumbnail:hover {
+            border-color: #000;
         }
 
         #quickViewModal .product-actions {
@@ -1047,6 +1308,10 @@
             background: rgba(71, 98, 79, 0.04);
         }
 
+        #quickViewModal .variant-options {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
         #quickViewModal .buy-now-btn i,
         #quickViewModal .add-to-cart-btn i {
             font-size: 18px;
@@ -1057,7 +1322,7 @@
             border-radius: 12px;
             padding: 20px;
             margin-bottom: 20px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
         }
 
         #quickViewModal .main-image img {
@@ -1094,7 +1359,6 @@
 
         #quickViewModal .selected-value {
             margin-left: 10px;
-            color: #666;
             font-weight: normal;
         }
     </style>

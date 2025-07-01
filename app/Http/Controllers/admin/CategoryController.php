@@ -47,7 +47,8 @@ class CategoryController
             'parent_id' => 'nullable|exists:categories,id',
             'type' => 'required|in:1,2',
             'status' => 'required|in:active,inactive',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'icon' => 'nullable|string|max:255'
         ]);
 
         $data = $request->all();
@@ -100,7 +101,8 @@ class CategoryController
             'parent_id' => 'nullable|exists:categories,id',
             'type' => 'required|in:1,2',
             'status' => 'required|in:active,inactive',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'icon' => 'nullable|string|max:255'
         ]);
 
         $data = $request->all();
@@ -121,8 +123,21 @@ class CategoryController
 
         $category->update($data);
 
+        // Cập nhật trạng thái cho tất cả danh mục con
+        if ($data['status'] === 'inactive' || $data['status'] === 'active') {
+            $this->updateChildrenStatus($category, $data['status']);
+        }
+
         return redirect()->route('admin.categories.index')
             ->with('success', 'Category updated successfully.');
+    }
+
+    private function updateChildrenStatus($category, $status)
+    {
+        foreach ($category->children as $child) {
+            $child->update(['status' => $status]);
+            $this->updateChildrenStatus($child, $status);
+        }
     }
 
     /**

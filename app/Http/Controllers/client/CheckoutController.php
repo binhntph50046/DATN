@@ -19,6 +19,9 @@ class CheckoutController
      */
     public function index(Request $request)
     {
+        /** @var \App\Models\User|null $user */
+        $user = Auth::user();
+
         // Lấy variant_id và quantity từ request
         $variantId = $request->input('variant_id');
         $quantity = $request->input('quantity', 1);
@@ -29,20 +32,27 @@ class CheckoutController
 
         // Nếu có variant_id thì lấy thông tin biến thể
         if ($variantId) {
-            // Lấy thông tin biến thể kèm theo product và các thuộc tính
             $variant = ProductVariant::with(['product', 'combinations.attributeValue.attributeType'])
                 ->find($variantId);
 
             if ($variant) {
-                // Lấy các thuộc tính của biến thể (màu sắc, dung lượng, ...)
                 foreach ($variant->combinations as $comb) {
                     $type = $comb->attributeValue->attributeType->name ?? '';
-                    $value = is_array($comb->attributeValue->value) 
-                        ? $comb->attributeValue->value[0] 
+                    $value = is_array($comb->attributeValue->value)
+                        ? $comb->attributeValue->value[0]
                         : (json_decode($comb->attributeValue->value, true)[0] ?? $comb->attributeValue->value);
                     $attributes[$type] = $value;
                 }
             }
+        }
+
+        // Kiểm tra nếu user là admin hoặc staff
+        if (Auth::check() && ($user && ($user->hasRole('admin') || $user->hasRole('staff')))) {
+            $slug = $variant && $variant->product ? $variant->product->slug : $request->input('slug');
+            if (!$slug) {
+                return redirect()->route('home')->with('error', 'Tài khoản admin và nhân viên không được phép mua hàng!');
+            }
+            return redirect()->route('product.detail', ['slug' => $slug])->with('error', 'Tài khoản admin và nhân viên không được phép mua hàng!');
         }
 
         // Trả về view với các thông tin cần thiết
@@ -56,69 +66,102 @@ class CheckoutController
     {
         try {
             DB::beginTransaction();
-
+            
             // Validate dữ liệu đầu vào
             $request->validate([
-                'variant_id' => 'required|exists:product_variants,id',
-                'quantity' => 'required|integer|min:1',
                 'c_fname' => 'required|string|max:255',
-                'c_lname' => 'required|string|max:255',
                 'c_email_address' => 'required|email|max:255',
-                'c_phone' => 'required|string|max:20',
+                'c_phone' => 'required|regex:/^([0-9\s\-\+\(\)]*)$/|min:10|max:11',
                 'c_address' => 'required|string|max:255',
-                'payment_method' => 'required|in:cod,bank_transfer,credit_card',
+                'payment_method' => 'required|in:cod,bank_transfer,credit_card,vnpay',
             ]);
 
-            // Lấy thông tin biến thể
-            $variant = ProductVariant::with('product')->findOrFail($request->variant_id);
+            // Tính toán subtotal dựa vào variant hoặc giỏ hàng
+            $subtotal = $this->calculateSubtotal($request);
 
-            // Kiểm tra số lượng tồn kho
-            if ($variant->stock < $request->quantity) {
-                throw new \Exception('Số lượng sản phẩm trong kho không đủ!');
-            }
+            // Xử lý voucher và tính giá
+            $priceInfo = $this->processVoucherAndPrice($request, $subtotal);
 
-            // Tính toán giá trị đơn hàng
-            $price = $variant->selling_price;
-            $quantity = $request->quantity;
-            $subtotal = $price * $quantity;
-            $discount = 0; // Có thể tính giảm giá nếu có voucher
-            $shipping_fee = 0; // Có thể lấy từ phương thức vận chuyển
-            $total_price = $subtotal + $shipping_fee - $discount;
-
-            // Map payment_method nếu chọn QR/VNPay trên giao diện (ví dụ: truyền bank_transfer)
-            $paymentMethod = $request->payment_method;
-
-            // Tạo đơn hàng mới
+            // Tạo đơn hàng
             $order = Order::create([
                 'user_id' => Auth::id(),
                 'subtotal' => $subtotal,
-                'discount' => $discount,
-                'shipping_fee' => $shipping_fee,
-                'total_price' => $total_price,
+                'discount' => $priceInfo['discount'],
+                'shipping_fee' => $priceInfo['shipping_fee'],
+                'total_price' => $priceInfo['total_price'],
                 'shipping_address' => $request->c_address,
-                'shipping_name' => $request->c_fname . ' ' . $request->c_lname,
+                'shipping_name' => $request->c_fname,
                 'shipping_phone' => $request->c_phone,
                 'shipping_email' => $request->c_email_address,
-                'payment_method' => $paymentMethod,
+                'payment_method' => $request->payment_method,
                 'payment_status' => 'pending',
-                'shipping_method_id' => null, // Có thể lấy từ form nếu có
+                'shipping_method_id' => null,
                 'status' => 'pending',
                 'is_paid' => 0,
-                'notes' => $request->c_order_notes,
+                'notes' => $request->c_order_notes ?? '',
+                'voucher_id' => $priceInfo['voucher'] ? $priceInfo['voucher']->id : null,
+                'voucher_code' => $priceInfo['voucher'] ? $priceInfo['voucher']->code : null,
+            ]);
+
+            // Cập nhật mã đơn hàng
+            $order->update([
+                'order_code' => 'DH' . $order->id
             ]);
 
             // Tạo chi tiết đơn hàng (order_items)
-            OrderItem::create([
-                'order_id' => $order->id,
-                'product_id' => $variant->product->id,
-                'product_variant_id' => $variant->id,
-                'quantity' => $quantity,
-                'price' => $price,
-                'total' => $subtotal,
-            ]);
+            if ($request->has('variant_id')) {
+                $variant = ProductVariant::with('product')->findOrFail($request->variant_id);
+                OrderItem::create([
+                    'order_id' => $order->id,
+                    'product_id' => $variant->product->id,
+                    'product_variant_id' => $variant->id,
+                    'quantity' => $request->quantity,
+                    'price' => $variant->selling_price,
+                    'total' => $subtotal,
+                ]);
+                $variant->decrement('stock', $request->quantity);
+            } else {
+                $cart = \App\Models\Cart::where('user_id', Auth::id())->first();
+                if (!$cart) {
+                    throw new \Exception('Giỏ hàng của bạn đang trống!');
+                }
+                $cartItems = $cart->cartItems()->with(['product', 'variant'])->get();
+                foreach ($cartItems as $item) {
+                    $price = $item->variant ? $item->variant->selling_price : $item->product->selling_price;
+                    $total = $price * $item->quantity;
+                    OrderItem::create([
+                        'order_id' => $order->id,
+                        'product_id' => $item->product_id,
+                        'product_variant_id' => $item->variant_id,
+                        'quantity' => $item->quantity,
+                        'price' => $price,
+                        'total' => $total,
+                    ]);
+                    if ($item->variant) {
+                        $item->variant->decrement('stock', $item->quantity);
+                    }
+                }
+                $cartItems->each->delete();
+            }
 
-            // Cập nhật số lượng tồn kho
-            $variant->decrement('stock', $quantity);
+            // Sau khi tạo order và commit transaction
+            if ($order->shipping_email) {
+                // Tạo hoặc lấy hóa đơn
+                $invoice = \App\Models\Invoice::where('order_id', $order->id)->first();
+                if (!$invoice) {
+                    $invoiceCode = 'INV' . str_pad($order->id, 6, '0', STR_PAD_LEFT);
+                    $invoice = \App\Models\Invoice::create([
+                        'order_id' => $order->id,
+                        'invoice_code' => $invoiceCode,
+                        'total' => $order->total_price,
+                        'issued_by' => null,
+                        'issued_at' => now(),
+                    ]);
+                }
+                $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('admin.invoices.pdf', ['invoice' => $invoice]);
+                $pdfContent = $pdf->output();
+                Mail::to($order->shipping_email)->send(new \App\Mail\InvoicePdfMail($invoice, $pdfContent));
+            }
 
             // Commit transaction nếu mọi thứ OK
             DB::commit();
@@ -127,7 +170,7 @@ class CheckoutController
             try {
                 $toAddresses = config('mail.to.addresses');
                 Log::info('Danh sách email nhận:', ['emails' => $toAddresses]);
-                
+
                 foreach ($toAddresses as $email) {
                     try {
                         Mail::to($email)->send(new OrderInvoice($order));
@@ -141,37 +184,266 @@ class CheckoutController
                 Log::error('Lỗi gửi email hóa đơn: ' . $e->getMessage());
             }
 
-            // Chuyển hướng sang trang theo dõi/tracking đơn hàng
-            return redirect()->route('order.index');
+            // Chuyển hướng sau khi đặt hàng thành công
+            if ($request->payment_method === 'vnpay') {
+                return $this->redirectToVNPay($order);
+            }
 
+            return $this->redirectAfterOrder($order);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Lỗi đặt hàng: ' . $e->getMessage());
+            return back()->withErrors(['error' => $e->getMessage()]);
+        }
+    }
+
+    public function tracking($orderId)
+    {
+        // Nếu là request tra cứu từ form
+        if ($orderId === 'search') {
+            $order_code = request('order_code');
+            $order = Order::where('order_code', $order_code)->first();
+
+            if (!$order) {
+                return redirect()->route('order.guest.tracking')
+                    ->with('error', 'Không tìm thấy đơn hàng. Vui lòng kiểm tra lại mã đơn hàng.');
+            }
+
+            return view('client.order.tracking', compact('order'));
+        }
+
+        // Nếu là request trực tiếp với ID đơn hàng
+        $order = Order::with(['items.product', 'items.variant'])->findOrFail($orderId);
+        return view('client.order.tracking', compact('order'));
+    }
+
+    /**
+     * Hiển thị trang checkout cho giỏ hàng
+     */
+    public function cartCheckout(Request $request)
+    {
+        /** @var \App\Models\User|null $user */
+        $user = Auth::user();
+
+        // Kiểm tra nếu user là admin hoặc staff
+        if (Auth::check() && ($user && ($user->hasRole('admin') || $user->hasRole('staff')))) {
+            return redirect()->route('home')->with('error', 'Tài khoản admin và nhân viên không được phép mua hàng!');
+        }
+
+        // Lấy giỏ hàng của user
+        $cart = \App\Models\Cart::where('user_id', Auth::id())->first();
+        if (!$cart) {
+            return redirect()->route('cart')->with('error', 'Giỏ hàng của bạn đang trống!');
+        }
+
+        // Lấy các sản phẩm được chọn từ request
+        $selectedItems = $request->input('selected_items', []);
+        if (empty($selectedItems)) {
+            return redirect()->route('cart')->with('error', 'Vui lòng chọn ít nhất một sản phẩm để thanh toán!');
+        }
+
+        $cartItems = $cart->cartItems()
+            ->whereIn('id', $selectedItems)
+            ->with(['product', 'variant'])
+            ->get();
+
+        if ($cartItems->isEmpty()) {
+            return redirect()->route('cart')->with('error', 'Giỏ hàng của bạn đang trống!');
+        }
+
+        // Tính toán tổng tiền
+        $subtotal = 0;
+        foreach ($cartItems as $item) {
+            $price = $item->variant ? $item->variant->selling_price : $item->product->selling_price;
+            $subtotal += $price * $item->quantity;
+        }
+
+        return view('client.checkout.index', compact('cartItems', 'subtotal'));
+    }
+
+    /**
+     * Xử lý đặt hàng từ giỏ hàng
+     */
+    public function processCartCheckout(Request $request)
+    {
+        try {
+            DB::beginTransaction();
+
+            // Validate dữ liệu đầu vào
+            $request->validate([
+                'c_fname' => 'required|string|max:255',
+                'c_email_address' => 'required|email|max:255',
+                'c_phone' => 'required|regex:/^([0-9\s\-\+\(\)]*)$/|min:10|max:11',
+                'c_address' => 'required|string|max:255',
+                'payment_method' => 'required|in:cod,bank_transfer,credit_card,vnpay',
+                'selected_items' => 'required|array',
+            ]);
+
+            // Tính toán subtotal dựa vào giỏ hàng
+            $subtotal = $this->calculateSubtotal($request);
+
+            // Xử lý voucher và tính giá
+            $priceInfo = $this->processVoucherAndPrice($request, $subtotal);
+
+            // Tạo đơn hàng
+            $order = Order::create([
+                'user_id' => Auth::id(),
+                'subtotal' => $subtotal,
+                'discount' => $priceInfo['discount'],
+                'shipping_fee' => $priceInfo['shipping_fee'],
+                'total_price' => $priceInfo['total_price'],
+                'shipping_address' => $request->c_address,
+                'shipping_name' => $request->c_fname,
+                'shipping_phone' => $request->c_phone,
+                'shipping_email' => $request->c_email_address,
+                'payment_method' => $request->payment_method,
+                'payment_status' => 'pending',
+                'shipping_method_id' => null,
+                'status' => 'pending',
+                'is_paid' => 0,
+                'notes' => $request->c_order_notes ?? '',
+                'voucher_id' => $priceInfo['voucher'] ? $priceInfo['voucher']->id : null,
+                'voucher_code' => $priceInfo['voucher'] ? $priceInfo['voucher']->code : null,
+            ]);
+
+            // Cập nhật mã đơn hàng
+            $order->update([
+                'order_code' => 'DH' . $order->id
+            ]);
+
+            // Tạo chi tiết đơn hàng và cập nhật tồn kho
+            $cart = \App\Models\Cart::where('user_id', Auth::id())->first();
+            if ($cart) {
+                $cartItems = $cart->cartItems()
+                    ->whereIn('id', $request->selected_items)
+                    ->with(['product', 'variant'])
+                    ->get();
+                foreach ($cartItems as $item) {
+                    $price = $item->variant ? $item->variant->selling_price : $item->product->selling_price;
+                    $total = $price * $item->quantity;
+                    OrderItem::create([
+                        'order_id' => $order->id,
+                        'product_id' => $item->product_id,
+                        'product_variant_id' => $item->variant_id,
+                        'quantity' => $item->quantity,
+                        'price' => $price,
+                        'total' => $total,
+                    ]);
+                    if ($item->variant) {
+                        $item->variant->decrement('stock', $item->quantity);
+                    }
+                }
+                $cartItems->each->delete();
+            }
+
+            // Gửi email hóa đơn
+            if ($order->shipping_email) {
+                $invoice = \App\Models\Invoice::create([
+                    'order_id' => $order->id,
+                    'invoice_code' => 'INV' . str_pad($order->id, 6, '0', STR_PAD_LEFT),
+                    'total' => $order->total_price,
+                    'issued_by' => null,
+                    'issued_at' => now(),
+                ]);
+                $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('admin.invoices.pdf', ['invoice' => $invoice]);
+                $pdfContent = $pdf->output();
+                Mail::to($order->shipping_email)->send(new \App\Mail\InvoicePdfMail($invoice, $pdfContent));
+            }
+            
+
+            DB::commit();
+
+            return redirect()->route('order.index')
+                ->with('success', 'Đặt hàng thành công!');
         } catch (\Exception $e) {
             DB::rollBack();
             return back()->withErrors(['error' => $e->getMessage()]);
         }
     }
 
-    public function resendInvoice($orderId)
+    // Xử lý voucher và tính toán giá
+    private function processVoucherAndPrice($request, $subtotal)
     {
-        $order = Order::with(['items.product', 'items.variant'])->findOrFail($orderId);
-        
-        try {
-            Mail::to($order->shipping_email)->send(new OrderInvoice($order));
-            return redirect()->back()->with('success', 'Đã gửi lại hóa đơn qua email thành công!');
-        } catch (\Exception $e) {
-            Log::error('Lỗi gửi email hóa đơn: ' . $e->getMessage());
-            return redirect()->back()->with('error', 'Không thể gửi email hóa đơn: ' . $e->getMessage());
+        $voucher = null;
+        $voucherDiscount = 0; // Mặc định discount là 0 thay vì null
+        $shipping_fee = 0;
+
+        if ($request->filled('voucher_code')) {
+            $voucher = \App\Models\Voucher::where('code', $request->voucher_code)
+                ->where('is_active', 1)
+                ->where('expires_at', '>', now())
+                ->first();
+            
+            if ($voucher) {
+                // Tính số tiền giảm giá
+                $voucherDiscount = $voucher->type == 'percentage' 
+                    ? round(($subtotal * $voucher->value) / 100) 
+                    : $voucher->value;
+
+                // Đảm bảo số tiền giảm không vượt quá tổng đơn hàng
+                $voucherDiscount = min($voucherDiscount, $subtotal);
+            }
+        }
+
+        $total_price = $subtotal + $shipping_fee - $voucherDiscount;
+
+        return [
+            'voucher' => $voucher,
+            'discount' => $voucherDiscount,
+            'shipping_fee' => $shipping_fee,
+            'total_price' => $total_price
+        ];
+    }
+
+    // Thêm phương thức tính subtotal
+    private function calculateSubtotal($request)
+    {
+        if ($request->has('variant_id')) {
+            $variant = ProductVariant::findOrFail($request->variant_id);
+            return $variant->selling_price * $request->quantity;
+        } else {
+            $cart = \App\Models\Cart::where('user_id', Auth::id())->first();
+            if (!$cart) {
+                throw new \Exception('Giỏ hàng của bạn đang trống!');
+            }
+
+            $subtotal = 0;
+            $cartItems = $cart->cartItems()->with(['product', 'variant'])->get();
+            foreach ($cartItems as $item) {
+                $price = $item->variant ? $item->variant->selling_price : $item->product->selling_price;
+                $subtotal += $price * $item->quantity;
+            }
+            return $subtotal;
         }
     }
 
-    public function tracking($orderId)
+    private function redirectToVNPay($order)
     {
-        $order = Order::with(['items.product', 'items.variant'])->findOrFail($orderId);
-        return view('client.order.tracking', compact('order'));
+        // Chuyển hướng đến trang thanh toán VNPay với các thông tin cần thiết
+        return redirect()->route('vnpay.payment', [
+            'variant_id' => request('variant_id'),
+            'quantity' => request('quantity'),
+            'c_fname' => request('c_fname'),
+            'c_email_address' => request('c_email_address'),
+            'c_phone' => request('c_phone'),
+            'c_address' => request('c_address'),
+            'c_order_notes' => request('c_order_notes'),
+            'voucher_code' => request('voucher_code')
+        ]);
     }
 
-    public function invoice($orderId)
+    private function redirectAfterOrder($order)
     {
-        $order = Order::with(['items.product', 'items.variant'])->findOrFail($orderId);
-        return view('client.order.invoice', compact('order'));
+        // Nếu khách đã đăng nhập
+        if (Auth::check()) {
+            return redirect()->route('order.index')
+                ->with('success', 'Đặt hàng thành công!');
+        }
+
+        // Nếu là khách vãng lai (chưa đăng nhập)
+        return redirect()->route('order.guest.tracking', [
+            'order_code' => $order->order_code,
+            'email' => $order->shipping_email
+        ])->with('success', 'Đặt hàng thành công! Bạn có thể dùng mã đơn hàng và email để tra cứu đơn hàng sau này.');
     }
 }

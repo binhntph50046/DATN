@@ -19,7 +19,9 @@ class UserController
         $query->where('id', '!=', Auth::id());
 
         // Nếu là staff, chỉ thấy tài khoản có vai trò user
-        if (Auth::user()->hasRole('staff')) {
+        /** @var \App\Models\User $currentUser */
+        $currentUser = Auth::user();
+        if ($currentUser && $currentUser->hasRole('staff')) {
             $query->whereHas('roles', function ($q) {
                 $q->where('name', 'user');
             });
@@ -96,7 +98,9 @@ class UserController
             $validated['avatar'] = 'uploads/users/' . $avatarName;
         }
 
-        User::create($validated);
+        $user = User::create($validated);
+        $user->assignRole('user'); // Gán role mặc định là 'user'
+
         return redirect()->route('admin.users.index')->with('success', 'Tạo tài khoản thành công');
     }
 
@@ -115,6 +119,8 @@ class UserController
     public function update(Request $request, string $id)
     {
         $user = User::findOrFail($id);
+
+        // Lấy dữ liệu ban đầu từ $user
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => [
@@ -128,7 +134,7 @@ class UserController
             'phone' => 'required|string|max:255',
             'address' => 'required|string|max:255',
             'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'dob' => 'required|date',
+            'dob' => 'nullable|date', // Không bắt buộc, chỉ validate nếu có
             'gender' => 'nullable|string|max:255|in:male,female,other',
             'status' => 'required|string|max:255|in:active,inactive',
         ], [
@@ -147,25 +153,37 @@ class UserController
             'address.required' => 'Địa chỉ là bắt buộc.',
             'address.max' => 'Địa chỉ không được vượt quá 255 ký tự.',
             'phone.required' => 'Số điện thoại là bắt buộc.',
-            'dob.required' => 'Ngày sinh là bắt buộc.',
             'dob.date' => 'Vui lòng nhập ngày sinh hợp lệ.',
         ]);
 
+        // Kiểm tra và giữ nguyên giá trị ban đầu nếu không có dữ liệu mới
+        $dataToUpdate = [
+            'name' => $request->filled('name') ? $validated['name'] : $user->name,
+            'email' => $request->filled('email') ? $validated['email'] : $user->email,
+            'phone' => $request->filled('phone') ? $validated['phone'] : $user->phone,
+            'address' => $request->filled('address') ? $validated['address'] : $user->address,
+            'dob' => $request->filled('dob') ? $validated['dob'] : $user->dob,
+            'gender' => $request->filled('gender') ? $validated['gender'] : $user->gender,
+            'status' => $validated['status'], // Luôn yêu cầu status
+        ];
+
+        // Xử lý password
         if ($request->filled('password')) {
-            $validated['password'] = bcrypt($request->password);
-        } else {
-            unset($validated['password']);
+            $dataToUpdate['password'] = bcrypt($request->password);
         }
 
+        // Xử lý avatar
         if ($request->hasFile('avatar')) {
             $avatar = $request->file('avatar');
             $avatarName = time() . '.' . $avatar->getClientOriginalExtension();
             $destinationPath = public_path('uploads/users');
             $avatar->move($destinationPath, $avatarName);
-            $validated['avatar'] = 'uploads/users/' . $avatarName;
+            $dataToUpdate['avatar'] = 'uploads/users/' . $avatarName;
+        } else {
+            $dataToUpdate['avatar'] = $user->avatar; // Giữ nguyên avatar nếu không thay đổi
         }
 
-        $user->update($validated);
+        $user->update($dataToUpdate);
         return redirect()->route('admin.users.index')->with('success', 'Cập nhật tài khoản thành công');
     }
 
@@ -194,13 +212,5 @@ class UserController
         $user = User::findOrFail($id);
         $user->delete();
         return redirect()->route('admin.users.index')->with('success', 'Xóa tài khoản thành công');
-    }
-
-    public function toggleStatus(Request $request, User $user)
-    {
-        $newStatus = $request->input('status'); // Lấy trạng thái từ form
-        $user->update(['status' => $newStatus]);
-
-        return redirect()->route('admin.users.index')->with('success', 'Trạng thái tài khoản đã được cập nhật thành ' . ucfirst($newStatus) . '!');
     }
 }

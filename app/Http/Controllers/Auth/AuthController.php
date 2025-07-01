@@ -43,12 +43,6 @@ class AuthController
         ]);
 
         $user->assignRole('user');
-        
-        // DB::table('model_has_roles')->insert([
-        //     'role_id' => 3,
-        //     'model_type' => User::class,
-        //     'model_id' => $user->id
-        // ]);
 
         return redirect('/login')->with('success', 'Register successfully!');
     }
@@ -86,7 +80,7 @@ class AuthController
         return back()->withErrors([
             'email' => 'Incorrect login information.',
             'password' => 'Password is not correct.',
-        ]);
+        ])->withInput();
     }
 
     public function logout(Request $request)

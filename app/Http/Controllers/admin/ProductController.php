@@ -239,21 +239,31 @@ class ProductController
     private function updateExistingVariant($variantData, $request, $index)
     {
         $variant = ProductVariant::find($variantData['id']);
-        if (!$variant) {
-            return;
+        if (!$variant) return;
+
+        // 1. So sánh và chỉ update trường thay đổi
+        $fields = ['name', 'stock', 'purchase_price', 'selling_price'];
+        $needUpdate = false;
+        foreach ($fields as $field) {
+            if ($variant->$field != $variantData[$field]) {
+                $variant->$field = $variantData[$field];
+                $needUpdate = true;
+            }
         }
+        // Slug luôn update nếu name đổi
+        if ($variant->name != $variantData['name']) {
+            $variant->slug = Str::slug($variantData['name']);
+            $needUpdate = true;
+        }
+        // is_default
+        $isDefault = isset($variantData['is_default']) && $variantData['is_default'] ? 1 : 0;
+        if ($variant->is_default != $isDefault) {
+            $variant->is_default = $isDefault;
+            $needUpdate = true;
+        }
+        if ($needUpdate) $variant->save();
 
-        // Update variant basic information
-        $variant->update([
-            'name' => $variantData['name'],
-            'slug' => Str::slug($variantData['name']),
-            'stock' => $variantData['stock'] ?? 0,
-            'purchase_price' => $variantData['purchase_price'] ?? 0,
-            'selling_price' => $variantData['selling_price'] ?? 0,
-            'is_default' => isset($variantData['is_default']) && $variantData['is_default'] ? 1 : 0,
-        ]);
-
-        // Handle image deletion
+        // 2. Chỉ update images nếu có thay đổi
         $imagesToDelete = [];
         if ($request->has('images_to_delete') && !empty($request->images_to_delete)) {
             $imagesToDeleteData = $request->images_to_delete;
@@ -263,15 +273,10 @@ class ProductController
                 $imagesToDelete = $imagesToDeleteData;
             }
         }
-
-        // Handle new image uploads
         $newImagePaths = [];
         if ($request->hasFile("variants.{$index}.images")) {
             $destinationPath = public_path('uploads/products');
-            if (!file_exists($destinationPath)) {
-                mkdir($destinationPath, 0777, true);
-            }
-            
+            if (!file_exists($destinationPath)) mkdir($destinationPath, 0777, true);
             foreach ($request->file("variants.{$index}.images") as $image) {
                 if ($image->isValid()) {
                     $filename = time() . '_' . $index . '_' . $image->getClientOriginalName();
@@ -281,100 +286,42 @@ class ProductController
                 }
             }
         }
-
-        // Update images: remove deleted ones, keep existing ones, add new ones
-        $existingImages = [];
-        if ($variant->images) {
-            if (is_string($variant->images)) {
-                $existingImages = json_decode($variant->images, true) ?: [];
-            } elseif (is_array($variant->images)) {
-                $existingImages = $variant->images;
-            }
-        }
-        
-        // Log for debugging
-        Log::info('Image deletion debug:', [
-            'variant_id' => $variant->id,
-            'existing_images' => $existingImages,
-            'images_to_delete' => $imagesToDelete,
-            'new_images' => $newImagePaths,
-            'has_image_deletions' => $request->has('has_image_deletions') ? $request->has_image_deletions : '0'
-        ]);
-        
-        // Only process image updates if there are deletions or new uploads
+        $existingImages = is_string($variant->images) ? (json_decode($variant->images, true) ?: []) : ($variant->images ?: []);
         if (!empty($imagesToDelete) || !empty($newImagePaths) || $request->has('has_image_deletions')) {
             $updatedImages = array_filter($existingImages, function($image) use ($imagesToDelete) {
-                // Normalize image path for comparison
-                $normalizedImage = $image;
-                
-                // Remove leading slash if present
-                if (strpos($normalizedImage, '/') === 0) {
-                    $normalizedImage = substr($normalizedImage, 1);
-                }
-                
-                // Ensure it starts with 'uploads/'
-                if (!str_starts_with($normalizedImage, 'uploads/')) {
-                    $normalizedImage = 'uploads/' . $normalizedImage;
-                }
-                
-                // Check if this image should be deleted
-                $shouldKeep = true;
+                $normalizedImage = ltrim($image, '/');
+                if (!str_starts_with($normalizedImage, 'uploads/')) $normalizedImage = 'uploads/' . $normalizedImage;
                 foreach ($imagesToDelete as $deletePath) {
-                    // Normalize delete path too
-                    $normalizedDeletePath = $deletePath;
-                    if (strpos($normalizedDeletePath, '/') === 0) {
-                        $normalizedDeletePath = substr($normalizedDeletePath, 1);
-                    }
-                    if (!str_starts_with($normalizedDeletePath, 'uploads/')) {
-                        $normalizedDeletePath = 'uploads/' . $normalizedDeletePath;
-                    }
-                    
-                    // Compare normalized paths
-                    if ($normalizedImage === $normalizedDeletePath) {
-                        $shouldKeep = false;
-                        break;
-                    }
+                    $normalizedDeletePath = ltrim($deletePath, '/');
+                    if (!str_starts_with($normalizedDeletePath, 'uploads/')) $normalizedDeletePath = 'uploads/' . $normalizedDeletePath;
+                    if ($normalizedImage === $normalizedDeletePath) return false;
                 }
-                
-                Log::info('Image filter check:', [
-                    'original_image' => $image,
-                    'normalized_image' => $normalizedImage,
-                    'images_to_delete' => $imagesToDelete,
-                    'should_keep' => $shouldKeep
-                ]);
-                
-                return $shouldKeep;
+                return true;
             });
-            
             $allImages = array_merge($updatedImages, $newImagePaths);
-            
-            Log::info('Final images for variant:', [
-                'variant_id' => $variant->id,
-                'final_images' => $allImages
-            ]);
-            
             $variant->images = json_encode($allImages);
             $variant->save();
         }
 
-        // Update combinations if attributes are provided
+        // 3. Chỉ update combinations nếu có thay đổi
         if (isset($variantData['attributes']) && is_array($variantData['attributes'])) {
-            // Clear existing combinations
-            VariantCombination::where('variant_id', $variant->id)->delete();
-            
-            // Create new combinations
+            // Lấy combinations cũ
+            $oldValueIds = $variant->combinations()->pluck('attribute_value_id')->sort()->values()->toArray();
+            $newValueIds = [];
             foreach ($variantData['attributes'] as $attr) {
-                if (!empty($attr['attribute_type_id']) && !empty($attr['selected_values'])) {
-                    $selectedValues = $attr['selected_values'];
-                    if (!is_array($selectedValues)) {
-                        $selectedValues = [$selectedValues];
-                    }
-                    foreach ($selectedValues as $valueId) {
-                        VariantCombination::create([
-                            'variant_id' => $variant->id,
-                            'attribute_value_id' => $valueId,
-                        ]);
-                    }
+                if (!empty($attr['selected_values'])) {
+                    $vals = is_array($attr['selected_values']) ? $attr['selected_values'] : [$attr['selected_values']];
+                    foreach ($vals as $v) $newValueIds[] = (int)$v;
+                }
+            }
+            sort($newValueIds);
+            if ($oldValueIds !== $newValueIds) {
+                VariantCombination::where('variant_id', $variant->id)->delete();
+                foreach ($newValueIds as $valueId) {
+                    VariantCombination::create([
+                        'variant_id' => $variant->id,
+                        'attribute_value_id' => $valueId,
+                    ]);
                 }
             }
         }

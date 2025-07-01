@@ -49,6 +49,7 @@ use App\Http\Controllers\client\CheckoutController;
 use App\Http\Controllers\client\SubscribeController;
 use App\Http\Controllers\client\VoucherController as ClientVoucherController;
 use App\Http\Controllers\client\CompareController;
+use App\Http\Controllers\client\SearchController;
 
 // Auth Controllers
 use App\Http\Controllers\auth\AuthController;
@@ -359,7 +360,7 @@ Route::prefix('admin')
             Route::get('/', [ActivityController::class, 'index'])->name('index');
             Route::get('/user/{id}', [ActivityController::class, 'show'])->name('show');
         });
-        
+
         // FAQ Management
         Route::prefix('faqs')->name('faqs.')->group(function () {
             Route::get('/', [FaqController::class, 'index'])->name('index');
@@ -392,9 +393,12 @@ Route::prefix('admin')
 Route::post('/voucher/check', [ClientVoucherController::class, 'check'])->name('voucher.check');
 
 // Admin Profile Routes
-Route::prefix('admin/profile')->name('admin.profile.')->middleware('auth','role:admin|staff')->group(function () {
+Route::prefix('admin/profile')->name('admin.profile.')->middleware('auth', 'role:admin|staff')->group(function () {
     Route::get('/', [AdminProfileController::class, 'edit'])->name('index');
     Route::put('/', [AdminProfileController::class, 'update'])->name('update');
     Route::get('/password', [AdminProfileController::class, 'password'])->name('password');
     Route::put('/password', [AdminProfileController::class, 'updatePassword'])->name('update-password');
 });
+
+Route::get('/tim-kiem', [SearchController::class, 'index'])->name('search');
+Route::get('/api/search-suggestions', [SearchController::class, 'suggestions'])->name('search.suggestions');

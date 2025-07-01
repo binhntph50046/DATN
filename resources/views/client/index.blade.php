@@ -49,72 +49,41 @@
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
 
-    <!-- Start Why Choose Us Section -->
-    <div class="why-choose-section" data-aos="fade-up">
+    <!-- Start We Help Section -->
+    <div class="we-help-section" data-aos="fade-up">
         <div class="container">
             <div class="row justify-content-between">
-                <div class="col-lg-6">
-                    <h2 class="section-title">Vì Sao Bạn Chọn Chúng Tôi</h2>
-                    <p>Chúng tôi cam kết mang đến trải nghiệm mua sắm Apple chính hãng dễ dàng, nhanh chóng và đáng tin cậy.
-                        Dịch vụ tận tâm, sản phẩm chất lượng, giá cả hợp lý – tất cả đều vì bạn.</p>
-
-                    <div class="row my-5">
-                        <div class="col-6 col-md-6" data-aos="fade-up" data-aos-delay="100">
-                            <div class="feature">
-                                <div class="icon">
-                                    <img src="images/truck.svg" alt="Giao hàng nhanh" class="img-fluid">
-                                </div>
-                                <h3>Giao Hàng Nhanh & Miễn Phí</h3>
-                                <p>Miễn phí giao hàng toàn quốc với tốc độ nhanh chóng, đảm bảo sản phẩm Apple đến tay bạn
-                                    an toàn và đúng hẹn.</p>
-                            </div>
-                        </div>
-
-                        <div class="col-6 col-md-6" data-aos="fade-up" data-aos-delay="200">
-                            <div class="feature">
-                                <div class="icon">
-                                    <img src="images/bag.svg" alt="Mua sắm dễ dàng" class="img-fluid">
-                                </div>
-                                <h3>Mua Sắm Dễ Dàng</h3>
-                                <p>Website thân thiện, hỗ trợ tìm kiếm nhanh chóng các sản phẩm Apple chính hãng như iPhone,
-                                    MacBook, AirPods và nhiều hơn nữa.</p>
-                            </div>
-                        </div>
-
-                        <div class="col-6 col-md-6" data-aos="fade-up" data-aos-delay="300">
-                            <div class="feature">
-                                <div class="icon">
-                                    <img src="images/support.svg" alt="Hỗ trợ 24/7" class="img-fluid">
-                                </div>
-                                <h3>Hỗ Trợ Khách Hàng 24/7</h3>
-                                <p>Đội ngũ tư vấn luôn sẵn sàng hỗ trợ bạn mọi lúc mọi nơi, từ chọn sản phẩm đến bảo hành và
-                                    kỹ thuật.</p>
-                            </div>
-                        </div>
-
-                        <div class="col-6 col-md-6" data-aos="fade-up" data-aos-delay="400">
-                            <div class="feature">
-                                <div class="icon">
-                                    <img src="images/return.svg" alt="Đổi trả dễ dàng" class="img-fluid">
-                                </div>
-                                <h3>Đổi Trả Nhanh Chóng</h3>
-                                <p>Hỗ trợ đổi trả trong 7 ngày nếu sản phẩm gặp lỗi từ nhà sản xuất hoặc không đúng mô tả.
-                                    Mua sắm không lo rủi ro.</p>
-                            </div>
-                        </div>
+                <div class="col-lg-7 mb-5 mb-lg-0" data-aos="fade-right">
+                    <div class="imgs-grid">
+                        <div class="grid grid-1"><img
+                                src="https://product.hstatic.net/1000259254/product/apple_watch_series_6_gps-3_f473dbbd7a8a4eebb713eb4737a4bb3c_grande.jpg"
+                                alt="Untree.co"></div>
+                        <div class="grid grid-2"><img
+                                src="https://store.storeimages.cdn-apple.com/1/as-images.apple.com/is/mac-card-100-customize-202503_FMT_WHH?wid=660&hei=492&fmt=png-alpha&.v=WGVJR1JzeVlHQndDQ0hPeUcxZEhIVVI0Q213c2R4MVpIbnhYSW0yemZZSjhCbGlKVjM2L2p6MTB1VFhaSTNQZTFpQTgzYnRLU3FIbktmUFFaOW9RVVI3OWM1K2xYY1BvNUdGM3NrY09OUVVBUlVVbndFOUhuNmlVSkZDVGZlRGc"
+                                alt="Untree.co"></div>
+                        <div class="grid grid-3"><img
+                                src="https://www.apple.com/newsroom/images/2023/09/apple-debuts-iphone-15-and-iphone-15-plus/article/Apple-iPhone-15-lineup-hero-geo-230912_inline.jpg.large.jpg"
+                                alt="Untree.co"></div>
                     </div>
                 </div>
+                <div class="col-lg-5 ps-lg-5" data-aos="fade-left" data-aos-delay="100">
+                    <h2 class="section-title mb-4">Chúng Tôi Giúp Bạn Sở Hữu Thiết Bị Apple Hiện Đại</h2>
+                    <p>Chúng tôi không chỉ bán sản phẩm – chúng tôi mang đến giải pháp công nghệ toàn diện cho cuộc sống
+                        hiện đại. Từ iPhone đến MacBook, tất cả đều được chọn lọc kỹ lưỡng để mang đến trải nghiệm đỉnh cao.
+                    </p>
 
-                <div class="col-lg-5">
-                    <div class="img-wrap" data-aos="zoom-in">
-                        <img src="https://img.freepik.com/free-photo/business-man-holding-clipboard-with-why-choose-us-question_23-2148932313.jpg?semt=ais_hybrid&w=740"
-                            alt="Image" class="img-fluid">
-                    </div>
+                    <ul class="list-unstyled custom-list my-4">
+                        <li>Sản phẩm Apple chính hãng, bảo hành toàn quốc</li>
+                        <li>Đa dạng mẫu mã từ iPhone, iPad, MacBook,...</li>
+                        <li>Giao hàng nhanh chóng, hỗ trợ tận nơi</li>
+                        <li>Hỗ trợ kỹ thuật & tư vấn tận tình 24/7</li>
+                    </ul>
+                    <p><a href="{{ route('shop') }}" class="btn">Khám Phá Ngay</a></p>
                 </div>
             </div>
         </div>
     </div>
-    <!-- End Why Choose Us Section -->
+    <!-- End We Help Section -->
 
     <!-- Start Most Popular Products Section -->
     <div class="most-popular-section" data-aos="fade-up">
@@ -334,41 +303,72 @@
     </div>
     <!-- End Product Section -->
 
-    <!-- Start We Help Section -->
-    <div class="we-help-section" data-aos="fade-up">
+    <!-- Start Why Choose Us Section -->
+    <div class="why-choose-section" data-aos="fade-up">
         <div class="container">
             <div class="row justify-content-between">
-                <div class="col-lg-7 mb-5 mb-lg-0" data-aos="fade-right">
-                    <div class="imgs-grid">
-                        <div class="grid grid-1"><img
-                                src="https://product.hstatic.net/1000259254/product/apple_watch_series_6_gps-3_f473dbbd7a8a4eebb713eb4737a4bb3c_grande.jpg"
-                                alt="Untree.co"></div>
-                        <div class="grid grid-2"><img
-                                src="https://store.storeimages.cdn-apple.com/1/as-images.apple.com/is/mac-card-100-customize-202503_FMT_WHH?wid=660&hei=492&fmt=png-alpha&.v=WGVJR1JzeVlHQndDQ0hPeUcxZEhIVVI0Q213c2R4MVpIbnhYSW0yemZZSjhCbGlKVjM2L2p6MTB1VFhaSTNQZTFpQTgzYnRLU3FIbktmUFFaOW9RVVI3OWM1K2xYY1BvNUdGM3NrY09OUVVBUlVVbndFOUhuNmlVSkZDVGZlRGc"
-                                alt="Untree.co"></div>
-                        <div class="grid grid-3"><img
-                                src="https://www.apple.com/newsroom/images/2023/09/apple-debuts-iphone-15-and-iphone-15-plus/article/Apple-iPhone-15-lineup-hero-geo-230912_inline.jpg.large.jpg"
-                                alt="Untree.co"></div>
+                <div class="col-lg-6">
+                    <h2 class="section-title">Vì Sao Bạn Chọn Chúng Tôi</h2>
+                    <p>Chúng tôi cam kết mang đến trải nghiệm mua sắm Apple chính hãng dễ dàng, nhanh chóng và đáng tin cậy.
+                        Dịch vụ tận tâm, sản phẩm chất lượng, giá cả hợp lý – tất cả đều vì bạn.</p>
+
+                    <div class="row my-5">
+                        <div class="col-6 col-md-6" data-aos="fade-up" data-aos-delay="100">
+                            <div class="feature">
+                                <div class="icon">
+                                    <img src="images/truck.svg" alt="Giao hàng nhanh" class="img-fluid">
+                                </div>
+                                <h3>Giao Hàng Nhanh & Miễn Phí</h3>
+                                <p>Miễn phí giao hàng toàn quốc với tốc độ nhanh chóng, đảm bảo sản phẩm Apple đến tay bạn
+                                    an toàn và đúng hẹn.</p>
+                            </div>
+                        </div>
+
+                        <div class="col-6 col-md-6" data-aos="fade-up" data-aos-delay="200">
+                            <div class="feature">
+                                <div class="icon">
+                                    <img src="images/bag.svg" alt="Mua sắm dễ dàng" class="img-fluid">
+                                </div>
+                                <h3>Mua Sắm Dễ Dàng</h3>
+                                <p>Website thân thiện, hỗ trợ tìm kiếm nhanh chóng các sản phẩm Apple chính hãng như iPhone,
+                                    MacBook, AirPods và nhiều hơn nữa.</p>
+                            </div>
+                        </div>
+
+                        <div class="col-6 col-md-6" data-aos="fade-up" data-aos-delay="300">
+                            <div class="feature">
+                                <div class="icon">
+                                    <img src="images/support.svg" alt="Hỗ trợ 24/7" class="img-fluid">
+                                </div>
+                                <h3>Hỗ Trợ Khách Hàng 24/7</h3>
+                                <p>Đội ngũ tư vấn luôn sẵn sàng hỗ trợ bạn mọi lúc mọi nơi, từ chọn sản phẩm đến bảo hành và
+                                    kỹ thuật.</p>
+                            </div>
+                        </div>
+
+                        <div class="col-6 col-md-6" data-aos="fade-up" data-aos-delay="400">
+                            <div class="feature">
+                                <div class="icon">
+                                    <img src="images/return.svg" alt="Đổi trả dễ dàng" class="img-fluid">
+                                </div>
+                                <h3>Đổi Trả Nhanh Chóng</h3>
+                                <p>Hỗ trợ đổi trả trong 7 ngày nếu sản phẩm gặp lỗi từ nhà sản xuất hoặc không đúng mô tả.
+                                    Mua sắm không lo rủi ro.</p>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <div class="col-lg-5 ps-lg-5" data-aos="fade-left" data-aos-delay="100">
-                    <h2 class="section-title mb-4">Chúng Tôi Giúp Bạn Sở Hữu Thiết Bị Apple Hiện Đại</h2>
-                    <p>Chúng tôi không chỉ bán sản phẩm – chúng tôi mang đến giải pháp công nghệ toàn diện cho cuộc sống
-                        hiện đại. Từ iPhone đến MacBook, tất cả đều được chọn lọc kỹ lưỡng để mang đến trải nghiệm đỉnh cao.
-                    </p>
 
-                    <ul class="list-unstyled custom-list my-4">
-                        <li>Sản phẩm Apple chính hãng, bảo hành toàn quốc</li>
-                        <li>Đa dạng mẫu mã từ iPhone, iPad, MacBook,...</li>
-                        <li>Giao hàng nhanh chóng, hỗ trợ tận nơi</li>
-                        <li>Hỗ trợ kỹ thuật & tư vấn tận tình 24/7</li>
-                    </ul>
-                    <p><a href="{{ route('shop') }}" class="btn">Khám Phá Ngay</a></p>
+                <div class="col-lg-5">
+                    <div class="img-wrap" data-aos="zoom-in">
+                        <img src="https://img.freepik.com/free-photo/business-man-holding-clipboard-with-why-choose-us-question_23-2148932313.jpg?semt=ais_hybrid&w=740"
+                            alt="Image" class="img-fluid">
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-    <!-- End We Help Section -->
+    <!-- End Why Choose Us Section -->
 
     <!-- Start Testimonial Slider -->
     <div class="testimonial-section" data-aos="fade-up">
@@ -455,16 +455,15 @@
     <!-- Nút FAB và Panel Chat -->
     <div x-data="{ open: false, selected: [] }" x-init="if (window.innerWidth > 768) open = false" @resize.window="if (window.innerWidth > 768) open = false">
         <!-- Form ẩn trong panel chat -->
-        <form id="compareForm" action="{{ route('compare.index') }}" method="GET" x-show="open"
-            x-ref="compareForm"
+        <form id="compareForm" action="{{ route('compare.index') }}" method="GET" x-show="open" x-ref="compareForm"
             @click.away="open = false"
             class="fixed bottom-20 right-4 w-72 bg-white border border-gray-200 rounded-lg shadow-lg p-4 z-50 transform transition-transform duration-300"
             :class="{ 'translate-y-full': !open, 'translate-y-0': open }">
             <div class="mb-2">
                 <label class="block text-sm font-medium text-gray-700">Chọn từ 2-4 sản phẩm:</label>
                 <select multiple name="products[]" x-model="selected"
-                    @change="if (selected.length >= 2 && selected.length <= 4) $refs.compareForm.submit()" class="w-full border p-2 rounded mt-1"
-                    required>
+                    @change="if (selected.length >= 2 && selected.length <= 4) $refs.compareForm.submit()"
+                    class="w-full border p-2 rounded mt-1" required>
                     @foreach ($products as $product)
                         <option value="{{ $product->id }}">{{ $product->name }}</option>
                     @endforeach
@@ -476,7 +475,7 @@
             <p class="text-xs text-gray-500 mt-1">Chọn từ 2-4 sản phẩm để so sánh tự động.</p>
         </form>
 
-       
+
     </div>
 
     <!-- JavaScript for Wishlist and Quick View -->
@@ -904,7 +903,7 @@
             compareSelected.splice(index, 1);
             compareNames.splice(index, 1);
             showCustomAlert('Đã bỏ chọn ' + productName + ' khỏi so sánh', 'info');
-            
+
             // If the list becomes empty, reset the category
             if (compareSelected.length === 0) {
                 compareCategory = null;
@@ -924,7 +923,7 @@
 
             compareSelected.push(productId);
             compareNames.push(productName);
-            
+
             // Set category if it's the first product being added
             if (compareSelected.length === 1) {
                 compareCategory = categoryId;
@@ -962,13 +961,13 @@
             const form = document.createElement('form');
             form.method = 'GET';
             form.action = '{{ route('compare.index') }}';
-            
+
             const productsInput = document.createElement('input');
             productsInput.type = 'hidden';
             productsInput.name = 'products';
             productsInput.value = compareSelected.join(',');
             form.appendChild(productsInput);
-            
+
             document.body.appendChild(form);
             form.submit();
         } else {
@@ -979,11 +978,13 @@
     // ... (các hàm khác giữ nguyên như trước)
 </script>
 
-    <!-- Nút So sánh nổi -->
-    <div id="compareButton" style="display:none; position:fixed; bottom:80px; right:30px; z-index:9999; background:#007bff; color:white; padding:15px 25px; border-radius:25px; box-shadow:0 4px 12px rgba(0,123,255,0.3); cursor:pointer; transition:all 0.3s ease;" onclick="goToCompare()">
-        <i class="fa-solid fa-code-compare me-2"></i>
-        <span id="compareButtonText">So sánh ngay</span>
-        <span id="compareCount" class="badge bg-light text-dark ms-2">0</span>
-    </div>
+<!-- Nút So sánh nổi -->
+<div id="compareButton"
+    style="display:none; position:fixed; bottom:80px; right:30px; z-index:9999; background:#007bff; color:white; padding:15px 25px; border-radius:25px; box-shadow:0 4px 12px rgba(0,123,255,0.3); cursor:pointer; transition:all 0.3s ease;"
+    onclick="goToCompare()">
+    <i class="fa-solid fa-code-compare me-2"></i>
+    <span id="compareButtonText">So sánh ngay</span>
+    <span id="compareCount" class="badge bg-light text-dark ms-2">0</span>
+</div>
 
 @endsection

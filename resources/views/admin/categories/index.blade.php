@@ -99,6 +99,7 @@
                                     <tr>
                                         <th>ID</th>
                                         <th>Image</th>
+                                        <th>Icon</th>
                                         <th>Name</th>
                                         <th>Slug</th>
                                         <th>Type</th>
@@ -128,6 +129,13 @@
                                                     echo '<img src="' . asset($category->image) . '" alt="' . $category->name . '" class="img-thumbnail" style="max-height: 80px;">';
                                                 } else {
                                                     echo '<span class="text-muted">No image</span>';
+                                                }
+                                                echo '</td>';
+                                                echo '<td>';
+                                                if ($category->icon) {
+                                                    echo '<i class="' . $category->icon . '" style="font-size: 1.5em;"></i>';
+                                                } else {
+                                                    echo '<span class="text-muted">No icon</span>';
                                                 }
                                                 echo '</td>';
                                                 echo '<td>' . $prefix . ($category->parent_id ? '└─ ' : '') . $category->name . '</td>';

@@ -47,7 +47,8 @@ class CategoryController
             'parent_id' => 'nullable|exists:categories,id',
             'type' => 'required|in:1,2',
             'status' => 'required|in:active,inactive',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'icon' => 'nullable|string|max:255'
         ]);
 
         $data = $request->all();
@@ -100,7 +101,8 @@ class CategoryController
             'parent_id' => 'nullable|exists:categories,id',
             'type' => 'required|in:1,2',
             'status' => 'required|in:active,inactive',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'icon' => 'nullable|string|max:255'
         ]);
 
         $data = $request->all();

@@ -7,6 +7,7 @@ use App\Models\Order;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\ResendInvoiceRequest;
+use App\Models\ProductReview;
 
 class OrderController
 {
@@ -26,7 +27,11 @@ class OrderController
 
         $orders = $query->orderBy('created_at', 'desc')->paginate(10);
 
-        return view('client.order.index', compact('orders'));
+        $reviewedOrders = ProductReview::where('user_id', Auth::id())
+            ->pluck('order_id')
+            ->toArray();
+
+        return view('client.order.index', compact('orders', 'reviewedOrders'));
     }
 
     public function cancel(Request $request, $id)

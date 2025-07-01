@@ -57,6 +57,8 @@ use App\Http\Controllers\auth\FacebookController;
 use App\Http\Controllers\auth\GoogleController;
 use App\Http\Controllers\auth\ForgotPasswordController;
 use App\Http\Controllers\auth\ResetPasswordController;
+use App\Http\Controllers\client\ProductReviewController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -176,6 +178,15 @@ Route::get('/order/resend-invoice/{order}', [CheckoutController::class, 'resendI
 Route::prefix('order')->name('order.')->group(function () {
     Route::post('{id}/request-resend-invoice', [ClientOrderController::class, 'requestResendInvoice'])->name('request-resend-invoice');
 });
+
+// Product Review
+
+// Route 1: Xem lịch sử đánh giá 1 biến thể
+Route::get('{order}/review/{variant}/history', [ProductReviewController::class, 'history'])->name('order.review.history');
+Route::get('order/{order}/review', [ProductReviewController::class, 'create'])->name('order.review');
+Route::post('order/{order}/review/{variant}', [ProductReviewController::class, 'store'])->name('order.review.store');
+// Route 2: Xem lịch sử đánh giá toàn bộ đơn hàng
+Route::get('order/{order}/review/history', [ProductReviewController::class, 'historyAll'])->name('order.review.history.all');
 
 /*
 |--------------------------------------------------------------------------

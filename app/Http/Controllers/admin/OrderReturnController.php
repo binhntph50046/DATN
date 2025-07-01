@@ -26,7 +26,26 @@ class OrderReturnController extends Controller
     // Duyệt yêu cầu hoàn hàng
     public function approve(Request $request, $id)
     {
+        $request->validate([
+            'refund_proof_image' => 'required|image|max:2048', // Validate hình ảnh, max 2MB
+            'refund_note' => 'nullable|string|max:500', // Ghi chú không bắt buộc
+        ]);
+
         $return = OrderReturn::with('items.orderItem.product')->findOrFail($id);
+        
+        // Upload hình ảnh chứng từ
+        if ($request->hasFile('refund_proof_image')) {
+            $image = $request->file('refund_proof_image');
+            $imageName = time() . '_' . $return->id . '.' . $image->getClientOriginalExtension();
+            $image->move(public_path('uploads/returns'), $imageName);
+            $return->refund_proof_image = 'uploads/returns/' . $imageName;
+        }
+
+        // Lưu ghi chú hoàn tiền
+        if ($request->filled('refund_note')) {
+            $return->refund_note = $request->refund_note;
+        }
+
         // Tính tổng tiền hoàn lại
         $refundAmount = 0;
         $restockArr = $request->input('restock', []);
@@ -39,23 +58,22 @@ class OrderReturnController extends Controller
                 $item->orderItem->product->increment('stock', $item->quantity);
             }
         }
-        if ($request->hasFile('proof_video')) {
-            $proofVideo = $request->file('proof_video');
-            $proofVideoName = time() . '.' . $proofVideo->getClientOriginalExtension();
-            $proofVideo->move(public_path('uploads/proof_video'), $proofVideoName);
-            $return->proof_video = $proofVideoName;
-        }
+
         // Cập nhật trạng thái hoàn hàng
         $return->update([
             'status' => 'approved',
             'admin_id' => Auth::id(),
             'processed_at' => now(),
+            'refunded_at' => now(), // Thêm thời gian hoàn tiền
         ]);
+
         event(new OrderStatusUpdated($return->order));
+
         // Cập nhật số tiền đã hoàn vào đơn hàng
         $order = $return->order;
         $order->refunded_amount = ($order->refunded_amount ?? 0) + $refundAmount;
         $order->total_price = $order->total_price - $refundAmount;
+
         // Tính tổng số lượng sản phẩm trong đơn và số lượng đã hoàn
         $totalOrderQty = $order->items->sum('quantity');
         $totalReturnedQty = 0;
@@ -66,13 +84,16 @@ class OrderReturnController extends Controller
                 }
             }
         }
+
         if ($totalReturnedQty >= $totalOrderQty) {
             $order->status = 'returned';
         } elseif ($totalReturnedQty > 0) {
             $order->status = 'partially_returned';
         }
         $order->save();
-        return redirect()->route('admin.order-returns.index')->with('success', 'Đã duyệt yêu cầu hoàn hàng. Đã hoàn lại ' . number_format($refundAmount) . ' VNĐ cho khách.');
+
+        return redirect()->route('admin.order-returns.index')
+            ->with('success', 'Đã duyệt yêu cầu hoàn hàng và lưu chứng từ hoàn tiền. Đã hoàn lại ' . number_format($refundAmount) . ' VNĐ cho khách.');
     }
     // Từ chối yêu cầu hoàn hàng
     public function reject($id)

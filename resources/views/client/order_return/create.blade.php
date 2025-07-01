@@ -3,7 +3,7 @@
 @section('content')
 <style>
 .return-container {
-    max-width: 600px;
+    max-width: 800px;
     margin: 100px auto;
     background: #fff;
     border-radius: 18px;
@@ -60,6 +60,19 @@
     font-size: 1rem;
     font-weight: 600;
 }
+.upload-info {
+    font-size: 0.875rem;
+    color: #6c757d;
+    margin-top: 0.25rem;
+}
+.alert {
+    border-radius: 10px;
+    border: none;
+}
+.alert-danger {
+    background-color: #fee2e2;
+    color: #991b1b;
+}
 @media (max-width: 600px) {
     .return-container {
         padding: 1.2rem 0.5rem;
@@ -89,7 +102,7 @@ input[type="checkbox"] {
     @endif
     <form action="{{ route('order.returns.store', $order->id) }}" method="POST" enctype="multipart/form-data">
         @csrf
-        <div class="mb-3">
+        <div class="mb-4">
             <label class="form-label">Chọn sản phẩm muốn hoàn:</label>
             @php
                 // Helper function to safely handle both JSON strings and arrays
@@ -120,17 +133,26 @@ input[type="checkbox"] {
                 </div>
             @endforeach
         </div>
-        <div class="mb-3">
-            <label for="reason" class="form-label">Lý do hoàn hàng</label>
+        <div class="mb-4">
+            <label for="reason" class="form-label">Lý do hoàn hàng <span class="text-danger">*</span></label>
             <textarea name="reason" id="reason" class="form-control" rows="3" required>{{ old('reason') }}</textarea>
+            <div class="upload-info">Vui lòng mô tả chi tiết lý do hoàn hàng</div>
         </div>
-        <div class="mb-3">
-            <label for="image" class="form-label">Hình ảnh minh chứng (nếu có)</label>
-            <input type="file" name="image" id="image" class="form-control">
+        <div class="mb-4">
+            <label for="image" class="form-label">Hình ảnh minh chứng</label>
+            <input type="file" name="image" id="image" class="form-control" accept="image/*">
+            <div class="upload-info">Chấp nhận các định dạng: JPG, PNG, JPEG. Kích thước tối đa: 2MB</div>
         </div>
-        <div class="d-flex justify-content-center gap-3 mt-4">
-            <button type="submit" class="btn btn-danger"><i class="fas fa-undo me-2"></i>Gửi yêu cầu hoàn hàng</button>
-        <a href="{{ route('order.index') }}" class="btn btn-secondary">Quay lại</a>
+        <div class="mb-4">
+            <label for="proof_video" class="form-label">Video minh chứng</label>
+            <input type="file" name="proof_video" id="proof_video" class="form-control" accept="video/mp4,video/mov,video/avi">
+            <div class="upload-info">Chấp nhận các định dạng: MP4, MOV, AVI. Kích thước tối đa: 20MB</div>
+        </div>
+        <div class="d-flex justify-content-center gap-3 mt-5">
+            <button type="submit" class="btn btn-danger">
+                <i class="fas fa-undo me-2"></i>Gửi yêu cầu hoàn hàng
+            </button>
+            <a href="{{ route('order.index') }}" class="btn btn-secondary">Quay lại</a>
         </div>
     </form>
 </div>

@@ -65,7 +65,17 @@ class OrderController extends Controller
         $new_status = $request->status;
         if (isset($status[$order->status]) && in_array($new_status, $status[$order->status])) {
             $old_status = $order->status;
-            $order->update(['status' => $new_status]);
+            
+            // Nếu chuyển sang trạng thái completed, cập nhật payment_status thành paid
+            if ($new_status === 'completed') {
+                $order->update([
+                    'status' => $new_status,
+                    'payment_status' => 'paid'
+                ]);
+            } else {
+                $order->update(['status' => $new_status]);
+            }
+
             // Gửi email hóa đơn kèm PDF khi chuyển sang 'confirmed'
             if ($old_status !== 'confirmed' && $new_status === 'confirmed') {
                 try {

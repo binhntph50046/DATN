@@ -11,9 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('shipping_orders', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
+        Schema::table('categories', function (Blueprint $table) {
+            $table->string('icon')->nullable()->after('image');
         });
     }
 
@@ -22,6 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('shipping_orders');
+        Schema::table('categories', function (Blueprint $table) {
+            $table->dropColumn('icon');
+        });
     }
 };

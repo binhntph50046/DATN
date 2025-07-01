@@ -213,27 +213,64 @@
                             </td>
                             <td>
                                 <div class="order-actions" id="order-actions-{{ $order->id }}">
-                                    <a href="{{ route('order.tracking', $order->id) }}" class="btn btn-action btn-primary" title="Xem chi tiết">
-                                        <i class="fas fa-eye"></i>
-                                    </a>
+                                    @if(in_array($order->status, ['returned', 'partially_returned']) && $order->returns->isNotEmpty())
+                                        <a href="{{ route('order.returns.show', [$order->id, $order->returns->first()->id]) }}" 
+                                           class="btn btn-action btn-info" title="Xem chi tiết hoàn hàng">
+                                            <i class="fas fa-undo"></i> Xem hoàn đơn
+                                        </a>
+                                    @else
+                                        <a href="{{ route('order.tracking', $order->id) }}" class="btn btn-action btn-primary" title="Xem chi tiết">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                    @endif
+
                                     @if(in_array($order->status, ['pending', 'confirmed']))
-                                        <form action="{{ route('order.cancel', $order->id) }}" method="POST" style="display:inline;">
+                                        <form action="{{ route('order.cancel', $order->id) }}" method="POST" style="display:inline;" id="cancel-order-form-{{ $order->id }}">
                                             @csrf
-                                            <button type="submit" class="btn btn-action btn-danger" title="Hủy đơn" onclick="return confirm('Bạn chắc chắn muốn hủy đơn này?')">
+                                            <button type="button" class="btn btn-action btn-danger btn-cancel-order" title="Hủy đơn" data-order-id="{{ $order->id }}">
                                                 <i class="fas fa-times"></i>
                                             </button>
                                         </form>
                                     @endif
+
                                     @if($order->status == 'completed')
-                                        @php
-                                            $created = \Carbon\Carbon::parse($order->created_at);
-                                            $now = \Carbon\Carbon::now();
-                                        @endphp
-                                        @if($now->diffInDays($created) <= 7)
-                                            <a href="{{ route('order.returns.create', $order->id) }}" class="btn btn-action btn-warning" title="Yêu cầu hoàn hàng">
-                                                <i class="fas fa-undo"></i>
+                                        @if($order->returns()->exists())
+                                            <a href="{{ route('order.returns.show', [$order->id, $order->returns->first()->id]) }}" 
+                                               class="btn btn-info btn-sm mb-1" title="Xem chi tiết hoàn hàng">
+                                                <i class="fas fa-undo"></i> Xem yêu cầu hoàn hàng
                                             </a>
+                                        @else
+                                            @php
+                                                $orderDate = \Carbon\Carbon::parse($order->created_at);
+                                                $now = \Carbon\Carbon::now();
+                                                $daysDiff = $now->diffInDays($orderDate);
+                                            @endphp
+                                            @if($daysDiff <= 7)
+                                                <a href="{{ route('order.returns.create', $order->id) }}" 
+                                                   class="btn btn-warning btn-sm mb-1" title="Yêu cầu hoàn hàng">
+                                                    <i class="fas fa-undo"></i> Yêu cầu hoàn hàng
+                                                </a>
+                                            @endif
                                         @endif
+                                        @foreach($order->items as $item)
+                                            @php
+                                                $variant = $item->variant;
+                                                if (!$variant) continue;
+                                                $isReviewed = \App\Models\ProductReview::where('user_id', Auth::id())
+                                                    ->where('order_id', $order->id)
+                                                    ->where('variant_id', $variant->id)
+                                                    ->exists();
+                                            @endphp
+                                            @if($isReviewed)
+                                                <a href="{{ route('order.review.history', [$order->id, $variant->id]) }}" class="btn btn-info btn-sm mb-1">
+                                                    Xem đánh giá {{ $variant->name }}
+                                                </a>
+                                            @else
+                                                <a href="{{ route('order.review', [$order->id, $variant->id]) }}" class="btn btn-success btn-sm mb-1">
+                                                    Đánh giá {{ $variant->name }}
+                                                </a>
+                                            @endif
+                                        @endforeach
                                     @endif
                                 </div>
                             </td>
@@ -625,145 +662,108 @@
 
 @section('scripts')
 <script>
-function renderOrderActions(orderId, status, createdAt) {
-    const actionsDiv = document.getElementById('order-actions-' + orderId);
-    if (!actionsDiv) return;
-
-    let html = '';
-    // Nút chi tiết luôn có
-    html += `<a href="/order/tracking/${orderId}" class="btn btn-action btn-primary">
-                <i class='fas fa-eye'></i> 
-            </a>`;
-
-    // Nút Hủy đơn: chỉ hiện khi status là 'pending' hoặc 'confirmed'
-    if (status === 'pending' || status === 'confirmed') {
-        html += `
-            <button type="button" class="btn btn-action btn-danger" data-bs-toggle="modal" data-bs-target="#cancelModal${orderId}">
-                <i class="fas fa-times"></i> <span>Hủy đơn</span>
-            </button>
-            <div class="modal fade" id="cancelModal${orderId}" tabindex="-1" aria-labelledby="cancelModalLabel${orderId}" aria-hidden="true">
-                <div class="modal-dialog modal-dialog-centered">
-                    <div class="modal-content">
-                        <form action="/order/cancel/${orderId}" method="POST">
-                            <input type="hidden" name="_token" value="${window.Laravel.csrfToken}">
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="cancelModalLabel${orderId}"><i class="fas fa-times text-danger me-2"></i>Hủy đơn hàng #${orderId}</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body">
-                                <div class="mb-3">
-                                    <label for="cancellation_reason_${orderId}" class="form-label">Lý do hủy đơn</label>
-                                    <input type="text" class="form-control" name="cancellation_reason" id="cancellation_reason_${orderId}" required placeholder="Nhập lý do hủy đơn...">
-                                </div>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
-                                <button type="submit" class="btn btn-danger"><i class="fas fa-times me-2"></i>Xác nhận hủy</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        `;
-    }
-    // Nút hoàn hàng chỉ hiện nếu chưa quá 7 ngày kể từ ngày mua và status là 'completed'
-    if (status === 'completed') {
-        const created = new Date(createdAt);
-        const now = new Date();
-        const diffTime = now - created;
-        const diffDays = diffTime / (1000 * 60 * 60 * 24);
-        if (diffDays <= 7) {
-            html += `<a href="/order/${orderId}/return" class="btn btn-action btn-warning">
-                        <i class='fas fa-undo'></i> 
-                    </a>`;
-        }
-    }
-
-    actionsDiv.innerHTML = html;
-}
-
 document.addEventListener('DOMContentLoaded', function() {
-    // Khởi tạo các nút chức năng ban đầu
-    document.querySelectorAll('tr[data-order-id]').forEach(row => {
-        renderOrderActions(
-            row.getAttribute('data-order-id'),
-            row.getAttribute('data-status'),
-            row.getAttribute('data-created-at')
-        );
+    // Xử lý sự kiện cho nút hủy đơn
+    document.querySelectorAll('.btn-cancel-order').forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
+            const orderId = this.getAttribute('data-order-id');
+            const modalId = `cancelModal${orderId}`;
+            
+            // Tìm modal có sẵn
+            let modal = document.getElementById(modalId);
+            if (!modal) {
+                // Nếu không có modal, tạo mới
+                const modalHtml = `
+                    <div class="modal fade" id="${modalId}" tabindex="-1" aria-labelledby="cancelModalLabel${orderId}" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-centered">
+                            <div class="modal-content">
+                                <form action="/order/cancel/${orderId}" method="POST">
+                                    @csrf
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="cancelModalLabel${orderId}">
+                                            <i class="fas fa-times text-danger me-2"></i>Hủy đơn hàng #${orderId}
+                                        </h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <div class="mb-3">
+                                            <label for="cancellation_reason_${orderId}" class="form-label">Lý do hủy đơn</label>
+                                            <input type="text" class="form-control" name="cancellation_reason" 
+                                                id="cancellation_reason_${orderId}" required 
+                                                placeholder="Vui lòng nhập lý do hủy đơn...">
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                                        <button type="submit" class="btn btn-danger">
+                                            <i class="fas fa-times me-2"></i>Xác nhận hủy
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                document.body.insertAdjacentHTML('beforeend', modalHtml);
+                modal = document.getElementById(modalId);
+            }
+            
+            // Hiển thị modal
+            const bsModal = new bootstrap.Modal(modal);
+            bsModal.show();
+        });
     });
 
     // Lắng nghe sự kiện cập nhật trạng thái realtime
-   setTimeout(() => {
     let orderIds = @json($orders->pluck('id'));
     orderIds.forEach(orderId => {
         window.Echo.channel('orderStatus.' + orderId)
             .listen('.OrderStatusUpdated', (e) => {
-                const card = document.querySelector(`[data-order-id="${orderId}"]`);
-                if (card) {
-                    // Cập nhật trạng thái data-status
-                    card.setAttribute('data-status', e.status);
+                const row = document.querySelector(`[data-order-id="${orderId}"]`);
+                if (row) {
+                    // Cập nhật trạng thái
+                    row.setAttribute('data-status', e.status);
 
-                    // Cập nhật lại badge trạng thái
-                    const statusBadge = card.querySelector('.status-badge');
+                    // Cập nhật badge trạng thái
+                    const statusBadge = row.querySelector('.status-badge');
                     if (statusBadge) {
-                        // Map trạng thái sang class và icon
-                        const statusClassMap = {
+                        const statusClass = {
                             'pending': 'warning',
                             'confirmed': 'info',
                             'preparing': 'primary',
                             'shipping': 'info',
                             'completed': 'success',
                             'cancelled': 'danger',
-                            'returned': 'secondary',
-                            '': 'secondary',
-                        };
-                        const statusIconMap = {
+                            'returned': 'secondary'
+                        }[e.status] || 'secondary';
+
+                        const statusIcon = {
                             'pending': 'fa-clock',
                             'confirmed': 'fa-circle-check',
                             'preparing': 'fa-box',
                             'shipping': 'fa-truck',
                             'completed': 'fa-circle-check',
                             'cancelled': 'fa-ban',
-                            'returned': 'fa-undo',
-                            '': 'fa-undo',
-                        };
-                        statusBadge.className = `status-badge status-${statusClassMap[e.status] || 'secondary'}`;
-                        statusBadge.innerHTML = `<i class="fas ${statusIconMap[e.status] || 'fa-circle'}"></i> ${e.status_text}`;
+                            'returned': 'fa-undo'
+                        }[e.status] || 'fa-circle';
 
+                        statusBadge.className = `status-badge status-${statusClass}`;
+                        statusBadge.innerHTML = `<i class="fas ${statusIcon}"></i> ${e.statusText}`;
                     }
 
-                    // Cập nhật lại nút thao tác với trạng thái mới
-                    renderOrderActions(
-                        orderId,
-                        e.status,
-                        card.getAttribute('data-created-at')
-                    );
-
-                    // Nếu đơn hàng bị hủy hoặc hoàn trả, reload trang để cập nhật danh sách
-                    if (e.status === 'cancelled' || e.status === 'returned' || e.status === '') {
-                        setTimeout(() => {
-                            window.location.reload();
-                        }, 1000);
+                    // Cập nhật nút thao tác
+                    const actionsDiv = row.querySelector('.order-actions');
+                    if (actionsDiv) {
+                        const cancelButton = actionsDiv.querySelector('.btn-cancel-order')?.closest('form');
+                        if (cancelButton) {
+                            cancelButton.style.display = 
+                                (e.status === 'pending' || e.status === 'confirmed') ? 'inline' : 'none';
+                        }
                     }
                 }
             });
     });
-},200);
-
-// Auto hide alerts after 5 seconds
-const alerts = document.querySelectorAll('.alert-modern');
-alerts.forEach(alert => {
-    setTimeout(() => {
-        alert.classList.add('alert-hide');
-        setTimeout(() => {
-            alert.remove();
-        }, 500);
-    }, 5000);
 });
-
-});
-
-
-
 </script>
 @endsection

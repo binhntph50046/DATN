@@ -166,20 +166,16 @@
                         <div class="tab-content" id="mysrpTabContent">
                             <div class="tab-pane fade show active" id="drp-tab-1" role="tabpanel"
                                 aria-labelledby="drp-t1" tabindex="0">
-                                <a href="#!" class="dropdown-item">
-                                    <i class="ti ti-edit-circle"></i>
-                                    <span>Edit Profile</span>
-                                </a>
-                                <a href="#!" class="dropdown-item">
+                                <a href="{{ route('admin.profile.index') }}" class="dropdown-item">
                                     <i class="ti ti-user"></i>
                                     <span>View Profile</span>
                                 </a>
-                                <a href="#!" class="dropdown-item">
-                                    <i class="ti ti-clipboard-list"></i>
-                                    <span>Social Profile</span>
+                                <a href="{{ route('admin.profile.password') }}" class="dropdown-item">
+                                    <i class="ti ti-lock"></i>
+                                    <span>Đổi mật khẩu</span>
                                 </a>
                                 <a href="#!" class="dropdown-item">
-                                    <i class="ti ti-wallet"></i>
+                                    <i class="ti ti-clipboard-list"></i>
                                     <span>Billing</span>
                                 </a>
                                 <a href="{{ route('home') }}" class="dropdown-item">

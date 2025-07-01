@@ -88,7 +88,7 @@ class OrderController extends Controller
                         Mail::to($order->shipping_email)->send(new InvoicePdfMail($invoice, $pdfContent));
                     }
                 } catch (\Exception $e) {
-                    // Có thể log lỗi nếu cần
+
                 }
             }
             event(new OrderStatusUpdated($order));

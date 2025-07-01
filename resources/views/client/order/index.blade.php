@@ -37,13 +37,13 @@
                     <a class="status-tab {{ request('status') == 'pending' ? 'active' : '' }}" 
                        href="{{ route('order.index', ['status' => 'pending']) }}">
                         <i class="fas fa-clock text-warning"></i>
-                        <span>Chưa thanh toán</span>
+                        <span>Chờ xử lý</span>
                         <div class="tab-indicator"></div>
                     </a>
                     <a class="status-tab {{ request('status') == 'confirmed' ? 'active' : '' }}" 
                        href="{{ route('order.index', ['status' => 'confirmed']) }}">
                         <i class="fas fa-circle-check text-info"></i>
-                        <span>Chờ xác nhận</span>
+                        <span>Đã xác nhận</span>
                         <div class="tab-indicator"></div>
                     </a>
                     <a class="status-tab {{ request('status') == 'preparing' ? 'active' : '' }}" 
@@ -248,8 +248,8 @@
                                     <h3>
                                         @php
                                             $statusText = match(request('status')) {
-                                                'pending' => 'Chưa thanh toán',
-                                                'confirmed' => 'Chờ xác nhận',
+                                                'pending' => 'Chờ xử lý',
+                                                'confirmed' => 'Đã xác nhận',
                                                 'preparing' => 'Đang chuẩn bị',
                                                 'shipping' => 'Đang giao',
                                                 'completed' => 'Đã giao',

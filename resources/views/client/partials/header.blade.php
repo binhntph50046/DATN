@@ -255,6 +255,7 @@
                     </a>
                 @endguest
                 <ul class="dropdown-menu dropdown-menu-bg" aria-labelledby="userDropdown">
+                    <li><a class="dropdown-item text-white" href="{{ route('order.guest.tracking') }}">Tra cứu đơn hàng</a></li>
                     @guest
                         <li><a class="dropdown-item text-white" href="{{ route('register') }}">Đăng kí</a></li>
                         <li><a class="dropdown-item text-white" href="{{ route('login') }}">Đăng nhập</a></li>

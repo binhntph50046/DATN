@@ -8,7 +8,7 @@ class OrderReturn extends Model
 {
     // Các trường có thể gán giá trị hàng loạt
     protected $fillable = [
-        'order_id', 'user_id', 'status', 'reason', 'image', 'admin_id', 'processed_at'
+        'order_id', 'user_id', 'status', 'reason', 'image', 'proof_video', 'admin_id', 'processed_at'
     ];
 
     // Kiểu dữ liệu cho các trường

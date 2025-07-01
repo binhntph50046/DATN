@@ -2,7 +2,8 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Middleware\VerifyCsrfToken;
-
+use Illuminate\Foundation\Auth\EmailVerificationRequest;
+use Illuminate\Http\Request;
 // Models
 use App\Models\Invoice;
 
@@ -196,6 +197,23 @@ Route::get('/auth/google', [GoogleController::class, 'redirectToGoogle'])->name(
 Route::get('/auth/google/callback', [GoogleController::class, 'handleGoogleCallback']);
 Route::get('/auth/facebook', [FacebookController::class, 'redirectToFacebook'])->name('auth.facebook.redirect');
 Route::get('/auth/facebook/callback', [FacebookController::class, 'handleFacebookCallback']);
+
+// Trang nhắc xác minh
+Route::get('/email/verify', function () {
+    return view('auth.verify-email'); // bạn cần tạo view này
+})->middleware('auth')->name('verification.notice');
+
+// Khi user click link xác minh trong email
+Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
+    $request->fulfill();
+    return redirect('/'); // Hoặc redirect tới dashboard
+})->middleware(['auth', 'signed'])->name('verification.verify');
+
+// Gửi lại email xác minh
+Route::post('/email/verification-notification', function (Request $request) {
+    $request->user()->sendEmailVerificationNotification();
+    return back()->with('message', 'Email xác minh đã được gửi!');
+})->middleware(['auth', 'throttle:6,1'])->name('verification.send');
 
 /*
 |--------------------------------------------------------------------------

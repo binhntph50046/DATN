@@ -2,14 +2,18 @@
 
 namespace App\Http\Controllers\auth;
 
+use App\Mail\VerifyEmailCustom;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\URL;
 
 class AuthController
 {
@@ -54,16 +58,23 @@ class AuthController
 
         $user->assignRole('user');
 
-        // return redirect('/login')->with('success', 'Register successfully!');
-
         // Tự động login người dùng
-        Auth::login($user);
+        // Auth::login($user);
+
+        // Tạo link xác minh thủ công
+        $verificationUrl = URL::temporarySignedRoute(
+            'verification.verify',
+            Carbon::now()->addMinutes(60), 
+            [
+                'id' => $user->id,
+                'hash' => sha1($user->email),
+            ]
+        );
 
         // Gửi email xác minh
-        event(new Registered($user)); // Laravel sẽ tự gọi sendEmailVerificationNotification()
+        Mail::to($user->email)->send(new VerifyEmailCustom($user, $verificationUrl));
 
-        // Redirect đến trang nhắc xác minh email
-        return redirect()->route('verification.notice')->with('success', 'Đăng ký thành công. Vui lòng kiểm tra email để xác minh tài khoản.');
+        return redirect('/login')->with('success', 'Đăng ký thành công. Vui lòng kiểm tra email để xác minh tài khoản!');
     }
     public function showLoginForm()
     {

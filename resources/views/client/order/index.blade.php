@@ -225,15 +225,25 @@
                                         </form>
                                     @endif
                                     @if($order->status == 'completed')
-                                        @php
-                                            $created = \Carbon\Carbon::parse($order->created_at);
-                                            $now = \Carbon\Carbon::now();
-                                        @endphp
-                                        @if($now->diffInDays($created) <= 7)
-                                            <a href="{{ route('order.returns.create', $order->id) }}" class="btn btn-action btn-warning" title="Yêu cầu hoàn hàng">
-                                                <i class="fas fa-undo"></i>
-                                            </a>
-                                        @endif
+                                        @foreach($order->items as $item)
+                                            @php
+                                                $variant = $item->variant;
+                                                if (!$variant) continue;
+                                                $isReviewed = \App\Models\ProductReview::where('user_id', Auth::id())
+                                                    ->where('order_id', $order->id)
+                                                    ->where('variant_id', $variant->id)
+                                                    ->exists();
+                                            @endphp
+                                            @if($isReviewed)
+                                                <a href="{{ route('order.review.history', [$order->id, $variant->id]) }}" class="btn btn-info btn-sm mb-1">
+                                                    Xem đánh giá {{ $variant->name }}
+                                                </a>
+                                            @else
+                                                <a href="{{ route('order.review', [$order->id, $variant->id]) }}" class="btn btn-success btn-sm mb-1">
+                                                    Đánh giá {{ $variant->name }}
+                                                </a>
+                                            @endif
+                                        @endforeach
                                     @endif
                                 </div>
                             </td>
@@ -666,7 +676,7 @@ function renderOrderActions(orderId, status, createdAt) {
             </div>
         `;
     }
-    // Nút hoàn hàng chỉ hiện nếu chưa quá 7 ngày kể từ ngày mua và status là 'completed'
+    // Nút hoàn hàng và nút đánh giá chỉ hiện nếu status là 'completed'
     if (status === 'completed') {
         const created = new Date(createdAt);
         const now = new Date();
@@ -675,6 +685,11 @@ function renderOrderActions(orderId, status, createdAt) {
         if (diffDays <= 7) {
             html += `<a href="/order/${orderId}/return" class="btn btn-action btn-warning">
                         <i class='fas fa-undo'></i> 
+                    </a>`;
+        }
+        if (diffDays <= 30) { // Chỉ cho phép đánh giá trong 30 ngày
+            html += `<a href="/order/${orderId}/review" class="btn btn-action btn-success">
+                        <i class="fas fa-star"></i>
                     </a>`;
         }
     }

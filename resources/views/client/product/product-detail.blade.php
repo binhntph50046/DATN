@@ -265,7 +265,8 @@
                                 <div class="content-overlay" id="content-overlay"></div>
                             </div>
                             <div class="d-flex justify-content-center mt-3">
-                                <button id="toggle-content-btn" class="btn tab-btn-custom active btn-sm">Xem thêm</button>
+                                <button id="toggle-content-btn" class="btn tab-btn-custom active btn-sm">Xem thêm<i
+                                        class="fas fa-chevron-down ms-2"></i></button>
                             </div>
                         </div>
                     </div>
@@ -557,7 +558,7 @@
             font-size: 16px;
             font-weight: 500;
             color: #1a237e;
-            background-color: #f0f0f5; 
+            background-color: #f0f0f5;
             border: 1px solid #d0d0e0;
             border-radius: 999px;
             transition: all 0.3s ease;
@@ -572,7 +573,7 @@
 
         .tab-btn-custom.active {
             background-color: #1a237e;
-            color: #fff;               
+            color: #fff;
             border-color: #1a237e;
             box-shadow: 0 4px 10px rgba(26, 35, 126, 0.2);
         }
@@ -1014,7 +1015,9 @@
                 overlay.style.display = isCollapsed ? 'none' : 'block';
 
                 // Đổi nội dung nút
-                toggleBtn.textContent = isCollapsed ? 'Thu gọn' : 'Xem thêm';
+                toggleBtn.innerHTML = isCollapsed ?
+                    'Thu gọn <i class="fas fa-chevron-up ms-2"></i>' :
+                    'Xem thêm <i class="fas fa-chevron-down ms-2"></i>';
             });
         });
     </script>

@@ -27,7 +27,7 @@
                     <div class="invalid-feedback">{{ $message }}</div>
                 @enderror
 
-                <input type="email" name="email" class="form-control @error('email') is-invalid @enderror"
+                <input type="text" name="email" class="form-control @error('email') is-invalid @enderror"
                     placeholder="Email" value="{{ old('email') }}">
                 @error('email')
                     <div class="invalid-feedback">{{ $message }}</div>

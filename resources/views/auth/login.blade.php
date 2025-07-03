@@ -20,7 +20,7 @@
                             class="fa-brands fa-facebook-f"></i></a>
                 </div>
                 <span>hoặc sử dụng mật khẩu email của bạn</span>
-                <input type="email" name="email" placeholder="Email"
+                <input type="text" name="email" placeholder="Email"
                     class="form-control @error('email') is-invalid @enderror" value="{{ old('email') }}">
                 @error('email')
                     <div class="invalid-feedback">{{ $message }}</div>

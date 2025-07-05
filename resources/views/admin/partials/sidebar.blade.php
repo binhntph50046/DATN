@@ -135,6 +135,12 @@
                     </a>
                     <ul class="pc-submenu">
                         <li class="pc-item">
+                            <a href="{{ route('admin.livechat.index') }}" class="pc-link">
+                                <span class="pc-micon"><i class="ti ti-news"></i></span>
+                                <span class="pc-mtext">Message</span>
+                            </a>
+                        </li>
+                        <li class="pc-item">
                             <a href="{{ route('admin.blogs.index') }}" class="pc-link">
                                 <span class="pc-micon"><i class="ti ti-news"></i></span>
                                 <span class="pc-mtext">Bài viết</span>

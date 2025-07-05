@@ -26,6 +26,7 @@ use App\Http\Controllers\admin\FaqController;
 use App\Http\Controllers\admin\ProductVariantController;
 use App\Http\Controllers\Admin\InvoiceController;
 use App\Http\Controllers\Admin\OrderReturnController as AdminOrderReturnController;
+use App\Http\Controllers\Admin\MessengerController;
 
 // Client Controllers
 use App\Http\Controllers\client\HomeController;
@@ -44,6 +45,7 @@ use App\Http\Controllers\client\ProfileController;
 use App\Http\Controllers\client\WishlistController;
 use App\Http\Controllers\client\CheckoutController;
 use App\Http\Controllers\client\SubscribeController;
+use App\Http\Controllers\client\ChatController;
 
 // Auth Controllers
 use App\Http\Controllers\auth\AuthController;
@@ -95,11 +97,6 @@ Route::get('/faq', [FaqsController::class, 'index'])->name('faq');
 Route::get('/location', function () {
     return view('client.location.index');
 })->name('location');
-
-// Chatbot Route
-Route::get('/chat', function () {
-    return view('chat');
-});
 
 Route::post('/chatbot/ask', [ChatBotController::class, 'ask'])->name('chatbot.ask');
 
@@ -169,6 +166,9 @@ Route::prefix('order')->name('order.')->group(function () {
     Route::post('{id}/request-resend-invoice', [ClientOrderController::class, 'requestResendInvoice'])->name('request-resend-invoice');
 });
 
+// Chatify Messenger Client
+Route::get('/chat', [ChatController::class, 'index'])->name('client.chat');
+
 /*
 |--------------------------------------------------------------------------
 | Authentication Routes
@@ -203,6 +203,14 @@ Route::prefix('admin')
     ->group(function () {
         // Dashboard
         Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+
+        // Live Chat Management
+        Route::prefix('livechat')->name('livechat.')->group(function () {
+            Route::get('/', [MessengerController::class, 'index'])->name('index');
+            Route::get('/users', [MessengerController::class, 'getUsers'])->name('users');
+            Route::get('/messages/{userId}', [MessengerController::class, 'getMessages'])->name('messages');
+            Route::post('/send', [MessengerController::class, 'sendMessage'])->name('send');
+        });
 
         // User Management
         Route::prefix('users')->name('users.')->middleware('permission:view users')->group(function () {
@@ -268,6 +276,8 @@ Route::prefix('admin')
             Route::put('/{id}/restore', [BlogController::class, 'restore'])->middleware('permission:edit blogs')->name('restore');
             Route::delete('/{id}/force-delete', [BlogController::class, 'forceDelete'])->middleware('permission:delete blogs')->name('forceDelete');
         });
+
+        
 
         // Attribute Management
         Route::prefix('attributes')->name('attributes.')->group(function () {

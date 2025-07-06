@@ -35,11 +35,22 @@ class ChatbotController
         }
 
         // 2. Nếu không có, chỉ lấy dữ liệu từ các bảng bạn muốn gửi cho AI
-        $tables = ['faqs', 'categories', 'product_variants','vouchers'];
+        $tables = [
+            'faqs' => '*',
+            'categories' => '*',
+            'product_variants' => '*',
+            'vouchers' => ['description'],
+            'flash_sale_items' => ['product_variant_id', 'count','discount'],
+            'flash_sales' => ['name']
+        ];
         $all_data_text = "";
-        foreach ($tables as $table) {
+        foreach ($tables as $table => $fields) {
             $all_data_text .= "Bảng: $table\n";
-            $rows = DB::table($table)->get();
+            if ($fields === '*') {
+                $rows = DB::table($table)->get();
+            } else {
+                $rows = DB::table($table)->select($fields)->get();
+            }
             foreach ($rows as $r) {
                 $all_data_text .= json_encode($r, JSON_UNESCAPED_UNICODE) . "\n";
             }
@@ -49,9 +60,10 @@ class ChatbotController
         // Gọi Gemini API
         $api_key = "AIzaSyC7bDHaBORo63DHUPL-PiILtmul8YQiOaU";
         $url = "https://generativelanguage.googleapis.com/v1/models/gemini-2.0-flash:generateContent?key=$api_key";
-        $prompt = "Bạn là nhân viên tư vấn chuyên nghiệp, luôn đặt nhu cầu khách hàng lên hàng đầu. Khi trả lời, hãy luôn bắt đầu bằng 'Dạ thưa anh/chị,' hoặc 'Dạ vâng, thưa anh/chị,' và trả lời thật lịch sự, chu đáo. 
+        $prompt = "Bạn là nhân viên tư vấn chuyên nghiệp, luôn đặt nhu cầu khách hàng lên hàng đầu. Khi trả lời, hãy luôn bắt đầu bằng 'Dạ thưa anh/chị,' hoặc 'Dạ vâng, thưa anh/chị,' và trả lời thật lịch sự, chu đáo Chỉ trả lời đúng sản phẩm mà khách hàng hỏi, không liệt kê các sản phẩm khác.
                     Dữ liệu:\n$all_data_text\n
                     Hãy trả lời NGẮN GỌN, trực tiếp cho câu hỏi sau: \"$msg\". Chỉ trả lời nội dung, không cần giải thích, không cần nhắc lại câu hỏi, không nói dựa vào bảng nào.";
+                    
         $data = [
             "contents" => [
                 [

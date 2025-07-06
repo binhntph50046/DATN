@@ -34,7 +34,7 @@
     @include('client.partials.header')
     @include('client.partials.notification')
     @yield('content')
-    @include('client.partials.chat')
+    @include('client.partials.chatbot')
     @include('client.partials.footer')
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <!-- Bootstrap Bundle + Popper -->

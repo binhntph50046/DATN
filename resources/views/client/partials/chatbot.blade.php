@@ -34,7 +34,6 @@
                 opacity: 0;
                 transform: translateY(40px);
             }
-
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -152,23 +151,18 @@
             0% {
                 transform: rotate(0deg);
             }
-
             20% {
                 transform: rotate(-10deg);
             }
-
             40% {
                 transform: rotate(10deg);
             }
-
             60% {
                 transform: rotate(-10deg);
             }
-
             80% {
                 transform: rotate(10deg);
             }
-
             100% {
                 transform: rotate(0deg);
             }
@@ -208,7 +202,6 @@
             z-index: 2001;
             transition: box-shadow 0.2s;
             overflow: visible;
-            /* Cho hiệu ứng ra ngoài */
         }
 
         .chatbot-icon.shake {
@@ -235,16 +228,60 @@
                 transform: translate(-50%, -50%) scale(1);
                 opacity: 0.6;
             }
-
             70% {
                 transform: translate(-50%, -50%) scale(1.5);
                 opacity: 0.1;
             }
-
             100% {
                 transform: translate(-50%, -50%) scale(1.8);
                 opacity: 0;
             }
+        }
+
+        /* CSS cho icon live chat */
+        .live-chat-icon {
+            position: fixed;
+            bottom: 110px;
+            right: 30px;
+            width: 70px;
+            height: 70px;
+            background: rgb(47, 104, 218);
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+            border: 4px solid #fff;
+            z-index: 2001;
+            transition: box-shadow 0.2s;
+        }
+
+        .live-chat-icon svg {
+            width: 24px;
+            height: 24px;
+            fill: #fff;
+        }
+
+        .live-chat-icon:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+        }
+
+        /* Thêm kiểu dáng cho nhãn "Chat 24/7" */
+        .chat-label {
+            font-size: 10px;
+            color: #fff;
+            font-weight: bold;
+            margin-top: 2px;
+            text-align: center;
+            line-height: 1;
+            text-transform: uppercase;
+        }
+
+        /* Hiệu ứng rung cho live-chat-icon khi nhấn */
+        .live-chat-icon.shake {
+            animation: shake 0.5s; /* Thực hiện rung 1 lần khi nhấn */
         }
     </style>
 </head>
@@ -287,6 +324,15 @@
             </svg>
         </span>
     </div>
+    <!-- Icon live chat -->
+    <div class="live-chat-icon" id="liveChatIcon" onclick="redirectToChat()">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path
+                d="M20 2H4C2.9 2 2 2.9 2 4V22L6 18H20C21.1 18 22 17.1 22 16V4C22 2.9 21.1 2 20 2ZM6 9H18V11H6V9ZM14 14H6V12H14V14ZM18 7H6V5H18V7Z"
+                fill="white" />
+        </svg>
+        <span class="chat-label">Chat 24/7</span>
+    </div>
 
     <!-- Khung chat -->
     <div class="chatbot-window" id="chatbotWindow">
@@ -320,7 +366,6 @@
             }
         }
 
-        // Gửi tin nhắn
         function sendMessagee(e) {
             e.preventDefault();
             const input = document.getElementById('chatbotInput');
@@ -331,7 +376,6 @@
             input.value = '';
             input.focus();
 
-            // Thêm hiệu ứng "đang trả lời..." động
             const messages = document.getElementById('chatbotMessages');
             const loadingDiv = document.createElement('div');
             loadingDiv.className = 'chatbot-message bot loading';
@@ -339,7 +383,6 @@
             messages.appendChild(loadingDiv);
             messages.scrollTop = messages.scrollHeight;
 
-            // Hiệu ứng động cho dấu ba chấm
             let dotCount = 1;
             const typingDots = loadingDiv.querySelector('#typing-dots');
             const dotsInterval = setInterval(() => {
@@ -347,7 +390,6 @@
                 typingDots.textContent = '.'.repeat(dotCount);
             }, 400);
 
-            // Gửi AJAX lên server (dùng route giống chatbot.blade.php)
             fetch('{{ route("chatbot.ask") }}', {
                 method: 'POST',
                 headers: {
@@ -358,13 +400,12 @@
             })
                 .then(res => res.json())
                 .then(data => {
-                    clearInterval(dotsInterval); // Dừng hiệu ứng
-                    // Xóa hiệu ứng "đang trả lời..."
+                    clearInterval(dotsInterval);
                     loadingDiv.remove();
-                    appendMessage('bot', data.answer || 'Xin lỗi, tôi chưa hiểu rõ câu hỏi.');
+                    appendMessage('bot', data.answer);
                 })
                 .catch(() => {
-                    clearInterval(dotsInterval); // Dừng hiệu ứng
+                    clearInterval(dotsInterval);
                     loadingDiv.remove();
                     appendMessage('bot', 'Có lỗi xảy ra, vui lòng thử lại sau.');
                 });
@@ -372,17 +413,20 @@
             return false;
         }
 
-        // Hiển thị tin nhắn lên khung chat
         function appendMessage(sender, text) {
             const messages = document.getElementById('chatbotMessages');
             const msgDiv = document.createElement('div');
             msgDiv.className = 'chatbot-message ' + sender;
-            msgDiv.innerHTML = `<div class="chatbot-bubble">${escapeHtml(text)}</div>`;
+            // Kiểm tra và thay thế link bằng nút nếu cần
+            if (text.includes('<a href="/chat"')) {
+                msgDiv.innerHTML = `<div class="chatbot-bubble">${text.replace('<a href="/chat" target="_blank">', '<button onclick="window.open(\'/chat\', \'_blank\')">').replace('</a>', '</button>')}</div>`;
+            } else {
+                msgDiv.innerHTML = `<div class="chatbot-bubble">${escapeHtml(text)}</div>`;
+            }
             messages.appendChild(msgDiv);
             messages.scrollTop = messages.scrollHeight;
         }
 
-        // Chống XSS
         function escapeHtml(text) {
             return text.replace(/[&<>"']/g, function (m) {
                 return ({
@@ -390,15 +434,23 @@
                     '<': '&lt;',
                     '>': '&gt;',
                     '"': '&quot;',
-                    "'": '&#39;'
+                    "'": '&#039;'
                 })[m];
             });
         }
 
-        // Gửi bằng phím Enter
         document.getElementById('chatbotInput').addEventListener('keydown', function (e) {
             if (e.key === 'Enter') sendMessagee(e);
         });
+
+        // Chuyển hướng đến /chat khi nhấn icon live chat với hiệu ứng rung
+        function redirectToChat() {
+            const liveChatIcon = document.getElementById('liveChatIcon');
+            liveChatIcon.classList.add('shake'); // Thêm hiệu ứng rung
+            setTimeout(() => {
+                window.location.href = '/chat'; // Chuyển hướng sau khi rung xong
+            }, 500); // Độ trễ 500ms để hiệu ứng hoàn thành
+        }
     </script>
 </body>
 

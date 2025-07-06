@@ -26,3 +26,4 @@ window.Echo = new Echo({
  */
 
 import './echo';
+import './echo-admin';

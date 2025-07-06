@@ -13,3 +13,6 @@ Broadcast::channel('chat.{userId}', function ($user, $userId) {
     // Chỉ cho phép user có id trùng userId mới được lắng nghe channel này
     return (int) $user->id === (int) $userId;
 });
+Broadcast::channel('admin.notifications', function ($user) {
+    return in_array($user->role, ['admin', 'staff']);
+});

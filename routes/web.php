@@ -7,6 +7,7 @@ use App\Http\Middleware\VerifyCsrfToken;
 use App\Models\Invoice;
 
 // Admin Controllers
+use App\Http\Controllers\admin\ActivityController;
 use App\Http\Controllers\admin\BlogController;
 use App\Http\Controllers\admin\UserController;
 use App\Http\Controllers\admin\OrderController;
@@ -26,6 +27,9 @@ use App\Http\Controllers\admin\FaqController;
 use App\Http\Controllers\admin\ProductVariantController;
 use App\Http\Controllers\Admin\InvoiceController;
 use App\Http\Controllers\Admin\OrderReturnController as AdminOrderReturnController;
+use App\Http\Controllers\Admin\AdminProfileController;
+use App\Http\Controllers\Admin\SitemapController;
+use App\Http\Controllers\Admin\RobotController;
 use App\Http\Controllers\Admin\MessengerController;
 
 // Client Controllers
@@ -42,10 +46,15 @@ use App\Http\Controllers\client\ProductController as ClientProductController;
 use App\Http\Controllers\client\OrderReturnController as ClientOrderReturnController;
 use App\Http\Controllers\client\FaqsController;
 use App\Http\Controllers\client\ProfileController;
+use App\Http\Controllers\client\UserActivityController;
 use App\Http\Controllers\client\WishlistController;
 use App\Http\Controllers\client\CheckoutController;
 use App\Http\Controllers\client\SubscribeController;
+use App\Http\Controllers\client\VoucherController as ClientVoucherController;
+use App\Http\Controllers\client\CompareController;
+use App\Http\Controllers\client\SearchController;
 use App\Http\Controllers\client\ChatController;
+
 
 // Auth Controllers
 use App\Http\Controllers\auth\AuthController;
@@ -53,13 +62,17 @@ use App\Http\Controllers\auth\FacebookController;
 use App\Http\Controllers\auth\GoogleController;
 use App\Http\Controllers\auth\ForgotPasswordController;
 use App\Http\Controllers\auth\ResetPasswordController;
-use App\Http\Controllers\client\CompareController;
+use App\Http\Controllers\client\ProductReviewController;
+
 
 /*
 |--------------------------------------------------------------------------
 | Client Routes
 |--------------------------------------------------------------------------
 */
+// User Activity
+Route::post('/track/start', [UserActivityController::class, 'start']);
+Route::post('/track/stop', [UserActivityController::class, 'stop']);
 
 // Home & Product Routes
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -67,7 +80,7 @@ Route::get('/product/{slug}', [ClientProductController::class, 'show'])->name('p
 Route::get('/api/products/{id}', [ClientProductController::class, 'getProductDetails'])->name('api.products.show');
 Route::get('/api/variants/{id}', [ClientProductController::class, 'getVariant'])->name('api.variants.show');
 Route::post('/increment-view/{id}', [HomeController::class, 'incrementView'])->name('increment.view');
-Route::post('/compare', [CompareController::class, 'index'])->name('compare.products');
+Route::get('/compare', [CompareController::class, 'index'])->name('compare.index');
 
 // Shop Routes
 Route::get('/shop', [ShopController::class, 'index'])->name('shop');
@@ -166,8 +179,14 @@ Route::prefix('order')->name('order.')->group(function () {
     Route::post('{id}/request-resend-invoice', [ClientOrderController::class, 'requestResendInvoice'])->name('request-resend-invoice');
 });
 
-// Chatify Messenger Client
-Route::get('/chat', [ChatController::class, 'index'])->name('client.chat');
+// Product Review
+
+// Route 1: Xem lịch sử đánh giá 1 biến thể
+Route::get('{order}/review/{variant}/history', [ProductReviewController::class, 'history'])->name('order.review.history');
+Route::get('order/{order}/review', [ProductReviewController::class, 'create'])->name('order.review');
+Route::post('order/{order}/review/{variant}', [ProductReviewController::class, 'store'])->name('order.review.store');
+// Route 2: Xem lịch sử đánh giá toàn bộ đơn hàng
+Route::get('order/{order}/review/history', [ProductReviewController::class, 'historyAll'])->name('order.review.history.all');
 
 /*
 |--------------------------------------------------------------------------
@@ -190,6 +209,11 @@ Route::get('/auth/google', [GoogleController::class, 'redirectToGoogle'])->name(
 Route::get('/auth/google/callback', [GoogleController::class, 'handleGoogleCallback']);
 Route::get('/auth/facebook', [FacebookController::class, 'redirectToFacebook'])->name('auth.facebook.redirect');
 Route::get('/auth/facebook/callback', [FacebookController::class, 'handleFacebookCallback']);
+
+Route::middleware('auth')->group(function () {
+    Route::get('/chat', [ChatController::class, 'index'])->name('chat.index');
+});
+
 
 /*
 |--------------------------------------------------------------------------
@@ -357,6 +381,12 @@ Route::prefix('admin')
             Route::patch('/restore/{id}', [SubcriberController::class, 'restore'])->name('restore');
         });
 
+        // Activity Management
+        Route::prefix('activities')->name('activities.')->group(function () {
+            Route::get('/', [ActivityController::class, 'index'])->name('index');
+            Route::get('/user/{id}', [ActivityController::class, 'show'])->name('show');
+        });
+
         // FAQ Management
         Route::prefix('faqs')->name('faqs.')->group(function () {
             Route::get('/', [FaqController::class, 'index'])->name('index');
@@ -382,6 +412,32 @@ Route::prefix('admin')
         Route::put('variants/{variant}', [ProductVariantController::class, 'update'])->name('variants.update');
         Route::delete('variants/{variant}', [ProductVariantController::class, 'destroy'])->name('variants.destroy');
 
+        // Sitemap Management
+        Route::prefix('sitemap')->name('sitemap.')->group(function () {
+            Route::get('/', [SitemapController::class, 'index'])->name('index');
+            Route::post('/generate', [SitemapController::class, 'generate'])->name('generate');
+            Route::get('/view', [SitemapController::class, 'view'])->name('view');
+        });
+
+        // Robots Management
+        Route::prefix('robots')->name('robots.')->group(function () {
+            Route::get('/', [RobotController::class, 'index'])->name('index');
+            Route::post('/update', [RobotController::class, 'update'])->name('update');
+        });
+
         // New route for checking variant slug
         Route::get('/admin/ajax/check-variant-slug', [ProductController::class, 'checkVariantSlug']);
     });
+
+Route::post('/voucher/check', [ClientVoucherController::class, 'check'])->name('voucher.check');
+
+// Admin Profile Routes
+Route::prefix('admin/profile')->name('admin.profile.')->middleware('auth', 'role:admin|staff')->group(function () {
+    Route::get('/', [AdminProfileController::class, 'edit'])->name('index');
+    Route::put('/', [AdminProfileController::class, 'update'])->name('update');
+    Route::get('/password', [AdminProfileController::class, 'password'])->name('password');
+    Route::put('/password', [AdminProfileController::class, 'updatePassword'])->name('update-password');
+});
+
+Route::get('/tim-kiem', [SearchController::class, 'index'])->name('search');
+Route::get('/api/search-suggestions', [SearchController::class, 'suggestions'])->name('search.suggestions');

@@ -20,6 +20,14 @@ class ResetPasswordController
             'token' => 'required',
             'email' => 'required|email|exists:users,email',
             'password' => 'required|confirmed|min:6',
+        ], [
+            'email.required' => 'Vui lòng nhập email.',
+            'email.email' => 'Định dạng email không hợp lệ.',
+            'email.exists' => 'Email không tồn tại trong hệ thống.',
+
+            'password.required' => 'Vui lòng nhập mật khẩu.',
+            'password.confirmed' => 'Mật khẩu xác nhận không khớp.',
+            'password.min' => 'Mật khẩu phải có ít nhất 6 ký tự.',
         ]);
 
         $record = DB::table('password_reset_tokens')->where('email', $request->email)->first();

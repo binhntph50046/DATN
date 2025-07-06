@@ -2,7 +2,8 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Middleware\VerifyCsrfToken;
-
+use Illuminate\Foundation\Auth\EmailVerificationRequest;
+use Illuminate\Http\Request;
 // Models
 use App\Models\Invoice;
 
@@ -27,10 +28,17 @@ use App\Http\Controllers\admin\FaqController;
 use App\Http\Controllers\admin\ProductVariantController;
 use App\Http\Controllers\Admin\InvoiceController;
 use App\Http\Controllers\Admin\OrderReturnController as AdminOrderReturnController;
+<<<<<<< HEAD
 use App\Http\Controllers\Admin\AdminProfileController;
 use App\Http\Controllers\Admin\SitemapController;
 use App\Http\Controllers\Admin\RobotController;
 use App\Http\Controllers\Admin\MessengerController;
+=======
+use App\Http\Controllers\Admin\MessengerController;
+use App\Http\Controllers\Admin\AdminProfileController;
+use App\Http\Controllers\Admin\SitemapController;
+use App\Http\Controllers\Admin\RobotController;
+>>>>>>> 8490d5d40f9b13a6f7923511255b79a51cc5a3f1
 
 // Client Controllers
 use App\Http\Controllers\client\HomeController;
@@ -50,11 +58,18 @@ use App\Http\Controllers\client\UserActivityController;
 use App\Http\Controllers\client\WishlistController;
 use App\Http\Controllers\client\CheckoutController;
 use App\Http\Controllers\client\SubscribeController;
+<<<<<<< HEAD
 use App\Http\Controllers\client\VoucherController as ClientVoucherController;
 use App\Http\Controllers\client\CompareController;
 use App\Http\Controllers\client\SearchController;
 use App\Http\Controllers\client\ChatController;
 
+=======
+use App\Http\Controllers\client\ChatController;
+use App\Http\Controllers\client\VoucherController as ClientVoucherController;
+use App\Http\Controllers\client\CompareController;
+use App\Http\Controllers\client\SearchController;
+>>>>>>> 8490d5d40f9b13a6f7923511255b79a51cc5a3f1
 
 // Auth Controllers
 use App\Http\Controllers\auth\AuthController;
@@ -179,6 +194,11 @@ Route::prefix('order')->name('order.')->group(function () {
     Route::post('{id}/request-resend-invoice', [ClientOrderController::class, 'requestResendInvoice'])->name('request-resend-invoice');
 });
 
+<<<<<<< HEAD
+=======
+// Chatify Messenger Client
+Route::get('/chat', [ChatController::class, 'index'])->name('client.chat');
+>>>>>>> 8490d5d40f9b13a6f7923511255b79a51cc5a3f1
 // Product Review
 
 // Route 1: Xem lịch sử đánh giá 1 biến thể
@@ -187,7 +207,10 @@ Route::get('order/{order}/review', [ProductReviewController::class, 'create'])->
 Route::post('order/{order}/review/{variant}', [ProductReviewController::class, 'store'])->name('order.review.store');
 // Route 2: Xem lịch sử đánh giá toàn bộ đơn hàng
 Route::get('order/{order}/review/history', [ProductReviewController::class, 'historyAll'])->name('order.review.history.all');
+<<<<<<< HEAD
 
+=======
+>>>>>>> 8490d5d40f9b13a6f7923511255b79a51cc5a3f1
 /*
 |--------------------------------------------------------------------------
 | Authentication Routes
@@ -210,10 +233,29 @@ Route::get('/auth/google/callback', [GoogleController::class, 'handleGoogleCallb
 Route::get('/auth/facebook', [FacebookController::class, 'redirectToFacebook'])->name('auth.facebook.redirect');
 Route::get('/auth/facebook/callback', [FacebookController::class, 'handleFacebookCallback']);
 
+<<<<<<< HEAD
 Route::middleware('auth')->group(function () {
     Route::get('/chat', [ChatController::class, 'index'])->name('chat.index');
 });
 
+=======
+// Trang nhắc xác minh
+Route::get('/email/verify', function () {
+    return view('auth.verify-email'); // bạn cần tạo view này
+})->middleware('auth')->name('verification.notice');
+
+// Khi user click link xác minh trong email
+Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
+    $request->fulfill();
+    return redirect('/'); // Hoặc redirect tới dashboard
+})->middleware(['auth', 'signed'])->name('verification.verify');
+
+// Gửi lại email xác minh
+Route::post('/email/verification-notification', function (Request $request) {
+    $request->user()->sendEmailVerificationNotification();
+    return back()->with('message', 'Email xác minh đã được gửi!');
+})->middleware(['auth', 'throttle:6,1'])->name('verification.send');
+>>>>>>> 8490d5d40f9b13a6f7923511255b79a51cc5a3f1
 
 /*
 |--------------------------------------------------------------------------

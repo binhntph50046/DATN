@@ -41,5 +41,10 @@ class AppServiceProvider extends ServiceProvider
 
     // Đăng ký composer cho tất cả view
         View::composer('*', CartComposer::class);
+
+        View::composer('client.partials.header', function ($view) {
+            $categories = Category::where('type', 1)->where('status', 'active')->orderBy('order')->get();
+            $view->with('categories', $categories);
+        });
     }
 }

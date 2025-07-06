@@ -14,7 +14,7 @@
             ];
         @endphp
 
-        @foreach ($suggestions as $key => $products)
+        @foreach (['Gợi ý cho bạn' => $suggestions['unique']] as $key => $products)
             @if ($products->isNotEmpty())
                 <div class="mb-5">
                     <h5 class="mb-3">{{ $groups[$key] ?? ucfirst($key) }}</h5>

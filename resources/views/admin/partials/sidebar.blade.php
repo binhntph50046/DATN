@@ -187,6 +187,12 @@
                                 <span class="pc-mtext">Email đăng ký</span>
                             </a>
                         </li>
+                        <li class="pc-item">
+                            <a href="{{ route('admin.activities.index') }}" class="pc-link">
+                                <span class="pc-micon"><i class="ti ti-clock"></i></span>
+                                <span class="pc-mtext">Hoạt động</span>
+                            </a>
+                        </li>
                     </ul>
                 </li>
 
@@ -220,6 +226,29 @@
                             <a href="elements/icon-tabler.html" class="pc-link">
                                 <span class="pc-micon"><i class="ti ti-icons"></i></span>
                                 <span class="pc-mtext">Icons</span>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
+                <!-- Quản lý SEO -->
+                <li class="pc-item pc-hasmenu" data-pc-parent="multiple">
+                    <a class="pc-link">
+                        <span class="pc-micon"><i class="ti ti-search"></i></span>
+                        <span class="pc-mtext">Quản lý SEO</span>
+                        <span class="pc-arrow"><i data-feather="chevron-right"></i></span>
+                    </a>
+                    <ul class="pc-submenu">
+                        <li class="pc-item">
+                            <a href="{{ route('admin.sitemap.index') }}" class="pc-link">
+                                <span class="pc-micon"><i class="ti ti-sitemap"></i></span>
+                                <span class="pc-mtext">Sitemap</span>
+                            </a>
+                        </li>
+                        <li class="pc-item">
+                            <a href="{{ route('admin.robots.index') }}" class="pc-link">
+                                <span class="pc-micon"><i class="ti ti-file-text"></i></span>
+                                <span class="pc-mtext">Robots.txt</span>
                             </a>
                         </li>
                     </ul>

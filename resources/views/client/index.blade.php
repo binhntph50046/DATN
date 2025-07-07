@@ -428,25 +428,27 @@
                     <h2 class="section-title">Recent Blog</h2>
                 </div>
                 <div class="col-md-6 text-start text-md-end" data-aos="fade-left">
-                    <a href="#" class="more">View All Posts</a>
+                    <a href="{{ route('blog') }}" class="more">View All Posts</a>
                 </div>
             </div>
 
             <div class="row">
-                <div class="col-12 col-sm-6 col-md-4 mb-4 mb-md-0" data-aos="fade-up" data-aos-delay="100">
-                    <div class="post-entry">
-                        <a href="#" class="post-thumbnail"><img src="images/post-1.jpg" alt="Image"
-                                class="img-fluid"></a>
-                        <div class="post-content-entry">
-                            <h3><a href="#">First Time Home Owner Ideas</a></h3>
-                            <div class="meta">
-                                <span>by <a href="#">Kristin Watson</a></span> <span>on <a href="#">Dec 19,
-                                        2021</a></span>
+                @foreach($latestBlogs as $blog)
+                    <div class="col-12 col-sm-6 col-md-4 mb-4 mb-md-0" data-aos="fade-up" data-aos-delay="{{ $loop->iteration * 100 }}">
+                        <div class="post-entry">
+                            <a href="{{ route('blog.show', $blog->slug) }}" class="post-thumbnail">
+                                <img src="{{ asset($blog->image ?? 'images/default-blog.jpg') }}" alt="{{ $blog->title }}" class="img-fluid">
+                            </a>
+                            <div class="post-content-entry">
+                                <h3><a href="{{ route('blog.show', $blog->slug) }}">{{ $blog->title }}</a></h3>
+                                <div class="meta">
+                                    <span>by <a href="#">{{ $blog->author->name ?? 'Admin' }}</a></span>
+                                    <span>on <a href="#">{{ $blog->created_at->format('M d, Y') }}</a></span>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                <!-- Thêm các item khác nếu cần -->
+                @endforeach
             </div>
         </div>
     </div>

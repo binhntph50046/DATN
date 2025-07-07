@@ -211,6 +211,10 @@ Route::get('/auth/google/callback', [GoogleController::class, 'handleGoogleCallb
 Route::get('/auth/facebook', [FacebookController::class, 'redirectToFacebook'])->name('auth.facebook.redirect');
 Route::get('/auth/facebook/callback', [FacebookController::class, 'handleFacebookCallback']);
 
+Route::middleware('auth')->group(function () {
+    Route::get('/chat', [ChatController::class, 'index'])->name('chat.index');
+});
+
 // Trang nhắc xác minh
 Route::get('/email/verify', function () {
     return view('auth.verify-email'); // bạn cần tạo view này

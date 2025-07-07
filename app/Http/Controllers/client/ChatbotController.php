@@ -4,9 +4,7 @@ namespace App\Http\Controllers\client;
 
 use Illuminate\Http\Request;
 use App\Models\Faq;
-use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\DB;
-
 
 class ChatbotController
 {
@@ -40,7 +38,7 @@ class ChatbotController
             'categories' => '*',
             'product_variants' => '*',
             'vouchers' => ['description'],
-            'flash_sale_items' => ['product_variant_id', 'count','discount'],
+            'flash_sale_items' => ['product_variant_id', 'count', 'discount'],
             'flash_sales' => ['name']
         ];
         $all_data_text = "";
@@ -63,7 +61,7 @@ class ChatbotController
         $prompt = "Bạn là nhân viên tư vấn chuyên nghiệp, luôn đặt nhu cầu khách hàng lên hàng đầu. Khi trả lời, hãy luôn bắt đầu bằng 'Dạ thưa anh/chị,' hoặc 'Dạ vâng, thưa anh/chị,' và trả lời thật lịch sự, chu đáo Chỉ trả lời đúng sản phẩm mà khách hàng hỏi, không liệt kê các sản phẩm khác.
                     Dữ liệu:\n$all_data_text\n
                     Hãy trả lời NGẮN GỌN, trực tiếp cho câu hỏi sau: \"$msg\". Chỉ trả lời nội dung, không cần giải thích, không cần nhắc lại câu hỏi, không nói dựa vào bảng nào.";
-                    
+
         $data = [
             "contents" => [
                 [
@@ -85,9 +83,16 @@ class ChatbotController
         $result = file_get_contents($url, false, $context);
         $json = json_decode($result, true);
         if (isset($json['candidates'][0]['content']['parts'][0]['text'])) {
-            return response()->json(['answer' => $json['candidates'][0]['content']['parts'][0]['text']]);
+            $answer = $json['candidates'][0]['content']['parts'][0]['text'];
+            // Kiểm tra nếu câu trả lời không liên quan (ví dụ: chứa "tôi không thể" hoặc không có thông tin cụ thể)
+            if (stripos($answer, 'chưa hỗ trợ') !== false || stripos($answer, 'không hỗ trợ') !== false) {
+                $liveChatLink = '<a href="/chat" target="_blank">Nhấn vào đây để chat trực tiếp với admin</a>';
+                return response()->json(['answer' => 'Dạ thưa anh/chị, tôi chưa tìm thấy câu trả lời phù hợp. ' . $liveChatLink]);
+            }
+            return response()->json(['answer' => $answer]);
         } else {
-            return response()->json(['answer' => 'Xin lỗi, tôi không thể trả lời câu hỏi này.']);
+            $liveChatLink = '<a href="/chat" target="_blank">Nhấn vào đây để chat trực tiếp với admin</a>';
+            return response()->json(['answer' => 'Dạ thưa anh/chị, tôi chưa tìm thấy câu trả lời. ' . $liveChatLink]);
         }
     }
 }

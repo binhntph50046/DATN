@@ -137,6 +137,21 @@ class MessagesController extends Controller
                     'old_name' => htmlentities(trim($attachment_title), ENT_QUOTES, 'UTF-8'),
                 ]) : null,
             ]);
+
+                    // ✅ Kiểm tra nếu đây là tin nhắn đầu tiên giữa user và admin
+            $fromId = Auth::user()->id;
+            $toId = $request['id'];
+            $conversationCount = Message::where(function ($query) use ($fromId, $toId) {
+                $query->where('from_id', $fromId)->where('to_id', $toId);
+            })->orWhere(function ($query) use ($fromId, $toId) {
+                $query->where('from_id', $toId)->where('to_id', $fromId);
+            })->count();
+
+            // ✅ Nếu là tin nhắn đầu tiên và gửi cho admin (ví dụ ID = 1)
+            if ($conversationCount === 1 && $toId == 1) {
+                event(new \App\Events\NewChatStarted(Auth::user()));
+            }
+
             $messageData = Chatify::parseMessage($message);
             if (Auth::user()->id != $request['id']) {
                 Chatify::push("private-chatify." . $request['id'], 'messaging', [

@@ -35,7 +35,7 @@
                                                     class="messenger-headTitle">MESSAGES</span> </a>
                                             {{-- header buttons --}}
                                             <nav class="m-header-right">
-                                                            <a href="#"><i class="fas fa-cog settings-btn"></i></a>
+                                                            <!-- <a href="#"><i class="fas fa-cog settings-btn"></i></a> -->
                                                             <a href="#" class="listView-x"><i class="fas fa-times"></i></a>
                                                         </nav>
                                         </nav>
@@ -152,6 +152,11 @@
         </div>
     </div>
     <style>
+        
+        .messenger-list-item td p span {
+  margin-left: 15px;
+  float: right;
+}
         .messenger-title > span {
   position: relative;
   padding: 0px 10px;

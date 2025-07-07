@@ -297,7 +297,7 @@
                                 <div class="row product-grid">
                                     @foreach ($category->products as $product)
                                         <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
-                                            <div class="product-item" data-aos="fade-up" data-aos-delay="100">
+                                            <div class="product-item" style="text-align: center;" data-aos="fade-up" data-aos-delay="100">
                                                 <a href="{{ route('product.detail', $product->slug) }}">
                                                     <div class="product-thumbnail text-center">
                                                         @php

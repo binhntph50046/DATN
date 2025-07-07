@@ -16,11 +16,7 @@ class BlogController
     //
     public function index(Request $request)
     {
-        // Lấy tất cả blog có trạng thái active, kèm quan hệ category và author
-        $blogs = Blog::with(['category', 'author'])
-            ->latest()
-            ->get();
-
+        // Lấy query blog kèm quan hệ category và author
         $query = Blog::with(['category', 'author']);
 
         // Lọc theo danh mục
@@ -28,7 +24,7 @@ class BlogController
             $query->where('category_id', $request->category_id);
         }
 
-        // Lọc theo tác giả
+        // Lọc theo tác giả (chỉ admin hoặc staff)
         if ($request->filled('author_id')) {
             $query->where('author_id', $request->author_id);
         }
@@ -37,7 +33,10 @@ class BlogController
 
         // Lấy dữ liệu dropdown
         $categories = Category::where('type', 2)->get();
-        $authors = User::all(); // Hoặc lọc theo role nếu cần (VD: ->where('role', 'author'))
+        // Chỉ lấy user có role admin hoặc staff qua bảng trung gian roles
+        $authors = User::whereHas('roles', function($q) {
+            $q->whereIn('name', ['admin', 'staff']);
+        })->get();
 
         return view('admin.blogs.index', compact('blogs', 'categories', 'authors'));
     }
@@ -45,7 +44,10 @@ class BlogController
     public function create()
     {
         $categories = Category::where('type', 2)->get();
-        $authors = User::all();
+        // Lấy user có role admin hoặc staff qua bảng trung gian
+        $authors = User::whereHas('roles', function($q) {
+            $q->whereIn('name', ['admin', 'staff']);
+        })->get();
         return view('admin.blogs.create', compact('categories','authors'));
     }
 
@@ -119,8 +121,11 @@ class BlogController
     }
     public function edit(Blog $blog)
     {
-        $categories = Category::all();
-        $authors = User::all();
+        $categories = Category::where('type', 2)->get();
+        // Chỉ lấy user có role admin hoặc staff qua bảng trung gian roles
+        $authors = User::whereHas('roles', function($q) {
+            $q->whereIn('name', ['admin', 'staff']);
+        })->get();
         return view('admin.blogs.edit', compact('blog', 'categories','authors'));
     }
 

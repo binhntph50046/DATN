@@ -52,13 +52,15 @@ class ProductSuggestionService
 
     public function suggestTrendingThisWeek()
     {
-        // Lấy các variant_id được mua nhiều nhất trong tuần
-        $variantIds = DB::table('order_details')
-            ->whereBetween('created_at', [now()->subDays(7), now()])
-            ->select('variant_id', DB::raw('SUM(quantity) as total'))
-            ->groupBy('variant_id')
+        $variantIds = DB::table('order_items')
+            ->join('orders', 'order_items.order_id', '=', 'orders.id')
+            ->where('orders.status', 'completed') // ✅ chỉ lấy đơn đã hoàn thành
+            ->whereBetween('order_items.created_at', [now()->subDays(7), now()])
+            ->select('order_items.product_variant_id', DB::raw('SUM(order_items.quantity) as total'))
+            ->groupBy('order_items.product_variant_id')
             ->orderByDesc('total')
-            ->pluck('variant_id');
+            ->pluck('order_items.product_variant_id');
+
 
         // Truy ngược từ variant_id → product_id
         $productIds = DB::table('product_variants')
@@ -77,6 +79,17 @@ class ProductSuggestionService
             'by_search' => $this->suggestBySearchHistory($userId),
             'trending' => $this->suggestTrendingThisWeek(),
         ];
+    }
+    public function getUniqueSuggestions(Product $product, $userId = null)
+    {
+        $all = collect([
+            $this->suggestByPrice($product),
+            $this->suggestByViewHistory($userId),
+            $this->suggestBySearchHistory($userId),
+            $this->suggestTrendingThisWeek(),
+        ])->flatten();
+
+        return $all->unique('id')->values(); // Loại trùng theo id
     }
 }
 // This service class provides methods to suggest products based on various criteria such as price, view history, search history, and trending products.

@@ -11,8 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('page_views', function (Blueprint $table) {
-            $table->integer('duration')->nullable()->after('user_agent');
+        Schema::table('categories', function (Blueprint $table) {
+            $table->string('icon')->nullable()->after('image');
         });
     }
 
@@ -21,8 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('page_views', function (Blueprint $table) {
-            $table->dropColumn('duration');
+        Schema::table('categories', function (Blueprint $table) {
+            $table->dropColumn('icon');
         });
     }
 };

@@ -98,6 +98,16 @@
                                         @enderror
                                     </div>
                                 </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="icon" class="form-label">Icon (FontAwesome)</label>
+                                        <input type="text" class="form-control @error('icon') is-invalid @enderror" id="icon" name="icon" value="{{ old('icon') }}" placeholder="fas fa-home">
+                                        <small class="form-text text-muted">Nhập tên class icon FontAwesome (ví dụ: fas fa-home, fas fa-shopping-cart)</small>
+                                        @error('icon')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                </div>
                             </div>
 
                             <div class="mb-3">
@@ -112,4 +122,26 @@
         <!-- [ Main Content ] end -->
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const iconInput = document.getElementById('icon');
+    const iconPreview = document.createElement('div');
+    iconPreview.id = 'icon-preview';
+    iconPreview.style.marginTop = '10px';
+    iconPreview.style.fontSize = '2em';
+    iconPreview.style.color = 'black';
+    
+    iconInput.parentNode.appendChild(iconPreview);
+    
+    iconInput.addEventListener('input', function() {
+        const iconClass = this.value.trim();
+        if (iconClass) {
+            iconPreview.innerHTML = `<i class="${iconClass}"></i> <span style="font-size: 0.5em; color: #666;">(${iconClass})</span>`;
+        } else {
+            iconPreview.innerHTML = '';
+        }
+    });
+});
+</script>
 @endsection

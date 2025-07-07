@@ -169,9 +169,9 @@
                     $topCategories = $topCategories ?? collect();
                     $isSlider = $topCategories->count() > 6;
                 @endphp
-                <ul class="choose-cate {{ $isSlider ? 'category-menu-slider' : 'd-flex justify-content-center' }}">
+                <ul class="p-0 choose-cate d-flex w-100 flex-nowrap {{ $isSlider ? 'category-menu-slider' : 'justify-content-between' }}">
                     @foreach ($topCategories as $category)
-                        <li class="box_category" data-aos="fade-up" data-aos-delay="{{ $loop->index * 50 }}">
+                        <li class="box_category" style="margin: 0; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.21);" data-aos="fade-up" data-aos-delay="{{ $loop->index * 50 }}">
                             <a href="{{ route('shop.category', ['slug' => $category->slug]) }}">
                                 <div class="img-catesp">
                                     <img src="{{ asset($category->image) }}" alt="{{ $category->name }}"

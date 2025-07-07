@@ -139,6 +139,21 @@ class MessagesController extends Controller
                     'old_name' => htmlentities(trim($attachment_title), ENT_QUOTES, 'UTF-8'),
                 ]) : null,
             ]);
+            
+            // ✅ Gửi thông báo khi user nhắn admin lần đầu
+                $fromId = Auth::user()->id;
+                $toId = $request['id'];
+                $conversationCount = Message::where(function ($query) use ($fromId, $toId) {
+                    $query->where('from_id', $fromId)->where('to_id', $toId);
+                })->orWhere(function ($query) use ($fromId, $toId) {
+                    $query->where('from_id', $toId)->where('to_id', $fromId);
+                })->count();
+
+                if ($conversationCount === 1 && $toId == 1) {
+                    $admin = User::find(1);
+                    $admin?->notify(new \App\Notifications\NewChatNotification(Auth::user()));
+                    broadcast(new \App\Events\NewChatStarted(Auth::user()));
+                }
 
             // fetch message to send it with the response
             $messageData = Chatify::parseMessage($message);

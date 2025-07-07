@@ -85,7 +85,21 @@
     
     <script src="https://cdn.jsdelivr.net/npm/laravel-echo/dist/echo.iife.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/socket.io-client@4.7.2/dist/socket.io.min.js"></script>
-    <script src="{{ asset('js/echo-admin.js') }}"></script>
+    <script type="module" src="{{ asset('js/echo-admin.js') }}"></script>
+
+    <script>
+    document.querySelector('.ti-bell')?.addEventListener('click', function () {
+        fetch('/admin/notifications/read', {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                'Content-Type': 'application/json'
+            }
+        }).then(() => {
+            document.querySelector('#notif-badge')?.classList.add('d-none');
+        });
+    });
+</script>
 
     @stack('scripts')
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ckeditor/4.9.2/ckeditor.js"
@@ -118,6 +132,38 @@
         font_change("Public-Sans");
     </script>
 
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    fetch('/admin/notifications')
+        .then(res => res.json())
+        .then(data => {
+            const dropdown = document.querySelector('#notif-list');
+            const badge = document.querySelector('#notif-badge');
+            let count = 0;
+            data.forEach(noti => {
+                const item = `
+                <a href="/admin/livechat/${noti.data.user_id}" class="list-group-item list-group-item-action">
+                    <div class="d-flex">
+                        <div class="flex-shrink-0">
+                            <img src="${noti.data.avatar}" alt="user-image" class="user-avtar">
+                        </div>
+                        <div class="flex-grow-1 ms-1">
+                            <span class="float-end text-muted">${noti.created_at}</span>
+                            <p class="text-body mb-1"><b>${noti.data.title}</b><br>${noti.data.body}</p>
+                        </div>
+                    </div>
+                </a>`;
+                dropdown.insertAdjacentHTML('beforeend', item);
+
+                if (!noti.read_at) count++;
+            });
+            if (count > 0) {
+                badge.textContent = count;
+                badge.classList.remove('d-none');
+            }
+        });
+});
+</script>
 </body>
 <!-- [Body] end -->
 

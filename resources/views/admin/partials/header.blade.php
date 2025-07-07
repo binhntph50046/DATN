@@ -41,45 +41,46 @@
             <ul class="list-unstyled">
                 <li class="dropdown pc-h-item">
                     <a class="pc-head-link dropdown-toggle arrow-none me-0" data-bs-toggle="dropdown" href="#"
-        role="button" aria-haspopup="true" aria-expanded="false">
-        <i class="ti ti-bell position-relative">
-            <span class="badge bg-danger d-none" id="notif-badge">0</span>
-        </i>
-    </a>
+                        role="button" aria-haspopup="true" aria-expanded="false">
+                        <i class="ti ti-bell position-relative">
+                            <span class="badge bg-danger d-none" id="notif-badge">0</span>
+                        </i>
+                    </a>
                     </content>
                     </create_file>
 
                     <div class="dropdown-menu dropdown-notification dropdown-menu-end pc-h-dropdown">
-    <div class="dropdown-header d-flex align-items-center justify-content-between">
-        <h5 class="m-0">Message</h5>
-        <a href="#!" class="pc-head-link bg-transparent"><i class="ti ti-x text-danger"></i></a>
-    </div>
-    <div class="dropdown-divider"></div>
+                        <div class="dropdown-header d-flex align-items-center justify-content-between">
+                            <h5 class="m-0">Message</h5>
+                            <a href="#!" class="pc-head-link bg-transparent"><i class="ti ti-x text-danger"></i></a>
+                        </div>
+                        <div class="dropdown-divider"></div>
 
-    <div class="dropdown-header px-0 text-wrap header-notification-scroll position-relative"
-         style="max-height: calc(100vh - 215px)">
-<div class="list-group list-group-flush w-100" id="notif-list">
-            {{-- Các thông báo mẫu bên dưới (có thể giữ hoặc xoá hết để JS insert động) --}}
-            <a class="list-group-item list-group-item-action">
-                <div class="d-flex">
-                    <div class="flex-shrink-0">
-                        <img src="assets/images/user/avatar-2.jpg" alt="user-image" class="user-avtar">
-                    </div>
-                    <div class="flex-grow-1 ms-1">
+                        <div class="dropdown-header px-0 text-wrap header-notification-scroll position-relative"
+                            style="max-height: calc(100vh - 215px)">
+                            <div class="list-group list-group-flush w-100" id="notif-list">
+                                {{-- Các thông báo mẫu bên dưới (có thể giữ hoặc xoá hết để JS insert động) --}}
+                                <a class="list-group-item list-group-item-action">
+                                    <div class="d-flex">
+                                        <!-- <div class="flex-shrink-0">
+                                            <img src="assets/images/user/avatar-2.jpg" alt="user-image"
+                                                class="user-avtar">
+                                        </div> -->
+                                        <!-- <div class="flex-grow-1 ms-1">
                         <span class="float-end text-muted">3:00 AM</span>
                         <p class="text-body mb-1">It's <b>Cristina danny's</b> birthday today.</p>
                         <span class="text-muted">2 min ago</span>
-                    </div>
-                </div>
-            </a>
-        </div>
-    </div>
+                    </div> -->
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
 
-    <div class="dropdown-divider"></div>
-    <div class="text-center py-2">
-        <a href="#!" class="link-primary">View all</a>
-    </div>
-</div>
+                        <div class="dropdown-divider"></div>
+                        <div class="text-center py-2">
+                            <a href="#!" class="link-primary">View all</a>
+                        </div>
+                    </div>
 
                 </li>
                 <li class="dropdown pc-h-item header-user-profile">
@@ -97,11 +98,9 @@
                             <div class="d-flex mb-1">
                                 <div class="flex-shrink-0">
                                     @if (Auth::user()->avatar)
-                                        <img src="{{ asset(Auth::user()->avatar) }}" alt="user-image"
-                                            class="user-avtar">
+                                        <img src="{{ asset(Auth::user()->avatar) }}" alt="user-image" class="user-avtar">
                                     @else
-                                        <img src="/assets/images/user/avatar-2.jpg" alt="user-image"
-                                            class="user-avtar">
+                                        <img src="/assets/images/user/avatar-2.jpg" alt="user-image" class="user-avtar">
                                     @endif
                                 </div>
                                 <div class="flex-grow-1 ms-3">
@@ -115,14 +114,14 @@
                         <ul class="nav drp-tabs nav-fill nav-tabs" id="mydrpTab" role="tablist">
                             <li class="nav-item" role="presentation">
                                 <button class="nav-link active" id="drp-t1" data-bs-toggle="tab"
-                                    data-bs-target="#drp-tab-1" type="button" role="tab"
-                                    aria-controls="drp-tab-1" aria-selected="true"><i class="ti ti-user"></i>
+                                    data-bs-target="#drp-tab-1" type="button" role="tab" aria-controls="drp-tab-1"
+                                    aria-selected="true"><i class="ti ti-user"></i>
                                     Profile</button>
                             </li>
                             <li class="nav-item" role="presentation">
-                                <button class="nav-link" id="drp-t2" data-bs-toggle="tab"
-                                    data-bs-target="#drp-tab-2" type="button" role="tab"
-                                    aria-controls="drp-tab-2" aria-selected="false"><i class="ti ti-settings"></i>
+                                <button class="nav-link" id="drp-t2" data-bs-toggle="tab" data-bs-target="#drp-tab-2"
+                                    type="button" role="tab" aria-controls="drp-tab-2" aria-selected="false"><i
+                                        class="ti ti-settings"></i>
                                     Setting</button>
                             </li>
                         </ul>
@@ -184,3 +183,54 @@
         </div>
     </div>
 </header>
+<script>import Echo from 'laravel-echo';
+import io from 'socket.io-client';
+
+window.io = io;
+
+window.Echo = new Echo({
+    broadcaster: 'reverb',
+    key: import.meta.env.VITE_REVERB_APP_KEY,
+    wsHost: import.meta.env.VITE_REVERB_HOST,
+    wsPort: import.meta.env.VITE_REVERB_PORT ?? 80,
+    wssPort: import.meta.env.VITE_REVERB_PORT ?? 443,
+    forceTLS: false,
+    enabledTransports: ['ws'],
+});
+
+window.Echo.private('admin.notifications')
+    .listen('.new-chat', (e) => {
+        showToastNotification(e.body);
+        addNotificationToDropdown(e);
+        updateNotifBadge();
+    });
+
+function showToastNotification(msg) {
+    const toast = document.createElement('div');
+    toast.className = 'toast toast-success';
+    toast.innerText = msg;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 5000);
+}
+
+function addNotificationToDropdown(data) {
+    const list = document.getElementById('notif-list');
+    const item = document.createElement('li');
+    item.innerHTML = `
+        <a href="/admin/livechat/${data.user_id}" class="dropdown-item">
+            <img src="${data.avatar}" class="rounded-circle me-2" width="30" height="30" />
+            <span><strong>${data.title}</strong><br>${data.body}</span>
+        </a>
+    `;
+    list.prepend(item);
+}
+
+function updateNotifBadge() {
+    const badge = document.getElementById('notif-badge');
+    if (badge) {
+        let count = parseInt(badge.textContent || '0');
+        badge.textContent = count + 1;
+        badge.classList.remove('d-none');
+    }
+}
+</script>

@@ -1,72 +1,50 @@
-import Echo from "laravel-echo";
-import Pusher from "pusher-js";
+import Echo from 'laravel-echo';
+import io from 'socket.io-client';
 
-window.Pusher = Pusher;
+window.io = io;
 
 window.Echo = new Echo({
-    broadcaster: "pusher",
-    key: import.meta.env.VITE_PUSHER_APP_KEY,
-    cluster: import.meta.env.VITE_PUSHER_APP_CLUSTER,
-    encrypted: true,
+    broadcaster: 'reverb',
+    key: import.meta.env.VITE_REVERB_APP_KEY,
+    wsHost: import.meta.env.VITE_REVERB_HOST,
+    wsPort: import.meta.env.VITE_REVERB_PORT ?? 80,
+    wssPort: import.meta.env.VITE_REVERB_PORT ?? 443,
     forceTLS: false,
-    wsHost: window.location.hostname,
-    wsPort: 6001,
-    wssPort: 6001,
-    enabledTransports: ["ws", "wss"],
-    authEndpoint: '/broadcasting/auth',
-    auth: {
-        headers: {
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-        }
-    }
+    enabledTransports: ['ws'],
 });
 
-// Lắng nghe sự kiện new-chat
 window.Echo.private('admin.notifications')
     .listen('.new-chat', (e) => {
-        showToastNotification(e.name + ' vừa nhắn tin cho bạn');
+        showToastNotification(e.body);
         addNotificationToDropdown(e);
-        increaseBellCount();
+        updateNotifBadge();
     });
 
-function showToastNotification(message) {
-    let toast = document.createElement('div');
-    toast.className = 'position-fixed top-0 end-0 p-3';
-    toast.innerHTML = `
-        <div class="toast align-items-center text-white bg-primary border-0 show" role="alert">
-            <div class="d-flex">
-                <div class="toast-body">${message}</div>
-                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
-            </div>
-        </div>`;
+function showToastNotification(msg) {
+    const toast = document.createElement('div');
+    toast.className = 'toast toast-success';
+    toast.innerText = msg;
     document.body.appendChild(toast);
     setTimeout(() => toast.remove(), 5000);
 }
 
 function addNotificationToDropdown(data) {
-    const dropdown = document.querySelector('.dropdown-notification .list-group');
-    const link = `/admin/livechat/${data.user_id}`;
-    const html = `
-        <a href="${link}" class="list-group-item list-group-item-action">
-            <div class="d-flex">
-                <div class="flex-shrink-0">
-                    <img src="${data.avatar}" alt="user-image" class="user-avtar">
-                </div>
-                <div class="flex-grow-1 ms-1">
-                    <span class="float-end text-muted">${data.time}</span>
-                    <p class="text-body mb-1"><b>${data.name}</b> vừa nhắn tin cho bạn</p>
-                </div>
-            </div>
-        </a>`;
-    dropdown.insertAdjacentHTML('afterbegin', html);
+    const list = document.getElementById('notif-list');
+    const item = document.createElement('li');
+    item.innerHTML = `
+        <a href="/admin/livechat/${data.user_id}" class="dropdown-item">
+            <img src="${data.avatar}" class="rounded-circle me-2" width="30" height="30" />
+            <span><strong>${data.title}</strong><br>${data.body}</span>
+        </a>
+    `;
+    list.prepend(item);
 }
 
-function increaseBellCount() {
-    let badge = document.querySelector('#notification-badge');
-    if (!badge) {
-        const icon = document.querySelector('.ti-bell');
-        icon.insertAdjacentHTML('afterend', `<span id="notification-badge" class="badge bg-danger">1</span>`);
-    } else {
-        badge.innerText = parseInt(badge.innerText) + 1;
+function updateNotifBadge() {
+    const badge = document.getElementById('notif-badge');
+    if (badge) {
+        let count = parseInt(badge.textContent || '0');
+        badge.textContent = count + 1;
+        badge.classList.remove('d-none');
     }
 }

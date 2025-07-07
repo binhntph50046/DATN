@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Admin;
 use Chatify\Http\Controllers\ChatifyMessengerController as BaseController;
 use Illuminate\Http\Request;
 use Auth;
+use App\Models\User;
 use Config;
+
 use App\Providers\RouteServiceProvider; // Adjust namespace if different
 
 class MessengerController
@@ -41,11 +43,11 @@ class MessengerController
         }
 
         $id = Auth::id(); // Current user ID
-        $admin = \App\Models\User::role('admin')->first(); // Get first admin
+        $admin = User::role('admin')->first(); // Get first admin
         if ($admin) {
             $messengerColor = Config::get('chatify.colors.primary', '#1890ff');
             $dark_mode = Auth::check() ? (Auth::user()->dark_mode ?? 'light') : 'light';
-            return view('user.chat', compact('id', 'messengerColor', 'dark_mode', 'admin')); // Create user.chat view
+            return view('user.chat', compact('id', 'messengerColor', 'dark_mode', 'admin')); 
         }
 
         return redirect()->route('home')->with('error', 'No admin available to chat.');

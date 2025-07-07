@@ -214,6 +214,10 @@ Route::get('/auth/facebook/callback', [FacebookController::class, 'handleFaceboo
 Route::middleware('auth')->group(function () {
     Route::get('/chat', [ChatController::class, 'index'])->name('chat.index');
 });
+Route::middleware(['auth', 'role:admin|staff'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/notifications', [\App\Http\Controllers\Admin\NotificationController::class, 'index']);
+    Route::post('/notifications/read', [\App\Http\Controllers\Admin\NotificationController::class, 'markAsRead']);
+});
 
 // Trang nhắc xác minh
 Route::get('/email/verify', function () {

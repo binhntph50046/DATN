@@ -31,6 +31,7 @@ class NewChatStarted implements ShouldBroadcast
             'user_id' => $this->user->id,
             'name' => $this->user->name,
             'avatar' => $this->user->avatar,
+            'body' => 'vừa nhắn tin cho bạn',
             'time' => now()->diffForHumans(),
         ];
     }

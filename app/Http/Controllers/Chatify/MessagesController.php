@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Response;
 use App\Models\User;
+use App\Events\NewChatStarted;
 use App\Models\ChMessage as Message;
 use App\Models\ChFavorite as Favorite;
 use Chatify\Facades\ChatifyMessenger as Chatify;
@@ -14,6 +15,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use App\Notifications\NewChatNotification;
 
 class MessagesController extends Controller
 {
@@ -147,9 +149,11 @@ class MessagesController extends Controller
                 $query->where('from_id', $toId)->where('to_id', $fromId);
             })->count();
 
-            // ✅ Nếu là tin nhắn đầu tiên và gửi cho admin (ví dụ ID = 1)
+            // Nếu là tin nhắn đầu tiên đến admin (id = 1), thì gửi notification và broadcast
             if ($conversationCount === 1 && $toId == 1) {
-                event(new \App\Events\NewChatStarted(Auth::user()));
+                $admin = User::find(1);
+                $admin?->notify(new NewChatNotification(Auth::user()));
+                broadcast(new NewChatStarted(Auth::user()));
             }
 
             $messageData = Chatify::parseMessage($message);

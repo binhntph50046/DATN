@@ -24,6 +24,7 @@ window.Echo = new Echo({
 // Lắng nghe sự kiện new-chat
 window.Echo.private('admin.notifications')
     .listen('.new-chat', (e) => {
+        console.log('🎉 New chat event received:', e);
         showToastNotification(e.name + ' vừa nhắn tin cho bạn');
         addNotificationToDropdown(e);
         increaseBellCount();
@@ -62,11 +63,12 @@ function addNotificationToDropdown(data) {
 }
 
 function increaseBellCount() {
-    let badge = document.querySelector('#notification-badge');
+    let badge = document.querySelector('#notif-badge');
     if (!badge) {
         const icon = document.querySelector('.ti-bell');
-        icon.insertAdjacentHTML('afterend', `<span id="notification-badge" class="badge bg-danger">1</span>`);
+        icon.insertAdjacentHTML('afterend', `<span id="notif-badge" class="badge bg-danger">1</span>`);
     } else {
+        badge.classList.remove('d-none');
         badge.innerText = parseInt(badge.innerText) + 1;
     }
 }

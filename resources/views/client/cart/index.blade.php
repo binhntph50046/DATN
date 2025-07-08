@@ -26,13 +26,13 @@
                         <table class="table">
                             <thead>
                                 <tr>
-                                    <th>Select</th>
-                                    <th class="product-thumbnail">Image</th>
-                                    <th class="product-name">Product</th>
-                                    <th class="product-price">Price</th>
-                                    <th class="product-quantity">Quantity</th>
-                                    <th class="product-total">Total</th>
-                                    <th class="product-remove">Remove</th>
+                                    <th>Chọn</th>
+                                    <th class="product-thumbnail">Ảnh</th>
+                                    <th class="product-name">Sản phẩm</th>
+                                    <th class="product-price">Giá</th>
+                                    <th class="product-quantity">Số lượng</th>
+                                    <th class="product-total">Tổng</th>
+                                    <th class="product-remove">Xóa</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -95,7 +95,7 @@
                                                 @endif
                                             </td>
                                             <td class="product-price">
-                                                <span class="price"
+                                                <span style="font-weight: bold" class="price"
                                                     data-price="{{ $item->variant->selling_price ?? $item->product->selling_price }}">
                                                     {{ number_format($item->variant->selling_price ?? $item->product->selling_price, 0, ',', '.') }}
                                                     VNĐ
@@ -161,8 +161,8 @@
                     @if ($cartItems->count() > 0)
                         <div class="cart-summary-sticky-bottom">
                             <div class="row align-items-center justify-content-between">
-                                <div class="col-md-6 d-flex align-items-center gap-3">
-                                    <div class="custom-control custom-checkbox d-inline-block">
+                                <div class="col-md-9 d-flex align-items-center justify-content-between gap-3">
+                                    <div style="margin-left: 20px" class="custom-control custom-checkbox d-inline-block">
                                         <input type="checkbox" class="custom-control-input" id="selectAll">
                                         <label class="custom-control-label" for="selectAll">Chọn tất cả</label>
                                     </div>
@@ -171,7 +171,7 @@
                                         <span id="cart-total">{{ number_format($subtotal, 0, ',', '.') }} VNĐ</span>
                                     </div>
                                 </div>
-                                <div class="col-md-3 text-md-right mt-3 mt-md-0">
+                                <div class="col-md-2 text-md-right mt-3 mt-md-0">
                                     <form action="{{ route('cart.checkout') }}" method="GET" id="checkout-form">
                                         <button type="submit" class="btn btn-checkout">Tiến hành thanh toán</button>
                                     </form>
@@ -201,24 +201,6 @@
                     </div>
                 @endif
 
-                {{-- <div class="cart-summary-sticky-bottom">
-                    <div class="row align-items-center justify-content-between">
-                        <div class="col-md-6 d-flex align-items-center gap-3">
-                            <div class="custom-control custom-checkbox d-inline-block">
-                                <input type="checkbox" class="custom-control-input" id="selectAll">
-                                <label class="custom-control-label" for="selectAll">Chọn tất cả</label>
-                            </div>
-                            <div class="cart-total">
-                                <strong>Tổng giỏ hàng:</strong>
-                                <span id="cart-total">{{ number_format($subtotal, 0, ',', '.') }} VNĐ</span>
-                            </div>
-                        </div>
-                        <div class="col-md-3 text-md-right mt-3 mt-md-0">
-                            <button class="btn btn-checkout" {{ $hasInvalidItems ? 'disabled' : '' }}>Tiến hành thanh
-                                toán</button>
-                        </div>
-                    </div>
-                </div> --}}
             @endif
         </div>
     </div>
@@ -464,7 +446,7 @@
             }
         }
 
-        .cart-summary-sticky-bottom {
+        /* .cart-summary-sticky-bottom {
             position: sticky;
             bottom: 0;
             z-index: 10;
@@ -472,15 +454,12 @@
             border-top: 1px solid #eee;
             box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.08);
             padding: 12px 0;
-        }
+        } */
 
         .cart-summary-sticky-bottom {
             position: sticky;
             bottom: 0;
-            background-color: #fff;
             padding: 16px 24px;
-            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
-            border-top: 1px solid #eee;
             z-index: 999;
             font-family: 'Segoe UI', Tahoma, sans-serif;
             font-size: 15px;
@@ -490,6 +469,7 @@
             display: flex;
             align-items: center;
             gap: 8px;
+            margin-right: 51px
         }
 
         .cart-total strong {
@@ -510,18 +490,18 @@
         }
 
         .btn-checkout {
-            background-color: #ee4d2d;
+            background-color: #2f2f2f;
             color: white;
             border: none;
-            padding: 10px 20px;
-            border-radius: 4px;
+            padding: 13px 20px;
+            border-radius: 22px;
             font-weight: 600;
             font-size: 15px;
             transition: background 0.3s ease;
         }
 
         .btn-checkout:hover {
-            background-color: #d44027;
+            background-color: #222222;
         }
 
         @media (max-width: 768px) {

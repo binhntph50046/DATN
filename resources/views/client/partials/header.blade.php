@@ -301,8 +301,7 @@
                     @else
                         @if (Auth::user()->hasRole(['admin', 'staff']))
                             <li>
-                                <a class="dropdown-item text-white" href="{{ route('admin.dashboard') }}">Admin
-                                    Dashboard</a>
+                                <a class="dropdown-item text-white" href="{{ route('admin.dashboard') }}">Trang quản trị</a>
                             </li>
                         @endif
                         <li><a class="dropdown-item text-white" href="{{ route('profile.index') }}">Trang cá nhân</a></li>

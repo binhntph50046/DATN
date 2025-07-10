@@ -29,22 +29,26 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Paginator::useBootstrapFive();
-        // Share categories for menu
-        $categories = Category::with('children')->whereNull('parent_id')->where('type', 1)->get();
-        view()->share('categories', $categories);
+        // Share categories for menu - kiểm tra bảng tồn tại trước khi truy vấn
+        if (\Illuminate\Support\Facades\Schema::hasTable('categories')) {
+            $categories = Category::with('children')->whereNull('parent_id')->where('type', 1)->get();
+            view()->share('categories', $categories);
+        }
         $this->registerPolicies();
 
-    // Bypass mọi permission nếu user là admin
-    Gate::before(function ($user, $ability) {
-        return $user->hasRole('admin') ? true : null;
-    });
+        // Bypass mọi permission nếu user là admin
+        Gate::before(function ($user, $ability) {
+            return $user->hasRole('admin') ? true : null;
+        });
 
-    // Đăng ký composer cho tất cả view
+        // Đăng ký composer cho tất cả view
         View::composer('*', CartComposer::class);
 
         View::composer('client.partials.header', function ($view) {
-            $categories = Category::where('type', 1)->where('status', 'active')->orderBy('order')->get();
-            $view->with('categories', $categories);
+            if (\Illuminate\Support\Facades\Schema::hasTable('categories')) {
+                $categories = Category::where('type', 1)->where('status', 'active')->orderBy('order')->get();
+                $view->with('categories', $categories);
+            }
         });
     }
 }

@@ -35,6 +35,7 @@ return new class extends Migration
             $table->text('notes')->nullable();
             $table->text('cancel_reason')->nullable();
             $table->timestamps();
+            $table->softDeletes();
 
             $table->foreign('user_id')->references('id')->on('users')->onDelete('set null');
             $table->foreign('voucher_id')->references('id')->on('vouchers')->onDelete('set null');

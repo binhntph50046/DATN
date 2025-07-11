@@ -1,5 +1,5 @@
 @extends('client.layouts.app')
-
+@section('title', 'Yêu cầu hoàn hàng')
 @section('content')
 <style>
 .return-container {
@@ -125,11 +125,14 @@ input[type="checkbox"] {
                     $imgSrc = isset($images[0]) ? asset($images[0]) : (isset($item->product->image) ? asset($item->product->image) : asset('uploads/default/default.jpg'));
                 @endphp
                 <div class="form-check mb-2 d-flex align-items-center" style="gap: 10px;">
-                    <input class="form-check-input" type="checkbox" name="items[{{ $item->id }}][selected]" value="1" id="item{{ $item->id }}">
-                    <label for="item{{ $item->id }}" style="margin-bottom:0; margin-right:10px; cursor:pointer;"></label>
-                    <img src="{{ $imgSrc }}" alt="Ảnh sản phẩm" style="width:48px; height:48px; object-fit:cover; border-radius:8px; border:1.5px solid #eee; margin-right:10px;">
-                    <span class="flex-grow-1">{{ $item->product->name }} <span class="text-muted">(SL: {{ $item->quantity }})</span></span>
-                    <input type="number" name="items[{{ $item->id }}][quantity]" min="1" max="{{ $item->quantity }}" value="1" class="form-control ms-2" style="width:80px;" placeholder="Số lượng hoàn">
+                    <div class="d-flex align-items-center flex-grow-1" style="cursor: pointer;">
+                        <input class="form-check-input" type="checkbox" name="items[{{ $item->id }}][selected]" value="1" id="item{{ $item->id }}">
+                        <label class="form-check-label d-flex align-items-center ms-2" for="item{{ $item->id }}" style="cursor: pointer;">
+                            <img src="{{ $imgSrc }}" alt="Ảnh sản phẩm" style="width:48px; height:48px; object-fit:cover; border-radius:8px; border:1.5px solid #eee; margin-right:10px;">
+                            <span>{{ $item->product->name }} <span class="text-muted">(SL: {{ $item->quantity }})</span></span>
+                        </label>
+                    </div>
+                    <input type="number" name="items[{{ $item->id }}][quantity]" min="1" max="{{ $item->quantity }}" value="1" class="form-control" style="width:80px;" placeholder="Số lượng hoàn">
                 </div>
             @endforeach
         </div>

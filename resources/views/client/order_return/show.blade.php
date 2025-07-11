@@ -37,7 +37,7 @@
                 <div class="card shadow-sm mb-4">
                     <div class="card-body p-4">
                         <div class="timeline">
-                            <div class="timeline-item {{ in_array($return->status, ['pending', 'approved', 'refunded']) ? 'completed' : '' }}">
+                       zz     <div class="timeline-item {{ in_array($return->status, ['pending', 'approved', 'refunded']) ? 'completed' : '' }}">
                                 <div class="timeline-point"></div>
                                 <div class="timeline-content">
                                     <h6 class="mb-1">Yêu cầu hoàn trả</h6>

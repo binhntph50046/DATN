@@ -28,11 +28,11 @@ class OrderReturnController extends Controller
     {
         $request->validate([
             'refund_proof_image' => 'required|image|max:2048', // Validate hình ảnh, max 2MB
-            'refund_note' => 'nullable|string|max:500', // Ghi chú không bắt buộc
+            'refund_note' => 'nullable|string|max:500',
         ]);
 
         $return = OrderReturn::with('items.orderItem.product')->findOrFail($id);
-        
+
         // Upload hình ảnh chứng từ
         if ($request->hasFile('refund_proof_image')) {
             $image = $request->file('refund_proof_image');
@@ -65,6 +65,7 @@ class OrderReturnController extends Controller
             'admin_id' => Auth::id(),
             'processed_at' => now(),
             'refunded_at' => now(), // Thêm thời gian hoàn tiền
+            'refund_amount' => $refundAmount, // Thêm số tiền hoàn trả
         ]);
 
         event(new OrderStatusUpdated($return->order));

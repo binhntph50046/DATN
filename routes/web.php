@@ -316,6 +316,7 @@ Route::prefix('admin')
             Route::get('/trash', [BlogController::class, 'trash'])->name('trash');
             Route::put('/{id}/restore', [BlogController::class, 'restore'])->middleware('permission:edit blogs')->name('restore');
             Route::delete('/{id}/force-delete', [BlogController::class, 'forceDelete'])->middleware('permission:delete blogs')->name('forceDelete');
+            
         });
 
         

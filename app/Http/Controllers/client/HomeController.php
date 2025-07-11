@@ -7,6 +7,7 @@ use App\Models\Blog;
 use App\Models\Product;
 use App\Models\Wishlist;
 use App\Models\ProductVariant;
+use App\Models\ProductReview;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
@@ -58,6 +59,18 @@ class HomeController
             ->take(3)
             ->get();
 
+        $topRatedVariants = ProductVariant::with(['product'])
+            ->withCount(['reviews as reviews_count' => function ($query) {
+                $query->whereNotNull('order_id')->whereNull('deleted_at');
+            }])
+            ->withAvg(['reviews as avg_rating' => function ($query) {
+                $query->whereNotNull('order_id')->whereNull('deleted_at');
+            }], 'rating')
+            ->orderByDesc('avg_rating')
+            ->orderByDesc('reviews_count')
+            ->take(5)
+            ->get();
+
 
         return view('client.index', [
             'banners' => $banners,
@@ -65,7 +78,8 @@ class HomeController
             'latestProducts' => $latestProducts,
             'wishlistProductIds' => $wishlistProductIds,
             'products' => $products,
-            'latestBlogs' => $latestBlogs
+            'latestBlogs' => $latestBlogs,
+            'topRatedVariants' => $topRatedVariants
         ]);
     }
 

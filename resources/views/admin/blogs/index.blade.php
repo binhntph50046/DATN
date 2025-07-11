@@ -1,6 +1,6 @@
 @extends('admin.layouts.app')
 
-@section('title', 'List Blogs')
+@section('title', 'Dánh sách bài viết')
 
 <style>
     .custom-shadow {
@@ -20,11 +20,11 @@
                     <div class="row align-items-center">
                         <div class="col-md-12">
                             <div class="page-header-title">
-                                <h5 class="m-b-10">Blogs</h5>
+                                <h5 class="m-b-10">Bài viết</h5>
                             </div>
                             <ul class="breadcrumb">
                                 <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Home</a></li>
-                                <li class="breadcrumb-item" aria-current="page">Blogs</li>
+                                <li class="breadcrumb-item" aria-current="page">Bài viết</li>
                             </ul>
                         </div>
                     </div>
@@ -37,13 +37,13 @@
                 <div class="col-12">
                     <div class="card">
                         <div class="card-header d-flex justify-content-between align-items-center">
-                            <h5>Blogs List</h5>
+                            <h5>Danh sách bài viết</h5>
                             <div>
                                 <a href="{{ route('admin.blogs.trash') }}" class="btn btn-danger btn-sm rounded-3">
-                                    <i class="ti ti-trash"></i> Trash
+                                    <i class="ti ti-trash"></i> Thùng rác
                                 </a>
                                 <a href="{{ route('admin.blogs.create') }}" class="btn btn-primary btn-sm rounded-3">
-                                    <i class="ti ti-plus"></i> Add New Blog
+                                    <i class="ti ti-plus"></i> Thêm bài viết mới
                                 </a>
                             </div>
                         </div>
@@ -59,9 +59,9 @@
                                 <div class="card-body">
                                     <form action="{{ route('admin.blogs.index') }}" method="GET" class="row g-3">
                                         <div class="col-md-4">
-                                            <label for="category_id" class="form-label mb-1">Category</label>
+                                            <label for="category_id" class="form-label mb-1">Danh mục</label>
                                             <select name="category_id" id="category_id" class="form-select form-select-sm">
-                                                <option value="">-- all --</option>
+                                                <option value="">-- tất cả --</option>
                                                 @foreach ($categories as $category)
                                                     <option value="{{ $category->id }}"
                                                         {{ request('category_id') == $category->id ? 'selected' : '' }}>
@@ -71,9 +71,9 @@
                                             </select>
                                         </div>
                                         <div class="col-md-4">
-                                            <label for="author_id" class="form-label mb-1">Author</label>
+                                            <label for="author_id" class="form-label mb-1">Tác giả</label>
                                             <select name="author_id" id="author_id" class="form-select form-select-sm">
-                                                <option value="">-- all --</option>
+                                                <option value="">-- tất cả --</option>
                                                 @foreach ($authors as $author)
                                                     <option value="{{ $author->id }}"
                                                         {{ request('author_id') == $author->id ? 'selected' : '' }}>
@@ -84,8 +84,8 @@
                                         </div>
                                           
                                     <div class="col-md-4 d-flex align-items-end">
-                                        <button type="submit" class="btn btn-primary btn-sm  me-2">Filter</button>
-                                        <a href="{{ route('admin.blogs.index') }}" class="btn btn-secondary btn-sm ">Reset</a>
+                                        <button type="submit" class="btn btn-primary btn-sm  me-2">Lọc</button>
+                                        <a href="{{ route('admin.blogs.index') }}" class="btn btn-secondary btn-sm ">Đặt lại</a>
                                     </div>
                                     </form>
 
@@ -97,13 +97,13 @@
                                 <table class="table table-hover table-borderless align-middle">
                                     <thead>
                                         <tr>
-                                            <th>STT</th>
-                                            <th>Title</th>
-                                            <th>Image</th>
-                                            <th>Category</th>
-                                            <th>Author</th>
-                                            <th>Status</th>
-                                            <th class="text-center">Action</th>
+                                            <th>Số TT</th>
+                                            <th>Tiêu đề</th>
+                                            <th>Hình ảnh</th>
+                                            <th>Danh mục</th>
+                                            <th>Tác giả</th>
+                                            <th>Trạng thái</th>
+                                            <th class="text-center">Hành động</th>
                                         </tr>
                                     </thead>
                                     <tbody>

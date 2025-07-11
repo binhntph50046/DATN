@@ -375,7 +375,7 @@
         <div class="container">
             <div class="row">
                 <div class="col-lg-7 mx-auto text-center" data-aos="fade-up">
-                    <h2 class="section-title">Testimonials</h2>
+                    <h2 class="section-title">Các Sản Phẩm Được Đánh Giá Tốt Nhất</h2>
                 </div>
             </div>
 
@@ -388,53 +388,90 @@
                         </div>
 
                         <div class="testimonial-slider">
-                            <div class="item">
-                                <div class="row justify-content-center">
-                                    <div class="col-lg-8 mx-auto">
-                                        <div class="testimonial-block text-center d-flex justify-content-center">
-                                            <div class="author-info col-lg-4">
-                                                <div class="author-pic">
-                                                    <img src="images/person-1.png" alt="Maria Jones" class="img-fluid">
+                            @php
+                                // Đặt hàm này ngay phía trên vòng lặp testimonial nếu chưa có
+                                if (!function_exists('getImagesArray')) {
+                                    function getImagesArray($images)
+                                    {
+                                        if (is_array($images)) {
+                                            return $images;
+                                        }
+                                        if (is_string($images)) {
+                                            $decoded = json_decode($images, true);
+                                            return is_array($decoded) ? $decoded : [];
+                                        }
+                                        return [];
+                                    }
+                                }
+                            @endphp
+
+                            @foreach ($topRatedVariants as $variant)
+                                @php
+                                    $variantImages = getImagesArray($variant->images);
+                                    $imageUrl = !empty($variantImages[0])
+                                        ? $variantImages[0]
+                                        : 'uploads/default/default.jpg';
+                                    // Thêm dòng này để lấy review nổi bật nhất (ví dụ: review có rating cao nhất)
+                                    $highlightReview = $variant->reviews
+                                        ->whereNotNull('order_id')
+                                        ->whereNull('deleted_at')
+                                        ->sortByDesc('rating')
+                                        ->first();
+                                @endphp
+                                <div class="item">
+                                    <div class="row justify-content-center">
+                                        <div class="col-lg-8 mx-auto">
+                                            <div class="testimonial-block text-center d-flex justify-content-center">
+                                                <div class="author-info col-lg-4">
+                                                    <div class="author-pic">
+                                                        <img src="{{ asset($imageUrl) }}"
+                                                            alt="{{ $variant->product->name }}" class="img-fluid">
+                                                    </div>
+                                                    <h3 class="font-weight-bold">{{ $variant->product->name }}</h3>
+                                                    <span class="position d-block mb-3">Biến thể:
+                                                        {{ $variant->name }}</span>
+                                                    <span class="position d-block mb-3">
+                                                        Số sao trung bình:
+                                                        @if ($variant->reviews_count > 0)
+                                                            <span style="color: #FACC15; font-weight: bold;">
+                                                                {{ number_format($variant->avg_rating, 1) }} ★
+                                                            </span>
+                                                            ({{ $variant->reviews_count }} lượt đánh giá)
+                                                        @else
+                                                            Chưa có đánh giá
+                                                        @endif
+                                                    </span>
                                                 </div>
-                                                <h3 class="font-weight-bold">Maria Jones</h3>
-                                                <span class="position d-block mb-3">CEO, Co-Founder, XYZ Inc.</span>
+                                                {{-- <blockquote class="mb-5 col-lg-8">
+                                                    <p>
+                                                        "{{ $highlightReview ? $highlightReview->review : 'Chưa có nhận xét nổi bật.' }}"
+                                                    </p>
+                                                </blockquote> --}}
                                             </div>
-                                            <blockquote class="mb-5 col-lg-8">
-                                                <p>"Donec facilisis quam ut purus rutrum lobortis. Donec vitae
-                                                    odio quis nisl dapibus malesuada. Nullam ac aliquet velit. Aliquam
-                                                    vulputate velit imperdiet dolor tempor tristique. Pellentesque
-                                                    habitant morbi tristique senectus et netus et malesuada fames ac
-                                                    turpis egestas. Integer convallis volutpat dui quis
-                                                    scelerisque."</p>
-                                            </blockquote>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="item">
-                                <div class="row justify-content-center">
-                                    <div class="col-lg-8 mx-auto">
-                                        <div class="testimonial-block text-center d-flex justify-content-center">
-                                            <div class="author-info col-lg-4">
-                                                <div class="author-pic">
-                                                    <img src="images/person-1.png" alt="Maria Jones" class="img-fluid">
+                            @endforeach
+                            @if ($topRatedVariants->isEmpty())
+                                <div class="item">
+                                    <div class="row justify-content-center">
+                                        <div class="col-lg-8 mx-auto">
+                                            <div class="testimonial-block text-center d-flex justify-content-center">
+                                                <div class="author-info col-lg-4">
+                                                    <div class="author-pic">
+                                                        <img src="{{ asset('uploads/default/default.jpg') }}"
+                                                            alt="No data" class="img-fluid">
+                                                    </div>
+                                                    <h3 class="font-weight-bold">Chưa có dữ liệu</h3>
                                                 </div>
-                                                <h3 class="font-weight-bold">Maria Jones</h3>
-                                                <span class="position d-block mb-3">CEO, Co-Founder, XYZ Inc.</span>
+                                                <blockquote class="mb-5 col-lg-8">
+                                                    <p>Chưa có sản phẩm nào được đánh giá.</p>
+                                                </blockquote>
                                             </div>
-                                            <blockquote class="mb-5 col-lg-8">
-                                                <p>"Donec facilisis quam ut purus rutrum lobortis. Donec vitae
-                                                    odio quis nisl dapibus malesuada. Nullam ac aliquet velit. Aliquam
-                                                    vulputate velit imperdiet dolor tempor tristique. Pellentesque
-                                                    habitant morbi tristique senectus et netus et malesuada fames ac
-                                                    turpis egestas. Integer convallis volutpat dui quis
-                                                    scelerisque."</p>
-                                            </blockquote>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                            <!-- Thêm các item khác nếu cần -->
+                            @endif
                         </div>
                     </div>
                 </div>
@@ -444,6 +481,7 @@
     <!-- End Testimonial Slider -->
 
     <!-- Start Blog Section -->
+    @if ($latestBlogs->count() > 0)
     <div class="blog-section" data-aos="fade-up">
         <div class="container">
             <div class="row mb-5">
@@ -456,11 +494,13 @@
             </div>
 
             <div class="row">
-                @foreach($latestBlogs as $blog)
-                    <div class="col-12 col-sm-6 col-md-4 mb-4 mb-md-0" data-aos="fade-up" data-aos-delay="{{ $loop->iteration * 100 }}">
+                @foreach ($latestBlogs as $blog)
+                    <div class="col-12 col-sm-6 col-md-4 mb-4 mb-md-0" data-aos="fade-up"
+                        data-aos-delay="{{ $loop->iteration * 100 }}">
                         <div class="post-entry">
                             <a href="{{ route('blog.show', $blog->slug) }}" class="post-thumbnail">
-                                <img src="{{ asset($blog->image ?? 'images/default-blog.jpg') }}" alt="{{ $blog->title }}" class="img-fluid">
+                                <img src="{{ asset($blog->image ?? 'images/default-blog.jpg') }}"
+                                    alt="{{ $blog->title }}" class="img-fluid">
                             </a>
                             <div class="post-content-entry">
                                 <h3><a href="{{ route('blog.show', $blog->slug) }}">{{ $blog->title }}</a></h3>
@@ -475,6 +515,7 @@
             </div>
         </div>
     </div>
+    @endif
     <!-- End Blog Section -->
 
     <!-- Nút FAB và Panel Chat -->
@@ -894,9 +935,11 @@
             font-size: 1.5rem;
         }
 
-        .ai-advice .lead {
-            font-size: 1rem;
-        }
+       
+    }
+
+    .author-pic img {
+        border-radius: 8px;
     }
 </style>
 

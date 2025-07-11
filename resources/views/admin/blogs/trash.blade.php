@@ -1,6 +1,6 @@
 @extends('admin.layouts.app')
 
-@section('title', 'Trash Blogs')
+@section('title', 'Thùng rác bài viết')
 
 <style>
     .custom-shadow {
@@ -20,11 +20,11 @@
                     <div class="row align-items-center">
                         <div class="col-md-12">
                             <div class="page-header-title">
-                                <h5 class="m-b-10">Trash</h5>
+                                <h5 class="m-b-10">Thùng rác</h5>
                             </div>
                             <ul class="breadcrumb">
-                                <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Home</a></li>
-                                <li class="breadcrumb-item" aria-current="page">Trash</li>
+                                <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Trang chủ</a></li>
+                                <li class="breadcrumb-item" aria-current="page">Thùng rác</li>
                             </ul>
                         </div>
                     </div>
@@ -37,10 +37,10 @@
                 <div class="col-12">
                     <div class="card">
                         <div class="card-header d-flex justify-content-between align-items-center">
-                            <h5>Trashed Blogs List</h5>
+                            <h5>Danh sách bài viết đã xóa</h5>
                             <div>
                                 <a href="{{ route('admin.blogs.index') }}" class="btn btn-primary btn-sm rounded-3">
-                                    <i class="ti ti-arrow-left"></i> Back to List
+                                    <i class="ti ti-arrow-left"></i> Quay lại danh sách
                                 </a>
                             </div>
                         </div>
@@ -56,12 +56,12 @@
                                     <thead>
                                         <tr>
                                             <th>STT</th>
-                                            <th>Title</th>
-                                            <th>Image</th>
-                                            <th>Category</th>
-                                            <th>Author</th>
-                                            <th>Deleted At</th>
-                                            <th class="text-center">Action</th>
+                                            <th>Tiêu đề</th>
+                                            <th>Hình ảnh</th>
+                                            <th>Danh mục</th>
+                                            <th>Tác giả</th>
+                                            <th>Thời gian xóa</th>
+                                            <th class="text-center">Hành động</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -89,7 +89,7 @@
                                                     @csrf
                                                     @method('PUT')
                                                     <button type="submit" class="btn btn-success btn-sm me-1" onclick="return confirm('Are you sure?')" title="Restore">
-                                                        <i class="ti ti-restore"></i> Restore
+                                                        <i class="ti ti-restore"></i> Khôi phục
                                                     </button>
                                                 </form>
                                                

@@ -22,7 +22,7 @@
         </div>
     </div>
     <!-- Start Why Choose Us Section -->
-    <div class="why-choose-section">
+    {{-- <div class="why-choose-section">
         <div class="container">
             <div class="row justify-content-between align-items-center">
                 <div class="col-lg-6">
@@ -86,7 +86,7 @@
 
             </div>
         </div>
-    </div>
+    </div> --}}
     <!-- End Why Choose Us Section -->
 
     <!-- Start Team Section -->
@@ -168,7 +168,7 @@
 
 
     <!-- Start Testimonial Slider -->
-    <div class="testimonial-section before-footer-section">
+    {{-- <div class="testimonial-section before-footer-section">
         <div class="container">
             <div class="row">
                 <div class="col-lg-7 mx-auto text-center">
@@ -277,6 +277,6 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div> --}}
     <!-- End Testimonial Slider -->
 @endsection

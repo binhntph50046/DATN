@@ -1,5 +1,5 @@
 @extends('admin.layouts.app')
-@section('title', 'Trash - Category Management')
+@section('title', 'Thùng rác')
 
 <style>
     .custom-shadow {
@@ -19,11 +19,11 @@
                 <div class="row align-items-center">
                     <div class="col-md-12">
                         <div class="page-header-title">
-                            <h5 class="m-b-10">Trash - Categories</h5>
+                            <h5 class="m-b-10">Thùng rác</h5>
                         </div>
                         <ul class="breadcrumb">
-                            <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Home</a></li>
-                            <li class="breadcrumb-item" aria-current="page">Trash - Categories</li>
+                            <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Trang chủ</a></li>
+                            <li class="breadcrumb-item" aria-current="page">Thùng rác</li>
                         </ul>
                     </div>
                 </div>
@@ -36,10 +36,10 @@
             <div class="col-12">
                 <div class="card">
                     <div class="card-header">
-                        <h5>Trash Categories</h5>
+                        <h5>Danh mục thùng rác</h5>
                         <div class="card-header-right">
                             <a href="{{ route('admin.categories.index') }}" class="btn btn-primary btn-sm rounded-3">
-                                <i class="ti ti-arrow-left"></i> Back to Categories
+                                <i class="ti ti-arrow-left"></i> Quay lại danh mục
                             </a>
                         </div>
                     </div>
@@ -55,14 +55,14 @@
                                 <thead>
                                     <tr>
                                         <th>ID</th>
-                                        <th>Image</th>
+                                        <th>Ảnh</th>
                                         <th>Icon</th>
-                                        <th>Name</th>
+                                        <th>Tên danh mục</th>
                                         <th>Slug</th>
-                                        <th>Parent</th>
-                                        <th>Type</th>
-                                        <th>Status</th>
-                                        <th class="text-center">Actions</th>
+                                        <th>Danh mục cha</th>
+                                        <th>Loại danh mục</th>
+                                        <th>Trạng thái</th>
+                                        <th class="text-center">Hành động</th>
                                     </tr>
                                 </thead>
                                 <tbody>

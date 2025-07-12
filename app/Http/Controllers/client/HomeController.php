@@ -3,9 +3,11 @@
 namespace App\Http\Controllers\client;
 
 use App\Models\Banner;
+use App\Models\Blog;
 use App\Models\Product;
 use App\Models\Wishlist;
 use App\Models\ProductVariant;
+use App\Models\ProductReview;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
@@ -19,10 +21,10 @@ class HomeController
         $banners = Banner::where('status', 'active')
             ->orderBy('order')
             ->get();
-            
+
         // Lấy sản phẩm theo nhóm 3 sản phẩm một hàng
         $mostViewedProducts = Product::where('status', 'active')
-            ->with(['variants' => function($query) {
+            ->with(['variants' => function ($query) {
                 $query->orderByDesc('is_default');
             }])
             ->orderBy('views', 'desc')
@@ -31,7 +33,7 @@ class HomeController
 
         // Lấy 3 sản phẩm mới nhất trong tháng hiện tại
         $latestProducts = Product::where('status', 'active')
-            ->with(['variants' => function($query) {
+            ->with(['variants' => function ($query) {
                 $query->orderByDesc('is_default');
             }])
             ->whereMonth('created_at', Carbon::now()->month)
@@ -47,18 +49,40 @@ class HomeController
                 ->pluck('product_id')
                 ->toArray();
         }
-            
+
         $products = Product::where('status', 'active')->get();
+
+        // Lấy 3 bài viết mới nhất
+        $latestBlogs = Blog::with(['category', 'author'])
+            ->where('status', 'active')
+            ->latest()
+            ->take(3)
+            ->get();
+
+        $topRatedVariants = ProductVariant::with(['product'])
+            ->withCount(['reviews as reviews_count' => function ($query) {
+                $query->whereNotNull('order_id')->whereNull('deleted_at');
+            }])
+            ->withAvg(['reviews as avg_rating' => function ($query) {
+                $query->whereNotNull('order_id')->whereNull('deleted_at');
+            }], 'rating')
+            ->orderByDesc('avg_rating')
+            ->orderByDesc('reviews_count')
+            ->take(5)
+            ->get();
+
 
         return view('client.index', [
             'banners' => $banners,
             'mostViewedProducts' => $mostViewedProducts,
             'latestProducts' => $latestProducts,
             'wishlistProductIds' => $wishlistProductIds,
-            'products' => $products
+            'products' => $products,
+            'latestBlogs' => $latestBlogs,
+            'topRatedVariants' => $topRatedVariants
         ]);
     }
-    
+
 
     public function incrementView($id)
     {
@@ -66,34 +90,34 @@ class HomeController
         $product->increment('views');
         return response()->json(['success' => true, 'views' => $product->views]);
     }
-    
+
     public function getProduct($id)
     {
-        $product = Product::with(['variants' => function($query) {
+        $product = Product::with(['variants' => function ($query) {
             $query->whereNull('deleted_at')
-                ->with(['combinations' => function($query) {
-                    $query->with(['attribute_value' => function($query) {
+                ->with(['combinations' => function ($query) {
+                    $query->with(['attribute_value' => function ($query) {
                         $query->whereNull('deleted_at')
                             ->with('attribute_type');
                     }]);
                 }]);
         }])
-        ->where('status', 'active')
-        ->findOrFail($id);
+            ->where('status', 'active')
+            ->findOrFail($id);
 
         return response()->json($product);
     }
 
     public function getVariant($id)
     {
-        $variant = ProductVariant::with(['combinations' => function($query) {
-            $query->with(['attribute_value' => function($query) {
+        $variant = ProductVariant::with(['combinations' => function ($query) {
+            $query->with(['attribute_value' => function ($query) {
                 $query->whereNull('deleted_at')
                     ->with('attribute_type');
             }]);
         }])
-        ->whereNull('deleted_at')
-        ->findOrFail($id);
+            ->whereNull('deleted_at')
+            ->findOrFail($id);
 
         return response()->json($variant);
     }

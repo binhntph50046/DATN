@@ -16,13 +16,15 @@ class BlogController
         return view('client.blog.index',compact('blogs'));
     }
 
-public function show($slug)
-{
-    $blog = Blog::with('author', 'category')->where('slug', $slug)->firstOrFail();
-    $relatedBlogs = Blog::where('category_id', $blog->category_id)
-        ->where('id', '!=', $blog->id)
-        ->take(3)
-        ->get();
-    return view('client.blog.show', compact('blog', 'relatedBlogs'));
-}
+    public function show($slug)
+    {
+        $blog = Blog::with('author', 'category')->where('slug', $slug)->firstOrFail();
+        $relatedBlogs = Blog::where('category_id', $blog->category_id)
+            ->where('id', '!=', $blog->id)
+            ->take(3)
+            ->get();
+        return view('client.blog.show', compact('blog', 'relatedBlogs'));
+    }
+
+
 }

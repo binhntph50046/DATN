@@ -27,10 +27,10 @@
                             <thead>
                                 <tr>
                                     <th>Chọn</th>
-                                    <th class="product-thumbnail">Ảnh</th>
-                                    <th class="product-name">Sản phẩm</th>
+                                    <th class="product-thumbnail">Hình Ảnh</th>
+                                    <th class="product-name">Sản Phẩm</th>
                                     <th class="product-price">Giá</th>
-                                    <th class="product-quantity">Số lượng</th>
+                                    <th class="product-quantity">Số Lượng</th>
                                     <th class="product-total">Tổng</th>
                                     <th class="product-remove">Xóa</th>
                                 </tr>

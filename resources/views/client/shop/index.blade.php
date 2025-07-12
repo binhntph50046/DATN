@@ -9,13 +9,13 @@
         <div class="container">
             <div class="row">
                 <div class="col-lg-12 text-center">
-                    <h1 data-aos="fade-up">Shop</h1>
+                    <h1 data-aos="fade-up">Cửa hàng</h1>
                     <!-- Breadcrumbs -->
                     <div class="breadcrumbs" data-aos="fade-up" data-aos-delay="200">
                         <nav aria-label="breadcrumb">
                             <ol class="breadcrumb">
-                                <li class="breadcrumb-item"><a href="{{ route('home') }}">Home</a></li>
-                                <li class="breadcrumb-item active" aria-current="page">Shop</li>
+                                <li class="breadcrumb-item"><a href="{{ route('home') }}">Trang chủ</a></li>
+                                <li class="breadcrumb-item active" aria-current="page">Cửa hàng</li>
                             </ol>
                         </nav>
                     </div>

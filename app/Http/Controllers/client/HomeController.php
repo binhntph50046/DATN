@@ -68,7 +68,7 @@ class HomeController
             }], 'rating')
             ->orderByDesc('avg_rating')
             ->orderByDesc('reviews_count')
-            ->take(5)
+            ->take(9)
             ->get();
 
 

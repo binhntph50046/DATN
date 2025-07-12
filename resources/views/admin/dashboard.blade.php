@@ -1,5 +1,5 @@
 @extends('admin.layouts.app')
-@section('title', 'Dashboard')
+@section('title', 'Trang quản trị')
 
 @section('content')
     <div class="pc-container">
@@ -14,7 +14,7 @@
                             </div>
                             <ul class="breadcrumb">
                                 <li class="breadcrumb-item"><a href="dashboard/index.html">Trang chủ</a></li>
-                                <li class="breadcrumb-item"><a href="javascript: void(0)">Bảng điều khiển</a></li>
+                                <li class="breadcrumb-item"><a href="javascript: void(0)">Thống kê</a></li>
                             </ul>
                         </div>
                     </div>

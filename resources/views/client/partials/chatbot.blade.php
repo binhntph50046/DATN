@@ -245,7 +245,7 @@
             right: 30px;
             width: 70px;
             height: 70px;
-            background: rgb(47, 104, 218);
+            background: rgb(54 94 173);
             border-radius: 50%;
             display: flex;
             flex-direction: column;

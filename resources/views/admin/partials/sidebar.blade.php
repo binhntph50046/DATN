@@ -11,7 +11,7 @@
                 <li class="pc-item">
                     <a href="{{ route('admin.dashboard') }}" class="pc-link">
                         <span class="pc-micon"><i class="ti ti-dashboard"></i></span>
-                        <span class="pc-mtext">Dashboard</span>
+                        <span class="pc-mtext">Thống kê</span>
                     </a>
                 </li>
 

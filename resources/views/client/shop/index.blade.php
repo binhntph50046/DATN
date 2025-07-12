@@ -9,13 +9,13 @@
         <div class="container">
             <div class="row">
                 <div class="col-lg-12 text-center">
-                    <h1 data-aos="fade-up">Shop</h1>
+                    <h1 data-aos="fade-up">Cửa hàng</h1>
                     <!-- Breadcrumbs -->
                     <div class="breadcrumbs" data-aos="fade-up" data-aos-delay="200">
                         <nav aria-label="breadcrumb">
                             <ol class="breadcrumb">
-                                <li class="breadcrumb-item"><a href="{{ route('home') }}">Home</a></li>
-                                <li class="breadcrumb-item active" aria-current="page">Shop</li>
+                                <li class="breadcrumb-item"><a href="{{ route('home') }}">Trang chủ</a></li>
+                                <li class="breadcrumb-item active" aria-current="page">Cửa hàng</li>
                             </ol>
                         </nav>
                     </div>
@@ -297,7 +297,7 @@
                                 <div class="row product-grid">
                                     @foreach ($category->products as $product)
                                         <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
-                                            <div class="product-item" data-aos="fade-up" data-aos-delay="100">
+                                            <div class="product-item" style="text-align: center;" data-aos="fade-up" data-aos-delay="100">
                                                 <a href="{{ route('product.detail', $product->slug) }}">
                                                     <div class="product-thumbnail text-center">
                                                         @php

@@ -35,7 +35,7 @@
             <div class="team-slider">
                 <!-- Team Member 1 -->
                 <div class="team-member">
-                    <img src="https://via.placeholder.com/300x300?text=Bao+Anh" class="img-fluid mb-3">
+                    <img src="{{ asset('uploads/avatar_member/banh.JPG') }}" class="img-fluid mb-3">
                     <h3><a href="#"><span>Nguyễn Ngọc</span> Bảo Anh</a></h3>
                     <span class="d-block position mb-3">Lập trình web</span>
                     <p>Cao đẳng FPT Polytechnic Hà Nội</p>
@@ -43,7 +43,7 @@
 
                 <!-- Team Member 2 -->
                 <div class="team-member">
-                    <img src="https://via.placeholder.com/300x300?text=Van+Dai" class="img-fluid mb-3">
+                    <img src="https://sbcf.fr/wp-content/uploads/2018/03/sbcf-default-avatar.png" class="img-fluid mb-3">
                     <h3><a href="#"><span>Chu Văn</span> Đại</a></h3>
                     <span class="d-block position mb-3">Lập trình web</span>
                     <p>Cao đẳng FPT Polytechnic Hà Nội</p>
@@ -51,7 +51,7 @@
 
                 <!-- Team Member 3 -->
                 <div class="team-member">
-                    <img src="https://via.placeholder.com/300x300?text=Manh+Cuong" class="img-fluid mb-3">
+                    <img src="https://sbcf.fr/wp-content/uploads/2018/03/sbcf-default-avatar.png" class="img-fluid mb-3">
                     <h3><a href="#"><span>Nguyễn Mạnh</span> Cường</a></h3>
                     <span class="d-block position mb-3">Lập trình web</span>
                     <p>Cao đẳng FPT Polytechnic Hà Nội</p>
@@ -59,7 +59,7 @@
 
                 <!-- Team Member 4 -->
                 <div class="team-member">
-                    <img src="https://via.placeholder.com/300x300?text=Thanh+Binh" class="img-fluid mb-3">
+                    <img src="{{ asset('uploads/avatar_member/binh.jpg') }}" class="img-fluid mb-3">
                     <h3><a href="#"><span>Nguyễn Thanh</span> Bình</a></h3>
                     <span class="d-block position mb-3">Lập trình web</span>
                     <p>Cao đẳng FPT Polytechnic Hà Nội</p>
@@ -67,7 +67,7 @@
 
                 <!-- Team Member 5 -->
                 <div class="team-member">
-                    <img src="https://via.placeholder.com/300x300?text=Van+Quang" class="img-fluid mb-3">
+                    <img src="https://sbcf.fr/wp-content/uploads/2018/03/sbcf-default-avatar.png" class="img-fluid mb-3">
                     <h3><a href="#"><span>Nguyễn Văn</span> Quảng</a></h3>
                     <span class="d-block position mb-3">Lập trình web</span>
                     <p>Cao đẳng FPT Polytechnic Hà Nội</p>
@@ -75,7 +75,8 @@
 
                 <!-- Team Member 6 -->
                 <div class="team-member">
-                    <img src="https://via.placeholder.com/300x300?text=Van+Khai" class="img-fluid mb-3">
+                    <img src="{{ asset('uploads/avatar_member/khai.jpg') }}"
+                        class="img-fluid mb-3">
                     <h3><a href="#"><span>Nguyễn Văn</span> Khải</a></h3>
                     <span class="d-block position mb-3">Lập trình web</span>
                     <p>Cao đẳng FPT Polytechnic Hà Nội</p>
@@ -83,7 +84,8 @@
 
                 <!-- Team Member 7 -->
                 <div class="team-member">
-                    <img src="https://via.placeholder.com/300x300?text=Kim+Phong" class="img-fluid mb-3">
+                    <img src="{{ asset('uploads/avatar_member/z6795420761011_54509d5aa1987147982f0627793c6f11.jpg') }}"
+                        class="img-fluid mb-3">
                     <h3><a href="#"><span>Kim Hồng</span> Phong</a></h3>
                     <span class="d-block position mb-3">Lập trình web</span>
                     <p>Cao đẳng FPT Polytechnic Hà Nội</p>
@@ -106,7 +108,7 @@
                 slidesToShow: 4,
                 slidesToScroll: 1,
                 autoplay: true,
-                autoplaySpeed: 3000,
+                autoplaySpeed: 2000,
                 dots: true,
                 arrows: true,
                 responsive: [{
@@ -125,5 +127,13 @@
             });
         });
     </script>
+    <style>
+        .team-member img {
+            width: 300px;
+            height: 300px;
+            object-fit: cover;
+            overflow: hidden;
+        }
+    </style>
 
 @endsection

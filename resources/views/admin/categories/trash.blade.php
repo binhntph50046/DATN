@@ -75,27 +75,27 @@
                                                 if ($category->image) {
                                                     echo '<img src="' . asset($category->image) . '" alt="' . $category->name . '" class="img-thumbnail" style="max-height: 50px;">';
                                                 } else {
-                                                    echo '<span class="text-muted">No image</span>';
+                                                    echo '<span class="text-muted">Không có ảnh</span>';
                                                 }
                                                 echo '</td>';
                                                 echo '<td>';
                                                 if ($category->icon) {
                                                     echo '<i class="' . $category->icon . '" style="font-size: 1.5em;"></i>';
                                                 } else {
-                                                    echo '<span class="text-muted">No icon</span>';
+                                                    echo '<span class="text-muted">Không có icon</span>';
                                                 }
                                                 echo '</td>';
-                                                $parentName = $category->parent ? $category->parent->name : 'No Parent';
+                                                $parentName = $category->parent ? $category->parent->name : 'Không có danh mục cha';
                                                 echo '<td>' . $prefix . ($category->parent_id ? '└─ ' : '') . $category->name . '</td>';
                                                 echo '<td>' . $category->slug . '</td>';
                                                 echo '<td>' . $parentName . '</td>';
-                                                echo '<td>' . ($category->type == 1 ? 'Product Category' : 'Post Category') . '</td>';
-                                                echo '<td><span class="badge ' . ($category->status == 'active' ? 'bg-success' : 'bg-danger') . '">' . ucfirst($category->status) . '</span></td>';
+                                                echo '<td>' . ($category->type == 1 ? 'Danh mục sản phẩm' : 'Danh mục bài viết') . '</td>';
+                                                echo '<td><span class="badge ' . ($category->status == 'active' ? 'bg-success' : 'bg-danger') . '">' . ($category->status == 'active' ? 'Hoạt động' : 'Không hoạt động') . '</span></td>';
                                                 echo '<td class="text-center">';
                                                 echo '<form action="' . route('admin.categories.restore', $category->id) . '" method="POST" class="d-inline">';
                                                 echo csrf_field();
                                                 echo method_field('POST');
-                                                echo '<button type="submit" class="btn btn-success btn-sm rounded-3 me-2" onclick="return confirm(\'Are you sure you want to restore this category?\')"><i class="ti ti-refresh"></i> Restore</button>';
+                                                echo '<button type="submit" class="btn btn-success btn-sm rounded-3 me-2" onclick="return confirm(\'Bạn có chắc chắn muốn khôi phục danh mục này không??\')"><i class="ti ti-refresh"></i> Khôi phục</button>';
                                                 echo '</form>';
                                                 // echo '<form action="' . route('admin.categories.forceDelete', $category->id) . '" method="POST" class="d-inline">';
                                                 // echo csrf_field();

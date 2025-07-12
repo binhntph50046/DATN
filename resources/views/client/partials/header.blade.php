@@ -157,10 +157,12 @@
             transform: translateY(10px);
             transition: opacity 0.3s ease-out, transform 0.3s ease-out;
             display: block;
+            pointer-events: none;
         }
 
         .dropdown-menu.show {
             opacity: 1;
+            pointer-events: auto;
             transform: translateY(0);
         }
 
@@ -301,7 +303,8 @@
                     @else
                         @if (Auth::user()->hasRole(['admin', 'staff']))
                             <li>
-                                <a class="dropdown-item text-white" href="{{ route('admin.dashboard') }}">Trang quản trị</a>
+                                <a class="dropdown-item text-white" href="{{ route('admin.dashboard') }}">Trang quản
+                                    trị</a>
                             </li>
                         @endif
                         <li><a class="dropdown-item text-white" href="{{ route('profile.index') }}">Trang cá nhân</a></li>

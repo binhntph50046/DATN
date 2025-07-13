@@ -258,11 +258,11 @@ Route::prefix('admin')
             Route::get('/', [UserController::class, 'index'])->name('index');
             Route::get('/create', [UserController::class, 'create'])->middleware('permission:create users')->name('create');
             Route::post('/', [UserController::class, 'store'])->middleware('permission:create users')->name('store');
+            Route::get('/trash', [UserController::class, 'trash'])->name('trash');
             Route::get('/{user}', [UserController::class, 'show'])->name('show');
             Route::get('/{user}/edit', [UserController::class, 'edit'])->middleware('permission:edit users')->name('edit');
             Route::put('/{user}', [UserController::class, 'update'])->middleware('permission:edit users')->name('update');
             Route::delete('/{user}', [UserController::class, 'destroy'])->middleware('permission:delete users')->name('destroy');
-            Route::get('/trash', [UserController::class, 'trash'])->name('trash');
             Route::post('/{user}/restore', [UserController::class, 'restore'])->middleware('permission:edit users')->name('restore');
             Route::delete('/{user}/force-delete', [UserController::class, 'forceDelete'])->middleware('permission:delete users')->name('forceDelete');
             Route::post('/toggle-status/{user}', [UserController::class, 'toggleStatus'])->name('toggle-status');
@@ -273,11 +273,11 @@ Route::prefix('admin')
             Route::get('/', [CategoryController::class, 'index'])->name('index');
             Route::get('/create', [CategoryController::class, 'create'])->middleware('permission:create categories')->name('create');
             Route::post('/', [CategoryController::class, 'store'])->middleware('permission:create categories')->name('store');
+            Route::get('/trash', [CategoryController::class, 'trash'])->name('trash');
             Route::get('/{category}', [CategoryController::class, 'show'])->name('show');
             Route::get('/{category}/edit', [CategoryController::class, 'edit'])->middleware('permission:edit categories')->name('edit');
             Route::put('/{category}', [CategoryController::class, 'update'])->middleware('permission:edit categories')->name('update');
             Route::delete('/{category}', [CategoryController::class, 'destroy'])->middleware('permission:delete categories')->name('destroy');
-            Route::get('/trash', [CategoryController::class, 'trash'])->name('trash');
             Route::post('/{category}/restore', [CategoryController::class, 'restore'])->middleware('permission:edit categories')->name('restore');
             Route::delete('/{category}/force-delete', [CategoryController::class, 'forceDelete'])->middleware('permission:delete categories')->name('forceDelete');
             Route::post('/change-order', [CategoryController::class, 'changeOrder'])->middleware('permission:edit categories')->name('changeOrder');
@@ -309,11 +309,11 @@ Route::prefix('admin')
             Route::get('/', [BlogController::class, 'index'])->name('index');
             Route::get('/create', [BlogController::class, 'create'])->middleware('permission:create blogs')->name('create');
             Route::post('/', [BlogController::class, 'store'])->middleware('permission:create blogs')->name('store');
+            Route::get('/trash', [BlogController::class, 'trash'])->name('trash');
             Route::get('/{blog}', [BlogController::class, 'show'])->name('show');
             Route::get('/{blog}/edit', [BlogController::class, 'edit'])->middleware('permission:edit blogs')->name('edit');
             Route::put('/{blog}', [BlogController::class, 'update'])->middleware('permission:edit blogs')->name('update');
             Route::delete('/{blog}', [BlogController::class, 'destroy'])->middleware('permission:delete blogs')->name('destroy');
-            Route::get('/trash', [BlogController::class, 'trash'])->name('trash');
             Route::put('/{id}/restore', [BlogController::class, 'restore'])->middleware('permission:edit blogs')->name('restore');
             Route::delete('/{id}/force-delete', [BlogController::class, 'forceDelete'])->middleware('permission:delete blogs')->name('forceDelete');
             
@@ -326,11 +326,11 @@ Route::prefix('admin')
             Route::get('/', [VariantAttributeTypeController::class, 'index'])->middleware('permission:view attributes')->name('index');
             Route::get('/create', [VariantAttributeTypeController::class, 'create'])->middleware('permission:create attributes')->name('create');
             Route::post('/', [VariantAttributeTypeController::class, 'store'])->middleware('permission:store attributes')->name('store');
+            Route::get('/trash', [VariantAttributeTypeController::class, 'trash'])->middleware('permission:trash attributes')->name('trash');
             Route::post('/store-values', [VariantAttributeTypeController::class, 'storeValues'])->name('store-values');
             Route::get('/{attributeType}/edit', [VariantAttributeTypeController::class, 'edit'])->middleware('permission:edit attributes')->name('edit');
             Route::put('/{attributeType}', [VariantAttributeTypeController::class, 'update'])->middleware('permission:update attributes')->name('update');
             Route::delete('/{attributeType}', [VariantAttributeTypeController::class, 'destroy'])->middleware('permission:destroy attributes')->name('destroy');
-            Route::get('/trash', [VariantAttributeTypeController::class, 'trash'])->middleware('permission:trash attributes')->name('trash');
             Route::post('/{attributeType}/restore', [VariantAttributeTypeController::class, 'restore'])->middleware('permission:restore attributes')->name('restore');
             Route::get('/{attributeType}/values', [ProductController::class, 'getAttributeValues'])->name('values');
         });
@@ -355,11 +355,11 @@ Route::prefix('admin')
             Route::get('/', [SpecificationController::class, 'index'])->name('index');
             Route::get('/create', [SpecificationController::class, 'create'])->name('create');
             Route::post('/', [SpecificationController::class, 'store'])->name('store');
+            Route::get('/trash', [SpecificationController::class, 'trash'])->name('trash');
             Route::get('/{specification}', [SpecificationController::class, 'show'])->name('show');
             Route::get('/{specification}/edit', [SpecificationController::class, 'edit'])->name('edit');
             Route::put('/{specification}', [SpecificationController::class, 'update'])->name('update');
             Route::delete('/{specification}', [SpecificationController::class, 'destroy'])->name('destroy');
-            Route::get('/trash', [SpecificationController::class, 'trash'])->name('trash');
             Route::post('/{id}/restore', [SpecificationController::class, 'restore'])->name('restore');
         });
 
@@ -394,8 +394,8 @@ Route::prefix('admin')
         // Subscriber Management
         Route::prefix('subscribers')->name('subscribers.')->group(function () {
             Route::get('/', [SubcriberController::class, 'index'])->name('index');
-            Route::delete('/{subscribers}', [SubcriberController::class, 'destroy'])->name('delete');
             Route::get('/trash', [SubcriberController::class, 'trash'])->name('trash');
+            Route::delete('/{subscribers}', [SubcriberController::class, 'destroy'])->name('delete');
             Route::patch('/restore/{id}', [SubcriberController::class, 'restore'])->name('restore');
         });
 
@@ -410,11 +410,11 @@ Route::prefix('admin')
             Route::get('/', [FaqController::class, 'index'])->name('index');
             Route::get('/create', [FaqController::class, 'create'])->name('create');
             Route::post('/', [FaqController::class, 'store'])->name('store');
+            Route::get('/trash', [FaqController::class, 'trash'])->name('trash');
             Route::get('/{faq}', [FaqController::class, 'show'])->name('show');
             Route::get('/{faq}/edit', [FaqController::class, 'edit'])->name('edit');
             Route::put('/{faq}', [FaqController::class, 'update'])->name('update');
             Route::delete('/{faq}', [FaqController::class, 'destroy'])->name('destroy');
-            Route::get('/trash', [FaqController::class, 'trash'])->name('trash');
             Route::post('/{faq}/restore', [FaqController::class, 'restore'])->name('restore');
             Route::delete('/{faq}/forceDelete', [FaqController::class, 'forceDelete'])->name('forceDelete');
         });

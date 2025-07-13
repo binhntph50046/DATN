@@ -165,7 +165,7 @@ class CategoryController
 
     public function trash()
     {
-        $categories = Category::onlyTrashed()->with('parent')->paginate(10);
+        $categories = Category::onlyTrashed()->with(['parent', 'children'])->paginate(10);
         return view('admin.categories.trash', compact('categories'));
     }
 

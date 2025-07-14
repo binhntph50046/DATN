@@ -50,6 +50,12 @@
                             </div>
                         @endif
 
+                        @if(session('error'))
+                            <div class="alert alert-danger">
+                                {{ session('error') }}
+                            </div>
+                        @endif
+
                         <div class="table custom-shadow">
                             <table class="table table-hover table-borderless">
                                 <thead>

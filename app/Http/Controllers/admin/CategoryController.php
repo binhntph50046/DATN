@@ -75,7 +75,7 @@ class CategoryController
         Category::create($data);
 
         return redirect()->route('admin.categories.index')
-            ->with('success', 'Category created successfully.');
+            ->with('success', 'Danh mục được tạo thành công.');
     }
 
     public function show(string $id)
@@ -129,7 +129,7 @@ class CategoryController
         }
 
         return redirect()->route('admin.categories.index')
-            ->with('success', 'Category updated successfully.');
+            ->with('success', 'Danh mục được cập nhật thành công.');
     }
 
     private function updateChildrenStatus($category, $status)
@@ -151,7 +151,7 @@ class CategoryController
         $this->deleteRecursive($category);
 
         return redirect()->route('admin.categories.index')
-            ->with('success', 'Category and all its subcategories deleted successfully.');
+            ->with('success', 'Danh mục và tất cả các danh mục con của nó đã được xóa thành công.');
     }
 
     private function deleteRecursive($category)
@@ -171,13 +171,27 @@ class CategoryController
 
     public function restore(string $id)
     {
-        $category = Category::onlyTrashed()->findOrFail($id);
+        // Tìm cả bản ghi đã xóa mềm lẫn chưa
+        $category = Category::withTrashed()->findOrFail($id);
 
+        // Nếu là danh mục con và cha đang bị soft-delete
+        if ($category->parent_id) {
+            $parent = Category::withTrashed()->find($category->parent_id);
+            if ($parent && $parent->trashed()) {
+                return redirect()
+                    ->route('admin.categories.trash')
+                    ->with('error', 'Vui lòng khôi phục danh mục cha trước khi khôi phục danh mục con.');
+            }
+        }
+
+        // Nếu không có vấn đề gì, tiến hành khôi phục đệ quy
         $this->restoreRecursive($category);
 
-        return redirect()->route('admin.categories.trash')
-            ->with('success', 'Category and all its subcategories restored successfully.');
+        return redirect()
+            ->route('admin.categories.trash')
+            ->with('success', 'Danh mục và tất cả danh mục con đã được khôi phục thành công.');
     }
+
 
     private function restoreRecursive($category)
     {

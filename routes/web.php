@@ -144,18 +144,31 @@ Route::middleware(['auth'])->group(function () {
 // Subscribe Route
 Route::post('/subscribe', [SubscribeController::class, 'store'])->name('subscribe.store');
 
-// Order Routes (Client)
-Route::prefix('order')->name('order.')->group(function () {
-    Route::get('/', [ClientOrderController::class, 'index'])->name('index'); // Danh sách đơn hàng
-    Route::get('/tracking/{order}', [CheckoutController::class, 'tracking'])->name('tracking'); // Theo dõi đơn hàng
-    Route::get('/guest-tracking/{order_code?}', [ClientOrderController::class, 'guestTracking'])->name('guest.tracking'); // Theo dõi đơn hàng cho khách không đăng nhập
-    Route::post('/cancel/{order}', [ClientOrderController::class, 'cancel'])->name('cancel')->middleware('auth'); // Hủy đơn hàng
-    Route::get('/{order}/return', [ClientOrderReturnController::class, 'create'])->name('returns.create'); // Yêu cầu hoàn hàng (form)
-    Route::post('/{order}/return', [ClientOrderReturnController::class, 'store'])->name('returns.store'); // Gửi yêu cầu hoàn hàng
+// Route cho khách gửi yêu cầu hoàn hàng và theo dõi đơn hàng
+Route::middleware(['auth'])->group(function () {
+    Route::prefix('order')->name('order.')->group(function () {
+        // Danh sách và theo dõi đơn hàng
+        Route::get('/', [ClientOrderController::class, 'index'])->name('index');
+        Route::get('/tracking/{order}', [CheckoutController::class, 'tracking'])->name('tracking');
+        Route::post('/cancel/{order}', [ClientOrderController::class, 'cancel'])->name('cancel');
+        Route::get('/invoice/{order}', [CheckoutController::class, 'invoice'])->name('invoice');
+        Route::get('/resend-invoice/{order}', [CheckoutController::class, 'resendInvoice'])->name('resend-invoice');
+        Route::post('{id}/request-resend-invoice', [ClientOrderController::class, 'requestResendInvoice'])->name('request-resend-invoice');
+        
+        // Hoàn đơn
+        Route::prefix('return')->name('returns.')->group(function () {
+            Route::get('/{order}', [ClientOrderReturnController::class, 'create'])->name('create');
+            Route::post('/{order}', [ClientOrderReturnController::class, 'store'])->name('store');
+            Route::get('/{order}/{return}', [ClientOrderReturnController::class, 'show'])->name('show');
+        });
+    });
 });
 
-// Route cho admin quản lý hoàn hàng
-Route::prefix('admin')->name('admin.')->group(function () {
+// Guest tracking
+Route::get('/order/guest-tracking/{order_code?}', [ClientOrderController::class, 'guestTracking'])->name('order.guest.tracking');
+
+// Admin routes
+Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin|staff'])->group(function () {
     Route::get('order-returns', [AdminOrderReturnController::class, 'index'])->name('order-returns.index');
     Route::get('order-returns/{id}', [AdminOrderReturnController::class, 'show'])->name('order-returns.show');
     Route::post('order-returns/{id}/approve', [AdminOrderReturnController::class, 'approve'])->name('order-returns.approve');

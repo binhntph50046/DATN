@@ -18,10 +18,14 @@ class ForgotPasswordController
 
     public function sendResetLinkEmail(Request $request)
     {
-        $request->validate(
-            ['email' => 'required|email|exists:users,email'],
-            ['email.exists' => 'Email not found']
-        );
+        $request->validate([
+            'email' => 'required|email|exists:users,email',
+        ], [
+            'email.required' => 'Vui lòng nhập email.',
+            'email.email' => 'Định dạng email không hợp lệ.',
+            'email.exists' => 'Email không tồn tại trong hệ thống.',
+        ]);
+
         $token = Str::random(60) . '_' . time() . '_' . $request->email;
 
         DB::table('password_reset_tokens')->updateOrInsert(

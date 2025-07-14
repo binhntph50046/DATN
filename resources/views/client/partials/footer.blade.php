@@ -7,8 +7,6 @@
      .footer-info-bar {
          background: #111827;
      }
-
-
  </style>
 
  <div class="footer-info-bar py-4">
@@ -81,7 +79,8 @@
              <div class="col-lg-4">
                  <div class="mb-4 footer-logo-wrap"><a href="#" class="footer-logo">Apple Store<span>.</span></a>
                  </div>
-                 <p class="mb-4" style="color: #ffffff">Chuyên cung cấp các sản phẩm Apple chính hãng với chất lượng cao cấp. Cam kết mang
+                 <p class="mb-4" style="color: #ffffff">Chuyên cung cấp các sản phẩm Apple chính hãng với chất lượng
+                     cao cấp. Cam kết mang
                      đến trải nghiệm tốt nhất cho khách hàng với dịch vụ tận tâm và chuyên nghiệp.</p>
 
                  <div class="custom-social">
@@ -93,44 +92,37 @@
              </div>
 
              <div class="col-lg-8">
-                 <div class="row links-wrap">
-                     <div class="col-6 col-sm-6 col-md-3">
+                 <div class="row">
+                     <!-- Cột 1 -->
+                     <div class="col-12 col-sm-6 col-md-4 mb-3">
                          <ul class="list-unstyled">
-                             <li><a href="#">Về chúng tôi</a></li>
-                             <li><a href="#">Sản phẩm</a></li>
-                             <li><a href="#">Tin tức</a></li>
-                             <li><a href="#">Liên hệ</a></li>
+                             <li><a href="{{ route('about') }}">Về chúng tôi</a></li>
+                             <li><a href="{{ route('shop') }}">Sản phẩm</a></li>
+                             <li><a href="{{ route('blog') }}">Bài viết</a></li>
+                             <li><a href="{{ route('contact') }}">Liên hệ</a></li>
                          </ul>
                      </div>
 
-                     <div class="col-6 col-sm-6 col-md-3">
+                     <!-- Cột 2 -->
+                     <div class="col-12 col-sm-6 col-md-4 mb-3">
                          <ul class="list-unstyled">
-                             <li><a href="#">Hỗ trợ</a></li>
-                             <li><a href="#">Bảo hành</a></li>
-                             <li><a href="#">FAQ</a></li>
-                             <li><a href="#">Chính sách đổi trả</a></li>
+                             <li><a href="/shop/iphone">iPhone</a></li>
+                             <li><a href="/shop/ipad">iPad</a></li>
+                             <li><a href="/shop/mac">MacBook</a></li>
+                             <li><a href="/shop/watch">Apple Watch</a></li>
                          </ul>
                      </div>
 
-                     <div class="col-6 col-sm-6 col-md-3">
+                     <!-- Cột 3 -->
+                     <div class="col-12 col-sm-6 col-md-4 mb-3">
                          <ul class="list-unstyled">
-                             <li><a href="#">iPhone</a></li>
-                             <li><a href="#">iPad</a></li>
-                             <li><a href="#">MacBook</a></li>
-                             <li><a href="#">Apple Watch</a></li>
-                         </ul>
-                     </div>
-
-                     <div class="col-6 col-sm-6 col-md-3">
-                         <ul class="list-unstyled">
-                             <li><a href="#">AirPods</a></li>
-                             <li><a href="#">Phụ kiện</a></li>
-                             <li><a href="#">Khuyến mãi</a></li>
-                             <li><a href="#">Tuyển dụng</a></li>
+                             <li><a href="/shop/tai-nghe-loa">AirPods</a></li>
+                             <li><a href="/shop/phu-kien">Phụ kiện</a></li>
                          </ul>
                      </div>
                  </div>
              </div>
+
 
          </div>
 
@@ -138,15 +130,16 @@
              <div class="row pt-4">
                  <div class="col-lg-6">
                      <p class="mb-2 text-center text-lg-start text-white">© 2025 Apple Store. Thiết kế bởi
-                         <a href="https://www.facebook.com/nguyenbaoanhhh"><strong>Nguyen Bao Anh</strong></a>
+                         <a href="https://www.facebook.com/nguyenbaoanhhh"><strong style="color: #ffffff">Nguyen Bao
+                                 Anh</strong></a>
                      </p>
                  </div>
-                 <div class="col-lg-6">
+                 {{-- <div class="col-lg-6">
                      <p class="mb-2 text-center text-lg-end">
                          <a href="#">Điều khoản sử dụng</a> |
                          <a href="#">Chính sách bảo mật</a>
                      </p>
-                 </div>
+                 </div> --}}
              </div>
          </div>
      </div>

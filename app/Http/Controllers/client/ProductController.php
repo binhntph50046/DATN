@@ -15,16 +15,16 @@ class ProductController
     {
         $product = Product::with([
             'category',
-            'variants' => function($query) {
+            'variants' => function ($query) {
                 $query->with(['combinations.attributeValue.attributeType']);
             },
             'specifications.specification',
             'defaultVariant'
         ])->where('slug', $slug)->firstOrFail();
-            
+
         // Increment view count
         $product->increment('views');
-        
+
         // Get related products (same category, excluding current product)
         $relatedProducts = Product::where('category_id', $product->category_id)
             ->where('slug', '!=', $slug)
@@ -37,8 +37,9 @@ class ProductController
         ]);
 
         // Gợi ý sản phẩm
-        $suggestionService = new ProductSuggestionService();
-        $suggestions = $suggestionService->getAllSuggestions($product, Auth::id());
+        $suggestions = [
+            'unique' => app(ProductSuggestionService::class)->getUniqueSuggestions($product, Auth::id()),
+        ];
         // dd($suggestions);
 
         return view('client.product.product-detail', compact('product', 'relatedProducts', 'suggestions'));
@@ -48,7 +49,7 @@ class ProductController
     {
         $product = Product::with([
             'category',
-            'variants' => function($query) {
+            'variants' => function ($query) {
                 $query->with(['combinations.attributeValue.attributeType']);
             },
             'specifications.specification',
@@ -60,14 +61,14 @@ class ProductController
 
     public function getVariant($id): JsonResponse
     {
-        $variant = ProductVariant::with(['combinations' => function($query) {
-            $query->with(['attributeValue' => function($query) {
+        $variant = ProductVariant::with(['combinations' => function ($query) {
+            $query->with(['attributeValue' => function ($query) {
                 $query->whereNull('deleted_at')
                     ->with('attributeType');
             }]);
         }])
-        ->whereNull('deleted_at')
-        ->findOrFail($id);
+            ->whereNull('deleted_at')
+            ->findOrFail($id);
 
         return response()->json($variant);
     }

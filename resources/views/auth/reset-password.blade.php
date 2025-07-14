@@ -11,7 +11,7 @@
 
             <input type="hidden" name="token" value="{{ $token }}">
 
-            <input class="forgot-password-input @error('email') is-invalid @enderror" name="email" type="email"
+            <input class="forgot-password-input @error('email') is-invalid @enderror" name="email" type="text"
                 value="{{ $email }}" readonly>
             @error('email')
                 <div class="invalid-feedback">

@@ -2,7 +2,8 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Middleware\VerifyCsrfToken;
-
+use Illuminate\Foundation\Auth\EmailVerificationRequest;
+use Illuminate\Http\Request;
 // Models
 use App\Models\Invoice;
 
@@ -27,6 +28,7 @@ use App\Http\Controllers\admin\FaqController;
 use App\Http\Controllers\admin\ProductVariantController;
 use App\Http\Controllers\Admin\InvoiceController;
 use App\Http\Controllers\Admin\OrderReturnController as AdminOrderReturnController;
+use App\Http\Controllers\Admin\MessengerController;
 use App\Http\Controllers\Admin\AdminProfileController;
 use App\Http\Controllers\Admin\SitemapController;
 use App\Http\Controllers\Admin\RobotController;
@@ -49,6 +51,7 @@ use App\Http\Controllers\client\UserActivityController;
 use App\Http\Controllers\client\WishlistController;
 use App\Http\Controllers\client\CheckoutController;
 use App\Http\Controllers\client\SubscribeController;
+use App\Http\Controllers\client\ChatController;
 use App\Http\Controllers\client\VoucherController as ClientVoucherController;
 use App\Http\Controllers\client\CompareController;
 use App\Http\Controllers\client\SearchController;
@@ -107,11 +110,6 @@ Route::get('/faq', [FaqsController::class, 'index'])->name('faq');
 Route::get('/location', function () {
     return view('client.location.index');
 })->name('location');
-
-// Chatbot Route
-Route::get('/chat', function () {
-    return view('chat');
-});
 
 Route::post('/chatbot/ask', [ChatBotController::class, 'ask'])->name('chatbot.ask');
 
@@ -177,6 +175,25 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin|staff'])
     Route::post('order-returns/{id}/reject', [AdminOrderReturnController::class, 'reject'])->name('order-returns.reject');
 });
 
+// Route cho khách gửi yêu cầu hoàn hàng
+Route::middleware(['auth'])->group(function () {
+    Route::get('order/{order}/return', [ClientOrderReturnController::class, 'create'])->name('order.returns.create');
+    Route::post('order/{order}/return', [ClientOrderReturnController::class, 'store'])->name('order.returns.store');
+});
+
+// Theo dõi đơn hàng sau khi đặt hàng
+Route::get('/order', [ClientOrderController::class, 'index'])->name('order.index');
+Route::post('/order/cancel/{order}', [ClientOrderController::class, 'cancel'])->name('order.cancel');
+Route::get('/order/tracking/{order}', [CheckoutController::class, 'tracking'])->name('order.tracking');
+Route::get('/order/invoice/{order}', [CheckoutController::class, 'invoice'])->name('order.invoice');
+Route::get('/order/resend-invoice/{order}', [CheckoutController::class, 'resendInvoice'])->name('order.resend-invoice');
+
+Route::prefix('order')->name('order.')->group(function () {
+    Route::post('{id}/request-resend-invoice', [ClientOrderController::class, 'requestResendInvoice'])->name('request-resend-invoice');
+});
+
+// Chatify Messenger Client
+Route::get('/chat', [ChatController::class, 'index'])->name('client.chat');
 // Product Review
 
 // Route 1: Xem lịch sử đánh giá 1 biến thể
@@ -185,7 +202,6 @@ Route::get('order/{order}/review', [ProductReviewController::class, 'create'])->
 Route::post('order/{order}/review/{variant}', [ProductReviewController::class, 'store'])->name('order.review.store');
 // Route 2: Xem lịch sử đánh giá toàn bộ đơn hàng
 Route::get('order/{order}/review/history', [ProductReviewController::class, 'historyAll'])->name('order.review.history.all');
-
 /*
 |--------------------------------------------------------------------------
 | Authentication Routes
@@ -208,6 +224,27 @@ Route::get('/auth/google/callback', [GoogleController::class, 'handleGoogleCallb
 Route::get('/auth/facebook', [FacebookController::class, 'redirectToFacebook'])->name('auth.facebook.redirect');
 Route::get('/auth/facebook/callback', [FacebookController::class, 'handleFacebookCallback']);
 
+Route::middleware('auth')->group(function () {
+    Route::get('/chat', [ChatController::class, 'index'])->name('chat.index');
+});
+
+// Trang nhắc xác minh
+Route::get('/email/verify', function () {
+    return view('auth.verify-email'); // bạn cần tạo view này
+})->middleware('auth')->name('verification.notice');
+
+// Khi user click link xác minh trong email
+Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
+    $request->fulfill();
+    return redirect('/'); // Hoặc redirect tới dashboard
+})->middleware(['auth', 'signed'])->name('verification.verify');
+
+// Gửi lại email xác minh
+Route::post('/email/verification-notification', function (Request $request) {
+    $request->user()->sendEmailVerificationNotification();
+    return back()->with('message', 'Email xác minh đã được gửi!');
+})->middleware(['auth', 'throttle:6,1'])->name('verification.send');
+
 /*
 |--------------------------------------------------------------------------
 | Admin Routes
@@ -221,16 +258,24 @@ Route::prefix('admin')
         // Dashboard
         Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 
+        // Live Chat Management
+        Route::prefix('livechat')->name('livechat.')->group(function () {
+            Route::get('/', [MessengerController::class, 'index'])->name('index');
+            Route::get('/users', [MessengerController::class, 'getUsers'])->name('users');
+            Route::get('/messages/{userId}', [MessengerController::class, 'getMessages'])->name('messages');
+            Route::post('/send', [MessengerController::class, 'sendMessage'])->name('send');
+        });
+
         // User Management
         Route::prefix('users')->name('users.')->middleware('permission:view users')->group(function () {
             Route::get('/', [UserController::class, 'index'])->name('index');
             Route::get('/create', [UserController::class, 'create'])->middleware('permission:create users')->name('create');
             Route::post('/', [UserController::class, 'store'])->middleware('permission:create users')->name('store');
+            Route::get('/trash', [UserController::class, 'trash'])->name('trash');
             Route::get('/{user}', [UserController::class, 'show'])->name('show');
             Route::get('/{user}/edit', [UserController::class, 'edit'])->middleware('permission:edit users')->name('edit');
             Route::put('/{user}', [UserController::class, 'update'])->middleware('permission:edit users')->name('update');
             Route::delete('/{user}', [UserController::class, 'destroy'])->middleware('permission:delete users')->name('destroy');
-            Route::get('/trash', [UserController::class, 'trash'])->name('trash');
             Route::post('/{user}/restore', [UserController::class, 'restore'])->middleware('permission:edit users')->name('restore');
             Route::delete('/{user}/force-delete', [UserController::class, 'forceDelete'])->middleware('permission:delete users')->name('forceDelete');
             Route::post('/toggle-status/{user}', [UserController::class, 'toggleStatus'])->name('toggle-status');
@@ -241,11 +286,11 @@ Route::prefix('admin')
             Route::get('/', [CategoryController::class, 'index'])->name('index');
             Route::get('/create', [CategoryController::class, 'create'])->middleware('permission:create categories')->name('create');
             Route::post('/', [CategoryController::class, 'store'])->middleware('permission:create categories')->name('store');
+            Route::get('/trash', [CategoryController::class, 'trash'])->name('trash');
             Route::get('/{category}', [CategoryController::class, 'show'])->name('show');
             Route::get('/{category}/edit', [CategoryController::class, 'edit'])->middleware('permission:edit categories')->name('edit');
             Route::put('/{category}', [CategoryController::class, 'update'])->middleware('permission:edit categories')->name('update');
             Route::delete('/{category}', [CategoryController::class, 'destroy'])->middleware('permission:delete categories')->name('destroy');
-            Route::get('/trash', [CategoryController::class, 'trash'])->name('trash');
             Route::post('/{category}/restore', [CategoryController::class, 'restore'])->middleware('permission:edit categories')->name('restore');
             Route::delete('/{category}/force-delete', [CategoryController::class, 'forceDelete'])->middleware('permission:delete categories')->name('forceDelete');
             Route::post('/change-order', [CategoryController::class, 'changeOrder'])->middleware('permission:edit categories')->name('changeOrder');
@@ -277,25 +322,28 @@ Route::prefix('admin')
             Route::get('/', [BlogController::class, 'index'])->name('index');
             Route::get('/create', [BlogController::class, 'create'])->middleware('permission:create blogs')->name('create');
             Route::post('/', [BlogController::class, 'store'])->middleware('permission:create blogs')->name('store');
+            Route::get('/trash', [BlogController::class, 'trash'])->name('trash');
             Route::get('/{blog}', [BlogController::class, 'show'])->name('show');
             Route::get('/{blog}/edit', [BlogController::class, 'edit'])->middleware('permission:edit blogs')->name('edit');
             Route::put('/{blog}', [BlogController::class, 'update'])->middleware('permission:edit blogs')->name('update');
             Route::delete('/{blog}', [BlogController::class, 'destroy'])->middleware('permission:delete blogs')->name('destroy');
-            Route::get('/trash', [BlogController::class, 'trash'])->name('trash');
             Route::put('/{id}/restore', [BlogController::class, 'restore'])->middleware('permission:edit blogs')->name('restore');
             Route::delete('/{id}/force-delete', [BlogController::class, 'forceDelete'])->middleware('permission:delete blogs')->name('forceDelete');
+            
         });
+
+        
 
         // Attribute Management
         Route::prefix('attributes')->name('attributes.')->group(function () {
             Route::get('/', [VariantAttributeTypeController::class, 'index'])->middleware('permission:view attributes')->name('index');
             Route::get('/create', [VariantAttributeTypeController::class, 'create'])->middleware('permission:create attributes')->name('create');
             Route::post('/', [VariantAttributeTypeController::class, 'store'])->middleware('permission:store attributes')->name('store');
+            Route::get('/trash', [VariantAttributeTypeController::class, 'trash'])->middleware('permission:trash attributes')->name('trash');
             Route::post('/store-values', [VariantAttributeTypeController::class, 'storeValues'])->name('store-values');
             Route::get('/{attributeType}/edit', [VariantAttributeTypeController::class, 'edit'])->middleware('permission:edit attributes')->name('edit');
             Route::put('/{attributeType}', [VariantAttributeTypeController::class, 'update'])->middleware('permission:update attributes')->name('update');
             Route::delete('/{attributeType}', [VariantAttributeTypeController::class, 'destroy'])->middleware('permission:destroy attributes')->name('destroy');
-            Route::get('/trash', [VariantAttributeTypeController::class, 'trash'])->middleware('permission:trash attributes')->name('trash');
             Route::post('/{attributeType}/restore', [VariantAttributeTypeController::class, 'restore'])->middleware('permission:restore attributes')->name('restore');
             Route::get('/{attributeType}/values', [ProductController::class, 'getAttributeValues'])->name('values');
         });
@@ -320,11 +368,11 @@ Route::prefix('admin')
             Route::get('/', [SpecificationController::class, 'index'])->name('index');
             Route::get('/create', [SpecificationController::class, 'create'])->name('create');
             Route::post('/', [SpecificationController::class, 'store'])->name('store');
+            Route::get('/trash', [SpecificationController::class, 'trash'])->name('trash');
             Route::get('/{specification}', [SpecificationController::class, 'show'])->name('show');
             Route::get('/{specification}/edit', [SpecificationController::class, 'edit'])->name('edit');
             Route::put('/{specification}', [SpecificationController::class, 'update'])->name('update');
             Route::delete('/{specification}', [SpecificationController::class, 'destroy'])->name('destroy');
-            Route::get('/trash', [SpecificationController::class, 'trash'])->name('trash');
             Route::post('/{id}/restore', [SpecificationController::class, 'restore'])->name('restore');
         });
 
@@ -359,8 +407,8 @@ Route::prefix('admin')
         // Subscriber Management
         Route::prefix('subscribers')->name('subscribers.')->group(function () {
             Route::get('/', [SubcriberController::class, 'index'])->name('index');
-            Route::delete('/{subscribers}', [SubcriberController::class, 'destroy'])->name('delete');
             Route::get('/trash', [SubcriberController::class, 'trash'])->name('trash');
+            Route::delete('/{subscribers}', [SubcriberController::class, 'destroy'])->name('delete');
             Route::patch('/restore/{id}', [SubcriberController::class, 'restore'])->name('restore');
         });
 
@@ -375,11 +423,11 @@ Route::prefix('admin')
             Route::get('/', [FaqController::class, 'index'])->name('index');
             Route::get('/create', [FaqController::class, 'create'])->name('create');
             Route::post('/', [FaqController::class, 'store'])->name('store');
+            Route::get('/trash', [FaqController::class, 'trash'])->name('trash');
             Route::get('/{faq}', [FaqController::class, 'show'])->name('show');
             Route::get('/{faq}/edit', [FaqController::class, 'edit'])->name('edit');
             Route::put('/{faq}', [FaqController::class, 'update'])->name('update');
             Route::delete('/{faq}', [FaqController::class, 'destroy'])->name('destroy');
-            Route::get('/trash', [FaqController::class, 'trash'])->name('trash');
             Route::post('/{faq}/restore', [FaqController::class, 'restore'])->name('restore');
             Route::delete('/{faq}/forceDelete', [FaqController::class, 'forceDelete'])->name('forceDelete');
         });

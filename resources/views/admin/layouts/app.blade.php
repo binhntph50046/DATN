@@ -61,6 +61,8 @@
     @yield('content')
     <!-- [ Main Content ] end -->
 
+
+
     <!-- [ Footer Content ] start -->
     @include('admin.partials.footer')
     <!-- [ Footer Content ] end -->
@@ -78,6 +80,12 @@
     <script src="{{ asset('assets/js/pcoded.js') }}"></script>
     <script src="{{ asset('assets/js/plugins/feather.min.js') }}"></script>
     <script src="{{ asset('assets/js/custom-sidebar.js') }}"></script>
+
+    <script src="{{ asset('js/app.js') }}"></script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/laravel-echo/dist/echo.iife.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/socket.io-client@4.7.2/dist/socket.io.min.js"></script>
+    <script src="{{ asset('js/echo-admin.js') }}"></script>
 
     @stack('scripts')
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ckeditor/4.9.2/ckeditor.js"

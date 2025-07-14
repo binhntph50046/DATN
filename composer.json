@@ -20,6 +20,7 @@
         "laravel/socialite": "^5.21",
         "laravel/tinker": "^2.10.1",
         "php-ffmpeg/php-ffmpeg": "*",
+        "munafio/chatify": "^1.6",
         "pusher/pusher-php-server": "^7.2",
         "simplesoftwareio/simple-qrcode": "^4.2",
         "spatie/laravel-permission": "^6.18"

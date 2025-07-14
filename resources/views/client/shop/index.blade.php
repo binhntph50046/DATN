@@ -9,13 +9,13 @@
         <div class="container">
             <div class="row">
                 <div class="col-lg-12 text-center">
-                    <h1 data-aos="fade-up">Shop</h1>
+                    <h1 data-aos="fade-up">Cửa hàng</h1>
                     <!-- Breadcrumbs -->
                     <div class="breadcrumbs" data-aos="fade-up" data-aos-delay="200">
                         <nav aria-label="breadcrumb">
                             <ol class="breadcrumb">
-                                <li class="breadcrumb-item"><a href="{{ route('home') }}">Home</a></li>
-                                <li class="breadcrumb-item active" aria-current="page">Shop</li>
+                                <li class="breadcrumb-item"><a href="{{ route('home') }}">Trang chủ</a></li>
+                                <li class="breadcrumb-item active" aria-current="page">Cửa hàng</li>
                             </ol>
                         </nav>
                     </div>
@@ -169,9 +169,9 @@
                     $topCategories = $topCategories ?? collect();
                     $isSlider = $topCategories->count() > 6;
                 @endphp
-                <ul class="choose-cate {{ $isSlider ? 'category-menu-slider' : 'd-flex justify-content-center' }}">
+                <ul class="p-0 choose-cate d-flex w-100 flex-nowrap {{ $isSlider ? 'category-menu-slider' : 'justify-content-between' }}">
                     @foreach ($topCategories as $category)
-                        <li class="box_category" data-aos="fade-up" data-aos-delay="{{ $loop->index * 50 }}">
+                        <li class="box_category" style="margin: 0; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.21);" data-aos="fade-up" data-aos-delay="{{ $loop->index * 50 }}">
                             <a href="{{ route('shop.category', ['slug' => $category->slug]) }}">
                                 <div class="img-catesp">
                                     <img src="{{ asset($category->image) }}" alt="{{ $category->name }}"
@@ -297,7 +297,7 @@
                                 <div class="row product-grid">
                                     @foreach ($category->products as $product)
                                         <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
-                                            <div class="product-item" data-aos="fade-up" data-aos-delay="100">
+                                            <div class="product-item" style="text-align: center;" data-aos="fade-up" data-aos-delay="100">
                                                 <a href="{{ route('product.detail', $product->slug) }}">
                                                     <div class="product-thumbnail text-center">
                                                         @php

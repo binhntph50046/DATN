@@ -3,40 +3,42 @@
 @section('content')
 
     <!-- Start Product Detail Section -->
-    <div class="untree_co-section product-section" style="margin-top: 70px">
-        
+    <div class="untree_co-section product-section" style="margin-top: 70px;padding-bottom: 0px">
+
         <div class="container">
             <!-- Hiển thị thông báo -->
             @if (session('success'))
-        <div class="custom-alert success" id="success-alert">
-            <div class="icon"><i class="fas fa-check-circle"></i></div>
-            <div class="content">
-                <strong>SUCCESS</strong>
-                <p>{{ session('success') }}</p>
-            </div>
-            <div class="close" onclick="this.parentElement.style.display='none';">&times;</div>
-        </div>
-    @endif
+                <div class="custom-alert success" id="success-alert">
+                    <div class="icon"><i class="fas fa-check-circle"></i></div>
+                    <div class="content">
+                        <strong>SUCCESS</strong>
+                        <p>{{ session('success') }}</p>
+                    </div>
+                    <div class="close" onclick="this.parentElement.style.display='none';">&times;</div>
+                </div>
+            @endif
 
-    @if (session('error'))
-        <div class="custom-alert error" id="error-alert">
-            <div class="icon"><i class="fas fa-times-circle"></i></div>
-            <div class="content">
-                <strong>ERROR</strong>
-                <p>{{ session('error') }}</p>
-            </div>
-            <div class="close" onclick="this.parentElement.style.display='none';">&times;</div>
-        </div>
-    @endif
+            @if (session('error'))
+                <div class="custom-alert error" id="error-alert">
+                    <div class="icon"><i class="fas fa-times-circle"></i></div>
+                    <div class="content">
+                        <strong>ERROR</strong>
+                        <p>{{ session('error') }}</p>
+                    </div>
+                    <div class="close" onclick="this.parentElement.style.display='none';">&times;</div>
+                </div>
+            @endif
             <div class="row">
                 <!-- Product Images -->
                 <div class="col-lg-6 mb-5">
                     <div class="product-gallery">
                         <div class="main-image mb-4 position-relative">
-                            <button id="prevImageBtn" class="image-nav-btn" style="display:none;" onclick="showPrevImage()"><i class="fas fa-chevron-left"></i></button>
+                            <button id="prevImageBtn" class="image-nav-btn" style="display:none;"
+                                onclick="showPrevImage()"><i class="fas fa-chevron-left"></i></button>
                             @php
                                 // Helper function to safely handle both JSON strings and arrays
-                                function getImagesArray($images) {
+                                function getImagesArray($images)
+                                {
                                     if (is_array($images)) {
                                         return $images;
                                     }
@@ -66,12 +68,18 @@
                             @endphp
                             <img src="{{ asset($mainImage) }}" class="img-fluid" alt="{{ $product->name }}"
                                 id="mainProductImage">
-                            <button id="nextImageBtn" class="image-nav-btn" style="display:none;" onclick="showNextImage()"><i class="fas fa-chevron-right"></i></button>
+                            <button id="nextImageBtn" class="image-nav-btn" style="display:none;"
+                                onclick="showNextImage()"><i class="fas fa-chevron-right"></i></button>
                         </div>
                         <div class="thumbnail-slider position-relative">
-                            <button id="thumbPrevBtn" class="image-nav-btn" style="left:0;top:50%;transform:translateY(-50%);" onclick="scrollThumbnails(-1)"><i class="fas fa-chevron-left"></i></button>
-                            <div class="row flex-nowrap overflow-auto" id="thumbnailsRow" style="scroll-behavior:smooth; margin:0 48px;"></div>
-                            <button id="thumbNextBtn" class="image-nav-btn" style="right:0;top:50%;transform:translateY(-50%);" onclick="scrollThumbnails(1)"><i class="fas fa-chevron-right"></i></button>
+                            <button id="thumbPrevBtn" class="image-nav-btn"
+                                style="left:0;top:50%;transform:translateY(-50%);" onclick="scrollThumbnails(-1)"><i
+                                    class="fas fa-chevron-left"></i></button>
+                            <div class="row flex-nowrap overflow-auto" id="thumbnailsRow"
+                                style="scroll-behavior:smooth; margin:0 48px;"></div>
+                            <button id="thumbNextBtn" class="image-nav-btn"
+                                style="right:0;top:50%;transform:translateY(-50%);" onclick="scrollThumbnails(1)"><i
+                                    class="fas fa-chevron-right"></i></button>
                         </div>
                     </div>
                 </div>
@@ -102,7 +110,7 @@
                             // Gom nhóm các thuộc tính theo loại (Color, Storage, ...)
                             $attributeGroups = [];
                             $seenValues = []; // Mảng để theo dõi các giá trị đã xuất hiện
-                            
+
                             foreach ($product->variants as $variant) {
                                 // Bỏ qua các biến thể đã bị xóa mềm
                                 if ($variant->deleted_at !== null) {
@@ -117,10 +125,10 @@
                                         $hexes = is_array($combination->attributeValue->hex)
                                             ? $combination->attributeValue->hex
                                             : json_decode($combination->attributeValue->hex, true);
-                                        
+
                                         // Tạo key duy nhất cho mỗi giá trị
                                         $valueKey = $typeName . '_' . ($values[0] ?? '');
-                                        
+
                                         // Chỉ thêm vào nếu chưa có giá trị này
                                         if (!isset($seenValues[$valueKey])) {
                                             $attributeGroups[$typeName][] = [
@@ -243,23 +251,31 @@
                 </div>
             </div>
             <!-- Tabs Section (bên dưới chi tiết sản phẩm) -->
+            <hr>
             <div class="container mt-5">
                 <div class="d-flex justify-content-center mb-4" style="gap: 18px;">
                     <button class="tab-btn-custom active" id="tab-desc-btn" onclick="showTab('desc')">Mô tả</button>
                     <button class="tab-btn-custom" id="tab-spec-btn" onclick="showTab('spec')">Thông số kỹ thuật</button>
-                    <button class="tab-btn-custom" id="tab-review-btn" onclick="showTab('review')">Đánh giá sản
-                        phẩm</button>
                 </div>
                 <div id="tab-desc" class="tab-content" style="display: block;">
                     <div class="card">
-                        <div class="card-body">
-                            {!! $product->content !!}
+                        <div class="card-body position-relative">
+                            <div id="product-content" class="collapsed-content position-relative">
+                                {!! $product->content !!}
+                                <div class="content-overlay" id="content-overlay"></div>
+                            </div>
+                            <div class="d-flex justify-content-center mt-3">
+                                <button id="toggle-content-btn" class="btn tab-btn-custom active btn-sm">Xem thêm<i
+                                        class="fas fa-chevron-down ms-2"></i></button>
+                            </div>
                         </div>
                     </div>
                 </div>
+
+
                 <div id="tab-spec" class="tab-content" style="display: none;">
                     <div class="card">
-                        <div class="card-body p-0">
+                        <div class="card-body">
                             <table class="table mb-0">
                                 <thead>
                                     <tr>
@@ -269,7 +285,7 @@
                                 <tbody>
                                     @if ($product->specifications && $product->specifications->isNotEmpty())
                                         @foreach ($product->specifications as $spec)
-                                            @if($spec->specification)
+                                            @if ($spec->specification)
                                                 <tr>
                                                     <td class="text-secondary" style="width: 220px;">
                                                         {{ $spec->specification->name }}</td>
@@ -287,13 +303,6 @@
                         </div>
                     </div>
                 </div>
-                <div id="tab-review" class="tab-content" style="display: none;">
-                    <div class="card">
-                        <div class="card-body">
-                            <em>Chức năng đánh giá sản phẩm sẽ sớm ra mắt.</em>
-                        </div>
-                    </div>
-                </div>
             </div>
             @include('client.product.suggestions', ['suggestions' => $suggestions]);
         </div>
@@ -301,84 +310,122 @@
     <!-- End Product Detail Section -->
 
     <style>
-         .custom-alert {
-        display: flex;
-        align-items: center;
-        background-color: #fff;
-        border-left: 5px solid;
-        border-radius: 4px;
-        padding: 16px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-        margin: 10px auto;
-        width: 360px;
-        position: relative;
-        animation: slideIn 0.3s ease;
-    }
-
-    .custom-alert .icon {
-        font-size: 20px;
-        margin-right: 12px;
-    }
-
-    .custom-alert .content {
-        flex-grow: 1;
-    }
-
-    .custom-alert .content strong {
-        display: block;
-        font-weight: bold;
-        color: #333;
-    }
-
-    .custom-alert .content p {
-        margin: 0;
-        color: #666;
-    }
-
-    .custom-alert .close {
-        font-size: 38px;
-        cursor: pointer;
-        color: #333;
-        margin-left: 10px;
-        margin-top: -32px;
-    }
-
-    .custom-alert.success {
-        border-color: #28a745;
-        background-color: #ffffff;
-    }
-
-    .custom-alert.success .icon {
-        color: #28a745;
-    }
-
-    .custom-alert.error {
-        border-color: #dc3545;
-        background-color: #ffffff;
-    }
-
-    .custom-alert.error .icon {
-        color: #dc3545;
-    }
-
-    @keyframes slideIn {
-        from {
-            transform: translateY(-10px);
-            opacity: 0;
+        .collapsed-content {
+            max-height: 380px;
+            overflow: hidden;
+            position: relative;
+            transition: max-height 0.5s ease;
         }
 
-        to {
-            transform: translateY(0);
-            opacity: 1;
+        .expanded-content {
+            max-height: none;
         }
-    }
 
-    .custom-alert {
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        z-index: 9999;
-    }
+        /* Overlay gradient phía dưới */
+        .content-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 160px;
+            background: linear-gradient(to bottom, rgba(255, 255, 255, 0), #fff);
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .card-body img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 0 auto;
+        }
+
+        #toggle-content-btn {
+            display: inline-block;
+            margin: 0 auto;
+            position: relative;
+            z-index: 2;
+            /* Đảm bảo nút nằm trên overlay */
+        }
+
+        .custom-alert {
+            display: flex;
+            align-items: center;
+            background-color: #fff;
+            border-left: 5px solid;
+            border-radius: 4px;
+            padding: 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            margin: 10px auto;
+            width: 360px;
+            position: relative;
+            animation: slideIn 0.3s ease;
+        }
+
+        .custom-alert .icon {
+            font-size: 20px;
+            margin-right: 12px;
+        }
+
+        .custom-alert .content {
+            flex-grow: 1;
+        }
+
+        .custom-alert .content strong {
+            display: block;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .custom-alert .content p {
+            margin: 0;
+            color: #666;
+        }
+
+        .custom-alert .close {
+            font-size: 38px;
+            cursor: pointer;
+            color: #333;
+            margin-left: 10px;
+            margin-top: -32px;
+        }
+
+        .custom-alert.success {
+            border-color: #28a745;
+            background-color: #ffffff;
+        }
+
+        .custom-alert.success .icon {
+            color: #28a745;
+        }
+
+        .custom-alert.error {
+            border-color: #dc3545;
+            background-color: #ffffff;
+        }
+
+        .custom-alert.error .icon {
+            color: #dc3545;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(-10px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .custom-alert {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+        }
 
         .color-variants {
             margin-bottom: 2rem;
@@ -507,32 +554,28 @@
         }
 
         .tab-btn-custom {
-            border: 2px solid #0d6efd;
-            background: #fff;
-            color: #0d6efd;
+            padding: 9px 26px;
+            font-size: 16px;
             font-weight: 500;
-            border-radius: 24px;
-            padding: 12px 40px;
-            font-size: 1.1rem;
-            transition: all 0.2s;
-            outline: none;
-            box-shadow: 0 2px 8px rgba(13, 110, 253, 0.08);
-            margin-bottom: 0;
+            color: #3b5d50;
+            background-color: #f0f0f5;
+            border: 1px solid #d0d0e0;
+            border-radius: 999px;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
         }
 
-        .tab-btn-custom:hover,
-        .tab-btn-custom:focus {
-            background: #e6f0ff;
-            color: #0a58ca;
-            border-color: #0a58ca;
-            box-shadow: 0 4px 16px rgba(13, 110, 253, 0.12);
+        .tab-btn-custom:hover {
+            background-color: #e2e6f3;
+            color: #0d1b5c;
+            border-color: #b0b6d1;
         }
 
         .tab-btn-custom.active {
-            background: #0d6efd;
+            background-color: #3b5d50;
             color: #fff;
-            border-color: #0d6efd;
-            box-shadow: 0 2px 8px rgba(13, 110, 253, 0.18);
+            border-color: #3b5d50;
+            box-shadow: 0 4px 10px rgba(26, 35, 126, 0.2);
         }
 
         .table th,
@@ -547,7 +590,7 @@
         .image-nav-btn {
             width: 48px;
             height: 48px;
-            background: rgba(0,0,0,0.18);
+            background: rgba(0, 0, 0, 0.18);
             border: none;
             border-radius: 50%;
             color: #fff;
@@ -560,20 +603,32 @@
             align-items: center;
             justify-content: center;
             transition: background 0.2s;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
         }
+
         .image-nav-btn:hover {
-            background: rgba(0,0,0,0.35);
+            background: rgba(0, 0, 0, 0.35);
         }
-        #prevImageBtn { left: 12px; }
-        #nextImageBtn { right: 12px; }
-        .thumbnail-slider { position: relative; }
-        #thumbPrevBtn, #thumbNextBtn {
+
+        #prevImageBtn {
+            left: 12px;
+        }
+
+        #nextImageBtn {
+            right: 12px;
+        }
+
+        .thumbnail-slider {
+            position: relative;
+        }
+
+        #thumbPrevBtn,
+        #thumbNextBtn {
             top: 50%;
             transform: translateY(-50%);
             position: absolute;
             z-index: 2;
-            background: rgba(0,0,0,0.18);
+            background: rgba(0, 0, 0, 0.18);
             color: #fff;
             border: none;
             border-radius: 50%;
@@ -585,9 +640,20 @@
             justify-content: center;
             transition: background 0.2s;
         }
-        #thumbPrevBtn { left: 0; }
-        #thumbNextBtn { right: 0; }
-        #thumbPrevBtn:hover, #thumbNextBtn:hover { background: rgba(0,0,0,0.35); }
+
+        #thumbPrevBtn {
+            left: 0;
+        }
+
+        #thumbNextBtn {
+            right: 0;
+        }
+
+        #thumbPrevBtn:hover,
+        #thumbNextBtn:hover {
+            background: rgba(0, 0, 0, 0.35);
+        }
+
         #thumbnailsRow {
             margin: 0 48px;
             overflow-x: auto;
@@ -595,24 +661,36 @@
             white-space: nowrap;
             scroll-behavior: smooth;
         }
-        #thumbnailsRow .col-3 { flex: 0 0 auto; width: 80px; max-width: 80px; padding: 0 4px; }
-        #thumbnailsRow img.thumbnail { border-radius: 8px; border: 2px solid transparent; }
-        #thumbnailsRow img.thumbnail.active { border: 2px solid #007bff; }
+
+        #thumbnailsRow .col-3 {
+            flex: 0 0 auto;
+            width: 80px;
+            max-width: 80px;
+            padding: 0 4px;
+        }
+
+        #thumbnailsRow img.thumbnail {
+            border-radius: 8px;
+            border: 2px solid transparent;
+        }
+
+        #thumbnailsRow img.thumbnail.active {
+            border: 2px solid #007bff;
+        }
     </style>
 
     <script>
+        function hideAlert(alertId) {
+            const alert = document.getElementById(alertId);
+            if (alert) {
+                setTimeout(() => {
+                    alert.style.display = 'none';
+                }, 3000);
+            }
+        }
 
-function hideAlert(alertId) {
-    const alert = document.getElementById(alertId);
-    if (alert) {
-        setTimeout(() => {
-            alert.style.display = 'none';
-        }, 3000);
-    }
-}
-
-hideAlert('success-alert');
-hideAlert('error-alert');
+        hideAlert('success-alert');
+        hideAlert('error-alert');
         // Khai báo biến toàn cục
         let selectedValues = {};
         let selectedVariants = {};
@@ -647,25 +725,25 @@ hideAlert('error-alert');
             // Khởi tạo dữ liệu biến thể
             @foreach ($product->variants as $variant)
                 @if ($variant->deleted_at === null)
-                variantData[{{ $variant->id }}] = {
-                    images: {!! json_encode(getImagesArray($variant->images)) !!},
-                    price: {{ $variant->selling_price }}
-                };
+                    variantData[{{ $variant->id }}] = {
+                        images: {!! json_encode(getImagesArray($variant->images)) !!},
+                        price: {{ $variant->selling_price }}
+                    };
                 @endif
             @endforeach
 
             // Khởi tạo mapping attribute -> variant
             @foreach ($product->variants as $variant)
                 @if ($variant->deleted_at === null)
-                @php
-                    $attrValues = [];
-                    foreach ($variant->combinations as $comb) {
-                        $value = is_array($comb->attributeValue->value) ? $comb->attributeValue->value[0] : json_decode($comb->attributeValue->value, true)[0] ?? '';
-                        $attrValues[] = $value;
-                    }
-                    $key = implode('|', $attrValues);
-                @endphp
-                attributeToVariant["{{ $key }}"] = {{ $variant->id }};
+                    @php
+                        $attrValues = [];
+                        foreach ($variant->combinations as $comb) {
+                            $value = is_array($comb->attributeValue->value) ? $comb->attributeValue->value[0] : json_decode($comb->attributeValue->value, true)[0] ?? '';
+                            $attrValues[] = $value;
+                        }
+                        $key = implode('|', $attrValues);
+                    @endphp
+                    attributeToVariant["{{ $key }}"] = {{ $variant->id }};
                 @endif
             @endforeach
 
@@ -713,7 +791,8 @@ hideAlert('error-alert');
                 }
                 const quantity = parseInt(quantityInput.value) || 1;
                 const mainImage = document.getElementById('mainProductImage').src;
-                window.location.href = '/checkout?variant_id=' + variantId + '&quantity=' + quantity + '&image=' + encodeURIComponent(mainImage);
+                window.location.href = '/checkout?variant_id=' + variantId + '&quantity=' + quantity +
+                    '&image=' + encodeURIComponent(mainImage);
             });
         });
 
@@ -726,7 +805,7 @@ hideAlert('error-alert');
 
             // Remove active class from all elements of this type
             document.querySelectorAll('[data-attr-type="' + typeName + '"]').forEach(opt => opt.classList.remove('active'));
-            
+
             // Add active to current
             el.classList.add('active');
 
@@ -746,15 +825,16 @@ hideAlert('error-alert');
             // Update images and price if valid variant found
             if (matchedVariantId && variantData[matchedVariantId]) {
                 // Cập nhật giá
-                document.getElementById('productPrice').textContent = 
+                document.getElementById('productPrice').textContent =
                     new Intl.NumberFormat('vi-VN').format(variantData[matchedVariantId].price) + ' VNĐ';
-                
+
                 // Cập nhật ảnh chính và thumbnails
                 if (variantData[matchedVariantId].images && variantData[matchedVariantId].images.length > 0) {
                     updateThumbnails(variantData[matchedVariantId].images);
-                    document.getElementById('mainProductImage').src = '{{ asset('') }}' + variantData[matchedVariantId].images[0];
+                    document.getElementById('mainProductImage').src = '{{ asset('') }}' + variantData[matchedVariantId]
+                        .images[0];
                 }
-                
+
                 // Cập nhật variant_id cho form
                 document.getElementById('selectedVariantId').value = matchedVariantId;
             }
@@ -763,18 +843,23 @@ hideAlert('error-alert');
         function selectAllAttributesOfVariant(variantId) {
             const variants = @json($product->variants);
             const selectedVariant = variants.find(v => v.id === variantId);
-            
+
             if (selectedVariant) {
                 // Reset all active states
                 document.querySelectorAll('.color-option, .storage-btn').forEach(el => el.classList.remove('active'));
 
                 selectedVariant.combinations.forEach(comb => {
                     const typeName = comb.attribute_value.attribute_type.name.trim();
-                    const matchedType = requiredTypes.find(t => t.toLowerCase() === typeName.toLowerCase()) || typeName;
-                    
+                    const matchedType = requiredTypes.find(t => t.toLowerCase() === typeName.toLowerCase()) ||
+                        typeName;
+
                     let value = comb.attribute_value.value;
                     if (typeof value === 'string') {
-                        try { value = JSON.parse(value); } catch { value = [value]; }
+                        try {
+                            value = JSON.parse(value);
+                        } catch {
+                            value = [value];
+                        }
                     }
                     value = Array.isArray(value) ? value[0] : value;
 
@@ -796,15 +881,16 @@ hideAlert('error-alert');
                 // Update images and price
                 if (variantData[variantId]) {
                     // Cập nhật giá
-                    document.getElementById('productPrice').textContent = 
+                    document.getElementById('productPrice').textContent =
                         new Intl.NumberFormat('vi-VN').format(variantData[variantId].price) + ' VNĐ';
-                    
+
                     // Cập nhật ảnh chính và thumbnails
                     if (variantData[variantId].images && variantData[variantId].images.length > 0) {
                         updateThumbnails(variantData[variantId].images);
-                        document.getElementById('mainProductImage').src = '{{ asset('') }}' + variantData[variantId].images[0];
+                        document.getElementById('mainProductImage').src = '{{ asset('') }}' + variantData[variantId]
+                            .images[0];
                     }
-                    
+
                     // Cập nhật variant_id cho form
                     document.getElementById('selectedVariantId').value = variantId;
                 }
@@ -836,7 +922,10 @@ hideAlert('error-alert');
         function scrollThumbnails(direction) {
             const row = document.getElementById('thumbnailsRow');
             const scrollAmount = 120; // px mỗi lần cuộn
-            row.scrollBy({ left: direction * scrollAmount, behavior: 'smooth' });
+            row.scrollBy({
+                left: direction * scrollAmount,
+                behavior: 'smooth'
+            });
         }
 
         function updateThumbnails(images) {
@@ -875,9 +964,9 @@ hideAlert('error-alert');
         }
 
         function updateImageNavButtons() {
-            document.getElementById('prevImageBtn').style.display = 
+            document.getElementById('prevImageBtn').style.display =
                 (currentImages.length > 1 && currentImageIndex > 0) ? '' : 'none';
-            document.getElementById('nextImageBtn').style.display = 
+            document.getElementById('nextImageBtn').style.display =
                 (currentImages.length > 1 && currentImageIndex < currentImages.length - 1) ? '' : 'none';
         }
 
@@ -898,16 +987,38 @@ hideAlert('error-alert');
             document.querySelectorAll('.tab-content').forEach(content => {
                 content.style.display = 'none';
             });
-            
+
             // Bỏ active khỏi tất cả các tab button
             document.querySelectorAll('.tab-btn-custom').forEach(btn => {
                 btn.classList.remove('active');
             });
-            
+
             // Hiển thị tab được chọn
             document.getElementById('tab-' + tab).style.display = 'block';
             // Active tab button tương ứng
             document.getElementById('tab-' + tab + '-btn').classList.add('active');
         }
+
+        // rút gọn mô tả
+        document.addEventListener('DOMContentLoaded', function() {
+            const content = document.getElementById('product-content');
+            const toggleBtn = document.getElementById('toggle-content-btn');
+            const overlay = document.getElementById('content-overlay');
+
+            toggleBtn.addEventListener('click', function() {
+                const isCollapsed = content.classList.contains('collapsed-content');
+
+                content.classList.toggle('collapsed-content');
+                content.classList.toggle('expanded-content');
+
+                // Ẩn hoặc hiện overlay
+                overlay.style.display = isCollapsed ? 'none' : 'block';
+
+                // Đổi nội dung nút
+                toggleBtn.innerHTML = isCollapsed ?
+                    'Thu gọn <i class="fas fa-chevron-up ms-2"></i>' :
+                    'Xem thêm <i class="fas fa-chevron-down ms-2"></i>';
+            });
+        });
     </script>
 @endsection

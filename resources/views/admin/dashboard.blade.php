@@ -10,7 +10,7 @@
                     <div class="row align-items-center">
                         <div class="col-md-12">
                             <div class="page-header-title">
-                                <h5 class="m-b-10">Trang chủ</h5>
+                                <h5 class="m-b-10">Thống kê</h5>
                             </div>
                             <ul class="breadcrumb">
                                 <li class="breadcrumb-item"><a href="dashboard/index.html">Trang chủ</a></li>
@@ -23,19 +23,41 @@
             <!-- [ breadcrumb ] end -->
             <!-- [ Main Content ] start -->
             <div class="row">
+                {{-- Hàm bỏ .0% khi thừa ví dụ: 100.0% -> 100% --}}
+                @php
+                    if (!function_exists('formatPercent')) {
+                        function formatPercent($value)
+                        {
+                            return fmod($value, 1) == 0
+                                ? number_format($value, 0) . '%'
+                                : number_format($value, 1) . '%';
+                        }
+                    }
+                @endphp
                 <!-- [ sample-page ] start -->
                 <div class="col-md-6 col-xl-3">
                     <div class="card">
                         <div class="card-body">
                             <h6 class="mb-2 f-w-400 text-muted">Tổng lượt xem sản phẩm</h6>
-                            <h4 class="mb-3">{{ number_format($totalProductViews) }} <span
-                                    class="badge bg-light-{{ $productViewsChange >= 0 ? 'success' : 'danger' }} border border-{{ $productViewsChange >= 0 ? 'success' : 'danger' }}"><i
-                                        class="ti ti-trending-{{ $productViewsChange >= 0 ? 'up' : 'down' }}"></i>
-                                    {{ number_format(abs($productViewsChange), 1) }}%</span></h4>
-                            <p class="mb-0 text-muted text-sm">Bạn có thêm <span
-                                    class="text-{{ $productViewsChange >= 0 ? 'success' : 'danger' }}">{{ number_format($totalProductViews - $lastYearProductViews) }}</span>
-                                lượt xem
-                                trong năm nay</p>
+                            <h4 class="mb-3">
+                                {{ number_format($totalProductViews) }}
+                                <span
+                                    class="badge bg-light-{{ $productViewsChange >= 0 ? 'success' : 'danger' }} border border-{{ $productViewsChange >= 0 ? 'success' : 'danger' }}">
+                                    <i class="ti ti-trending-{{ $productViewsChange >= 0 ? 'up' : 'down' }}"></i>
+                                    {{ formatPercent(abs($productViewsChange)) }}
+                                </span>
+                            </h4>
+                            <p class="mb-0 text-muted text-sm">
+                                {{ $productViewsChange >= 0 ? 'Bạn có thêm' : 'Bạn bị giảm' }}
+                                <span class="text-{{ $productViewsChange >= 0 ? 'success' : 'danger' }}">
+                                    {{ number_format(abs($totalProductViews - $lastYearProductViews)) }}
+                                </span>
+                                lượt xem, chiếm
+                                <span class="text-{{ $productViewsChange >= 0 ? 'success' : 'danger' }}">
+                                    {{ formatPercent(abs($productViewsChange)) }}
+                                </span>
+                                tổng lượt xem năm nay
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -43,14 +65,25 @@
                     <div class="card">
                         <div class="card-body">
                             <h6 class="mb-2 f-w-400 text-muted">Tổng người dùng</h6>
-                            <h4 class="mb-3">{{ number_format($totalUsers) }} <span
-                                    class="badge bg-light-{{ $usersChange >= 0 ? 'success' : 'danger' }} border border-{{ $usersChange >= 0 ? 'success' : 'danger' }}"><i
-                                        class="ti ti-trending-{{ $usersChange >= 0 ? 'up' : 'down' }}"></i>
-                                    {{ number_format(abs($usersChange), 1) }}%</span></h4>
-                            <p class="mb-0 text-muted text-sm">Bạn có thêm <span
-                                    class="text-{{ $usersChange >= 0 ? 'success' : 'danger' }}">{{ number_format($totalUsers - $lastYearUsers) }}</span>
-                                người dùng
-                                trong năm nay</p>
+                            <h4 class="mb-3">
+                                {{ number_format($totalUsers) }}
+                                <span
+                                    class="badge bg-light-{{ $usersChange >= 0 ? 'success' : 'danger' }} border border-{{ $usersChange >= 0 ? 'success' : 'danger' }}">
+                                    <i class="ti ti-trending-{{ $usersChange >= 0 ? 'up' : 'down' }}"></i>
+                                    {{ formatPercent(abs($usersChange)) }}
+                                </span>
+                            </h4>
+                            <p class="mb-0 text-muted text-sm">
+                                {{ $usersChange >= 0 ? 'Bạn có thêm' : 'Bạn bị giảm' }}
+                                <span class="text-{{ $usersChange >= 0 ? 'success' : 'danger' }}">
+                                    {{ number_format(abs($totalUsers - $lastYearUsers)) }}
+                                </span>
+                                người dùng, chiếm
+                                <span class="text-{{ $usersChange >= 0 ? 'success' : 'danger' }}">
+                                    {{ formatPercent(abs($usersChange)) }}
+                                </span>
+                                tổng số người dùng năm nay
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -58,14 +91,25 @@
                     <div class="card">
                         <div class="card-body">
                             <h6 class="mb-2 f-w-400 text-muted">Tổng đơn hàng</h6>
-                            <h4 class="mb-3">{{ number_format($totalOrders) }} <span
-                                    class="badge bg-light-{{ $ordersChange >= 0 ? 'success' : 'danger' }} border border-{{ $ordersChange >= 0 ? 'success' : 'danger' }}"><i
-                                        class="ti ti-trending-{{ $ordersChange >= 0 ? 'up' : 'down' }}"></i>
-                                    {{ number_format(abs($ordersChange), 1) }}%</span></h4>
-                            <p class="mb-0 text-muted text-sm">Bạn có thêm <span
-                                    class="text-{{ $ordersChange >= 0 ? 'success' : 'danger' }}">{{ number_format($totalOrders - $lastYearOrders) }}</span>
-                                đơn hàng
-                                trong năm nay</p>
+                            <h4 class="mb-3">
+                                {{ number_format($totalOrders) }}
+                                <span
+                                    class="badge bg-light-{{ $ordersChange >= 0 ? 'success' : 'danger' }} border border-{{ $ordersChange >= 0 ? 'success' : 'danger' }}">
+                                    <i class="ti ti-trending-{{ $ordersChange >= 0 ? 'up' : 'down' }}"></i>
+                                    {{ formatPercent(abs($ordersChange)) }}
+                                </span>
+                            </h4>
+                            <p class="mb-0 text-muted text-sm">
+                                {{ $ordersChange >= 0 ? 'Bạn có thêm' : 'Bạn bị giảm' }}
+                                <span class="text-{{ $ordersChange >= 0 ? 'success' : 'danger' }}">
+                                    {{ number_format(abs($totalOrders - $lastYearOrders)) }}
+                                </span>
+                                đơn hàng, chiếm
+                                <span class="text-{{ $ordersChange >= 0 ? 'success' : 'danger' }}">
+                                    {{ formatPercent(abs($ordersChange)) }}
+                                </span>
+                                tổng số đơn hàng năm nay
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -73,13 +117,24 @@
                     <div class="card">
                         <div class="card-body">
                             <h6 class="mb-2 f-w-400 text-muted">Tổng doanh thu</h6>
-                            <h4 class="mb-3">{{ number_format($totalSales, 0, ',', '.') }}đ <span
-                                    class="badge bg-light-{{ $salesChange >= 0 ? 'success' : 'danger' }} border border-{{ $salesChange >= 0 ? 'success' : 'danger' }}"><i
-                                        class="ti ti-trending-{{ $salesChange >= 0 ? 'up' : 'down' }}"></i>
-                                    {{ number_format(abs($salesChange), 1) }}%</span></h4>
-                            <p class="mb-0 text-muted text-sm">Bạn có thêm <span
-                                    class="text-{{ $salesChange >= 0 ? 'success' : 'danger' }}">{{ number_format($totalSales - $lastYearSales, 0, ',', '.') }}đ</span>
-                                trong năm nay
+                            <h4 class="mb-3">
+                                {{ number_format($totalSales, 0, ',', '.') }}đ
+                                <span
+                                    class="badge bg-light-{{ $salesChange >= 0 ? 'success' : 'danger' }} border border-{{ $salesChange >= 0 ? 'success' : 'danger' }}">
+                                    <i class="ti ti-trending-{{ $salesChange >= 0 ? 'up' : 'down' }}"></i>
+                                    {{ formatPercent(abs($salesChange)) }}
+                                </span>
+                            </h4>
+                            <p class="mb-0 text-muted text-sm">
+                                {{ $salesChange >= 0 ? 'Bạn có thêm' : 'Bạn bị giảm' }}
+                                <span class="text-{{ $salesChange >= 0 ? 'success' : 'danger' }}">
+                                    {{ number_format(abs($totalSales - $lastYearSales), 0, ',', '.') }}đ
+                                </span>
+                                doanh thu, chiếm
+                                <span class="text-{{ $salesChange >= 0 ? 'success' : 'danger' }}">
+                                    {{ formatPercent(abs($salesChange)) }}
+                                </span>
+                                tổng doanh thu năm nay
                             </p>
                         </div>
                     </div>
@@ -268,7 +323,8 @@
                                             @endforeach
                                         @else
                                             <tr>
-                                                <td colspan="4" class="text-center text-muted">Không có sản phẩm nào được
+                                                <td colspan="4" class="text-center text-muted">Không có sản phẩm nào
+                                                    được
                                                     bán chạy nhất</td>
                                             </tr>
                                         @endif

@@ -408,7 +408,7 @@
                     @endphp
 
                     <div class="product-card px-3">
-                        <div class="border rounded p-3 h-100 text-center shadow-sm bg-white">
+                        <div class="border rounded p-4 h-100 text-center shadow-sm bg-white">
                             <img src="{{ asset($imageUrl) }}"
                                  alt="{{ $variant->product->name }}"
                                  class="img-fluid mb-3"

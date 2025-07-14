@@ -203,7 +203,7 @@
                 </li>
 
                 <!-- Giao diện -->
-                <li class="pc-item pc-hasmenu" data-pc-parent="multiple">
+                {{-- <li class="pc-item pc-hasmenu" data-pc-parent="multiple">
                     <a class="pc-link">
                         <span class="pc-micon"><i class="ti ti-palette"></i></span>
                         <span class="pc-mtext">Giao diện</span>
@@ -229,7 +229,7 @@
                             </a>
                         </li>
                     </ul>
-                </li>
+                </li> --}}
 
                 <!-- Quản lý SEO -->
                 <li class="pc-item pc-hasmenu" data-pc-parent="multiple">

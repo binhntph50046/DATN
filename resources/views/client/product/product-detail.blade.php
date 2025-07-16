@@ -727,7 +727,8 @@
                 @if ($variant->deleted_at === null)
                     variantData[{{ $variant->id }}] = {
                         images: {!! json_encode(getImagesArray($variant->images)) !!},
-                        price: {{ $variant->selling_price }}
+                        price: {{ $variant->selling_price }},
+                        stock: {{ $variant->stock }}
                     };
                 @endif
             @endforeach
@@ -784,12 +785,50 @@
             });
 
             buyNowBtn.addEventListener('click', function(e) {
+                e.preventDefault();
                 const variantId = getSelectedVariantId();
                 if (!variantId) {
-                    e.preventDefault();
                     return false;
                 }
+
+                // Kiểm tra số lượng tồn kho
                 const quantity = parseInt(quantityInput.value) || 1;
+                if (variantData[variantId].stock < 1) {
+                    const alertDiv = document.createElement('div');
+                    alertDiv.className = 'custom-alert error';
+                    alertDiv.innerHTML = `
+                        <div class="icon"><i class="fas fa-times-circle"></i></div>
+                        <div class="content">
+                            <strong>ERROR</strong>
+                            <p>⚠️ Hết số lượng tồn kho!</p>
+                        </div>
+                        <div class="close" onclick="this.parentElement.style.display='none';">&times;</div>
+                    `;
+                    document.body.appendChild(alertDiv);
+                    setTimeout(() => {
+                        alertDiv.style.display = 'none';
+                    }, 3000);
+                    return false;
+                }
+
+                if (variantData[variantId].stock < quantity) {
+                    const alertDiv = document.createElement('div');
+                    alertDiv.className = 'custom-alert error';
+                    alertDiv.innerHTML = `
+                        <div class="icon"><i class="fas fa-times-circle"></i></div>
+                        <div class="content">
+                            <strong>ERROR</strong>
+                            <p>⚠️ Hết số lượng tồn kho!</p>
+                        </div>
+                        <div class="close" onclick="this.parentElement.style.display='none';">&times;</div>
+                    `;
+                    document.body.appendChild(alertDiv);
+                    setTimeout(() => {
+                        alertDiv.style.display = 'none';
+                    }, 3000);
+                    return false;
+                }
+
                 const mainImage = document.getElementById('mainProductImage').src;
                 window.location.href = '/checkout?variant_id=' + variantId + '&quantity=' + quantity +
                     '&image=' + encodeURIComponent(mainImage);

@@ -81,6 +81,70 @@
             font-weight: 500;
             color: #222;
         }
+        .custom-alert {
+            display: flex;
+            align-items: center;
+            background-color: #fff;
+            border-left: 5px solid;
+            border-radius: 4px;
+            padding: 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            margin: 10px auto;
+            width: 360px;
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            animation: slideIn 0.3s ease;
+        }
+
+        .custom-alert .icon {
+            font-size: 20px;
+            margin-right: 12px;
+        }
+
+        .custom-alert .content {
+            flex-grow: 1;
+        }
+
+        .custom-alert .content strong {
+            display: block;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .custom-alert .content p {
+            margin: 0;
+            color: #666;
+        }
+
+        .custom-alert .close {
+            font-size: 38px;
+            cursor: pointer;
+            color: #333;
+            margin-left: 10px;
+            margin-top: -32px;
+        }
+
+        .custom-alert.error {
+            border-color: #dc3545;
+            background-color: #ffffff;
+        }
+
+        .custom-alert.error .icon {
+            color: #dc3545;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(-10px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
     </style>
 </head>
     <div class="untree_co-section">
@@ -90,13 +154,16 @@
                     <h2 class="h3 mb-3 text-black">Thông tin đơn hàng của bạn</h2>
                     <div class="p-3 p-lg-5 border bg-white">
                         @if($errors->any())
-                            <div class="alert alert-danger">
-                                <ul>
-                                    @foreach ($errors->all() as $error)
-                                        <li>{{ $error }}</li>
-                                    @endforeach
-                                </ul>
-                            </div>
+                            @foreach ($errors->all() as $error)
+                                <div class="custom-alert error" id="error-alert">
+                                    <div class="icon"><i class="fas fa-times-circle"></i></div>
+                                    <div class="content">
+                                        <strong>ERROR</strong>
+                                        <p>{{ $error }}</p>
+                                    </div>
+                                    <div class="close" onclick="this.parentElement.style.display='none';">&times;</div>
+                                </div>
+                            @endforeach
                         @endif
                         <form action="{{ isset($variant) ? route('checkout.store') : route('cart.checkout.store') }}" method="POST" id="checkoutForm">
                             @csrf
@@ -179,8 +246,14 @@
                                 <label for="c_code" class="text-black mb-3">Nhập mã giảm giá nếu bạn có</label>
                                 <div class="input-group w-75 couponcode-wrap">
                                     <input type="text" class="form-control" id="c_code"
-                                        placeholder="Mã giảm giá" aria-label="Mã giảm giá">
+                                        placeholder="Mã giảm giá" aria-label="Mã giảm giá"
+                                        {{ isset($hasDiscountedProducts) && $hasDiscountedProducts ? 'disabled' : '' }}>
                                 </div>
+                                @if(isset($hasDiscountedProducts) && $hasDiscountedProducts)
+                                    <div class="text-danger mt-2">
+                                        <small><i class="fas fa-info-circle"></i> Không thể áp dụng mã giảm giá cho sản phẩm đang khuyến mãi</small>
+                                    </div>
+                                @endif
                                 <div id="voucher-message" style="display: none;"></div>
                             </div>
                         </div>
@@ -437,4 +510,22 @@
         });
     });
     </script>
+    <script>
+document.addEventListener('DOMContentLoaded', function() {
+    function hideAlert(alertId) {
+        const alert = document.getElementById(alertId);
+        if (alert) {
+            setTimeout(() => {
+                alert.style.display = 'none';
+            }, 3000);
+        }
+    }
+
+    // Tự động ẩn tất cả các thông báo lỗi
+    document.querySelectorAll('.custom-alert').forEach((alert, index) => {
+        alert.id = `error-alert-${index}`;
+        hideAlert(`error-alert-${index}`);
+    });
+});
+</script>
 @endsection

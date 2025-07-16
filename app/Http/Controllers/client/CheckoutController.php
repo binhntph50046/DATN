@@ -110,7 +110,20 @@ class CheckoutController
 
             // Tạo chi tiết đơn hàng (order_items)
             if ($request->has('variant_id')) {
-                $variant = ProductVariant::with('product')->findOrFail($request->variant_id);
+                // Lock variant để tránh race condition
+                $variant = ProductVariant::lockForUpdate()->with('product')->findOrFail($request->variant_id);
+                
+                // Kiểm tra số lượng tồn kho
+                if ($variant->stock < 1) {
+                    throw new \Exception('⚠️ Hết số lượng tồn kho!');
+                }
+                if ($variant->stock < $request->quantity) {
+                    throw new \Exception('⚠️ Hết số lượng tồn kho!');
+                }
+                if ($request->quantity < 1) {
+                    throw new \Exception('⚠️ Số lượng sản phẩm phải lớn hơn 0!');
+                }
+
                 OrderItem::create([
                     'order_id' => $order->id,
                     'product_id' => $variant->product->id,
@@ -127,6 +140,20 @@ class CheckoutController
                 }
                 $cartItems = $cart->cartItems()->with(['product', 'variant'])->get();
                 foreach ($cartItems as $item) {
+                    // Lock variant để tránh khi có nhiều người cùng mua 1 sản phẩm
+                    if ($item->variant) {
+                        $variant = ProductVariant::lockForUpdate()->find($item->variant->id);
+                        if ($variant->stock < 1) {
+                            throw new \Exception('⚠️ Hết số lượng tồn kho!');
+                        }
+                        if ($variant->stock < $item->quantity) {
+                            throw new \Exception('⚠️ Hết số lượng tồn kho!');
+                        }
+                        if ($item->quantity < 1) {
+                            throw new \Exception('⚠️ Số lượng sản phẩm phải lớn hơn 0!');
+                        }
+                    }
+
                     $price = $item->variant ? $item->variant->selling_price : $item->product->selling_price;
                     $total = $price * $item->quantity;
                     OrderItem::create([
@@ -138,7 +165,7 @@ class CheckoutController
                         'total' => $total,
                     ]);
                     if ($item->variant) {
-                        $item->variant->decrement('stock', $item->quantity);
+                        $variant->decrement('stock', $item->quantity);
                     }
                 }
                 $cartItems->each->delete();
@@ -365,7 +392,7 @@ class CheckoutController
     private function processVoucherAndPrice($request, $subtotal)
     {
         $voucher = null;
-        $voucherDiscount = 0; // Mặc định discount là 0 thay vì null
+        $voucherDiscount = 0;
         $shipping_fee = 0;
 
         if ($request->filled('voucher_code')) {
@@ -375,13 +402,38 @@ class CheckoutController
                 ->first();
             
             if ($voucher) {
+                // Kiểm tra sản phẩm có đang khuyến mãi không
+                if ($request->has('variant_id')) {
+                    $variant = ProductVariant::with('product')->find($request->variant_id);
+                    if ($variant && $variant->product->is_discount) {
+                        throw new \Exception('⚠️ Không thể áp dụng mã giảm giá cho sản phẩm đang khuyến mãi!');
+                    }
+                } else {
+                    $cart = \App\Models\Cart::where('user_id', Auth::id())->first();
+                    if ($cart) {
+                        foreach ($cart->cartItems()->with('product') as $item) {
+                            if ($item->product->is_discount) {
+                                throw new \Exception('⚠️ Không thể áp dụng mã giảm giá cho đơn hàng có sản phẩm đang khuyến mãi!');
+                            }
+                        }
+                    }
+                }
+
                 // Tính số tiền giảm giá
-                $voucherDiscount = $voucher->type == 'percentage' 
-                    ? round(($subtotal * $voucher->value) / 100) 
-                    : $voucher->value;
+                if ($voucher->type == 'percentage') {
+                    $voucherDiscount = round(($subtotal * $voucher->value) / 100);
+                } else {
+                    // Nếu giá trị voucher lớn hơn tổng tiền hàng
+                    if ($voucher->value > $subtotal) {
+                        throw new \Exception('⚠️ Không thể áp dụng mã giảm giá này cho đơn hàng vì giá trị voucher lớn hơn tổng tiền hàng!');
+                    }
+                    $voucherDiscount = $voucher->value;
+                }
 
                 // Đảm bảo số tiền giảm không vượt quá tổng đơn hàng
-                $voucherDiscount = min($voucherDiscount, $subtotal);
+                if ($voucherDiscount >= $subtotal) {
+                    throw new \Exception('⚠️ Không thể áp dụng mã giảm giá này cho đơn hàng!');
+                }
             }
         }
 

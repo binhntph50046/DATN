@@ -83,6 +83,10 @@
                         <span class="fw-bold"><i class="fas fa-comment-dots me-1"></i>Lý do hoàn hàng:</span>
                         <div class="alert alert-secondary mt-2 mb-0" style="white-space: pre-line;">{{ $return->reason }}</div>
                     </div>
+                    <div class="mb-3">
+                        <span class="fw-bold"><i class="fas fa-university me-1"></i>Thông tin tài khoản ngân hàng:</span>
+                        <div class="alert alert-info mt-2 mb-0" style="white-space: pre-line;">{{ $return->bank_info }}</div>
+                    </div>
                     <div class="d-flex justify-content-between">
                         <a href="{{ route('admin.order-returns.index') }}" class="btn btn-outline-secondary">
                             <i class="fas fa-arrow-left me-1"></i>Quay lại

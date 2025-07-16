@@ -203,7 +203,7 @@
                                         'completed' => 'fa-circle-check',
                                         'cancelled' => 'fa-ban',
                                         'returned' => 'fa-undo',
-                                        '' => 'fa-undo',
+                                        '' => 'fa-circle',
                                     ][$order->status] ?? 'fa-circle';
                                 @endphp
                                 <span class="status-badge status-{{ $statusClass }}">
@@ -744,57 +744,131 @@ const route = (name, params) => {
     return url + params;
 };
 
+// Hàm cập nhật giao diện dựa trên trạng thái
+function updateOrderStatus(orderId, status, statusText) {
+    const row = document.querySelector(`[data-order-id="${orderId}"]`);
+    if (!row) return;
+
+    // Cập nhật trạng thái trong data attribute
+    row.setAttribute('data-status', status);
+
+    // Cập nhật badge trạng thái
+    const statusBadge = row.querySelector('.status-badge');
+    if (statusBadge) {
+        const statusClass = {
+            'pending': 'warning',
+            'confirmed': 'info',
+            'preparing': 'primary',
+            'shipping': 'info',
+            'completed': 'success',
+            'cancelled': 'danger',
+            'returned': 'secondary',
+            'partially_returned': 'secondary'
+        }[status] || 'secondary';
+
+        const statusIcon = {
+            'pending': 'fa-clock',
+            'confirmed': 'fa-circle-check',
+            'preparing': 'fa-box',
+            'shipping': 'fa-truck',
+            'completed': 'fa-circle-check',
+            'cancelled': 'fa-ban',
+            'returned': 'fa-undo',
+            'partially_returned': 'fa-undo'
+        }[status] || 'fa-circle';
+
+        statusBadge.className = `status-badge status-${statusClass}`;
+        statusBadge.innerHTML = `<i class="fas ${statusIcon}"></i> ${statusText}`;
+    }
+
+    // Cập nhật nút thao tác
+    const actionsContainer = document.getElementById(`order-actions-${orderId}`);
+    if (actionsContainer) {
+        let actionsHtml = '';
+
+        // Nút xem chi tiết luôn hiển thị
+        if (['returned', 'partially_returned'].includes(status)) {
+            actionsHtml += `
+                <button type="button" 
+                   onclick="window.location.href='/order/returns/show/${orderId}/${row.getAttribute('data-return-id')}'"
+                   class="btn btn-action btn-soft-info" 
+                   data-bs-toggle="tooltip" 
+                   title="Xem chi tiết hoàn đơn">
+                    <i class="fas fa-eye"></i>
+                </button>`;
+        } else {
+            actionsHtml += `
+                <button type="button"
+                    onclick="window.location.href='/order/tracking/${orderId}'"
+                    class="btn btn-action btn-soft-primary" 
+                    data-bs-toggle="tooltip" 
+                    title="Xem chi tiết đơn hàng">
+                    <i class="fas fa-eye"></i>
+                </button>`;
+        }
+
+        // Nút hủy đơn cho trạng thái pending và confirmed
+        if (['pending', 'confirmed'].includes(status)) {
+            actionsHtml += `
+                <button type="button" 
+                    class="btn btn-action btn-soft-danger btn-cancel-order" 
+                    data-bs-toggle="tooltip" 
+                    title="Hủy đơn hàng" 
+                    data-order-id="${orderId}">
+                    <i class="fas fa-times"></i>
+                </button>`;
+        }
+
+        // Nút hoàn đơn và đánh giá cho đơn đã giao
+        if (status === 'completed') {
+            // Lấy thông tin đơn hàng từ row
+            const orderDate = new Date(row.getAttribute('data-created-at'));
+            const now = new Date();
+            const daysDiff = Math.floor((now - orderDate) / (1000 * 60 * 60 * 24));
+
+            // Chỉ hiển thị nút hoàn đơn trong 7 ngày
+            if (daysDiff <= 7) {
+                actionsHtml += `
+                    <button type="button"
+                        onclick="window.location.href='${route('order.returns.create', orderId)}'"
+                        class="btn btn-action btn-soft-warning"
+                        data-bs-toggle="tooltip" 
+                        title="Yêu cầu hoàn hàng">
+                        <i class="fas fa-history"></i>
+                    </button>`;
+            }
+
+            // Nút đánh giá
+            actionsHtml += `
+                <button type="button"
+                    onclick="window.location.href='${route('order.review', orderId)}'"
+                    class="btn btn-action btn-soft-success"
+                    data-bs-toggle="tooltip" 
+                    title="Đánh giá">
+                    <i class="fas fa-star"></i>
+                </button>`;
+        }
+
+        actionsContainer.innerHTML = actionsHtml;
+
+        // Khởi tạo lại tooltips
+        const tooltipTriggerList = [].slice.call(actionsContainer.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+
+        // Gắn lại event cho nút hủy đơn
+        const newCancelButton = actionsContainer.querySelector('.btn-cancel-order');
+        if (newCancelButton) {
+            newCancelButton.addEventListener('click', handleCancelButtonClick);
+        }
+    }
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     // Xử lý sự kiện cho nút hủy đơn
     document.querySelectorAll('.btn-cancel-order').forEach(button => {
-        button.addEventListener('click', function(e) {
-            e.preventDefault();
-            const orderId = this.getAttribute('data-order-id');
-            const modalId = `cancelModal${orderId}`;
-            
-            // Tìm modal có sẵn
-            let modal = document.getElementById(modalId);
-            if (!modal) {
-                // Nếu không có modal, tạo mới
-                const modalHtml = `
-                    <div class="modal fade" id="${modalId}" tabindex="-1" aria-labelledby="cancelModalLabel${orderId}" aria-hidden="true">
-                        <div class="modal-dialog modal-dialog-centered">
-                            <div class="modal-content">
-                                <form action="/order/cancel/${orderId}" method="POST">
-                                    @csrf
-                                    <div class="modal-header">
-                                        <h5 class="modal-title" id="cancelModalLabel${orderId}">
-                                            <i class="fas fa-times text-danger me-2"></i>Hủy đơn hàng #${orderId}
-                                        </h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                    </div>
-                                    <div class="modal-body">
-                                        <div class="mb-3">
-                                            <label for="cancellation_reason_${orderId}" class="form-label">Lý do hủy đơn</label>
-                                            <input type="text" class="form-control" name="cancellation_reason" 
-                                                id="cancellation_reason_${orderId}" required 
-                                                placeholder="Vui lòng nhập lý do hủy đơn...">
-                                        </div>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
-                                        <button type="submit" class="btn btn-danger text-black">
-                                            <i class="fas fa-times me-2" style="color: red !important;"></i><span style="color: black !important;">Xác nhận hủy</span>
-                                        </button>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                `;
-                document.body.insertAdjacentHTML('beforeend', modalHtml);
-                modal = document.getElementById(modalId);
-            }
-            
-            // Hiển thị modal
-            const bsModal = new bootstrap.Modal(modal);
-            bsModal.show();
-        });
+        button.addEventListener('click', handleCancelButtonClick);
     });
 
     // Lắng nghe sự kiện cập nhật trạng thái realtime
@@ -802,280 +876,61 @@ document.addEventListener('DOMContentLoaded', function() {
     orderIds.forEach(orderId => {
         window.Echo.channel('orderStatus.' + orderId)
             .listen('.OrderStatusUpdated', (e) => {
-                const row = document.querySelector(`[data-order-id="${orderId}"]`);
-                if (row) {
-                    // Lưu trạng thái mới vào localStorage
-                    localStorage.setItem(`order_${orderId}_status`, e.status);
-                    localStorage.setItem(`order_${orderId}_status_text`, e.status_text);
-
-                    // Cập nhật trạng thái trong data attribute
-                    row.setAttribute('data-status', e.status);
-
-                    // Cập nhật badge trạng thái
-                    const statusBadge = row.querySelector('.status-badge');
-                    if (statusBadge) {
-                        const statusClass = {
-                            'pending': 'warning',
-                            'confirmed': 'info',
-                            'preparing': 'primary',
-                            'shipping': 'info',
-                            'completed': 'success',
-                            'cancelled': 'danger',
-                            'returned': 'secondary',
-                            'partially_returned': 'secondary'
-                        }[e.status] || 'secondary';
-
-                        const statusIcon = {
-                            'pending': 'fa-clock',
-                            'confirmed': 'fa-circle-check',
-                            'preparing': 'fa-box',
-                            'shipping': 'fa-truck',
-                            'completed': 'fa-circle-check',
-                            'cancelled': 'fa-ban',
-                            'returned': 'fa-undo',
-                            'partially_returned': 'fa-undo'
-                        }[e.status] || 'fa-circle';
-
-                        statusBadge.className = `status-badge status-${statusClass}`;
-                        statusBadge.innerHTML = `<i class="fas ${statusIcon}"></i> ${e.status_text}`;
-                    }
-
-                    // Cập nhật nút thao tác
-                    const actionsContainer = document.getElementById(`order-actions-${orderId}`);
-                    if (actionsContainer) {
-                        let actionsHtml = '';
-
-                        // Nút xem chi tiết luôn hiển thị
-                        actionsHtml += `
-                            <button type="button"
-                                onclick="window.location.href='/order/tracking/${orderId}'"
-                                class="btn btn-action btn-soft-primary" 
-                                data-bs-toggle="tooltip" 
-                                title="Xem chi tiết đơn hàng">
-                                <i class="fas fa-eye"></i>
-                            </button>`;
-
-                        // Nút hủy đơn cho trạng thái pending và confirmed
-                        if (['pending', 'confirmed'].includes(e.status)) {
-                            actionsHtml += `
-                                <button type="button" 
-                                    class="btn btn-action btn-soft-danger btn-cancel-order" 
-                                    data-bs-toggle="tooltip" 
-                                    title="Hủy đơn hàng" 
-                                    data-order-id="${orderId}">
-                                    <i class="fas fa-times"></i>
-                                </button>`;
-                        }
-
-                        // Nút hoàn đơn và đánh giá cho đơn đã giao
-                        if (e.status === 'completed') {
-                            // Lấy thông tin đơn hàng từ row
-                            const orderDate = new Date(row.getAttribute('data-created-at'));
-                            const now = new Date();
-                            const daysDiff = Math.floor((now - orderDate) / (1000 * 60 * 60 * 24));
-
-                            // Chỉ hiển thị nút hoàn đơn trong 7 ngày
-                            if (daysDiff <= 7) {
-                                actionsHtml += `
-                                    <button type="button"
-                                        onclick="window.location.href='${route('order.returns.create', orderId)}'"
-                                        class="btn btn-action btn-soft-warning"
-                                        data-bs-toggle="tooltip" 
-                                        title="Yêu cầu hoàn hàng">
-                                        <i class="fas fa-history"></i>
-                                    </button>`;
-                            }
-
-                            // Nút đánh giá
-                            actionsHtml += `
-                                <button type="button"
-                                    onclick="window.location.href='${route('order.review', orderId)}'"
-                                    class="btn btn-action btn-soft-success"
-                                    data-bs-toggle="tooltip" 
-                                    title="Đánh giá">
-                                    <i class="fas fa-star"></i>
-                                </button>`;
-                        }
-
-                        actionsContainer.innerHTML = actionsHtml;
-
-                        // Khởi tạo lại tooltips
-                        const tooltipTriggerList = [].slice.call(actionsContainer.querySelectorAll('[data-bs-toggle="tooltip"]'));
-                        tooltipTriggerList.map(function (tooltipTriggerEl) {
-                            return new bootstrap.Tooltip(tooltipTriggerEl);
-                        });
-
-                        // Gắn lại event cho nút hủy đơn
-                        const newCancelButton = actionsContainer.querySelector('.btn-cancel-order');
-                        if (newCancelButton) {
-                            newCancelButton.addEventListener('click', handleCancelButtonClick);
-                        }
-                    }
-                }
+                updateOrderStatus(orderId, e.status, e.status_text);
             });
     });
+});
 
-    // Khôi phục trạng thái từ localStorage khi tải trang
-    document.addEventListener('DOMContentLoaded', function() {
-        orderIds.forEach(orderId => {
-            const savedStatus = localStorage.getItem(`order_${orderId}_status`);
-            const savedStatusText = localStorage.getItem(`order_${orderId}_status_text`);
-            
-            if (savedStatus && savedStatusText) {
-                const row = document.querySelector(`[data-order-id="${orderId}"]`);
-                if (row) {
-                    // Cập nhật trạng thái
-                    row.setAttribute('data-status', savedStatus);
-
-                    // Cập nhật badge
-                    const statusBadge = row.querySelector('.status-badge');
-                    if (statusBadge) {
-                        const statusClass = {
-                            'pending': 'warning',
-                            'confirmed': 'info',
-                            'preparing': 'primary',
-                            'shipping': 'info',
-                            'completed': 'success',
-                            'cancelled': 'danger',
-                            'returned': 'secondary',
-                            'partially_returned': 'secondary'
-                        }[savedStatus] || 'secondary';
-
-                        const statusIcon = {
-                            'pending': 'fa-clock',
-                            'confirmed': 'fa-circle-check',
-                            'preparing': 'fa-box',
-                            'shipping': 'fa-truck',
-                            'completed': 'fa-circle-check',
-                            'cancelled': 'fa-ban',
-                            'returned': 'fa-undo',
-                            'partially_returned': 'fa-undo'
-                        }[savedStatus] || 'fa-circle';
-
-                        statusBadge.className = `status-badge status-${statusClass}`;
-                        statusBadge.innerHTML = `<i class="fas ${statusIcon}"></i> ${savedStatusText}`;
-                    }
-
-                    // Cập nhật nút thao tác
-                    const actionsContainer = document.getElementById(`order-actions-${orderId}`);
-                    if (actionsContainer) {
-                        let actionsHtml = '';
-
-                        // Nút xem chi tiết luôn hiển thị
-                        actionsHtml += `
-                            <button type="button"
-                                onclick="window.location.href='/order/tracking/${orderId}'"
-                                class="btn btn-action btn-soft-primary" 
-                                data-bs-toggle="tooltip" 
-                                title="Xem chi tiết đơn hàng">
-                                <i class="fas fa-eye"></i>
-                            </button>`;
-
-                        // Nút hủy đơn cho trạng thái pending và confirmed
-                        if (['pending', 'confirmed'].includes(savedStatus)) {
-                            actionsHtml += `
-                                <button type="button" 
-                                    class="btn btn-action btn-soft-danger btn-cancel-order" 
-                                    data-bs-toggle="tooltip" 
-                                    title="Hủy đơn hàng" 
-                                    data-order-id="${orderId}">
-                                    <i class="fas fa-times"></i>
-                                </button>`;
-                        }
-
-                        // Nút hoàn đơn và đánh giá cho đơn đã giao
-                        if (savedStatus === 'completed') {
-                            // Lấy thông tin đơn hàng từ row
-                            const orderDate = new Date(row.getAttribute('data-created-at'));
-                            const now = new Date();
-                            const daysDiff = Math.floor((now - orderDate) / (1000 * 60 * 60 * 24));
-
-                            // Chỉ hiển thị nút hoàn đơn trong 7 ngày
-                            if (daysDiff <= 7) {
-                                actionsHtml += `
-                                    <button type="button"
-                                        onclick="window.location.href='${route('order.returns.create', orderId)}'"
-                                        class="btn btn-action btn-soft-warning"
-                                        data-bs-toggle="tooltip" 
-                                        title="Yêu cầu hoàn hàng">
-                                        <i class="fas fa-history"></i>
-                                    </button>`;
-                            }
-
-                            // Nút đánh giá
-                            actionsHtml += `
-                                <button type="button"
-                                    onclick="window.location.href='${route('order.review', orderId)}'"
-                                    class="btn btn-action btn-soft-success"
-                                    data-bs-toggle="tooltip" 
-                                    title="Đánh giá">
-                                    <i class="fas fa-star"></i>
-                                </button>`;
-                        }
-
-                        actionsContainer.innerHTML = actionsHtml;
-
-                        // Khởi tạo lại tooltips
-                        const tooltipTriggerList = [].slice.call(actionsContainer.querySelectorAll('[data-bs-toggle="tooltip"]'));
-                        tooltipTriggerList.map(function (tooltipTriggerEl) {
-                            return new bootstrap.Tooltip(tooltipTriggerEl);
-                        });
-
-                        // Gắn lại event cho nút hủy đơn
-                        const newCancelButton = actionsContainer.querySelector('.btn-cancel-order');
-                        if (newCancelButton) {
-                            newCancelButton.addEventListener('click', handleCancelButtonClick);
-                        }
-                    }
-                }
-            }
-        });
-    });
-
-    // Hàm xử lý sự kiện click nút hủy đơn
-    function handleCancelButtonClick(event) {
-        event.preventDefault();
-        const orderId = this.getAttribute('data-order-id');
-        const modalId = `cancelModal${orderId}`;
-        let modal = document.getElementById(modalId);
-        if (!modal) {
-            // Tạo modal nếu chưa tồn tại
-            const modalHtml = `
-                <div class="modal fade" id="${modalId}" tabindex="-1" aria-labelledby="cancelModalLabel${orderId}" aria-hidden="true">
-                    <div class="modal-dialog modal-dialog-centered">
-                        <div class="modal-content">
-                            <form action="/order/cancel/${orderId}" method="POST">
-                                @csrf
-                                <div class="modal-header">
-                                    <h5 class="modal-title" id="cancelModalLabel${orderId}">
-                                        <i class="fas fa-times text-danger me-2"></i>Hủy đơn hàng #${orderId}
-                                    </h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                </div>
-                                <div class="modal-body">
-                                    <div class="mb-3">
-                                        <label for="cancellation_reason_${orderId}" class="form-label">Lý do hủy đơn</label>
-                                        <input type="text" class="form-control" name="cancellation_reason" 
-                                            id="cancellation_reason_${orderId}" required 
-                                            placeholder="Vui lòng nhập lý do hủy đơn...">
-                                    </div>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
-                                    <button type="submit" class="btn btn-danger text-black">
-                                        <i class="fas fa-times me-2" style="color: red !important;"></i><span style="color: black !important;">Xác nhận hủy</span>
-                                    </button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>`;
-            document.body.insertAdjacentHTML('beforeend', modalHtml);
-            modal = document.getElementById(modalId);
-        }
-        const bsModal = new bootstrap.Modal(modal);
-        bsModal.show();
+// Khi quay lại trang, tự động reload để lấy trạng thái mới nhất
+window.addEventListener('pageshow', function(event) {
+    if (event.persisted || window.performance && window.performance.navigation.type === 2) {
+        window.location.reload();
     }
 });
+
+// Hàm xử lý sự kiện click nút hủy đơn
+function handleCancelButtonClick(event) {
+    event.preventDefault();
+    const orderId = this.getAttribute('data-order-id');
+    const modalId = `cancelModal${orderId}`;
+    let modal = document.getElementById(modalId);
+    if (!modal) {
+        // Tạo modal nếu chưa tồn tại
+        const modalHtml = `
+            <div class="modal fade" id="${modalId}" tabindex="-1" aria-labelledby="cancelModalLabel${orderId}" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <form action="/order/cancel/${orderId}" method="POST">
+                            @csrf
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="cancelModalLabel${orderId}">
+                                    <i class="fas fa-times text-danger me-2"></i>Hủy đơn hàng #${orderId}
+                                </h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="mb-3">
+                                    <label for="cancellation_reason_${orderId}" class="form-label">Lý do hủy đơn</label>
+                                    <input type="text" class="form-control" name="cancellation_reason" 
+                                        id="cancellation_reason_${orderId}" required 
+                                        placeholder="Vui lòng nhập lý do hủy đơn...">
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                                <button type="submit" class="btn btn-danger text-black">
+                                    <i class="fas fa-times me-2" style="color: red !important;"></i><span style="color: black !important;">Xác nhận hủy</span>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>`;
+        document.body.insertAdjacentHTML('beforeend', modalHtml);
+        modal = document.getElementById(modalId);
+    }
+    const bsModal = new bootstrap.Modal(modal);
+    bsModal.show();
+}
 </script>
 @endsection

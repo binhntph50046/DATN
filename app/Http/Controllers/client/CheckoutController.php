@@ -11,6 +11,9 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Log;
 use App\Mail\OrderInvoice;
+use App\Events\OrderCreated;
+use App\Models\User;
+use App\Notifications\AdminDatabaseNotification;
 
 class CheckoutController
 {
@@ -103,6 +106,22 @@ class CheckoutController
                 'voucher_code' => $priceInfo['voucher'] ? $priceInfo['voucher']->code : null,
             ]);
 
+            event(new OrderCreated($order));
+
+            // Lấy tất cả admin
+            $admins = User::role('admin')->get();
+
+            foreach ($admins as $admin) {
+                $admin->notify(new AdminDatabaseNotification([
+                    'type' => 'order_created',
+                    'title' => 'Đơn hàng mới',
+                    'message' => 'Khách hàng ' . ($order->user->name ?? $order->shipping_name) . ' vừa đặt đơn hàng #' . $order->id,
+                    'order_id' => $order->id,
+                    'user_id' => $order->user_id,
+                    'created_at' => now(),
+                ]));
+            }
+
             // Cập nhật mã đơn hàng
             $order->update([
                 'order_code' => 'DH' . $order->id
@@ -160,7 +179,7 @@ class CheckoutController
                 }
                 $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('admin.invoices.pdf', ['invoice' => $invoice]);
                 $pdfContent = $pdf->output();
-                Mail::to($order->shipping_email)->send(new \App\Mail\InvoicePdfMail($invoice, $pdfContent));
+                // Mail::to($order->shipping_email)->send(new \App\Mail\InvoicePdfMail($invoice, $pdfContent));
             }
 
             // Commit transaction nếu mọi thứ OK
@@ -347,7 +366,7 @@ class CheckoutController
                 ]);
                 $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('admin.invoices.pdf', ['invoice' => $invoice]);
                 $pdfContent = $pdf->output();
-                Mail::to($order->shipping_email)->send(new \App\Mail\InvoicePdfMail($invoice, $pdfContent));
+                // Mail::to($order->shipping_email)->send(new \App\Mail\InvoicePdfMail($invoice, $pdfContent));
             }
             
 

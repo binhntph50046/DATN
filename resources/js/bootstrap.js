@@ -1,29 +1,15 @@
 import axios from 'axios';
-import Echo from 'laravel-echo';
-import Pusher from 'pusher-js';
-import io from 'socket.io-client';
-
 window.axios = axios;
-window.Pusher = Pusher;
-window.io = io;
+import echo from 'laravel-echo';
+window.Pusher = require('pusher-js');
 
 window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
-window.Echo = new Echo({
-    broadcaster: 'reverb',
-    key: import.meta.env.VITE_REVERB_APP_KEY,
-    wsHost: import.meta.env.VITE_REVERB_HOST,
-    wsPort: import.meta.env.VITE_REVERB_PORT ?? 80,
-    wssPort: import.meta.env.VITE_REVERB_PORT ?? 443,
-    forceTLS: (import.meta.env.VITE_REVERB_SCHEME ?? 'https') === 'https',
-    enabledTransports: ['ws', 'wss'],
+
+window.Echo = new echo({
+    broadcaster: 'pusher',
+    key: 'fabd5ba46281a80295b5',
+    cluster: 'ap1',
+    forceTLS: true,
+    encrypted: true,
 });
-
-
-/**
- * Echo exposes an expressive API for subscribing to channels and listening
- * for events that are broadcast by Laravel. Echo and event broadcasting
- * allow your team to quickly build robust real-time web applications.
- */
-
 import './echo';
-import './echo-admin';

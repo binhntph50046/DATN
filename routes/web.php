@@ -4,6 +4,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Broadcast;
+
 // Models
 use App\Models\Invoice;
 
@@ -70,7 +72,7 @@ use App\Http\Controllers\client\ProductReviewController;
 | Client Routes
 |--------------------------------------------------------------------------
 */
-// User Activity
+
 Route::post('/track/start', [UserActivityController::class, 'start']);
 Route::post('/track/stop', [UserActivityController::class, 'stop']);
 
@@ -213,10 +215,6 @@ Route::get('/auth/facebook/callback', [FacebookController::class, 'handleFaceboo
 
 Route::middleware('auth')->group(function () {
     Route::get('/chat', [ChatController::class, 'index'])->name('chat.index');
-});
-Route::middleware(['auth', 'role:admin|staff'])->prefix('admin')->name('admin.')->group(function () {
-    Route::get('/notifications', [\App\Http\Controllers\Admin\NotificationController::class, 'index']);
-    Route::post('/notifications/read', [\App\Http\Controllers\Admin\NotificationController::class, 'markAsRead']);
 });
 
 // Trang nhắc xác minh
@@ -453,7 +451,7 @@ Route::prefix('admin')
 Route::post('/voucher/check', [ClientVoucherController::class, 'check'])->name('voucher.check');
 
 // Admin Profile Routes
-Route::prefix('admin/profile')->name('admin.profile.')->middleware('auth', 'role:admin|staff')->group(function () {
+Route::prefix('admin/profile')->name('admin.profile.')->middleware(['auth', 'role:admin|staff'])->group(function () {
     Route::get('/', [AdminProfileController::class, 'edit'])->name('index');
     Route::put('/', [AdminProfileController::class, 'update'])->name('update');
     Route::get('/password', [AdminProfileController::class, 'password'])->name('password');

@@ -16510,7 +16510,7 @@ pre[class*=language-] > code {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 34px;
+  width: 54px;
   height: 34px;
   border-radius: 4px;
   color: var(--pc-header-color);
@@ -16528,6 +16528,9 @@ pre[class*=language-] > code {
   border-radius: 50%;
   transform: scale(0);
   transition: all 0.08s cubic-bezier(0.37, 0.24, 0.53, 0.99);
+}
+#notif-badge span{
+  width: 10px;
 }
 .pc-header .pc-head-link > img,
 .pc-header .pc-head-link > span,
@@ -16702,8 +16705,8 @@ pre[class*=language-] > code {
   background: transparent;
 }
 .pc-header .header-user-profile .pc-head-link > span > i {
-  font-size: 22px;
-  margin-right: 8px;
+  font-size: 12px;
+  margin-right: 2px;
 }
 .pc-header .header-user-profile .pc-head-link .user-avtar {
   width: 24px;

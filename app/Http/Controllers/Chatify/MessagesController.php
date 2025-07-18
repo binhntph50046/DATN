@@ -15,12 +15,89 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
-use App\Notifications\NewChatNotification;
 
 class MessagesController extends Controller
 {
     protected $perPage = 30;
 
+    /**
+     * Send a message to database
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function send(Request $request)
+    {
+        // default variables
+        $error = (object)[
+            'status' => 0,
+            'message' => null
+        ];
+        $attachment = null;
+        $attachment_title = null;
+
+        // if there is attachment [file]
+        if ($request->hasFile('file')) {
+            $allowed_images = Chatify::getAllowedImages();
+            $allowed_files = Chatify::getAllowedFiles();
+            $allowed = array_merge($allowed_images, $allowed_files);
+
+            $file = $request->file('file');
+            if ($file->getSize() < Chatify::getMaxUploadSize()) {
+                if (in_array(strtolower($file->extension()), $allowed)) {
+                    $attachment_title = $file->getClientOriginalName();
+                    $attachment = Str::uuid() . "." . $file->extension();
+                    $file->storeAs(config('chatify.attachments.folder'), $attachment, config('chatify.storage_disk_name'));
+                } else {
+                    $error->status = 1;
+                    $error->message = "File extension not allowed!";
+                }
+            } else {
+                $error->status = 1;
+                $error->message = "File size you are trying to upload is too large!";
+            }
+        }
+
+        if (!$error->status) {
+            $message = Chatify::newMessage([
+                'from_id' => Auth::user()->id,
+                'to_id' => $request['id'],
+                'body' => htmlentities(trim($request['message']), ENT_QUOTES, 'UTF-8'),
+                'attachment' => ($attachment) ? json_encode((object)[
+                    'new_name' => $attachment,
+                    'old_name' => htmlentities(trim($attachment_title), ENT_QUOTES, 'UTF-8'),
+                ]) : null,
+            ]);
+            event(new \App\Events\ChatCreated($message));
+
+                    // ✅ Kiểm tra nếu đây là tin nhắn đầu tiên giữa user và admin
+            $fromId = Auth::user()->id;
+            $toId = $request['id'];
+            $conversationCount = Message::where(function ($query) use ($fromId, $toId) {
+                $query->where('from_id', $fromId)->where('to_id', $toId);
+            })->orWhere(function ($query) use ($fromId, $toId) {
+                $query->where('from_id', $toId)->where('to_id', $fromId);
+            })->count();
+
+            
+
+            $messageData = Chatify::parseMessage($message);
+            if (Auth::user()->id != $request['id']) {
+                Chatify::push("private-chatify." . $request['id'], 'messaging', [
+                    'from_id' => Auth::user()->id,
+                    'to_id' => $request['id'],
+                    'message' => Chatify::messageCard($messageData, true)
+                ]);
+            }
+        }
+
+        return Response::json([
+            'status' => '200',
+            'error' => $error,
+            'message' => Chatify::messageCard(@$messageData),
+            'tempID' => $request['temporaryMsgId'],
+        ]);
+    }
     /**
      * Authenticate the connection for pusher
      *
@@ -91,88 +168,7 @@ class MessagesController extends Controller
         return abort(404, "Sorry, File does not exist in our server or may have been deleted!");
     }
 
-    /**
-     * Send a message to database
-     *
-     * @param Request $request
-     * @return JsonResponse
-     */
-    public function send(Request $request)
-    {
-        // default variables
-        $error = (object)[
-            'status' => 0,
-            'message' => null
-        ];
-        $attachment = null;
-        $attachment_title = null;
-
-        // if there is attachment [file]
-        if ($request->hasFile('file')) {
-            $allowed_images = Chatify::getAllowedImages();
-            $allowed_files = Chatify::getAllowedFiles();
-            $allowed = array_merge($allowed_images, $allowed_files);
-
-            $file = $request->file('file');
-            if ($file->getSize() < Chatify::getMaxUploadSize()) {
-                if (in_array(strtolower($file->extension()), $allowed)) {
-                    $attachment_title = $file->getClientOriginalName();
-                    $attachment = Str::uuid() . "." . $file->extension();
-                    $file->storeAs(config('chatify.attachments.folder'), $attachment, config('chatify.storage_disk_name'));
-                } else {
-                    $error->status = 1;
-                    $error->message = "File extension not allowed!";
-                }
-            } else {
-                $error->status = 1;
-                $error->message = "File size you are trying to upload is too large!";
-            }
-        }
-
-        if (!$error->status) {
-            $message = Chatify::newMessage([
-                'from_id' => Auth::user()->id,
-                'to_id' => $request['id'],
-                'body' => htmlentities(trim($request['message']), ENT_QUOTES, 'UTF-8'),
-                'attachment' => ($attachment) ? json_encode((object)[
-                    'new_name' => $attachment,
-                    'old_name' => htmlentities(trim($attachment_title), ENT_QUOTES, 'UTF-8'),
-                ]) : null,
-            ]);
-
-                    // ✅ Kiểm tra nếu đây là tin nhắn đầu tiên giữa user và admin
-            $fromId = Auth::user()->id;
-            $toId = $request['id'];
-            $conversationCount = Message::where(function ($query) use ($fromId, $toId) {
-                $query->where('from_id', $fromId)->where('to_id', $toId);
-            })->orWhere(function ($query) use ($fromId, $toId) {
-                $query->where('from_id', $toId)->where('to_id', $fromId);
-            })->count();
-
-            // Nếu là tin nhắn đầu tiên đến admin (id = 1), thì gửi notification và broadcast
-            if ($conversationCount === 1 && $toId == 1) {
-                $admin = User::find(1);
-                $admin?->notify(new NewChatNotification(Auth::user()));
-                broadcast(new NewChatStarted(Auth::user()));
-            }
-
-            $messageData = Chatify::parseMessage($message);
-            if (Auth::user()->id != $request['id']) {
-                Chatify::push("private-chatify." . $request['id'], 'messaging', [
-                    'from_id' => Auth::user()->id,
-                    'to_id' => $request['id'],
-                    'message' => Chatify::messageCard($messageData, true)
-                ]);
-            }
-        }
-
-        return Response::json([
-            'status' => '200',
-            'error' => $error,
-            'message' => Chatify::messageCard(@$messageData),
-            'tempID' => $request['temporaryMsgId'],
-        ]);
-    }
+    
 
     /**
      * Fetch [user/group] messages from database

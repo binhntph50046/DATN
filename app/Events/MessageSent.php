@@ -15,13 +15,42 @@ class MessageSent implements ShouldBroadcast
 
     public $message;
 
+    /**
+     * Tạo sự kiện với tin nhắn vừa gửi
+     */
     public function __construct(Message $message)
     {
         $this->message = $message;
     }
 
+    /**
+     * Channel riêng cho từng user nhận (bảo mật)
+     */
     public function broadcastOn()
     {
-        return new PrivateChannel('chat.' . $this->message->to_id);
+        // Giả sử cột nhận là to_user_id, nếu là to_id thì sửa lại cho đúng
+        return new PrivateChannel('chat.' . $this->message->to_user_id);
+    }
+
+    /**
+     * Dữ liệu trả về cho frontend
+     */
+    public function broadcastWith()
+    {
+        return [
+            'id' => $this->message->id,
+            'from_user_id' => $this->message->from_user_id,
+            'to_user_id' => $this->message->to_user_id,
+            'message' => $this->message->message,
+            'created_at' => $this->message->created_at->toDateTimeString(),
+        ];
+    }
+
+    /**
+     * Tên sự kiện phía frontend sẽ nhận
+     */
+    public function broadcastAs()
+    {
+        return 'new-message';
     }
 }

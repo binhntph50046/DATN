@@ -19,72 +19,6 @@ class MessagesController extends Controller
 {
     protected $perPage = 30;
 
-     /**
-     * Authinticate the connection for pusher
-     *
-     * @param Request $request
-     * @return void
-     */
-    public function pusherAuth(Request $request)
-    {
-        return Chatify::pusherAuth(
-            $request->user(),
-            Auth::user(),
-            $request['channel_name'],
-            $request['socket_id']
-        );
-    }
-
-    /**
-     * Fetch data by id for (user/group)
-     *
-     * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function idFetchData(Request $request)
-    {
-        return auth()->user();
-        // Favorite
-        $favorite = Chatify::inFavorite($request['id']);
-
-        // User data
-        if ($request['type'] == 'user') {
-            $fetch = User::where('id', $request['id'])->first();
-            if($fetch){
-                $userAvatar = Chatify::getUserWithAvatar($fetch)->avatar;
-            }
-        }
-
-        // send the response
-        return Response::json([
-            'favorite' => $favorite,
-            'fetch' => $fetch ?? null,
-            'user_avatar' => $userAvatar ?? null,
-        ]);
-    }
-
-    /**
-     * This method to make a links for the attachments
-     * to be downloadable.
-     *
-     * @param string $fileName
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function download($fileName)
-    {
-        $path = config('chatify.attachments.folder') . '/' . $fileName;
-        if (Chatify::storage()->exists($path)) {
-            return response()->json([
-                'file_name' => $fileName,
-                'download_path' => Chatify::storage()->url($path)
-            ], 200);
-        } else {
-            return response()->json([
-                'message'=>"Sorry, File does not exist in our server or may have been deleted!"
-            ], 404);
-        }
-    }
-
     /**
      * Send a message to database
      *
@@ -152,7 +86,7 @@ class MessagesController extends Controller
                 if ($conversationCount === 1 && $toId == 1) {
                     $admin = User::find(1);
                     $admin?->notify(new \App\Notifications\NewChatNotification(Auth::user()));
-                    broadcast(new \App\Events\NewChatStarted(Auth::user()));
+                    
                 }
 
             // fetch message to send it with the response
@@ -176,6 +110,73 @@ class MessagesController extends Controller
             'tempID' => $request['temporaryMsgId'],
         ]);
     }
+     /**
+     * Authinticate the connection for pusher
+     *
+     * @param Request $request
+     * @return void
+     */
+    public function pusherAuth(Request $request)
+    {
+        return Chatify::pusherAuth(
+            $request->user(),
+            Auth::user(),
+            $request['channel_name'],
+            $request['socket_id']
+        );
+    }
+
+    /**
+     * Fetch data by id for (user/group)
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function idFetchData(Request $request)
+    {
+        return auth()->user();
+        // Favorite
+        $favorite = Chatify::inFavorite($request['id']);
+
+        // User data
+        if ($request['type'] == 'user') {
+            $fetch = User::where('id', $request['id'])->first();
+            if($fetch){
+                $userAvatar = Chatify::getUserWithAvatar($fetch)->avatar;
+            }
+        }
+
+        // send the response
+        return Response::json([
+            'favorite' => $favorite,
+            'fetch' => $fetch ?? null,
+            'user_avatar' => $userAvatar ?? null,
+        ]);
+    }
+
+    /**
+     * This method to make a links for the attachments
+     * to be downloadable.
+     *
+     * @param string $fileName
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function download($fileName)
+    {
+        $path = config('chatify.attachments.folder') . '/' . $fileName;
+        if (Chatify::storage()->exists($path)) {
+            return response()->json([
+                'file_name' => $fileName,
+                'download_path' => Chatify::storage()->url($path)
+            ], 200);
+        } else {
+            return response()->json([
+                'message'=>"Sorry, File does not exist in our server or may have been deleted!"
+            ], 404);
+        }
+    }
+
+    
 
     /**
      * fetch [user/group] messages from database

@@ -1,3 +1,4 @@
+</style>
 <header class="pc-header">
     <div class="header-wrapper"> <!-- [Mobile Media Block] start -->
         <div class="me-auto pc-mob-drp">
@@ -40,49 +41,52 @@
         <div class="ms-auto">
             <ul class="list-unstyled">
                 <li class="dropdown pc-h-item">
-                    <a class="pc-head-link dropdown-toggle arrow-none me-0" data-bs-toggle="dropdown" href="#"
-                        role="button" aria-haspopup="true" aria-expanded="false">
-                        <i class="ti ti-bell position-relative">
-                            <span class="badge bg-danger d-none" id="notif-badge">0</span>
-                        </i>
-                    </a>
-                    </content>
-                    </create_file>
+    <a class="pc-head-link dropdown-toggle arrow-none me-0" data-bs-toggle="dropdown" href="#"
+        role="button" aria-haspopup="true" aria-expanded="false">
+        <i class="ti ti-bell position-relative">
+            @php
+                $unreadCount = Auth::user()->unreadNotifications->count();
+            @endphp
+            @if ($unreadCount > 0)
+                <span class="badge bg-danger" id="notif-badge">{{ $unreadCount }}</span>
+            @else
+                <span class="badge bg-danger d-none" id="notif-badge">0</span>
+            @endif
+        </i>
+    </a>
 
-                    <div class="dropdown-menu dropdown-notification dropdown-menu-end pc-h-dropdown">
-                        <div class="dropdown-header d-flex align-items-center justify-content-between">
-                            <h5 class="m-0">Message</h5>
-                            <a href="#!" class="pc-head-link bg-transparent"><i class="ti ti-x text-danger"></i></a>
-                        </div>
-                        <div class="dropdown-divider"></div>
+    <div class="dropdown-menu dropdown-notification dropdown-menu-end pc-h-dropdown">
+        <div class="dropdown-header d-flex align-items-center justify-content-between">
+            <h5 class="m-0">Message</h5>
+            <a href="#!" class="pc-head-link bg-transparent"><i class="ti ti-x text-danger"></i></a>
+        </div>
+        <div class="dropdown-divider"></div>
 
-                        <div class="dropdown-header px-0 text-wrap header-notification-scroll position-relative"
-                            style="max-height: calc(100vh - 215px)">
-                            <div class="list-group list-group-flush w-100" id="notif-list">
-                                {{-- Các thông báo mẫu bên dưới (có thể giữ hoặc xoá hết để JS insert động) --}}
-                                <a class="list-group-item list-group-item-action">
-                                    <div class="d-flex">
-                                        <!-- <div class="flex-shrink-0">
-                                            <img src="assets/images/user/avatar-2.jpg" alt="user-image"
-                                                class="user-avtar">
-                                        </div> -->
-                                        <!-- <div class="flex-grow-1 ms-1">
-                        <span class="float-end text-muted">3:00 AM</span>
-                        <p class="text-body mb-1">It's <b>Cristina danny's</b> birthday today.</p>
-                        <span class="text-muted">2 min ago</span>
-                    </div> -->
-                                    </div>
-                                </a>
+        <div class="dropdown-header px-0 text-wrap header-notification-scroll position-relative"
+            style="max-height: calc(100vh - 215px)">
+            <div class="list-group list-group-flush w-100" id="notif-list">
+                {{-- Load từ DB --}}
+                @foreach(Auth::user()->unreadNotifications->take(5) as $notification)
+                    <a class="list-group-item list-group-item-action" href="{{ $notification->data['url'] ?? '#' }}">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <b>{{ $notification->data['title'] ?? 'Thông báo' }}</b><br>
+                                <small>{{ $notification->data['message'] ?? '' }}</small>
                             </div>
+                            <div><span class="badge bg-success">Mới</span></div>
                         </div>
+                    </a>
+                @endforeach
+            </div>
+        </div>
 
-                        <div class="dropdown-divider"></div>
-                        <div class="text-center py-2">
-                            <a href="#!" class="link-primary">View all</a>
-                        </div>
-                    </div>
+        <div class="dropdown-divider"></div>
+        <div class="text-center py-2">
+            <a href="" class="link-primary">View all</a>
+        </div>
+    </div>
+</li>
 
-                </li>
                 <li class="dropdown pc-h-item header-user-profile">
                     <a class="pc-head-link dropdown-toggle arrow-none me-0" data-bs-toggle="dropdown" href="#"
                         role="button" aria-haspopup="false" data-bs-auto-close="outside" aria-expanded="false">
@@ -183,54 +187,85 @@
         </div>
     </div>
 </header>
-<script>import Echo from 'laravel-echo';
-import io from 'socket.io-client';
 
-window.io = io;
+<!-- Không cần nhúng lại toastr hoặc jQuery ở đây nếu đã nhúng ở layout -->
 
-window.Echo = new Echo({
-    broadcaster: 'reverb',
-    key: import.meta.env.VITE_REVERB_APP_KEY,
-    wsHost: import.meta.env.VITE_REVERB_HOST,
-    wsPort: import.meta.env.VITE_REVERB_PORT ?? 80,
-    wssPort: import.meta.env.VITE_REVERB_PORT ?? 443,
-    forceTLS: false,
-    enabledTransports: ['ws'],
-});
+<script src="https://js.pusher.com/8.4.0/pusher.min.js"></script>
+<script>
+    // Enable Pusher logging - chỉ bật khi debug
+    Pusher.logToConsole = true;
 
-window.Echo.private('admin.notifications')
-    .listen('.new-chat', (e) => {
-        showToastNotification(e.body);
-        addNotificationToDropdown(e);
-        updateNotifBadge();
+    // Khởi tạo Pusher
+    var pusher = new Pusher('fabd5ba46281a80295b5', {
+        cluster: 'ap1'
     });
 
-function showToastNotification(msg) {
-    const toast = document.createElement('div');
-    toast.className = 'toast toast-success';
-    toast.innerText = msg;
-    document.body.appendChild(toast);
-    setTimeout(() => toast.remove(), 5000);
-}
+    // Sub kênh chung cho admin
+    var channel = pusher.subscribe('admin-notifications');
 
-function addNotificationToDropdown(data) {
-    const list = document.getElementById('notif-list');
-    const item = document.createElement('li');
-    item.innerHTML = `
-        <a href="/admin/livechat/${data.user_id}" class="dropdown-item">
-            <img src="${data.avatar}" class="rounded-circle me-2" width="30" height="30" />
-            <span><strong>${data.title}</strong><br>${data.body}</span>
-        </a>
-    `;
-    list.prepend(item);
-}
-
-function updateNotifBadge() {
-    const badge = document.getElementById('notif-badge');
-    if (badge) {
-        let count = parseInt(badge.textContent || '0');
-        badge.textContent = count + 1;
-        badge.classList.remove('d-none');
+    // Hàm thêm thông báo vào danh sách
+    function appendNotification(data) {
+        var notifList = document.getElementById('notif-list');
+        if (notifList) {
+            var a = document.createElement('a');
+            a.className = 'list-group-item list-group-item-action';
+            a.href = data.url || '#';
+            a.innerHTML = `
+                <div class="d-flex justify-content-between">
+                    <div>
+                        <b>${data.title || 'Thông báo'}</b><br>
+                        <small>${data.message || ''}</small>
+                    </div>
+                    <div><span class="badge bg-success">Mới</span></div>
+                </div>
+            `;
+            notifList.prepend(a);
+        }
+        // Cập nhật số lượng badge
+        var badge = document.getElementById('notif-badge');
+        if (badge) {
+            badge.classList.remove('d-none');
+            badge.textContent = parseInt(badge.textContent || '0') + 1;
+        }
     }
-}
+
+    // Lắng nghe sự kiện tài khoản mới
+    channel.bind('user.created', function (data) {
+        toastr.success('Email: ' + data.email, 'Tài khoản mới: ' + data.name);
+        appendNotification({
+            title: 'Tài khoản mới',
+            message: data.name + ' (' + data.email + ') vừa đăng ký.',
+            url: data.url || '#'
+        });
+    });
+
+    // Lắng nghe sự kiện đơn hàng mới
+    channel.bind('order.created', function (data) {
+        toastr.info(
+            'Khách hàng: ' + data.user + '<br>Đơn hàng #' + data.order_id + '<br>Tổng tiền: ' + data.total + 'đ',
+            'Đơn hàng mới'
+        );
+        appendNotification({
+            title: 'Đơn hàng mới',
+            message: 'Khách hàng: ' + data.user + ', Đơn hàng #' + data.order_id + ', Tổng tiền: ' + data.total + 'đ',
+            url: data.url || '#'
+        });
+    });
+    // Lắng nghe sự kiện chat mới
+    channel.bind('message.created', function (data) {
+        toastr.info(
+            'Có một tin nhắn mới từ ' + data.from_user_id + ': ' + data.message, 'Tin nhắn mới'
+        );
+        appendNotification({
+            title: 'Tin nhắn mới',
+            message: 'Người gửi: ' + data.from_user_id + ', Tin nhắn: #' + data.message,
+            url: data.url || '#'
+        });
+    });
+
+    // Bạn có thể bind thêm các loại thông báo khác ở đây, ví dụ:
+    // channel.bind('order.cancelled', function (data) { ... });
+    // channel.bind('chat.message', function (data) { ... });
 </script>
+
+ 

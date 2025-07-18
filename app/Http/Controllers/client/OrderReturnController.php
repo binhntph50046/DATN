@@ -7,6 +7,9 @@ use Illuminate\Http\Request;
 use App\Models\Order;
 use App\Models\OrderReturn;
 use Illuminate\Support\Facades\Auth;
+use App\Events\OrderCreated;
+use App\Models\User;
+use App\Notifications\NewOrderNotification;
 
 class OrderReturnController
 {

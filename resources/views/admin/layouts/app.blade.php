@@ -34,7 +34,8 @@
     <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}" id="main-style-link">
     <link rel="stylesheet" href="{{ asset('assets/css/style-preset.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/custom-sidebar.css') }}">
-
+    <link rel="stylesheet" href="{{ asset('css/custom.css') }}">
+ 
 </head>
 <!-- [Head] end -->
 
@@ -73,6 +74,10 @@
     <!-- [Page Specific JS] end -->
     <!-- Required Js -->
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <!-- Pusher -->
+    <script src="https://js.pusher.com/8.4.0/pusher.min.js"></script>
     <script src="{{ asset('assets/js/plugins/popper.min.js') }}"></script>
     <script src="{{ asset('assets/js/plugins/simplebar.min.js') }}"></script>
     <script src="{{ asset('assets/js/plugins/bootstrap.min.js') }}"></script>
@@ -81,30 +86,18 @@
     <script src="{{ asset('assets/js/plugins/feather.min.js') }}"></script>
     <script src="{{ asset('assets/js/custom-sidebar.js') }}"></script>
 
-    <script src="{{ asset('js/app.js') }}"></script>
+     @vite(['resources/js/app.js','resources/js/echo.js'])
+
     
     <script src="https://cdn.jsdelivr.net/npm/laravel-echo/dist/echo.iife.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/socket.io-client@4.7.2/dist/socket.io.min.js"></script>
-    <script type="module" src="{{ asset('js/echo-admin.js') }}"></script>
-
-    <script>
-    document.querySelector('.ti-bell')?.addEventListener('click', function () {
-        fetch('/admin/notifications/read', {
-            method: 'POST',
-            headers: {
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                'Content-Type': 'application/json'
-            }
-        }).then(() => {
-            document.querySelector('#notif-badge')?.classList.add('d-none');
-        });
-    });
-</script>
+    
 
     @stack('scripts')
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ckeditor/4.9.2/ckeditor.js"
         integrity="sha512-OF6VwfoBrM/wE3gt0I/lTh1ElROdq3etwAquhEm2YI45Um4ird+0ZFX1IwuBDBRufdXBuYoBb0mqXrmUA2VnOA=="
-        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+        crossorigin="anonymous" referrerpolicy="no-referrer">
+    </script>
     <script>
         $(document).ready(function() {
             CKEDITOR.replaceAll('snettech-editor');
@@ -132,38 +125,6 @@
         font_change("Public-Sans");
     </script>
 
-<script>
-document.addEventListener("DOMContentLoaded", function () {
-    fetch('/admin/notifications')
-        .then(res => res.json())
-        .then(data => {
-            const dropdown = document.querySelector('#notif-list');
-            const badge = document.querySelector('#notif-badge');
-            let count = 0;
-            data.forEach(noti => {
-                const item = `
-                <a href="/admin/livechat/${noti.data.user_id}" class="list-group-item list-group-item-action">
-                    <div class="d-flex">
-                        <div class="flex-shrink-0">
-                            <img src="${noti.data.avatar}" alt="user-image" class="user-avtar">
-                        </div>
-                        <div class="flex-grow-1 ms-1">
-                            <span class="float-end text-muted">${noti.created_at}</span>
-                            <p class="text-body mb-1"><b>${noti.data.title}</b><br>${noti.data.body}</p>
-                        </div>
-                    </div>
-                </a>`;
-                dropdown.insertAdjacentHTML('beforeend', item);
-
-                if (!noti.read_at) count++;
-            });
-            if (count > 0) {
-                badge.textContent = count;
-                badge.classList.remove('d-none');
-            }
-        });
-});
-</script>
 </body>
 <!-- [Body] end -->
 

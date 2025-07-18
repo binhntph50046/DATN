@@ -1,5 +1,5 @@
 @extends('admin.layouts.app')
-
+@section('title', 'Quản lý đơn hàng - Apple Store')
 @section('content')
     <div class="pc-container">
         <div class="pc-content">

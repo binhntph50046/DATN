@@ -1,5 +1,5 @@
 @extends('admin.layouts.app')
-
+@section('title', 'Chi tiết đơn hàng - Apple Store')
 @section('content')
 <style>
     .admin-order-details {

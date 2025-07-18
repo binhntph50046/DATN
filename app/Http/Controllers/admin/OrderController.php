@@ -11,6 +11,7 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use App\Models\Invoice;
 use App\Mail\InvoicePdfMail;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class OrderController extends Controller
 {
@@ -98,10 +99,35 @@ class OrderController extends Controller
                         Mail::to($order->shipping_email)->send(new InvoicePdfMail($invoice, $pdfContent));
                     }
                 } catch (\Exception $e) {
-
+                    Log::error('Failed to send invoice email', [
+                        'order_id' => $order->id,
+                        'error' => $e->getMessage()
+                    ]);
                 }
             }
-            event(new OrderStatusUpdated($order));
+            try {
+                Log::info('Bắt đầu gửi sự kiện cập nhật trạng thái', [
+                    'order_id' => $order->id,
+                    'old_status' => $old_status,
+                    'new_status' => $new_status
+                ]);
+
+                // Refresh order model để đảm bảo có dữ liệu mới nhất
+                $order->refresh();
+                
+                // Broadcast ngay lập tức và không dùng queue
+                event(new OrderStatusUpdated($order));
+                
+                Log::info('Đã gửi sự kiện thành công');
+
+            } catch (\Exception $e) {
+                Log::error('Lỗi khi gửi sự kiện', [
+                    'order_id' => $order->id,
+                    'error' => $e->getMessage(),
+                    'trace' => $e->getTraceAsString()
+                ]);
+            }
+
             if ($request->ajax() || $request->wantsJson()) {
                 return response()->json(['success' => true, 'status' => $order->status]);
             }

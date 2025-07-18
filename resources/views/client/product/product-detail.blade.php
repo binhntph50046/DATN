@@ -1,33 +1,12 @@
 @extends('client.layouts.app')
-
+@section('title', 'Chi tiết sản phẩm')
 @section('content')
 
     <!-- Start Product Detail Section -->
     <div class="untree_co-section product-section" style="margin-top: 70px;padding-bottom: 0px">
 
         <div class="container">
-            <!-- Hiển thị thông báo -->
-            @if (session('success'))
-                <div class="custom-alert success" id="success-alert">
-                    <div class="icon"><i class="fas fa-check-circle"></i></div>
-                    <div class="content">
-                        <strong>SUCCESS</strong>
-                        <p>{{ session('success') }}</p>
-                    </div>
-                    <div class="close" onclick="this.parentElement.style.display='none';">&times;</div>
-                </div>
-            @endif
-
-            @if (session('error'))
-                <div class="custom-alert error" id="error-alert">
-                    <div class="icon"><i class="fas fa-times-circle"></i></div>
-                    <div class="content">
-                        <strong>ERROR</strong>
-                        <p>{{ session('error') }}</p>
-                    </div>
-                    <div class="close" onclick="this.parentElement.style.display='none';">&times;</div>
-                </div>
-            @endif
+            <!-- Bỏ phần thông báo cũ -->
             <div class="row">
                 <!-- Product Images -->
                 <div class="col-lg-6 mb-5">
@@ -348,85 +327,6 @@
             /* Đảm bảo nút nằm trên overlay */
         }
 
-        .custom-alert {
-            display: flex;
-            align-items: center;
-            background-color: #fff;
-            border-left: 5px solid;
-            border-radius: 4px;
-            padding: 16px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            margin: 10px auto;
-            width: 360px;
-            position: relative;
-            animation: slideIn 0.3s ease;
-        }
-
-        .custom-alert .icon {
-            font-size: 20px;
-            margin-right: 12px;
-        }
-
-        .custom-alert .content {
-            flex-grow: 1;
-        }
-
-        .custom-alert .content strong {
-            display: block;
-            font-weight: bold;
-            color: #333;
-        }
-
-        .custom-alert .content p {
-            margin: 0;
-            color: #666;
-        }
-
-        .custom-alert .close {
-            font-size: 38px;
-            cursor: pointer;
-            color: #333;
-            margin-left: 10px;
-            margin-top: -32px;
-        }
-
-        .custom-alert.success {
-            border-color: #28a745;
-            background-color: #ffffff;
-        }
-
-        .custom-alert.success .icon {
-            color: #28a745;
-        }
-
-        .custom-alert.error {
-            border-color: #dc3545;
-            background-color: #ffffff;
-        }
-
-        .custom-alert.error .icon {
-            color: #dc3545;
-        }
-
-        @keyframes slideIn {
-            from {
-                transform: translateY(-10px);
-                opacity: 0;
-            }
-
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
-        }
-
-        .custom-alert {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 9999;
-        }
-
         .color-variants {
             margin-bottom: 2rem;
         }
@@ -679,18 +579,10 @@
         }
     </style>
 
+    @section('scripts')
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
-        function hideAlert(alertId) {
-            const alert = document.getElementById(alertId);
-            if (alert) {
-                setTimeout(() => {
-                    alert.style.display = 'none';
-                }, 3000);
-            }
-        }
-
-        hideAlert('success-alert');
-        hideAlert('error-alert');
         // Khai báo biến toàn cục
         let selectedValues = {};
         let selectedVariants = {};
@@ -701,6 +593,36 @@
         let currentImages = @json($images);
 
         document.addEventListener('DOMContentLoaded', function() {
+            // Custom styling cho SweetAlert2
+            const Toast = Swal.mixin({
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true,
+                didOpen: (toast) => {
+                    toast.addEventListener('mouseenter', Swal.stopTimer)
+                    toast.addEventListener('mouseleave', Swal.resumeTimer)
+                }
+            });
+
+            // Handle session flash messages
+            @if(session('success'))
+                Toast.fire({
+                    icon: 'success',
+                    title: 'Thành công',
+                    text: '{{ session('success') }}'
+                });
+            @endif
+
+            @if(session('error'))
+                Toast.fire({
+                    icon: 'error',
+                    title: 'Lỗi',
+                    text: '{{ session('error') }}'
+                });
+            @endif
+
             // Quantity controls
             const quantityInput = document.getElementById('quantity');
             const minusBtn = document.querySelector('.quantity-btn.minus');
@@ -780,6 +702,27 @@
                 if (!variantId) {
                     return false;
                 }
+
+                // Kiểm tra số lượng tồn kho
+                const quantity = parseInt(quantityInput.value) || 1;
+                if (variantData[variantId].stock < 1) {
+                    Toast.fire({
+                        icon: 'error',
+                        title: 'Lỗi',
+                        text: '⚠️ Hết số lượng tồn kho!'
+                    });
+                    return false;
+                }
+
+                if (variantData[variantId].stock < quantity) {
+                    Toast.fire({
+                        icon: 'error',
+                        title: 'Lỗi',
+                        text: '⚠️ Số lượng trong kho không đủ!'
+                    });
+                    return false;
+                }
+
                 document.getElementById('selectedVariantId').value = variantId;
                 document.getElementById('addToCartForm').submit();
             });
@@ -794,38 +737,20 @@
                 // Kiểm tra số lượng tồn kho
                 const quantity = parseInt(quantityInput.value) || 1;
                 if (variantData[variantId].stock < 1) {
-                    const alertDiv = document.createElement('div');
-                    alertDiv.className = 'custom-alert error';
-                    alertDiv.innerHTML = `
-                        <div class="icon"><i class="fas fa-times-circle"></i></div>
-                        <div class="content">
-                            <strong>ERROR</strong>
-                            <p>⚠️ Hết số lượng tồn kho!</p>
-                        </div>
-                        <div class="close" onclick="this.parentElement.style.display='none';">&times;</div>
-                    `;
-                    document.body.appendChild(alertDiv);
-                    setTimeout(() => {
-                        alertDiv.style.display = 'none';
-                    }, 3000);
+                    Toast.fire({
+                        icon: 'error',
+                        title: 'Lỗi',
+                        text: '⚠️ Hết số lượng tồn kho!'
+                    });
                     return false;
                 }
 
                 if (variantData[variantId].stock < quantity) {
-                    const alertDiv = document.createElement('div');
-                    alertDiv.className = 'custom-alert error';
-                    alertDiv.innerHTML = `
-                        <div class="icon"><i class="fas fa-times-circle"></i></div>
-                        <div class="content">
-                            <strong>ERROR</strong>
-                            <p>⚠️ Hết số lượng tồn kho!</p>
-                        </div>
-                        <div class="close" onclick="this.parentElement.style.display='none';">&times;</div>
-                    `;
-                    document.body.appendChild(alertDiv);
-                    setTimeout(() => {
-                        alertDiv.style.display = 'none';
-                    }, 3000);
+                    Toast.fire({
+                        icon: 'error',
+                        title: 'Lỗi',
+                        text: '⚠️ Số lượng trong kho không đủ!'
+                    });
                     return false;
                 }
 
@@ -947,13 +872,21 @@
             }).join('|');
 
             if (missingTypes.length > 0) {
-                alert('Vui lòng chọn các thuộc tính sau: ' + missingTypes.join(', '));
+                Toast.fire({
+                    icon: 'warning',
+                    title: 'Cảnh báo',
+                    text: 'Vui lòng chọn các thuộc tính sau: ' + missingTypes.join(', ')
+                });
                 return null;
             }
 
             const variantId = attributeToVariant[key] || null;
             if (!variantId) {
-                alert('Không tìm thấy biến thể phù hợp với lựa chọn của bạn!');
+                Toast.fire({
+                    icon: 'error',
+                    title: 'Lỗi',
+                    text: 'Không tìm thấy biến thể phù hợp với lựa chọn của bạn!'
+                });
             }
             return variantId;
         }
@@ -1060,4 +993,37 @@
             });
         });
     </script>
+
+    <style>
+        /* Custom styles cho Toast notifications */
+        .swal2-toast {
+            max-width: 300px !important;
+            font-size: 0.875rem !important;
+        }
+
+        .swal2-toast .swal2-title {
+            font-size: 1rem !important;
+            margin: 0.5em 1em !important;
+        }
+
+        .swal2-toast .swal2-content {
+            font-size: 0.875rem !important;
+        }
+
+        .swal2-toast .swal2-icon {
+            width: 2em !important;
+            height: 2em !important;
+            margin: 0.5em !important;
+        }
+
+        .swal2-toast .swal2-icon .swal2-icon-content {
+            font-size: 1.5em !important;
+        }
+
+        .swal2-toast .swal2-success-ring {
+            width: 2em !important;
+            height: 2em !important;
+        }
+    </style>
+    @endsection
 @endsection

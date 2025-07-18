@@ -83,12 +83,26 @@
                      cao cấp. Cam kết mang
                      đến trải nghiệm tốt nhất cho khách hàng với dịch vụ tận tâm và chuyên nghiệp.</p>
 
-                 <div class="custom-social">
-                     <img src="https://cdn2.fptshop.com.vn/svg/facebook_icon_a64b579fe2.svg?w=32&q=100" alt="Facebook">
-                     <img src="https://cdn2.fptshop.com.vn/svg/zalo_icon_8cbef61812.svg?w=32&q=100" alt="Zalo">
-                     <img src="https://cdn2.fptshop.com.vn/svg/youtube_icon_b492d61ba5.svg?w=32&q=100" alt="Youtube">
-                     <img src="https://cdn2.fptshop.com.vn/svg/tiktok_icon_faabbeeb61.svg?w=32&q=100" alt="Tiktok">
-                 </div>
+                                   <div class="custom-social d-flex">
+                      <img src="https://cdn2.fptshop.com.vn/svg/facebook_icon_a64b579fe2.svg?w=32&q=100" alt="Facebook">
+                      <img src="https://cdn2.fptshop.com.vn/svg/zalo_icon_8cbef61812.svg?w=32&q=100" alt="Zalo" class="ms-3">
+                      <img src="https://cdn2.fptshop.com.vn/svg/youtube_icon_b492d61ba5.svg?w=32&q=100" alt="Youtube" class="ms-3">
+                      <img src="https://cdn2.fptshop.com.vn/svg/tiktok_icon_faabbeeb61.svg?w=32&q=100" alt="Tiktok" class="ms-3">
+                  </div>
+                  <style>
+                    .custom-social {
+                        margin-left: -4px;
+                    }
+                    .custom-social img {
+                        width: 32px;
+                        height: 32px;
+                        cursor: pointer;
+                        transition: transform 0.2s;
+                    }
+                    .custom-social img:hover {
+                        transform: translateY(-2px);
+                    }
+                  </style>
              </div>
 
              <div class="col-lg-8">

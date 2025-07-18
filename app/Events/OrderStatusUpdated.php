@@ -6,52 +6,62 @@ use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PresenceChannel;
 use Illuminate\Broadcasting\PrivateChannel;
-use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
+use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 use App\Models\Order;
+use Illuminate\Support\Facades\Log;
 
-    class OrderStatusUpdated implements ShouldBroadcast
+class OrderStatusUpdated implements ShouldBroadcastNow
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
     public $order;
+    public $status;
+    public $status_text;
 
-    /**
-     * Create a new event instance.
-     */
     public function __construct(Order $order)
     {
         $this->order = $order;
+        $this->status = $order->status;
+        $this->status_text = $order->getStatusTextAttribute();
+        
+        Log::info('Cập nhật trạng thái đơn hàng', [
+            'order_id' => $order->id,
+            'status' => $order->status
+        ]);
     }
 
-    /**
-     * Get the channels the event should broadcast on.
-     *
-     * @return array<int, \Illuminate\Broadcasting\Channel>
-     */
-    public function broadcastOn(): array
+    public function broadcastOn()
     {
-        return [
-            new Channel('orderStatus.' . $this->order->id),
-        ];
-    }
-    public function broadcastAs(): string
-    {
-        return 'OrderStatusUpdated' ;
+        $channelName = 'orderStatus.'.$this->order->id;
+        Log::info('Broadcasting on public channel', [
+            'channel' => $channelName,
+            'event' => 'OrderStatusUpdated',
+            'data' => $this->broadcastWith()
+        ]);
+        return new Channel($channelName); // Giữ nguyên là public channel
     }
 
-    /**
-     * Get the data to broadcast.
-     *
-     * @return array
-     */
-    public function broadcastWith(): array
+    public function broadcastAs()
     {
-        return [
+        return 'OrderStatusUpdated'; // Giữ nguyên tên event
+    }
+
+    public function broadcastWith()
+    {
+        $data = [
             'order_id' => $this->order->id,
-            'status' => $this->order->status,
-            'status_text' => $this->order->getStatusTextAttribute()
+            'status' => $this->status,
+            'status_text' => $this->status_text
         ];
+        Log::info('Event data being broadcast', $data);
+        return $data;
+    }
+
+    // Thêm phương thức mới
+    public function broadcastWhen()
+    {
+        return true;
     }
 }

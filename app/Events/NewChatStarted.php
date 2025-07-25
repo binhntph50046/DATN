@@ -6,10 +6,10 @@ use App\Models\User;
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Broadcasting\InteractsWithSockets;
-use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
+use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
 use Illuminate\Queue\SerializesModels;
 
-class NewChatStarted implements ShouldBroadcast
+class NewChatStarted implements ShouldBroadcastNow
 {
     use InteractsWithSockets, SerializesModels;
 
@@ -40,4 +40,3 @@ class NewChatStarted implements ShouldBroadcast
         return 'new-chat';
     }
 }
-

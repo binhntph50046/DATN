@@ -6,6 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chatbot</title>
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <script>
+        window.currentUserId = {{ auth()->id() }};
+    </script>
     <style>
         .chatbot-icon svg {
             width: 38px;
@@ -34,6 +37,7 @@
                 opacity: 0;
                 transform: translateY(40px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -151,18 +155,23 @@
             0% {
                 transform: rotate(0deg);
             }
+
             20% {
                 transform: rotate(-10deg);
             }
+
             40% {
                 transform: rotate(10deg);
             }
+
             60% {
                 transform: rotate(-10deg);
             }
+
             80% {
                 transform: rotate(10deg);
             }
+
             100% {
                 transform: rotate(0deg);
             }
@@ -228,10 +237,12 @@
                 transform: translate(-50%, -50%) scale(1);
                 opacity: 0.6;
             }
+
             70% {
                 transform: translate(-50%, -50%) scale(1.5);
                 opacity: 0.1;
             }
+
             100% {
                 transform: translate(-50%, -50%) scale(1.8);
                 opacity: 0;
@@ -281,7 +292,8 @@
 
         /* Hiệu ứng rung cho live-chat-icon khi nhấn */
         .live-chat-icon.shake {
-            animation: shake 0.5s; /* Thực hiện rung 1 lần khi nhấn */
+            animation: shake 0.5s;
+            /* Thực hiện rung 1 lần khi nhấn */
         }
     </style>
 </head>
@@ -332,6 +344,10 @@
                 fill="white" />
         </svg>
         <span class="chat-label">Chat 24/7</span>
+        <!-- 🔴 Badge số lượng chưa đọc -->
+        <!-- <span id="unreadBadge" style="position:absolute; top:-4px; right:-4px; background:red; color:white;
+                    font-size:12px; font-weight:bold; border-radius:50%; padding:3px 6px;
+                    display:none;">0</span> -->
     </div>
 
     <!-- Khung chat -->
@@ -452,6 +468,91 @@
             }, 500); // Độ trễ 500ms để hiệu ứng hoàn thành
         }
     </script>
+    <!-- Đảm bảo đã load Pusher trước
+<script src="https://js.pusher.com/8.4.0/pusher.min.js"></script>
+
+<script>
+  // 0. Kiểm tra script có chạy không
+  console.log('[Debug] Chat badge script start');
+
+  // 1. Đọc CSRF & user-id
+  const userIdMeta = document.head.querySelector('meta[name="user-id"]');
+  const csrfMeta   = document.head.querySelector('meta[name="csrf-token"]');
+  console.log('[Debug] user-id meta:', userIdMeta, 'csrf meta:', csrfMeta);
+  const userId = userIdMeta ? userIdMeta.content : null;
+  const badge  = document.getElementById('unreadBadge');
+  console.log('[Debug] userId:', userId, 'badge element:', badge);
+
+  if (!userId || !badge) {
+    console.warn('[Debug] Missing userId or badge element, aborting.');
+  } else {
+    // 2. Hàm cập nhật badge
+    function updateBadge(count) {
+      console.log('[Debug] updateBadge(', count, ')');
+      if (count > 0) {
+        badge.textContent = count;
+        badge.style.display = 'inline-block';
+      } else {
+        badge.style.display = 'none';
+      }
+    }
+
+    // 3. Lấy count ban đầu
+    console.log('[Debug] Fetching initial unread count');
+    fetch('/chat/unread-count', {
+      headers: { 'X-CSRF-TOKEN': csrfMeta.content }
+    })
+      .then(res => {
+        console.log('[Debug] /chat/unread-count response status:', res.status);
+        return res.json();
+      })
+      .then(data => {
+        console.log('[Debug] initial unread data:', data);
+        if (data.unread != null) updateBadge(data.unread);
+      })
+      .catch(err => console.error('[Debug] fetch unread-count error:', err));
+
+    // 4. Cấu hình Pusher + Echo
+    console.log('[Debug] Initializing Echo');
+    window.Pusher.logToConsole = true; // bật debug Pusher
+    window.Echo = new window.Echo.constructor({
+      broadcaster: 'pusher',
+      key: '{{ env("PUSHER_APP_KEY") }}',
+      cluster: '{{ env("PUSHER_APP_CLUSTER") }}',
+      forceTLS: true,
+      encrypted: true,
+    });
+
+    // 5. Lắng nghe realtime
+    const channelName = `chat.${userId}`;
+    console.log('[Debug] Subscribing to channel:', channelName);
+    window.Echo.private(channelName)
+      .listen('MessageSent', e => {
+        console.log('[Debug] Received MessageSent event:', e);
+        if (e.message.to_id == userId) {
+          const cur = parseInt(badge.textContent || '0', 10) + 1;
+          console.log('[Debug] Increment badge to:', cur);
+          updateBadge(cur);
+        }
+      })
+      .error(err => console.error('[Debug] Echo subscription error:', err));
+
+    // 6. Khi click icon, mark seen và reset badge
+    document.getElementById('liveChatIcon').addEventListener('click', () => {
+      console.log('[Debug] liveChatIcon clicked, marking seen');
+      fetch('/chat/mark-seen', {
+        method: 'POST',
+        headers: { 'X-CSRF-TOKEN': csrfMeta.content }
+      })
+        .then(res => {
+          console.log('[Debug] mark-seen response status:', res.status);
+          updateBadge(0);
+        })
+        .catch(err => console.error('[Debug] mark-seen error:', err));
+    });
+  }
+</script> -->
+
 </body>
 
 </html>

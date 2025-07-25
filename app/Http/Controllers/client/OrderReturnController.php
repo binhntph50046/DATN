@@ -5,6 +5,10 @@ use Illuminate\Http\Request;
 use App\Models\Order;
 use App\Models\OrderReturn;
 use Illuminate\Support\Facades\Auth;
+use App\Events\OrderReturnCreated;
+use App\Models\User;
+use App\Notifications\AdminDatabaseNotification;
+
 
 class OrderReturnController
 {
@@ -109,6 +113,20 @@ class OrderReturnController
                 ]);
             }
         }
+        // Bắn sự kiện realtime
+        event(new OrderReturnCreated($orderReturn));
+
+        // Gửi database notification cho admin
+        $admins = User::role('admin')->get();
+        foreach ($admins as $admin) {
+            $admin->notify(new AdminDatabaseNotification([
+                'type' => 'return_created',
+                'title' => 'Yêu cầu hoàn hàng',
+                'message' => 'Khách hàng ' . $orderReturn->user->name . ' gửi yêu cầu hoàn hàng cho đơn ' . ($orderReturn->order->order_code ?? 'ĐH' . $orderReturn->order->id),
+                'url' => route('admin.order_returns.show', $orderReturn->id),
+            ]));
+        }
+
 
         return redirect()->route('order.index')->with('success', 'Yêu cầu hoàn hàng đã được gửi thành công.');
     }

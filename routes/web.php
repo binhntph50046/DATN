@@ -4,6 +4,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Broadcast;
+
 // Models
 use App\Models\Invoice;
 
@@ -32,6 +34,7 @@ use App\Http\Controllers\Admin\MessengerController;
 use App\Http\Controllers\Admin\AdminProfileController;
 use App\Http\Controllers\Admin\SitemapController;
 use App\Http\Controllers\Admin\RobotController;
+use App\Http\Controllers\Admin\NotifyController;
 
 // Client Controllers
 use App\Http\Controllers\client\HomeController;
@@ -64,13 +67,15 @@ use App\Http\Controllers\auth\ForgotPasswordController;
 use App\Http\Controllers\auth\ResetPasswordController;
 use App\Http\Controllers\client\ProductReviewController;
 
+use App\Notifications\AdminDatabaseNotification;
+
 
 /*
 |--------------------------------------------------------------------------
 | Client Routes
 |--------------------------------------------------------------------------
 */
-// User Activity
+
 Route::post('/track/start', [UserActivityController::class, 'start']);
 Route::post('/track/stop', [UserActivityController::class, 'stop']);
 
@@ -193,7 +198,9 @@ Route::prefix('order')->name('order.')->group(function () {
 });
 
 // Chatify Messenger Client
-Route::get('/chat', [ChatController::class, 'index'])->name('client.chat');
+Route::get('/chat', [ChatController::class, 'index'])->name('client.chat'); 
+// Route::get('/chat/unread-count', [ChatController::class, 'unreadCount']);
+
 // Product Review
 
 // Route 1: Xem lịch sử đánh giá 1 biến thể
@@ -245,6 +252,18 @@ Route::post('/email/verification-notification', function (Request $request) {
     return back()->with('message', 'Email xác minh đã được gửi!');
 })->middleware(['auth', 'throttle:6,1'])->name('verification.send');
 
+//Notification
+Route::post('/notifications/read/{id}', function ($id) {
+    $noti = auth()->user()->unreadNotifications()->findOrFail($id);
+    $noti->markAsRead();
+    return response()->json(['success' => true]);
+});
+Route::post('/notifications/read-all', function () {
+    auth()->user()->unreadNotifications->markAsRead();
+    return response()->json(['success' => true]);
+});
+
+
 /*
 |--------------------------------------------------------------------------
 | Admin Routes
@@ -261,9 +280,20 @@ Route::prefix('admin')
         // Live Chat Management
         Route::prefix('livechat')->name('livechat.')->group(function () {
             Route::get('/', [MessengerController::class, 'index'])->name('index');
+            Route::get('/fetch', [MessengerController::class, 'fetch'])->name('fetch');
             Route::get('/users', [MessengerController::class, 'getUsers'])->name('users');
             Route::get('/messages/{userId}', [MessengerController::class, 'getMessages'])->name('messages');
             Route::post('/send', [MessengerController::class, 'sendMessage'])->name('send');
+        });
+
+        //Notification
+        Route::prefix('notify')->name('notify.')->group(function () {
+            Route::get('/', [NotifyController::class, 'index'])->name('index');
+            Route::delete('/{id}', [NotifyController::class, 'destroy'])->name('destroy');
+            Route::get('/trash', [NotifyController::class, 'trash'])->name('trash');
+            Route::post('/restore/{id}', [NotifyController::class, 'restore'])->name('restore');
+            Route::delete('/force-delete/{id}', [NotifyController::class, 'forceDelete'])->name('forceDelete');
+            Route::post('/mark-as-read/{id}', [NotifyController::class, 'markAsRead'])->name('markAsRead');
         });
 
         // User Management
@@ -463,7 +493,7 @@ Route::prefix('admin')
 Route::post('/voucher/check', [ClientVoucherController::class, 'check'])->name('voucher.check');
 
 // Admin Profile Routes
-Route::prefix('admin/profile')->name('admin.profile.')->middleware('auth', 'role:admin|staff')->group(function () {
+Route::prefix('admin/profile')->name('admin.profile.')->middleware(['auth', 'role:admin|staff'])->group(function () {
     Route::get('/', [AdminProfileController::class, 'edit'])->name('index');
     Route::put('/', [AdminProfileController::class, 'update'])->name('update');
     Route::get('/password', [AdminProfileController::class, 'password'])->name('password');

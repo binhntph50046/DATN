@@ -210,6 +210,10 @@
             color: #ffd700;
             font-weight: bold;
         }
+
+        .dropdown-toggle::after {
+            display: none !important;
+        }
     </style>
     <div class="container d-flex justify-content-between" style="align-items: flex-start">
         <!-- Logo -->
@@ -281,21 +285,34 @@
                 class="rounded-circle d-flex align-items-center justify-content-center icon-circle-btn">
                 <i class="fas fa-heart text-white"></i>
             </a>
+            
+            <!-- Giỏ hàng -->
+            <a class="rounded-circle d-flex align-items-center justify-content-center icon-circle-btn position-relative"
+                href="{{ route('cart') }}">
+                <i class="fas fa-shopping-cart text-white"></i>
+
+                @if ($cartCount > 0)
+                    <span class="position-absolute start-100 translate-middle badge rounded-pill bg-danger"
+                        style="top: 6px; font-size: 0.75rem; padding: 0.35em 0.5em;">
+                        {{ $cartCount }}
+                    </span>
+                @endif
+            </a>
 
             <!-- User dropdown -->
             <div class="dropdown">
-                @guest
-                    <a class="rounded-circle d-flex align-items-center justify-content-center dropdown-toggle icon-circle-btn"
-                        href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <a class="rounded-circle d-flex align-items-center justify-content-center dropdown-toggle icon-circle-btn"
+                    href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    {{-- Nếu muốn dùng avatar thật --}}
+                    @auth
+                        <img src="{{ Auth::user()->avatar ?? asset('uploads/default/avatar_default.png') }}" alt="Avatar"
+                            class="rounded-circle" width="46" height="46">
+                    @else
+                        {{-- Nếu chưa đăng nhập thì dùng icon --}}
                         <i class="fas fa-user text-white"></i>
-                    </a>
-                @else
-                    <a class="d-flex align-items-center dropdown-toggle user-logged-in-btn" href="#" id="userDropdown"
-                        role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                        <i class="fas fa-user text-white"></i>
-                        <span class="user-name-text">{{ Str::limit(auth()->user()->name, 12, '...') }}</span>
-                    </a>
-                @endguest
+                    @endauth
+                </a>
+
                 <ul class="dropdown-menu dropdown-menu-bg" aria-labelledby="userDropdown">
                     <li><a class="dropdown-item text-white" href="{{ route('order.guest.tracking') }}">Tra cứu đơn hàng</a></li>
                     @guest
@@ -321,21 +338,6 @@
                     @endguest
                 </ul>
             </div>
-
-            <!-- Giỏ hàng -->
-            <a class="rounded-circle d-flex align-items-center justify-content-center icon-circle-btn position-relative"
-                href="{{ route('cart') }}">
-                <i class="fas fa-shopping-cart text-white"></i>
-
-                @if ($cartCount > 0)
-                    <span class="position-absolute start-100 translate-middle badge rounded-pill bg-danger"
-                        style="top: 6px; font-size: 0.75rem; padding: 0.35em 0.5em;">
-                        {{ $cartCount }}
-                    </span>
-                @endif
-            </a>
-
-
 
         </div>
     </div>

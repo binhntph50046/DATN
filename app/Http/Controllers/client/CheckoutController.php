@@ -115,9 +115,10 @@ class CheckoutController
                 $admin->notify(new AdminDatabaseNotification([
                     'type' => 'order_created',
                     'title' => 'Đơn hàng mới',
-                    'message' => 'Khách hàng ' . ($order->user->name ?? $order->shipping_name) . ' vừa đặt đơn hàng #' . $order->id,
+                    'message' => 'Khách hàng: ' . $order->user->name . ', Đơn hàng #' . $order->id,
                     'order_id' => $order->id,
                     'user_id' => $order->user_id,
+                    'url' => route('admin.orders.show', $order->id),
                     'created_at' => now(),
                 ]));
             }

@@ -7,16 +7,6 @@
         .product-grid .product-item {
             margin-bottom: 30px;
         }
-        .product-item {
-            background: #fff;
-            border: 1px solid #eee;
-            border-radius: 8px;
-            padding: 15px;
-            transition: all .3s ease;
-            text-decoration: none;
-            display: block;
-            height: 100%;
-        }
         .product-item:hover {
             box-shadow: 0 5px 15px rgba(0,0,0,.1);
             transform: translateY(-5px);
@@ -45,8 +35,7 @@
             -webkit-box-orient: vertical;
         }
         .price-wrapper {
-            margin-top: 10px;
-            min-height: 44px;
+            min-height: 30px;
         }
         .product-price {
             font-size: 1.1rem;
@@ -99,7 +88,7 @@
             <div class="row product-grid">
                 @forelse($products as $product)
                     <div class="col-lg-3 col-md-4 col-sm-6">
-                        <div class="product-item" data-aos="fade-up" data-aos-delay="{{ ($loop->index % 4) * 100 }}">
+                        <div style="text-align: center;" class="product-item" data-aos="fade-up" data-aos-delay="{{ ($loop->index % 4) * 100 }}">
                             <a href="{{ route('product.detail', $product->slug) }}">
                                 <div class="product-thumbnail">
                                      @php

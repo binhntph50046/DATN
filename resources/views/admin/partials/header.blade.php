@@ -1,3 +1,25 @@
+<style>
+    #notif-badge {
+        right: -15px;
+        font-size: 10px;
+        padding: 3px;
+        width: 20px;
+    }
+
+    .pc-header .pc-head-link {
+        margin: 0 4px;
+        position: relative;
+        font-weight: 500;
+        padding: 0;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 54px;
+        height: 54px;
+        border-radius: 4px;
+        color: var(--pc-header-color);
+        overflow: hidden;
+    }
 </style>
 <header class="pc-header">
     <div class="header-wrapper"> <!-- [Mobile Media Block] start -->
@@ -14,78 +36,86 @@
                         <i class="ti ti-menu-2"></i>
                     </a>
                 </li>
-                <li class="dropdown pc-h-item d-inline-flex d-md-none">
-                    <a class="pc-head-link dropdown-toggle arrow-none m-0" data-bs-toggle="dropdown" href="#"
-                        role="button" aria-haspopup="false" aria-expanded="false">
-                        <i class="ti ti-search"></i>
-                    </a>
-                    <div class="dropdown-menu pc-h-dropdown drp-search">
-                        <form class="px-3">
-                            <div class="form-group mb-0 d-flex align-items-center">
-                                <i data-feather="search"></i>
-                                <input type="search" class="form-control border-0 shadow-none"
-                                    placeholder="Search here. . .">
-                            </div>
-                        </form>
-                    </div>
-                </li>
-                <li class="pc-h-item d-none d-md-inline-flex">
-                    <form class="header-search">
-                        <i data-feather="search" class="icon-search"></i>
-                        <input type="search" class="form-control" placeholder="Search here. . .">
-                    </form>
-                </li>
+
             </ul>
         </div>
         <!-- [Mobile Media Block end] -->
         <div class="ms-auto">
             <ul class="list-unstyled">
                 <li class="dropdown pc-h-item">
-    <a class="pc-head-link dropdown-toggle arrow-none me-0" data-bs-toggle="dropdown" href="#"
-        role="button" aria-haspopup="true" aria-expanded="false">
-        <i class="ti ti-bell position-relative">
-            @php
-                $unreadCount = Auth::user()->unreadNotifications->count();
-            @endphp
-            @if ($unreadCount > 0)
-                <span class="badge bg-danger" id="notif-badge">{{ $unreadCount }}</span>
-            @else
-                <span class="badge bg-danger d-none" id="notif-badge">0</span>
-            @endif
-        </i>
-    </a>
-
-    <div class="dropdown-menu dropdown-notification dropdown-menu-end pc-h-dropdown">
-        <div class="dropdown-header d-flex align-items-center justify-content-between">
-            <h5 class="m-0">Message</h5>
-            <a href="#!" class="pc-head-link bg-transparent"><i class="ti ti-x text-danger"></i></a>
-        </div>
-        <div class="dropdown-divider"></div>
-
-        <div class="dropdown-header px-0 text-wrap header-notification-scroll position-relative"
-            style="max-height: calc(100vh - 215px)">
-            <div class="list-group list-group-flush w-100" id="notif-list">
-                {{-- Load từ DB --}}
-                @foreach(Auth::user()->unreadNotifications->take(5) as $notification)
-                    <a class="list-group-item list-group-item-action" href="{{ $notification->data['url'] ?? '#' }}">
-                        <div class="d-flex justify-content-between">
-                            <div>
-                                <b>{{ $notification->data['title'] ?? 'Thông báo' }}</b><br>
-                                <small>{{ $notification->data['message'] ?? '' }}</small>
-                            </div>
-                            <div><span class="badge bg-success">Mới</span></div>
-                        </div>
+                    <a class="pc-head-link dropdown-toggle arrow-none me-0" data-bs-toggle="dropdown" href="#"
+                        role="button" aria-haspopup="true" aria-expanded="false">
+                        <span class="position-relative d-inline-block">
+                            <i class="ti ti-bell" style="font-size: 23px;"></i>
+                            <span id="notif-badge"
+                                class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger {{ Auth::user()->unreadNotifications->count() == 0 ? 'd-none' : '' }}">
+                                {{ Auth::user()->unreadNotifications->count() }}
+                            </span>
+                        </span>
                     </a>
-                @endforeach
-            </div>
-        </div>
 
-        <div class="dropdown-divider"></div>
-        <div class="text-center py-2">
-            <a href="" class="link-primary">View all</a>
-        </div>
-    </div>
-</li>
+                    <div class="dropdown-menu dropdown-notification dropdown-menu-end pc-h-dropdown">
+                        <div class="dropdown-header d-flex align-items-center justify-content-between">
+                            <h5 class="m-0">Message</h5>
+                            <div class="text-end px-3 pb-2">
+                                <button class="btn btn-sm btn-link" id="mark-all-read">Đánh dấu tất cả đã đọc</button>
+                            </div>
+                        </div>
+
+
+                        <div class="dropdown-divider"></div>
+
+                        <div class="dropdown-header px-0 text-wrap header-notification-scroll position-relative"
+                            style="max-height: calc(100vh - 215px)">
+                            <div class="list-group list-group-flush w-100" id="notif-list">
+                                {{-- Load từ DB --}}
+                                @foreach(Auth::user()->notifications->take(5) as $notification)
+                                    @php
+                                        $isUnread = is_null($notification->read_at);
+                                    @endphp
+                                    <a href="{{ $notification->data['url'] ?? '#' }}"
+                                        class="list-group-item list-group-item-action notif-item"
+                                        data-id="{{ $notification->id }}">
+                                        <div class="d-flex justify-content-between">
+                                            <div>
+                                                @php
+                                                    $isUnread = is_null($notification->read_at);
+                                                    $type = $notification->data['type'] ?? 'default';
+
+                                                    $typeColor = match ($type) {
+                                                        'user_created' => 'text-success',
+                                                        'order_created' => 'text-info',
+                                                        'return_created' => 'text-warning',
+                                                        'contact_submitted' => 'text-warning',
+                                                        'message_created' => 'text-info',
+                                                        'error' => 'text-danger',
+                                                        default => 'text-muted',
+                                                    };
+                                                @endphp
+                                                <b
+                                                    class="{{ $typeColor }}">{{ $notification->data['title'] ?? 'Thông báo' }}</b><br>
+                                                <small>{{ $notification->data['user_name']}} {{ $notification->data['message'] }}</small>
+                                                <small
+                                                    class="text-muted d-block mt-1">{{ $notification->created_at->diffForHumans() }}</small>
+                                            </div>
+                                            <div>
+                                                @if($isUnread)
+                                                    <span class="badge bg-success">Mới</span>
+                                                @endif
+                                            </div>
+                                        </div>
+                                    </a>
+                                @endforeach
+
+                            </div>
+                        </div>
+
+                        <div class="dropdown-divider"></div>
+                        <div class="text-center py-2">
+                            <a href="{{ route('admin.notify.index') }}" class="link-primary">View all</a>
+                        </div>
+                    </div>
+                </li>
 
                 <li class="dropdown pc-h-item header-user-profile">
                     <a class="pc-head-link dropdown-toggle arrow-none me-0" data-bs-toggle="dropdown" href="#"
@@ -105,14 +135,13 @@
                                         <img src="{{ asset(Auth::user()->avatar) }}" alt="user-image" class="user-avtar">
                                     @else
                                         <img src="/assets/images/user/avatar-2.jpg" alt="user-image" class="user-avtar">
+                                        <img src="/assets/images/user/avatar-2.jpg" alt="user-image" class="user-avtar">
                                     @endif
                                 </div>
                                 <div class="flex-grow-1 ms-3">
                                     <h6 class="mb-1">{{ Auth::user()->name }}</h6>
                                     <span>{{ Auth::user()->email }}</span>
                                 </div>
-                                {{-- <a href="#!" class="pc-head-link bg-transparent"><i
-                                        class="ti ti-power text-danger"></i></a> --}}
                             </div>
                         </div>
                         <ul class="nav drp-tabs nav-fill nav-tabs" id="mydrpTab" role="tablist">
@@ -134,52 +163,26 @@
                                 aria-labelledby="drp-t1" tabindex="0">
                                 <a href="{{ route('admin.profile.index') }}" class="dropdown-item">
                                     <i class="ti ti-user"></i>
-                                    <span>View Profile</span>
+                                    <span>Xem thông tin</span>
                                 </a>
                                 <a href="{{ route('admin.profile.password') }}" class="dropdown-item">
                                     <i class="ti ti-lock"></i>
                                     <span>Đổi mật khẩu</span>
                                 </a>
-                                <a href="#!" class="dropdown-item">
-                                    <i class="ti ti-clipboard-list"></i>
-                                    <span>Billing</span>
-                                </a>
                                 <a href="{{ route('home') }}" class="dropdown-item">
                                     <i class="ti ti-home"></i>
-                                    <span>Back to Client</span>
+                                    <span>Quay lại trang chủ</span>
                                 </a>
                                 <form action="{{ route('logout') }}" method="POST" class="m-0 p-0">
                                     @csrf
                                     <button type="submit"
                                         class="dropdown-item w-100 text-start bg-transparent border-0">
                                         <i class="ti ti-power"></i>
-                                        <span>Logout</span>
+                                        <span>Đăng xuất</span>
                                     </button>
                                 </form>
                             </div>
-                            <div class="tab-pane fade" id="drp-tab-2" role="tabpanel" aria-labelledby="drp-t2"
-                                tabindex="0">
-                                <a href="#!" class="dropdown-item">
-                                    <i class="ti ti-help"></i>
-                                    <span>Support</span>
-                                </a>
-                                <a href="#!" class="dropdown-item">
-                                    <i class="ti ti-user"></i>
-                                    <span>Account Settings</span>
-                                </a>
-                                <a href="#!" class="dropdown-item">
-                                    <i class="ti ti-lock"></i>
-                                    <span>Privacy Center</span>
-                                </a>
-                                <a href="#!" class="dropdown-item">
-                                    <i class="ti ti-messages"></i>
-                                    <span>Feedback</span>
-                                </a>
-                                <a href="#!" class="dropdown-item">
-                                    <i class="ti ti-list"></i>
-                                    <span>History</span>
-                                </a>
-                            </div>
+
                         </div>
                     </div>
                 </li>
@@ -187,85 +190,4 @@
         </div>
     </div>
 </header>
-
-<!-- Không cần nhúng lại toastr hoặc jQuery ở đây nếu đã nhúng ở layout -->
-
-<script src="https://js.pusher.com/8.4.0/pusher.min.js"></script>
-<script>
-    // Enable Pusher logging - chỉ bật khi debug
-    Pusher.logToConsole = true;
-
-    // Khởi tạo Pusher
-    var pusher = new Pusher('fabd5ba46281a80295b5', {
-        cluster: 'ap1'
-    });
-
-    // Sub kênh chung cho admin
-    var channel = pusher.subscribe('admin-notifications');
-
-    // Hàm thêm thông báo vào danh sách
-    function appendNotification(data) {
-        var notifList = document.getElementById('notif-list');
-        if (notifList) {
-            var a = document.createElement('a');
-            a.className = 'list-group-item list-group-item-action';
-            a.href = data.url || '#';
-            a.innerHTML = `
-                <div class="d-flex justify-content-between">
-                    <div>
-                        <b>${data.title || 'Thông báo'}</b><br>
-                        <small>${data.message || ''}</small>
-                    </div>
-                    <div><span class="badge bg-success">Mới</span></div>
-                </div>
-            `;
-            notifList.prepend(a);
-        }
-        // Cập nhật số lượng badge
-        var badge = document.getElementById('notif-badge');
-        if (badge) {
-            badge.classList.remove('d-none');
-            badge.textContent = parseInt(badge.textContent || '0') + 1;
-        }
-    }
-
-    // Lắng nghe sự kiện tài khoản mới
-    channel.bind('user.created', function (data) {
-        toastr.success('Email: ' + data.email, 'Tài khoản mới: ' + data.name);
-        appendNotification({
-            title: 'Tài khoản mới',
-            message: data.name + ' (' + data.email + ') vừa đăng ký.',
-            url: data.url || '#'
-        });
-    });
-
-    // Lắng nghe sự kiện đơn hàng mới
-    channel.bind('order.created', function (data) {
-        toastr.info(
-            'Khách hàng: ' + data.user + '<br>Đơn hàng #' + data.order_id + '<br>Tổng tiền: ' + data.total + 'đ',
-            'Đơn hàng mới'
-        );
-        appendNotification({
-            title: 'Đơn hàng mới',
-            message: 'Khách hàng: ' + data.user + ', Đơn hàng #' + data.order_id + ', Tổng tiền: ' + data.total + 'đ',
-            url: data.url || '#'
-        });
-    });
-    // Lắng nghe sự kiện chat mới
-    channel.bind('message.created', function (data) {
-        toastr.info(
-            'Có một tin nhắn mới từ ' + data.from_user_id + ': ' + data.message, 'Tin nhắn mới'
-        );
-        appendNotification({
-            title: 'Tin nhắn mới',
-            message: 'Người gửi: ' + data.from_user_id + ', Tin nhắn: #' + data.message,
-            url: data.url || '#'
-        });
-    });
-
-    // Bạn có thể bind thêm các loại thông báo khác ở đây, ví dụ:
-    // channel.bind('order.cancelled', function (data) { ... });
-    // channel.bind('chat.message', function (data) { ... });
-</script>
-
- 
+@include('admin.partials.notify')

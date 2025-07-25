@@ -11,7 +11,7 @@
                 <li class="pc-item">
                     <a href="{{ route('admin.dashboard') }}" class="pc-link">
                         <span class="pc-micon"><i class="ti ti-dashboard"></i></span>
-                        <span class="pc-mtext">Dashboard</span>
+                        <span class="pc-mtext">Thống kê</span>
                     </a>
                 </li>
 
@@ -135,6 +135,12 @@
                     </a>
                     <ul class="pc-submenu">
                         <li class="pc-item">
+                            <a href="{{ route('admin.notify.index') }}" class="pc-link">
+                                <span class="pc-micon"><i class="ti ti-bell"></i></span>
+                                <span class="pc-mtext">Thông báo</span>
+                            </a>
+                        </li>
+                        <li class="pc-item">
                             <a href="{{ route('admin.livechat.index') }}" class="pc-link">
                                 <span class="pc-micon"><i class="ti ti-message"></i></span>
                                 <span class="pc-mtext">Message</span>
@@ -203,7 +209,7 @@
                 </li>
 
                 <!-- Giao diện -->
-                <li class="pc-item pc-hasmenu" data-pc-parent="multiple">
+                {{-- <li class="pc-item pc-hasmenu" data-pc-parent="multiple">
                     <a class="pc-link">
                         <span class="pc-micon"><i class="ti ti-palette"></i></span>
                         <span class="pc-mtext">Giao diện</span>
@@ -229,7 +235,7 @@
                             </a>
                         </li>
                     </ul>
-                </li>
+                </li> --}}
 
                 <!-- Quản lý SEO -->
                 <li class="pc-item pc-hasmenu" data-pc-parent="multiple">

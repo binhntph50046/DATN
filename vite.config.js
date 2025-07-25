@@ -8,7 +8,7 @@ export default defineConfig({
             input: [
                 'resources/css/app.css',
                 'resources/js/app.js',
-                'resources/js/echo.js',
+                'resources/js/noti.js',
             ],
             refresh: true,
         }),

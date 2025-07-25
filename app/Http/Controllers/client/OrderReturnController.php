@@ -1,15 +1,14 @@
 <?php
 
-namespace App\Http\Controllers\Client;
-
-use App\Http\Controllers\Controller;
+namespace App\Http\Controllers\client;
 use Illuminate\Http\Request;
 use App\Models\Order;
 use App\Models\OrderReturn;
 use Illuminate\Support\Facades\Auth;
-use App\Events\OrderCreated;
+use App\Events\OrderReturnCreated;
 use App\Models\User;
-use App\Notifications\NewOrderNotification;
+use App\Notifications\AdminDatabaseNotification;
+
 
 class OrderReturnController
 {
@@ -52,7 +51,8 @@ class OrderReturnController
         // Validate dữ liệu
         $request->validate([
             'reason' => 'required|string|min:10',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048'
+            'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'proof_video' => 'nullable|mimes:mp4,mov,avi|max:20480' // Max 20MB cho video
         ]);
 
         $selectedItems = $request->input('items', []);
@@ -80,12 +80,26 @@ class OrderReturnController
             $imagePath = 'uploads/returns/' . $imageName;
         }
 
+        // Xử lý upload video nếu có
+        $videoPath = null;
+        if ($request->hasFile('proof_video')) {
+            $video = $request->file('proof_video');
+            $videoName = time() . '_' . $video->getClientOriginalName();
+            $uploadPath = public_path('uploads/returns/videos');
+            if (!file_exists($uploadPath)) {
+                mkdir($uploadPath, 0755, true);
+            }
+            $video->move($uploadPath, $videoName);
+            $videoPath = 'uploads/returns/videos/' . $videoName;
+        }
+
         // Tạo yêu cầu hoàn hàng mới
         $orderReturn = OrderReturn::create([
             'order_id' => $order->id,
             'user_id' => Auth::id(),
             'reason' => $request->reason,
             'image' => $imagePath,
+            'proof_video' => $videoPath,
             'status' => 'pending'
         ]);
 
@@ -99,7 +113,39 @@ class OrderReturnController
                 ]);
             }
         }
+        // Bắn sự kiện realtime
+        event(new OrderReturnCreated($orderReturn));
+
+        // Gửi database notification cho admin
+        $admins = User::role('admin')->get();
+        foreach ($admins as $admin) {
+            $admin->notify(new AdminDatabaseNotification([
+                'type' => 'return_created',
+                'title' => 'Yêu cầu hoàn hàng',
+                'message' => 'Khách hàng ' . $orderReturn->user->name . ' gửi yêu cầu hoàn hàng cho đơn ' . ($orderReturn->order->order_code ?? 'ĐH' . $orderReturn->order->id),
+                'url' => route('admin.order_returns.show', $orderReturn->id),
+            ]));
+        }
+
 
         return redirect()->route('order.index')->with('success', 'Yêu cầu hoàn hàng đã được gửi thành công.');
+    }
+
+    /**
+     * Hiển thị chi tiết yêu cầu hoàn hàng
+     */
+    public function show(Order $order, OrderReturn $return)
+    {
+        // Kiểm tra xem đơn hàng có thuộc về user hiện tại không
+        if ($order->user_id !== Auth::id()) {
+            abort(403);
+        }
+
+        // Kiểm tra xem yêu cầu hoàn hàng có thuộc về đơn hàng này không
+        if ($return->order_id !== $order->id) {
+            abort(404);
+        }
+
+        return view('client.order_return.show', compact('order', 'return'));
     }
 } 

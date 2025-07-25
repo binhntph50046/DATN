@@ -3,9 +3,12 @@ namespace App\Http\Controllers\Admin;
 
 use Chatify\Http\Controllers\ChatifyMessengerController as BaseController;
 use Illuminate\Http\Request;
+use Chatify\Models\ChMessage;
+use Chatify\Facades\Chatify;
 use Auth;
 use App\Models\User;
 use Config;
+
 
 use App\Providers\RouteServiceProvider; // Adjust namespace if different
 
@@ -52,4 +55,31 @@ class MessengerController
 
         return redirect()->route('home')->with('error', 'No admin available to chat.');
     }
+    public function fetch(Request $request)
+    {
+        $me    = Auth::id();
+        $other = $request->id;
+
+        // Lấy message hai chiều
+        $msgs = ChMessage::where(function($q) use ($me, $other) {
+                    $q->where('from_id', $me)
+                      ->where('to_id', $other);
+                })
+                ->orWhere(function($q) use ($me, $other) {
+                    $q->where('from_id', $other)
+                      ->where('to_id', $me);
+                })
+                ->orderBy('created_at', 'asc')
+                ->get();
+
+        // Chuyển mỗi message thành HTML card
+        $html = $msgs
+            ->map(fn($m) => Chatify::messageCard(Chatify::parseMessage($m), true))
+            ->implode('');
+
+        return response()->json([
+            'html' => $html
+        ]);
+    }
+
 }

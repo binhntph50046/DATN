@@ -36,7 +36,12 @@ class UserCreated implements ShouldBroadcastNow
             'id' => $this->user->id,
             'name' => $this->user->name,
             'email' => $this->user->email,
+            'url' => route('admin.users.index'), // link đến trang quản lý người dùng
             'created_at' => $this->user->created_at->toDateTimeString(),
         ];
+    }
+    public function broadcastVia()
+    {
+        return ['pusher-notify'];
     }
 }

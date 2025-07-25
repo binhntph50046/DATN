@@ -7,7 +7,6 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Response;
 use App\Models\User;
-use App\Events\NewChatStarted;
 use App\Models\ChMessage as Message;
 use App\Models\ChFavorite as Favorite;
 use Chatify\Facades\ChatifyMessenger as Chatify;
@@ -68,7 +67,6 @@ class MessagesController extends Controller
                     'old_name' => htmlentities(trim($attachment_title), ENT_QUOTES, 'UTF-8'),
                 ]) : null,
             ]);
-            event(new \App\Events\ChatCreated($message));
 
                     // ✅ Kiểm tra nếu đây là tin nhắn đầu tiên giữa user và admin
             $fromId = Auth::user()->id;
@@ -79,7 +77,11 @@ class MessagesController extends Controller
                 $query->where('from_id', $toId)->where('to_id', $fromId);
             })->count();
 
-            
+            // ✅ Nếu là tin nhắn đầu tiên và gửi cho admin (ví dụ ID = 1)
+            if ($conversationCount === 1 && $toId == 1) {
+                event(new \App\Events\NewChatStarted(Auth::user()));
+            }
+
 
             $messageData = Chatify::parseMessage($message);
             if (Auth::user()->id != $request['id']) {
@@ -98,6 +100,8 @@ class MessagesController extends Controller
             'tempID' => $request['temporaryMsgId'],
         ]);
     }
+
+
     /**
      * Authenticate the connection for pusher
      *
@@ -169,7 +173,6 @@ class MessagesController extends Controller
     }
 
     
-
     /**
      * Fetch [user/group] messages from database
      *

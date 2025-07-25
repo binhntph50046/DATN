@@ -85,8 +85,9 @@ class AuthController
                 $admin->notify(new AdminDatabaseNotification([
                     'type' => 'user_created',
                     'title' => 'Tài khoản mới',
-                    'message' => 'Người dùng ' . $user->name . ' vừa đăng ký.',
+                    'message' => $user->name . ' vừa đăng ký.',
                     'user_id' => $user->id,
+                    'url' => route('admin.users.index'), // link đến trang quản lý người dùng
                     'created_at' => now(),
                 ]));
             }

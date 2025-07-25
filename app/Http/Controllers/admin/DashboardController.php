@@ -33,14 +33,22 @@ class DashboardController
             ->sum('total_price');
 
         // Liệt kê theo năm hiện tại
-        $productViewsChange = $lastYearProductViews > 0 ?
-            (($totalProductViews - $lastYearProductViews) / $lastYearProductViews) * 100 : 0;
-        $usersChange = $lastYearUsers > 0 ?
-            (($totalUsers - $lastYearUsers) / $lastYearUsers) * 100 : 0;
-        $ordersChange = $lastYearOrders > 0 ?
-            (($totalOrders - $lastYearOrders) / $lastYearOrders) * 100 : 0;
-        $salesChange = $lastYearSales > 0 ?
-            (($totalSales - $lastYearSales) / $lastYearSales) * 100 : 0;
+        $productViewsChange = $totalProductViews > 0
+            ? (floatval($totalProductViews - $lastYearProductViews) / floatval($totalProductViews)) * 100
+            : 0;
+
+        $usersChange = $totalUsers > 0
+            ? (floatval($totalUsers - $lastYearUsers) / floatval($totalUsers)) * 100
+            : 0;
+
+        $ordersChange = $totalOrders > 0
+            ? (floatval($totalOrders - $lastYearOrders) / floatval($totalOrders)) * 100
+            : 0;
+
+        $salesChange = $totalSales > 0
+            ? (floatval($totalSales - $lastYearSales) / floatval($totalSales)) * 100
+            : 0;
+
 
         // Đơn hàng gần đây
         $recentOrders = Order::with('items.product')->orderBy('created_at', 'desc')->take(10)->get();

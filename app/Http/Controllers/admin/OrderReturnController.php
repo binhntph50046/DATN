@@ -7,33 +7,44 @@ use Illuminate\Http\Request;
 use App\Models\OrderReturn;
 use Illuminate\Support\Facades\Auth;
 use App\Events\OrderStatusUpdated;
+
 class OrderReturnController extends Controller
 {
-    /**
-     * Hiển thị danh sách yêu cầu hoàn hàng
-     */
+    // Hiển thị danh sách yêu cầu hoàn hàng
     public function index()
     {
         // Lấy tất cả yêu cầu hoàn hàng, mới nhất lên đầu
         $returns = OrderReturn::with(['order', 'user', 'admin'])->latest()->paginate(20);
         return view('admin.order_returns.index', compact('returns'));
     }
-
-    /**
-     * Hiển thị chi tiết một yêu cầu hoàn hàng
-     */
+    // Hiển thị chi tiết một yêu cầu hoàn hàng
     public function show($id)
     {
         $return = OrderReturn::with(['order', 'user', 'admin'])->findOrFail($id);
         return view('admin.order_returns.show', compact('return'));
     }
-
-    /**
-     * Duyệt yêu cầu hoàn hàng
-     */
+    // Duyệt yêu cầu hoàn hàng
     public function approve(Request $request, $id)
     {
-        $return = \App\Models\OrderReturn::with('items.orderItem.product')->findOrFail($id);
+        $request->validate([
+            'refund_proof_image' => 'required|image|max:2048', // Validate hình ảnh, max 2MB
+            'refund_note' => 'nullable|string|max:500',
+        ]);
+
+        $return = OrderReturn::with('items.orderItem.product')->findOrFail($id);
+
+        // Upload hình ảnh chứng từ
+        if ($request->hasFile('refund_proof_image')) {
+            $image = $request->file('refund_proof_image');
+            $imageName = time() . '_' . $return->id . '.' . $image->getClientOriginalExtension();
+            $image->move(public_path('uploads/returns'), $imageName);
+            $return->refund_proof_image = 'uploads/returns/' . $imageName;
+        }
+
+        // Lưu ghi chú hoàn tiền
+        if ($request->filled('refund_note')) {
+            $return->refund_note = $request->refund_note;
+        }
 
         // Tính tổng tiền hoàn lại
         $refundAmount = 0;
@@ -53,7 +64,10 @@ class OrderReturnController extends Controller
             'status' => 'approved',
             'admin_id' => Auth::id(),
             'processed_at' => now(),
+            'refunded_at' => now(), // Thêm thời gian hoàn tiền
+            'refund_amount' => $refundAmount, // Thêm số tiền hoàn trả
         ]);
+
         event(new OrderStatusUpdated($return->order));
 
         // Cập nhật số tiền đã hoàn vào đơn hàng
@@ -71,6 +85,7 @@ class OrderReturnController extends Controller
                 }
             }
         }
+
         if ($totalReturnedQty >= $totalOrderQty) {
             $order->status = 'returned';
         } elseif ($totalReturnedQty > 0) {
@@ -78,13 +93,10 @@ class OrderReturnController extends Controller
         }
         $order->save();
 
-       
-
-        return redirect()->route('admin.order-returns.index')->with('success', 'Đã duyệt yêu cầu hoàn hàng. Đã hoàn lại ' . number_format($refundAmount) . ' VNĐ cho khách.');
+        return redirect()->route('admin.order-returns.index')
+            ->with('success', 'Đã duyệt yêu cầu hoàn hàng và lưu chứng từ hoàn tiền. Đã hoàn lại ' . number_format($refundAmount) . ' VNĐ cho khách.');
     }
-    /**
-     * Từ chối yêu cầu hoàn hàng
-     */
+    // Từ chối yêu cầu hoàn hàng
     public function reject($id)
     {
         $return = OrderReturn::findOrFail($id);

@@ -27,9 +27,11 @@ class AdminDatabaseNotification extends Notification
     public function toDatabase($notifiable)
     {
         return [
-            'type' => $this->data['type'], // ví dụ: 'user_created'
+            'type' => $this->data['type'],
             'title' => $this->data['title'],
             'message' => $this->data['message'],
+            'user_id' => $this->data['user_id'] ?? null,
+            'user_name' => $this->data['user_name'] ?? null,
             'url' => $this->data['url'] ?? null,
         ];
     }

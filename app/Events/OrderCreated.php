@@ -25,7 +25,11 @@ class OrderCreated implements ShouldBroadcastNow
         return [
             'order_id' => $this->order->id,
             'user' => $this->order->user->name ?? $this->order->shipping_name,
-            'total' => $this->order->total,
-        ];
+            'total' => $this->order->total_price,
+            'url'=> route('admin.orders.show', $this->order->id),        ];
+    }
+    public function broadcastVia()
+    {
+        return ['pusher-notify'];
     }
 }

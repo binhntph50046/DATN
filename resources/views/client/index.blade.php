@@ -371,79 +371,84 @@
     <!-- End Why Choose Us Section -->
 
     <!-- Start Testimonial Slider -->
-    <div class="testimonial-section" data-aos="fade-up">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-7 mx-auto text-center" data-aos="fade-up">
-                    <h2 class="section-title">Testimonials</h2>
-                </div>
-            </div>
+    <!-- SẢN PHẨM ĐƯỢC ĐÁNH GIÁ TỐT NHẤT -->
+<section class="top-rated-products py-5" data-aos="fade-up">
+    <div class="container">
+        <div class="text-center mb-4">
+            <h2 class="section-title">Các Sản Phẩm Được Đánh Giá Tốt Nhất</h2>
+        </div>
 
-            <div class="row justify-content-center">
-                <div class="col-lg-12" data-aos="fade-up" data-aos-delay="100">
-                    <div class="testimonial-slider-wrap text-center">
-                        <div id="testimonial-nav">
-                            <span class="prev" data-controls="prev"><span class="fa fa-chevron-left"></span></span>
-                            <span class="next" data-controls="next"><span class="fa fa-chevron-right"></span></span>
-                        </div>
+        <div class="position-relative">
+            <!-- Điều hướng mũi tên -->
+            {{-- <div id="testimonial-nav" class="d-flex justify-content-between mb-3">
+                <span class="prev" data-controls="prev"><i class="fa fa-chevron-left"></i></span>
+                <span class="next" data-controls="next"><i class="fa fa-chevron-right"></i></span>
+            </div> --}}
 
-                        <div class="testimonial-slider">
-                            <div class="item">
-                                <div class="row justify-content-center">
-                                    <div class="col-lg-8 mx-auto">
-                                        <div class="testimonial-block text-center d-flex justify-content-center">
-                                            <div class="author-info col-lg-4">
-                                                <div class="author-pic">
-                                                    <img src="images/person-1.png" alt="Maria Jones" class="img-fluid">
-                                                </div>
-                                                <h3 class="font-weight-bold">Maria Jones</h3>
-                                                <span class="position d-block mb-3">CEO, Co-Founder, XYZ Inc.</span>
-                                            </div>
-                                            <blockquote class="mb-5 col-lg-8">
-                                                <p>"Donec facilisis quam ut purus rutrum lobortis. Donec vitae
-                                                    odio quis nisl dapibus malesuada. Nullam ac aliquet velit. Aliquam
-                                                    vulputate velit imperdiet dolor tempor tristique. Pellentesque
-                                                    habitant morbi tristique senectus et netus et malesuada fames ac
-                                                    turpis egestas. Integer convallis volutpat dui quis
-                                                    scelerisque."</p>
-                                            </blockquote>
-                                        </div>
-                                    </div>
+            <!-- Slider sản phẩm -->
+            <div class="top-rated-slider">
+                @php
+                    if (!function_exists('getImagesArray')) {
+                        function getImagesArray($images)
+                        {
+                            if (is_array($images)) return $images;
+                            if (is_string($images)) {
+                                $decoded = json_decode($images, true);
+                                return is_array($decoded) ? $decoded : [];
+                            }
+                            return [];
+                        }
+                    }
+                @endphp
+
+                @foreach ($topRatedVariants as $variant)
+                    @php
+                        $images = getImagesArray($variant->images);
+                        $imageUrl = !empty($images[0]) ? $images[0] : 'uploads/default/default.jpg';
+                    @endphp
+
+                    <div class="product-card px-3">
+                        <div class="border rounded p-4 h-100 text-center shadow-sm bg-white">
+                            <img src="{{ asset($imageUrl) }}"
+                                 alt="{{ $variant->product->name }}"
+                                 class="img-fluid mb-3"
+                                 style="height: 220px; object-fit: contain; display: inline-block; margin: 0 auto;">
+                            <h5 class="mb-1">{{ $variant->product->name }}</h5>
+                            <small class="text-muted d-block mb-2">Biến thể: {{ $variant->name }}</small>
+
+                            @if ($variant->reviews_count > 0)
+                                <div class="text-warning fw-bold mb-2">
+                                    {{ number_format($variant->avg_rating, 1) }} ★
+                                    <small class="text-secondary">({{ $variant->reviews_count }} đánh giá)</small>
                                 </div>
-                            </div>
-                            <div class="item">
-                                <div class="row justify-content-center">
-                                    <div class="col-lg-8 mx-auto">
-                                        <div class="testimonial-block text-center d-flex justify-content-center">
-                                            <div class="author-info col-lg-4">
-                                                <div class="author-pic">
-                                                    <img src="images/person-1.png" alt="Maria Jones" class="img-fluid">
-                                                </div>
-                                                <h3 class="font-weight-bold">Maria Jones</h3>
-                                                <span class="position d-block mb-3">CEO, Co-Founder, XYZ Inc.</span>
-                                            </div>
-                                            <blockquote class="mb-5 col-lg-8">
-                                                <p>"Donec facilisis quam ut purus rutrum lobortis. Donec vitae
-                                                    odio quis nisl dapibus malesuada. Nullam ac aliquet velit. Aliquam
-                                                    vulputate velit imperdiet dolor tempor tristique. Pellentesque
-                                                    habitant morbi tristique senectus et netus et malesuada fames ac
-                                                    turpis egestas. Integer convallis volutpat dui quis
-                                                    scelerisque."</p>
-                                            </blockquote>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <!-- Thêm các item khác nếu cần -->
+                            @else
+                                <small class="text-muted">Chưa có đánh giá</small>
+                            @endif
                         </div>
                     </div>
-                </div>
+                @endforeach
+
+                @if ($topRatedVariants->isEmpty())
+                    <div class="product-card px-3">
+                        <div class="border rounded p-3 text-center shadow-sm bg-light">
+                            <img src="{{ asset('uploads/default/default.jpg') }}"
+                                 alt="No data"
+                                 class="img-fluid mb-3"
+                                 style="height: 180px;">
+                            <h5>Chưa có dữ liệu</h5>
+                            <p class="text-muted">Không có sản phẩm nào được đánh giá.</p>
+                        </div>
+                    </div>
+                @endif
             </div>
         </div>
     </div>
+</section>
+
     <!-- End Testimonial Slider -->
 
     <!-- Start Blog Section -->
+    @if ($latestBlogs->count() > 0)
     <div class="blog-section" data-aos="fade-up">
         <div class="container">
             <div class="row mb-5">
@@ -456,11 +461,13 @@
             </div>
 
             <div class="row">
-                @foreach($latestBlogs as $blog)
-                    <div class="col-12 col-sm-6 col-md-4 mb-4 mb-md-0" data-aos="fade-up" data-aos-delay="{{ $loop->iteration * 100 }}">
+                @foreach ($latestBlogs as $blog)
+                    <div class="col-12 col-sm-6 col-md-4 mb-4 mb-md-0" data-aos="fade-up"
+                        data-aos-delay="{{ $loop->iteration * 100 }}">
                         <div class="post-entry">
                             <a href="{{ route('blog.show', $blog->slug) }}" class="post-thumbnail">
-                                <img src="{{ asset($blog->image ?? 'images/default-blog.jpg') }}" alt="{{ $blog->title }}" class="img-fluid">
+                                <img src="{{ asset($blog->image ?? 'images/default-blog.jpg') }}"
+                                    alt="{{ $blog->title }}" class="img-fluid">
                             </a>
                             <div class="post-content-entry">
                                 <h3><a href="{{ route('blog.show', $blog->slug) }}">{{ $blog->title }}</a></h3>
@@ -475,6 +482,7 @@
             </div>
         </div>
     </div>
+    @endif
     <!-- End Blog Section -->
 
     <!-- Nút FAB và Panel Chat -->
@@ -594,13 +602,13 @@
 @section('scripts')
     <script>
         $(document).ready(function() {
-            $('.product-slider, .latest-products-slider').slick({
+            $('.product-slider, .latest-products-slider, .top-rated-slider').slick({
                 dots: true,
                 infinite: true,
                 speed: 300,
                 slidesToShow: 3,
                 slidesToScroll: 1,
-                autoplay: true,
+                autoplay: false,
                 autoplaySpeed: 3000,
                 arrows: true,
                 responsive: [{
@@ -621,6 +629,7 @@
             });
         });
     </script>
+
 @endsection
 
 <style>
@@ -894,9 +903,11 @@
             font-size: 1.5rem;
         }
 
-        .ai-advice .lead {
-            font-size: 1rem;
-        }
+       
+    }
+
+    .author-pic img {
+        border-radius: 8px;
     }
 </style>
 

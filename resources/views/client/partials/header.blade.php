@@ -157,10 +157,12 @@
             transform: translateY(10px);
             transition: opacity 0.3s ease-out, transform 0.3s ease-out;
             display: block;
+            pointer-events: none;
         }
 
         .dropdown-menu.show {
             opacity: 1;
+            pointer-events: auto;
             transform: translateY(0);
         }
 
@@ -295,14 +297,15 @@
                     </a>
                 @endguest
                 <ul class="dropdown-menu dropdown-menu-bg" aria-labelledby="userDropdown">
+                    <li><a class="dropdown-item text-white" href="{{ route('order.guest.tracking') }}">Tra cứu đơn hàng</a></li>
                     @guest
                         <li><a class="dropdown-item text-white" href="{{ route('register') }}">Đăng kí</a></li>
                         <li><a class="dropdown-item text-white" href="{{ route('login') }}">Đăng nhập</a></li>
                     @else
                         @if (Auth::user()->hasRole(['admin', 'staff']))
                             <li>
-                                <a class="dropdown-item text-white" href="{{ route('admin.dashboard') }}">Admin
-                                    Dashboard</a>
+                                <a class="dropdown-item text-white" href="{{ route('admin.dashboard') }}">Trang quản
+                                    trị</a>
                             </li>
                         @endif
                         <li><a class="dropdown-item text-white" href="{{ route('profile.index') }}">Trang cá nhân</a></li>

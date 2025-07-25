@@ -182,7 +182,7 @@ class BlogController
     public function trash()
     {
         $blogs = Blog::onlyTrashed()->with('category', 'author')->paginate(12);
-        return view('admin.blogs.trash', compact('blogs'));
+        return view('admin.blogs.trash', data: compact('blogs'));
     }
 
     /**

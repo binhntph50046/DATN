@@ -557,7 +557,7 @@
             padding: 9px 26px;
             font-size: 16px;
             font-weight: 500;
-            color: #1a237e;
+            color: #3b5d50;
             background-color: #f0f0f5;
             border: 1px solid #d0d0e0;
             border-radius: 999px;
@@ -572,9 +572,9 @@
         }
 
         .tab-btn-custom.active {
-            background-color: #1a237e;
+            background-color: #3b5d50;
             color: #fff;
-            border-color: #1a237e;
+            border-color: #3b5d50;
             box-shadow: 0 4px 10px rgba(26, 35, 126, 0.2);
         }
 

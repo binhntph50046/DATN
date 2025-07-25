@@ -1,295 +1,426 @@
 @extends('client.layouts.app')
-
+@section('title', 'Chi tiết đơn hàng - Apple Store')
 @section('content')
     <style>
-        .order-detail-container {
-            background: #fff;
-            border-radius: 18px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-            padding: 2.5rem 2rem;
-            margin-top: 100px;
-            max-width: 900px;
-            margin-left: auto;
-            margin-right: auto;
+        :root {
+            --primary-color: #6b7280;
+            --secondary-color: #f3f4f6;
+            --accent-color: #4f46e5;
+            --text-primary: #374151;
+            --text-secondary: #6b7280;
+            --border-color: #e5e7eb;
+            --success-color: #059669;
+            --danger-color: #dc2626;
         }
 
-        .order-detail-header {
+        .order-page {
+            max-width: 1200px;
+            margin: 120px auto 40px;
+            padding: 0 20px;
+        }
+
+        .order-card {
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+            margin-bottom: 24px;
+        }
+
+        .order-header {
+            padding: 32px;
+            border-bottom: 1px solid var(--border-color);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 2rem;
-            flex-wrap: wrap;
+            background: var(--secondary-color);
         }
 
-        .order-detail-title {
-            font-size: 2rem;
-            font-weight: 700;
-            color: #2c3e50;
-            margin-bottom: 0.5rem;
-        }
-
-        .order-detail-status {
+        .order-title {
             display: flex;
             align-items: center;
-            gap: 1rem;
+            gap: 16px;
+            color: var(--text-primary);
         }
 
-        .status-badge {
-            padding: 0.5rem 1.2rem;
-            border-radius: 25px;
-            font-size: 1rem;
+        .order-number {
+            font-size: 24px;
             font-weight: 600;
-            display: inline-flex;
+            margin-bottom: 4px;
+        }
+
+        .order-date {
+            color: var(--text-secondary);
+            font-size: 14px;
+            margin-top: 4px;
+        }
+
+        .order-status {
+            padding: 8px 16px;
+            border-radius: 20px;
+            background: #fff;
+            color: var(--accent-color);
+            font-weight: 500;
+            display: flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: 8px;
+            border: 1px solid var(--accent-color);
         }
 
-        .status-warning {
-            background: #fff3cd;
-            color: #856404;
+        .shipping-info {
+            padding: 24px 32px;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 24px;
         }
 
-        .status-info {
-            background: #d1ecf1;
-            color: #0c5460;
+        .info-group {
+            display: flex;
+            gap: 16px;
         }
 
-        .status-primary {
-            background: #d1ecf1;
-            color: #155724;
+        .info-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: var(--secondary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--accent-color);
         }
 
-        .status-success {
-            background: #d4edda;
-            color: #155724;
+        .info-content {
+            flex: 1;
         }
 
-        .status-danger {
-            background: #f8d7da;
-            color: #721c24;
+        .info-label {
+            color: var(--text-secondary);
+            font-size: 14px;
+            margin-bottom: 4px;
         }
 
-        .status-secondary {
-            background: #e2e3e5;
-            color: #383d41;
+        .info-value {
+            color: var(--text-primary);
+            font-weight: 500;
+            font-size: 16px;
         }
 
-        .order-section-title {
-            font-size: 1.2rem;
+        .info-value.highlight {
+            color: var(--accent-color);
             font-weight: 600;
-            color: #495057;
-            margin-top: 2rem;
-            margin-bottom: 1rem;
         }
 
-        .order-summary-table th,
-        .order-summary-table td {
+        .order-products {
+            padding: 24px 32px;
+        }
+
+        .product-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .product-table th {
+            text-align: left;
+            padding: 12px 16px;
+            background: var(--secondary-color);
+            color: var(--text-primary);
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .product-table td {
+            padding: 16px;
+            border-bottom: 1px solid var(--border-color);
             vertical-align: middle;
         }
 
-        .order-summary-table img {
-            width: 60px;
-            height: 60px;
-            object-fit: cover;
-            border-radius: 10px;
-            border: 2px solid #f8f9fa;
-        }
-
-        .order-total-row td {
-            font-size: 1.2rem;
-            font-weight: bold;
-            color: #e74c3c;
-            border-top: 2px solid #eee;
-        }
-
-        .order-info-box {
-            background: #f8f9fa;
-            border-radius: 12px;
-            padding: 1.5rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .order-info-box p {
-            margin-bottom: 0.5rem;
-            color: #2c3e50;
-        }
-
-        .order-detail-actions {
-            margin-top: 2.5rem;
+        .product-info {
             display: flex;
-            gap: 1rem;
+            align-items: center;
+            gap: 16px;
         }
 
-        .btn-back {
-            background: #222;
-            color: #fff;
-            border-radius: 10px;
-            padding: 0.75rem 2rem;
+        .product-image {
+            width: 100px;
+            height: 100px;
+            border-radius: 8px;
+            object-fit: cover;
+            border: 1px solid var(--border-color);
+        }
+
+        .product-details {
+            flex: 1;
+        }
+
+        .product-details h3 {
+            color: var(--text-primary);
             font-weight: 600;
-            font-size: 1rem;
+            margin: 0 0 8px;
+            font-size: 16px;
+        }
+
+        .product-variant {
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        .quantity-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 32px;
+            height: 32px;
+            background: var(--secondary-color);
+            border-radius: 6px;
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        .price {
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .order-summary {
+            padding: 24px 32px;
+            border-top: 1px solid var(--border-color);
+            background: var(--secondary-color);
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        .summary-row.total {
+            color: var(--text-primary);
+            font-weight: 600;
+            font-size: 18px;
+            border-top: 1px solid var(--border-color);
+            margin-top: 8px;
+            padding-top: 16px;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 500;
+            text-decoration: none;
             transition: all 0.2s;
         }
 
-        .btn-back:hover {
-            background: #444;
+        .btn-primary {
+            background: var(--accent-color);
             color: #fff;
         }
 
-        @media (max-width: 768px) {
-            .order-detail-container {
-                padding: 1.2rem 0.5rem;
-            }
+        .btn-secondary {
+            background: var(--secondary-color);
+            color: var(--text-primary);
+        }
 
-            .order-detail-header {
+        .alert {
+            padding: 16px;
+            border-radius: 8px;
+            margin-top: 24px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .alert-success {
+            background: #ecfdf5;
+            color: var(--success-color);
+            border: 1px solid #a7f3d0;
+        }
+
+        .alert-danger {
+            background: #fef2f2;
+            color: var(--danger-color);
+            border: 1px solid #fecaca;
+        }
+
+        @media (max-width: 768px) {
+            .order-header {
                 flex-direction: column;
                 align-items: flex-start;
-                gap: 1rem;
+                gap: 16px;
+            }
+
+            .shipping-info {
+                grid-template-columns: 1fr;
+            }
+
+            .product-table {
+                display: block;
+                overflow-x: auto;
+            }
+
+            .product-info {
+                min-width: 300px;
             }
         }
-
-        .text-danger {
-            color: #dc3545 !important;
-        }
-        
-        .order-summary-table tfoot tr:not(.order-total-row) td {
-            padding: 8px;
-            font-size: 1rem;
-        }
     </style>
-    <div class="order-detail-container">
-        <div class="order-detail-header">
-            <div>
-                <div class="order-detail-title">Chi tiết đơn hàng #{{ $order->id }}</div>
-                <div class="text-muted" style="font-size:1rem;">Ngày đặt: {{ $order->created_at->format('d/m/Y H:i') }}</div>
-            </div>
-            <div class="order-detail-status">
-                @php
-                    $statusClass =
-                        [
-                            'pending' => 'warning',
-                            'confirmed' => 'info',
-                            'preparing' => 'primary',
-                            'shipping' => 'info',
-                            'completed' => 'success',
-                            'cancelled' => 'danger',
-                            'returned' => 'secondary',
-                            'partially_returned' => 'secondary',
-                        ][$order->status] ?? 'secondary';
-                    $statusIcons =
-                        [
-                            'pending' => 'fa-clock',
-                            'confirmed' => 'fa-circle-check',
-                            'preparing' => 'fa-box',
-                            'shipping' => 'fa-truck',
-                            'completed' => 'fa-circle-check',
-                            'cancelled' => 'fa-ban',
-                            'returned' => 'fa-undo',
-                            'partially_returned' => 'fa-undo',
-                        ][$order->status] ?? 'fa-circle';
-                @endphp
-                <span id="order-status-badge" class="status-badge status-{{ $statusClass }}">
-                    <i class="fas {{ $statusIcons }}"></i>
+
+    <div class="order-page">
+        <div class="order-card">
+            <div class="order-header">
+                <div class="order-title">
+                    <div>
+                        <div class="order-number">
+                            <i class="fas fa-shopping-bag"></i>
+                            Đơn hàng #{{ $order->id }}
+                        </div>
+                        <div class="order-date">
+                            <i class="far fa-calendar-alt"></i>
+                            {{ $order->created_at->format('d/m/Y H:i') }}
+                        </div>
+                    </div>
+                </div>
+                <div class="order-status">
+                    <i class="fas {{ $statusIcons[$order->status] ?? 'fa-circle' }}"></i>
                     <span id="order-status-text">{{ $order->getStatusTextAttribute() }}</span>
-                </span>
+                </div>
+            </div>
+
+            <div class="shipping-info">
+                <div class="info-group">
+                    <div class="info-icon">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="info-content">
+                        <div class="info-label">Người nhận</div>
+                        <div class="info-value highlight">{{ $order->shipping_name }}</div>
+                    </div>
+                </div>
+                <div class="info-group">
+                    <div class="info-icon">
+                        <i class="fas fa-phone"></i>
+                    </div>
+                    <div class="info-content">
+                        <div class="info-label">Số điện thoại</div>
+                        <div class="info-value highlight">{{ $order->shipping_phone }}</div>
+                    </div>
+                </div>
+                <div class="info-group">
+                    <div class="info-icon">
+                        <i class="fas fa-envelope"></i>
+                    </div>
+                    <div class="info-content">
+                        <div class="info-label">Email</div>
+                        <div class="info-value">{{ $order->shipping_email }}</div>
+                    </div>
+                </div>
+                <div class="info-group">
+                    <div class="info-icon">
+                        <i class="fas fa-map-marker-alt"></i>
+                    </div>
+                    <div class="info-content">
+                        <div class="info-label">Địa chỉ</div>
+                        <div class="info-value">{{ $order->shipping_address }}</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="order-products">
+                <table class="product-table">
+                    <thead>
+                        <tr>
+                            <th>Sản phẩm</th>
+                            <th>Số lượng</th>
+                            <th>Đơn giá</th>
+                            <th>Thành tiền</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @php
+                            // Helper function to safely handle both JSON strings and arrays
+                            function getImagesArray($images) {
+                                if (is_array($images)) {
+                                    return $images;
+                                }
+                                if (is_string($images)) {
+                                    $decoded = json_decode($images, true);
+                                    return is_array($decoded) ? $decoded : [];
+                                }
+                                return [];
+                            }
+                        @endphp
+                        @foreach ($order->items as $item)
+                            <tr>
+                                <td>
+                                    <div class="product-info">
+                                        @php
+                                            $images = $item->variant && $item->variant->images ? getImagesArray($item->variant->images) : [];
+                                            $imgSrc = isset($images[0]) ? asset($images[0]) : (isset($item->product->image) ? asset($item->product->image) : asset('uploads/default/default.jpg'));
+                                        @endphp
+                                        <img src="{{ $imgSrc }}" alt="{{ $item->product->name ?? '' }}" class="product-image">
+                                        <div class="product-details">
+                                            <h3>{{ $item->product->name ?? '' }}</h3>
+                                            @if($item->variant && $item->variant->name)
+                                                <div class="product-variant">{{ $item->variant->name }}</div>
+                                            @endif
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="quantity-badge">{{ $item->quantity }}</span>
+                                </td>
+                                <td class="price">{{ number_format($item->price) }} VNĐ</td>
+                                <td class="price">{{ number_format($item->total) }} VNĐ</td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="order-summary">
+                <div class="summary-row">
+                    <span>Tạm tính</span>
+                    <span>{{ number_format($order->subtotal) }} VNĐ</span>
+                </div>
+                @if($order->discount > 0)
+                    <div class="summary-row">
+                        <span>Giảm giá</span>
+                        <span>-{{ number_format($order->discount) }} VNĐ</span>
+                    </div>
+                @endif
+                @if($order->shipping_fee > 0)
+                    <div class="summary-row">
+                        <span>Phí vận chuyển</span>
+                        <span>{{ number_format($order->shipping_fee) }} VNĐ</span>
+                    </div>
+                @endif
+                <div class="summary-row total">
+                    <span>Tổng cộng</span>
+                    <span>{{ number_format($order->total_price) }} VNĐ</span>
+                </div>
             </div>
         </div>
 
-        <div class="order-section-title">Thông tin sản phẩm</div>
-        <div class="table-responsive">
-            <table class="table order-summary-table">
-                <thead>
-                    <tr>
-                        <th>Hình ảnh</th>
-                        <th>Sản phẩm</th>
-                        <th>Biến thể</th>
-                        <th>Số lượng</th>
-                        <th>Giá</th>
-                        <th>Tổng</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @php
-                        // Helper function to safely handle both JSON strings and arrays
-                        function getImagesArray($images) {
-                            if (is_array($images)) {
-                                return $images;
-                            }
-                            if (is_string($images)) {
-                                $decoded = json_decode($images, true);
-                                return is_array($decoded) ? $decoded : [];
-                            }
-                            return [];
-                        }
-                    @endphp
-                    @foreach ($order->items as $item)
-                        <tr>
-                            <td>
-                                @php
-                                    $images = $item->variant && $item->variant->images
-                                        ? getImagesArray($item->variant->images)
-                                        : [];
-                                    $imgSrc = isset($images[0])
-                                        ? asset($images[0])
-                                        : (isset($item->product->image)
-                                            ? asset($item->product->image)
-                                            : asset('uploads/default/default.jpg'));
-                                @endphp
-                                <img src="{{ $imgSrc }}" alt="">
-                            </td>
-                            <td>{{ $item->product->name ?? '' }}</td>
-                            <td>{{ $item->variant->name ?? '' }}</td>
-                            <td>{{ $item->quantity }}</td>
-                            <td>{{ number_format($item->price) }} VNĐ</td>
-                            <td>{{ number_format($item->total) }} VNĐ</td>
-                        </tr>
-                    @endforeach
-                </tbody>
-                <tfoot>
-                    <tr>
-                        <td colspan="5" class="text-end">Tạm tính:</td>
-                        <td>{{ number_format($order->subtotal) }} VNĐ</td>
-                    </tr>
-                    @if($order->discount > 0)
-                    <tr>
-                        <td colspan="5" class="text-end">Giảm giá:</td>
-                        <td class="text-danger">-{{ number_format($order->discount) }} VNĐ</td>
-                    </tr>
-                    @endif
-                    @if($order->shipping_fee > 0)
-                    <tr>
-                        <td colspan="5" class="text-end">Phí vận chuyển:</td>
-                        <td>{{ number_format($order->shipping_fee) }} VNĐ</td>
-                    </tr>
-                    @endif
-                    <tr class="order-total-row">
-                        <td colspan="5" class="text-end">Tổng tiền:</td>
-                        <td>{{ number_format($order->total_price) }} VNĐ</td>
-                    </tr>
-                </tfoot>
-            </table>
-        </div>
-
-        <div class="order-section-title">Thông tin giao hàng</div>
-        <div class="order-info-box">
-            <p><strong>Người nhận:</strong> {{ $order->shipping_name }}</p>
-            <p><strong>Địa chỉ:</strong> {{ $order->shipping_address }}</p>
-            <p><strong>Số điện thoại:</strong> {{ $order->shipping_phone }}</p>
-            <p><strong>Email:</strong> {{ $order->shipping_email }}</p>
-        </div>
-
-        <div class="order-detail-actions">
-            <a href="{{ route('shop') }}" class="btn btn-back">
-                <i class="fas fa-arrow-left me-2"></i> Tiếp tục mua sắm
+        <div style="text-align: center;">
+            <a href="{{ route('shop') }}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i>
+                Tiếp tục mua sắm
             </a>
         </div>
 
         @if (session('success'))
-            <div class="alert alert-success mt-3">
+            <div class="alert alert-success">
+                <i class="fas fa-check-circle"></i>
                 {{ session('success') }}
             </div>
         @endif
         @if (session('error'))
-            <div class="alert alert-danger mt-3">
+            <div class="alert alert-danger">
+                <i class="fas fa-exclamation-circle"></i>
                 {{ session('error') }}
             </div>
         @endif
@@ -302,42 +433,12 @@
             let orderId = {{ $order->id }};
             window.Echo.channel('orderStatus.' + orderId)
                 .listen('.OrderStatusUpdated', (e) => {
-                    // Map trạng thái sang class và icon
-                    const statusClassMap = {
-                        'pending': 'warning',
-                        'confirmed': 'info',
-                        'preparing': 'primary',
-                        'shipping': 'info',
-                        'completed': 'success',
-                        'cancelled': 'danger',
-                        'returned': 'secondary',
-                        'partially_returned': 'secondary',
-                    };
-                    const statusIconMap = {
-                        'pending': 'fa-clock',
-                        'confirmed': 'fa-circle-check',
-                        'preparing': 'fa-box',
-                        'shipping': 'fa-truck',
-                        'completed': 'fa-circle-check',
-                        'cancelled': 'fa-ban',
-                        'returned': 'fa-undo',
-                        'partially_returned': 'fa-undo',
-                    };
-
-                    // Cập nhật badge trạng thái
-                    const statusBadge = document.getElementById('order-status-badge');
                     const statusText = document.getElementById('order-status-text');
-
-                    if (statusBadge && statusText) {
-                        statusBadge.className =
-                        `status-badge status-${statusClassMap[e.status] || 'secondary'}`;
-                        statusBadge.innerHTML =
-                            `<i class="fas ${statusIconMap[e.status] || 'fa-circle'}"></i> ${e.status_text}`;
+                    if (statusText) {
+                        statusText.textContent = e.status_text;
                     }
 
-                    // Nếu đơn hàng bị hủy hoặc hoàn trả, reload trang sau 1 giây
-                    if (e.status === 'cancelled' || e.status === 'returned' || e.status ===
-                        'partially_returned') {
+                    if (e.status === 'cancelled' || e.status === 'returned' || e.status === 'partially_returned') {
                         setTimeout(() => {
                             window.location.reload();
                         }, 1000);

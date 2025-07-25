@@ -1,15 +1,21 @@
-import axios from 'axios';
-window.axios = axios;
-import echo from 'laravel-echo';
-window.Pusher = require('pusher-js');
+    import axios from 'axios';
+    window.axios = axios;
+    import toastr from 'toastr'; // Ensure toastr is installed via npm
+    // Mặc định: cho Chatify
+    window.Pusher = require('pusher-js');
 
-window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
+    window.Echo = new Echo({
+        broadcaster: 'pusher',
+        key: import.meta.env.VITE_PUSHER_APP_KEY,
+        cluster: import.meta.env.VITE_PUSHER_APP_CLUSTER,
+        forceTLS: true,
+    });
 
-window.Echo = new echo({
-    broadcaster: 'pusher',
-    key: 'fabd5ba46281a80295b5',
-    cluster: 'ap1',
-    forceTLS: true,
-    encrypted: true,
-});
-import './echo';
+    // Khác biệt: tạo 1 Echo riêng cho Notifications
+    window.NotifyEcho = new Echo({
+        broadcaster: 'pusher',
+        key: import.meta.env.VITE_PUSHER_NOTIFY_KEY,
+        cluster: import.meta.env.VITE_PUSHER_NOTIFY_CLUSTER,
+        forceTLS: true,
+    });
+    import './noti';

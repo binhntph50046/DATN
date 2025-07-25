@@ -18,6 +18,7 @@ return new class extends Migration
             $table->text('data');
             $table->timestamp('read_at')->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
@@ -27,5 +28,9 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('notifications');
+        Schema::table('notifications', function (Blueprint $table) {
+            $table->dropSoftDeletes();
+        });
+
     }
 };

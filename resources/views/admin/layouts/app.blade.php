@@ -78,6 +78,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
     <!-- Pusher -->
     <script src="https://js.pusher.com/8.4.0/pusher.min.js"></script>
+    
     <script src="{{ asset('assets/js/plugins/popper.min.js') }}"></script>
     <script src="{{ asset('assets/js/plugins/simplebar.min.js') }}"></script>
     <script src="{{ asset('assets/js/plugins/bootstrap.min.js') }}"></script>
@@ -86,7 +87,7 @@
     <script src="{{ asset('assets/js/plugins/feather.min.js') }}"></script>
     <script src="{{ asset('assets/js/custom-sidebar.js') }}"></script>
 
-     @vite(['resources/js/app.js','resources/js/echo.js'])
+     @vite(['resources/js/app.js','resources/js/noti.js'])
 
     
     <script src="https://cdn.jsdelivr.net/npm/laravel-echo/dist/echo.iife.js"></script>

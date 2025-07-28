@@ -120,7 +120,7 @@
                         <li class="pc-item">
                             <a href="{{ route('admin.flash-sales.index') }}" class="pc-link">
                                 <span class="pc-micon"><i class="ti ti-bolt"></i></span>
-                                <span class="pc-mtext">Flash Sale</span>
+                                <span class="pc-mtext">Khuyến mãi</span>
                             </a>
                         </li>
                     </ul>
@@ -155,7 +155,7 @@
                         <li class="pc-item">
                             <a href="{{ route('admin.banners.index') }}" class="pc-link">
                                 <span class="pc-micon"><i class="ti ti-photo"></i></span>
-                                <span class="pc-mtext">Banner</span>
+                                <span class="pc-mtext">Biểu ngữ</span>
                             </a>
                         </li>
                         <li class="pc-item">

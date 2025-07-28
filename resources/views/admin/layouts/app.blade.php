@@ -87,7 +87,7 @@
     <script src="{{ asset('assets/js/plugins/feather.min.js') }}"></script>
     <script src="{{ asset('assets/js/custom-sidebar.js') }}"></script>
 
-     @vite(['resources/js/app.js','resources/js/noti.js'])
+     {{-- @vite(['resources/js/app.js','resources/js/noti.js']) --}}
 
     
     <script src="https://cdn.jsdelivr.net/npm/laravel-echo/dist/echo.iife.js"></script>

@@ -37,7 +37,7 @@
 
                             <div class="mb-3">
                                 <label for="title" class="form-label">Tiêu đề</label>
-                                <input type="text" class="form-control @error('title') is-invalid @enderror" id="title" name="title" value="{{ old('title', $banner->title) }}" required>
+                                <input type="text" class="form-control @error('title') is-invalid @enderror" id="title" name="title" value="{{ old('title', $banner->title) }}">
                                 @error('title')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
@@ -58,7 +58,7 @@
 
                             <div class="mb-3">
                                 <label for="status" class="form-label">Trạng thái</label>
-                                <select class="form-select @error('status') is-invalid @enderror" id="status" name="status" required>
+                                <select class="form-select @error('status') is-invalid @enderror" id="status" name="status">
                                     <option value="active" {{ old('status', $banner->status) == 'active' ? 'selected' : '' }}>Hoạt động</option>
                                     <option value="inactive" {{ old('status', $banner->status) == 'inactive' ? 'selected' : '' }}>Không hoạt động</option>
                                 </select>

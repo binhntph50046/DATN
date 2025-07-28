@@ -28,7 +28,7 @@
             <div class="row">
                 <div class="col-12">
                     <div class="card">
-                        @if ($errors->any())
+                        {{-- @if ($errors->any())
                             <div class="alert alert-danger">
                                 <ul class="mb-0">
                                     @foreach ($errors->all() as $error)
@@ -36,7 +36,7 @@
                                     @endforeach
                                 </ul>
                             </div>
-                        @endif
+                        @endif --}}
                         <div class="card-header">
                             <h5>Tạo khuyến mãi mới</h5>
                         </div>
@@ -46,20 +46,29 @@
                                 <div class="row">
                                     <div class="col-md-6 mb-3">
                                         <label for="name" class="form-label">Tên khuyến mãi</label>
-                                        <input type="text" class="form-control" id="name" name="name"
+                                        <input type="text" class="form-control @error('name') is-invalid @enderror" id="name" name="name"
                                             placeholder="Nhập tên khuyến mãi" value="{{ old('name') }}">
+                                        @error('name')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
                                     </div>
 
                                     <div class="col-md-3 mb-3">
                                         <label for="start_time" class="form-label">Thời gian bắt đầu</label>
-                                        <input type="datetime-local" class="form-control" id="start_time" name="start_time"
+                                        <input type="datetime-local" class="form-control @error('start_time') is-invalid @enderror" id="start_time" name="start_time"
                                             value="{{ old('start_time') }}">
+                                        @error('start_time')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
                                     </div>
 
                                     <div class="col-md-3 mb-3">
                                         <label for="end_time" class="form-label">Thời gian kết thúc</label>
-                                        <input type="datetime-local" class="form-control" id="end_time" name="end_time"
+                                        <input type="datetime-local" class="form-control @error('end_time') is-invalid @enderror" id="end_time" name="end_time"
                                             value="{{ old('end_time') }}">
+                                        @error('end_time')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
                                     </div>
 
                                     <div class="col-md-12 mb-3">
@@ -79,46 +88,64 @@
                                         <div class="col-md-3">
                                             <label for="product_id_0" class="form-label">Sản phẩm</label>
                                             <select id="product_id_0" name="items[0][product_id]"
-                                                class="form-select product-select" required>
+                                                class="form-select product-select @error('items.0.product_id') is-invalid @enderror">
                                                 <option value="">-- Chọn biến thể --</option>
                                                 @foreach ($products as $product)
                                                     <option value="{{ $product->id }}">{{ $product->name }}</option>
                                                 @endforeach
                                             </select>
+                                            @error('items.0.product_id')
+                                                <div class="invalid-feedback">{{ $message }}</div>
+                                            @enderror
                                         </div>
 
                                         <div class="col-md-2">
                                             <label for="variant_id_0" class="form-label">Biến thể</label>
                                             <select id="variant_id_0" name="items[0][product_variant_id]"
-                                                class="form-select variant-select" required>
+                                                class="form-select variant-select @error('items.0.product_variant_id') is-invalid @enderror">
                                                 <option value="">-- Chọn biến thể --</option>
                                             </select>
+                                            @error('items.0.product_variant_id')
+                                                <div class="invalid-feedback">{{ $message }}</div>
+                                            @enderror
                                         </div>
 
                                         <div class="col-md-1">
                                             <label for="discount_0" class="form-label">Giảm giá</label>
                                             <input id="discount_0" type="number" step="1" name="items[0][discount]"
-                                                class="form-control" placeholder="Số" min="0" required>
+                                                class="form-control @error('items.0.discount') is-invalid @enderror" placeholder="Số" min="0">
+                                            @error('items.0.discount')
+                                                <div class="invalid-feedback">{{ $message }}</div>
+                                            @enderror
                                         </div>
 
                                         <div class="col-md-1">
                                             <label for="discount_type_0" class="form-label">Loại</label>
-                                            <select id="discount_type_0" name="items[0][discount_type]" class="form-select">
+                                            <select id="discount_type_0" name="items[0][discount_type]" class="form-select @error('items.0.discount_type') is-invalid @enderror">
                                                 <option value="percent">%</option>
                                                 <option value="fixed">₫</option>
                                             </select>
+                                            @error('items.0.discount_type')
+                                                <div class="invalid-feedback">{{ $message }}</div>
+                                            @enderror
                                         </div>
 
                                         <div class="col-md-1">
                                             <label for="count_0" class="form-label">Số lượng</label>
-                                            <input id="count_0" type="number" name="items[0][count]" class="form-control"
-                                                value="1" placeholder="Qty" required>
+                                            <input id="count_0" type="number" name="items[0][count]" class="form-control @error('items.0.count') is-invalid @enderror"
+                                                value="1" placeholder="Qty">
+                                            @error('items.0.count')
+                                                <div class="invalid-feedback">{{ $message }}</div>
+                                            @enderror
                                         </div>
 
                                         <div class="col-md-1">
                                             <label for="buy_limit_0" class="form-label">Giới hạn</label>
                                             <input id="buy_limit_0" type="number" name="items[0][buy_limit]"
-                                                class="form-control" value="1" placeholder="Limit" required>
+                                                class="form-control @error('items.0.buy_limit') is-invalid @enderror" value="1" placeholder="Limit">
+                                            @error('items.0.buy_limit')
+                                                <div class="invalid-feedback">{{ $message }}</div>
+                                            @enderror
                                         </div>
 
                                         <div class="col-md-1 d-flex align-items-end">
@@ -182,7 +209,7 @@
                 <div class="flash-sale-item row align-items-end g-2 mb-2">
                     <div class="col-md-3">
                         <label class="form-label">Sản phẩm</label>
-                        <select name="items[${itemIndex}][product_id]" class="form-select product-select" required>
+                        <select name="items[${itemIndex}][product_id]" class="form-select product-select">
                             <option value="">-- Chọn sản phẩm --</option>
                             @foreach ($products as $product)
                                 <option value="{{ $product->id }}">{{ $product->name }}</option>
@@ -192,14 +219,14 @@
 
                     <div class="col-md-2">
                         <label class="form-label">Biến thể</label>
-                        <select name="items[${itemIndex}][product_variant_id]" class="form-select variant-select" required>
+                        <select name="items[${itemIndex}][product_variant_id]" class="form-select variant-select">
                             <option value="">-- Chọn biến thể --</option>
                         </select>
                     </div>
 
                     <div class="col-md-1">
                         <label class="form-label">Giảm giá</label>
-                        <input type="number" step="1" min="0" name="items[${itemIndex}][discount]" class="form-control" placeholder="Số" required>
+                        <input type="number" step="1" min="0" name="items[${itemIndex}][discount]" class="form-control" placeholder="Số">
                     </div>
 
                     <div class="col-md-1">
@@ -212,12 +239,12 @@
 
                     <div class="col-md-1">
                         <label class="form-label">Số lượng</label>
-                        <input type="number" name="items[${itemIndex}][count]" class="form-control" value="1" placeholder="Qty" required>
+                        <input type="number" name="items[${itemIndex}][count]" class="form-control" value="1" placeholder="Qty">
                     </div>
 
                     <div class="col-md-1">
                         <label class="form-label">Giới hạn</label>
-                        <input type="number" name="items[${itemIndex}][buy_limit]" class="form-control" value="1" placeholder="Limit" required>
+                        <input type="number" name="items[${itemIndex}][buy_limit]" class="form-control" value="1" placeholder="Limit">
                     </div>
 
                     <div class="col-md-1 d-flex align-items-end">

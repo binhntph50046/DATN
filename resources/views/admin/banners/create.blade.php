@@ -37,7 +37,7 @@
                                 <div class="col-md-6">
                                     <div class="mb-3">
                                         <label for="title" class="form-label">Tiêu đề</label>
-                                        <input type="text" class="form-control @error('title') is-invalid @enderror" id="title" name="title" value="{{ old('title') }}" required>
+                                        <input type="text" class="form-control @error('title') is-invalid @enderror" id="title" name="title" value="{{ old('title') }}">
                                         @error('title')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
@@ -46,7 +46,7 @@
                                 <div class="col-md-6">
                                     <div class="mb-3">
                                         <label for="image" class="form-label">Hình ảnh biểu ngữ</label>
-                                        <input type="file" class="form-control @error('image') is-invalid @enderror" id="image" name="image" required>
+                                        <input type="file" class="form-control @error('image') is-invalid @enderror" id="image" name="image">
                                         @error('image')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
@@ -58,7 +58,7 @@
                                 <div class="col-md-6">
                                     <div class="mb-3">
                                         <label for="status" class="form-label">Trạng thái</label>
-                                        <select class="form-select @error('status') is-invalid @enderror" id="status" name="status" required>
+                                        <select class="form-select @error('status') is-invalid @enderror" id="status" name="status">
                                             <option value="inactive" {{ old('status') == 'inactive' ? 'selected' : '' }}>Không hoạt động</option>
                                             <option value="active" {{ old('status') == 'active' ? 'selected' : '' }}>Hoạt động</option>
                                         </select>

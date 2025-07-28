@@ -114,7 +114,7 @@
                                                 <td>
                                                     @if ($user->avatar)
                                                         <img src="{{ asset($user->avatar) }}" alt="Avatar"
-                                                            style="max-height: 80px;">
+                                                            style="width:60px; height:60px; object-fit:cover; border-radius:8px;">
                                                     @else
                                                         <span class="text-muted">No avatar</span>
                                                     @endif

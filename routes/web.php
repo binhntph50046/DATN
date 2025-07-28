@@ -270,6 +270,7 @@ Route::prefix('admin')
 
         // Category Management
         Route::prefix('categories')->name('categories.')->middleware('permission:view categories')->group(function () {
+            Route::get('/trash', [CategoryController::class, 'trash'])->name('trash');
             Route::get('/', [CategoryController::class, 'index'])->name('index');
             Route::get('/create', [CategoryController::class, 'create'])->middleware('permission:create categories')->name('create');
             Route::post('/', [CategoryController::class, 'store'])->middleware('permission:create categories')->name('store');
@@ -277,7 +278,6 @@ Route::prefix('admin')
             Route::get('/{category}/edit', [CategoryController::class, 'edit'])->middleware('permission:edit categories')->name('edit');
             Route::put('/{category}', [CategoryController::class, 'update'])->middleware('permission:edit categories')->name('update');
             Route::delete('/{category}', [CategoryController::class, 'destroy'])->middleware('permission:delete categories')->name('destroy');
-            Route::get('/trash', [CategoryController::class, 'trash'])->name('trash');
             Route::post('/{category}/restore', [CategoryController::class, 'restore'])->middleware('permission:edit categories')->name('restore');
             Route::delete('/{category}/force-delete', [CategoryController::class, 'forceDelete'])->middleware('permission:delete categories')->name('forceDelete');
             Route::post('/change-order', [CategoryController::class, 'changeOrder'])->middleware('permission:edit categories')->name('changeOrder');

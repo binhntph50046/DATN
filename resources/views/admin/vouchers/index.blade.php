@@ -132,7 +132,7 @@
                                                 </td>
                                                 <td class="text-start">{{ $voucher->description ?? '-' }}</td>
                                                 <td>
-                                                    {{ $voucher->type === 'percentage' ? $voucher->value . '%' : number_format($voucher->value, 0, ',', '.') . '$' }}
+                                                    {{ $voucher->type === 'percentage' ? $voucher->value . '%' : number_format($voucher->value, 0, ',', '.') . ' VND' }}
                                                 </td>
                                                 <td>
                                                     {{ $voucher->expires_at ? \Carbon\Carbon::parse($voucher->expires_at)->format('d/m/Y H:i') : 'No Limit' }}

@@ -47,7 +47,7 @@
                                     <div class="col-md-6 mb-3">
                                         <label for="name" class="form-label">Tên khuyến mãi</label>
                                         <input type="text" class="form-control" id="name" name="name"
-                                            placeholder="Enter flash sale name" value="{{ old('name') }}">
+                                            placeholder="Nhập tên khuyến mãi" value="{{ old('name') }}">
                                     </div>
 
                                     <div class="col-md-3 mb-3">
@@ -98,7 +98,7 @@
                                         <div class="col-md-1">
                                             <label for="discount_0" class="form-label">Giảm giá</label>
                                             <input id="discount_0" type="number" step="1" name="items[0][discount]"
-                                                class="form-control" placeholder="Số" required>
+                                                class="form-control" placeholder="Số" min="0" required>
                                         </div>
 
                                         <div class="col-md-1">
@@ -199,7 +199,7 @@
 
                     <div class="col-md-1">
                         <label class="form-label">Giảm giá</label>
-                        <input type="number" step="1" name="items[${itemIndex}][discount]" class="form-control" placeholder="Số" required>
+                        <input type="number" step="1" min="0" name="items[${itemIndex}][discount]" class="form-control" placeholder="Số" required>
                     </div>
 
                     <div class="col-md-1">

@@ -46,7 +46,7 @@
                                     <label for="type" class="form-label">Loại</label>
                                     <select name="type" id="type"
                                         class="form-select @error('type') is-invalid @enderror" required>
-                                        <option value="fixed" {{ old('type') == 'fixed' ? 'selected' : '' }}>Số tiền cố định (USA)</option>
+                                        <option value="fixed" {{ old('type') == 'fixed' ? 'selected' : '' }}>Số tiền cố định (VND)</option>
                                         <option value="percentage" {{ old('type') == 'percentage' ? 'selected' : '' }}>Phần trăm (%)</option>
                                     </select>
                                     @error('type')

@@ -84,7 +84,7 @@
                                 <div id="flash-sale-items-container">
                                     <h6>Biến thể khuyến mãi</h6>
 
-                                    <div class="flash-sale-item row align-items-end g-2 mb-2">
+                                    <div class="flash-sale-item row align-items-top g-2 mb-3">
                                         <div class="col-md-3">
                                             <label for="product_id_0" class="form-label">Sản phẩm</label>
                                             <select id="product_id_0" name="items[0][product_id]"
@@ -148,7 +148,7 @@
                                             @enderror
                                         </div>
 
-                                        <div class="col-md-1 d-flex align-items-end">
+                                        <div class="col-md-1 d-flex align-items-center">
                                             <button type="button" class="btn btn-danger btn-sm remove-item">X</button>
                                         </div>
                                     </div>
@@ -206,7 +206,7 @@
             // Thêm dòng mới
             $('#add-item').click(function() {
                 const newItem = `
-                <div class="flash-sale-item row align-items-end g-2 mb-2">
+                <div class="flash-sale-item row align-items-top g-2 mb-3">
                     <div class="col-md-3">
                         <label class="form-label">Sản phẩm</label>
                         <select name="items[${itemIndex}][product_id]" class="form-select product-select">

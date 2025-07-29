@@ -36,14 +36,14 @@ class VoucherController
         if ($voucher->min_order_amount && $request->subtotal < $voucher->min_order_amount) {
             return response()->json([
                 'success' => false,
-                'message' => '⚠️ Đơn hàng phải có giá trị tối thiểu ' . number_format($voucher->min_order_amount) . ' VNĐ!'
+                'message' => ' Đơn hàng phải có giá trị tối thiểu ' . number_format($voucher->min_order_amount) . ' VNĐ!'
             ]);
         }
 
         if ($voucher->usage_limit && $voucher->used_count >= $voucher->usage_limit) {
             return response()->json([
                 'success' => false,
-                'message' => '⚠️ Mã giảm giá đã hết lượt sử dụng!'
+                'message' => 'Mã giảm giá đã hết lượt sử dụng!'
             ]);
         }
 
@@ -61,7 +61,7 @@ class VoucherController
                 if (!$request->filled('email')) {
                     return response()->json([
                         'success' => false,
-                        'message' => '⚠️ Vui lòng nhập email để sử dụng mã giảm giá!'
+                        'message' => 'Vui lòng nhập email để sử dụng mã giảm giá!'
                     ]);
                 }
                 $userUsedCount = Order::whereNull('user_id')
@@ -106,7 +106,7 @@ class VoucherController
         if ($hasDiscountedProducts) {
             return response()->json([
                 'success' => false,
-                'message' => '⚠️ Không thể áp dụng mã giảm giá cho đơn hàng có sản phẩm đang khuyến mãi!'
+                'message' => ' Không thể áp dụng mã giảm giá cho đơn hàng có sản phẩm đang khuyến mãi!'
             ]);
         }
 
@@ -134,7 +134,7 @@ class VoucherController
         if ($discountAmount >= $request->subtotal) {
             return response()->json([
                 'success' => false,
-                'message' => '⚠️ Không thể áp dụng mã giảm giá này cho đơn hàng!'
+                'message' => ' Không thể áp dụng mã giảm giá này cho đơn hàng!'
             ]);
         }
 
@@ -148,7 +148,7 @@ class VoucherController
                 'discount_amount' => $discountAmount,
                 'final_total' => $finalTotal
             ],
-            'message' => '✅ Áp dụng mã giảm giá thành công!'
+            'message' => 'Áp dụng mã giảm giá thành công đã giảm giá với số tiền ' . number_format($discountAmount) . ' VNĐ!'
         ]);
     }
 }

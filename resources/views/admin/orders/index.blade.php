@@ -64,8 +64,11 @@
                             <thead class="table-light">
                                 <tr>
                                     <th>Mã đơn hàng</th>
+                                    <th>Ngày đặt</th>
                                     <th>Khách hàng</th>
+                                    <th>Sản phẩm</th>
                                     <th>Tổng tiền</th>
+                                    <th>Phương thức</th>
                                     <th>Thanh toán</th>
                                     <th>Trạng thái</th>
                                     <th class="text-center">Thao tác</th>
@@ -76,15 +79,62 @@
                                     <tr>
                                         <td class="fw-bold text-primary">{{ $order->order_code }}</td>
                                         <td>
+                                            <div class="text-dark">{{ $order->created_at->format('d/m/Y') }}</div>
+                                            <div class="text-muted small">{{ $order->created_at->format('H:i') }}</div>
+                                        </td>
+                                        <td>
                                             <div class="fw-semibold">{{ $order->shipping_name }}</div>
                                             <div class="text-muted small">{{ $order->shipping_email }}</div>
                                             <div class="text-muted small">{{ $order->shipping_phone }}</div>
                                             <div class="text-muted small">{{ $order->shipping_address }}</div>
                                         </td>
+                                        <td>
+                                            @if($order->items && count($order->items) > 0)
+                                                <div class="d-flex gap-2 flex-wrap">
+                                                    @foreach($order->items as $item)
+                                                        @if($item->product)
+                                                            <div class="border rounded" style="width: 80px; height: 80px;">
+                                                                @if($item->variant && $item->variant->image)
+                                                                    <img src="{{ asset($item->variant->image) }}" 
+                                                                        alt="{{ $item->product->name }}" 
+                                                                        class="w-100 h-100"
+                                                                        style="object-fit: cover;"
+                                                                        title="{{ $item->product->name }}">
+                                                                @elseif($item->product->default_variant_image)
+                                                                    <img src="{{ asset($item->product->default_variant_image) }}" 
+                                                                        alt="{{ $item->product->name }}" 
+                                                                        class="w-100 h-100"
+                                                                        style="object-fit: cover;"
+                                                                        title="{{ $item->product->name }}">
+                                                                @else
+                                                                    <div class="w-100 h-100 d-flex align-items-center justify-content-center bg-light">
+                                                                        <i class="fas fa-image text-muted fs-4"></i>
+                                                                    </div>
+                                                                @endif
+                                                            </div>
+                                                        @endif
+                                                    @endforeach
+                                                </div>
+                                            @else
+                                                <span class="text-muted fst-italic">Không có sản phẩm</span>
+                                            @endif
+                                        </td>
                                         <td class="fw-bold text-dark">{{ number_format($order->total_price) }} VNĐ</td>
                                         <td>
+                                            @switch($order->payment_method)
+                                                @case('cod')
+                                                    <span class="badge bg-secondary">COD</span>
+                                                    @break
+                                                @case('vnpay')
+                                                    <span class="badge" style="background: #00bcd4">VNPAY</span>
+                                                    @break
+                                                @default
+                                                    <span class="badge bg-secondary">{{ $order->payment_method }}</span>
+                                            @endswitch
+                                        </td>
+                                        <td>
                                             <span
-                                                class="badge rounded-pill {{ $order->payment_status == 'paid' ? 'bg-success' : 'bg-warning text-dark' }}">
+                                                class="badge {{ $order->payment_status == 'paid' ? 'bg-success' : 'bg-danger' }}">
                                                 {{ $order->payment_status == 'paid' ? 'Đã thanh toán' : 'Chưa thanh toán' }}
                                             </span>
                                         </td>
@@ -165,6 +215,17 @@
         .badge {
             font-size: 0.95em;
             padding: 0.5em 1em;
+        }
+        .product-img-thumb {
+            box-shadow: 0 2px 12px 0 rgba(0,0,0,0.12), 0 1.5px 4px 0 rgba(0,0,0,0.08);
+            border: 2px solid #eee;
+            transition: transform 0.2s, border-color 0.2s;
+        }
+        .product-img-thumb:hover {
+            transform: scale(1.08);
+            border-color: #007bff;
+            box-shadow: 0 4px 18px 0 rgba(0,123,255,0.15), 0 3px 8px 0 rgba(0,0,0,0.10);
+            z-index: 2;
         }
     </style>
 @endsection

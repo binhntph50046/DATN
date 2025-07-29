@@ -68,13 +68,24 @@ class CheckoutController
             DB::beginTransaction();
             
             // Validate dữ liệu đầu vào
-            $request->validate([
+            $validationRules = [
                 'c_fname' => 'required|string|max:255',
                 'c_email_address' => 'required|email|max:255',
                 'c_phone' => 'required|regex:/^([0-9\s\-\+\(\)]*)$/|min:10|max:11',
                 'c_address' => 'required|string|max:255',
-                'payment_method' => 'required|in:cod,bank_transfer,credit_card,vnpay',
-            ]);
+                'payment_method' => 'required|in:cod,vnpay',
+                'ship_to_different' => 'nullable|in:1',
+            ];
+
+            // Thêm validation rules cho thông tin người nhận nếu đặt hàng hộ
+            if ($request->ship_to_different == '1') {
+                $validationRules['shipping_name'] = 'required|string|max:255';
+                $validationRules['shipping_address'] = 'required|string';
+                $validationRules['shipping_phone'] = 'required|regex:/^([0-9\s\-\+\(\)]*)$/|min:10|max:11';
+                $validationRules['shipping_email'] = 'nullable|email|max:255';
+            }
+
+            $request->validate($validationRules);
 
             // Tính toán subtotal dựa vào variant hoặc giỏ hàng
             $subtotal = $this->calculateSubtotal($request);
@@ -89,10 +100,10 @@ class CheckoutController
                 'discount' => $priceInfo['discount'],
                 'shipping_fee' => $priceInfo['shipping_fee'],
                 'total_price' => $priceInfo['total_price'],
-                'shipping_address' => $request->c_address,
-                'shipping_name' => $request->c_fname,
-                'shipping_phone' => $request->c_phone,
-                'shipping_email' => $request->c_email_address,
+                'shipping_name' => $request->ship_to_different == '1' ? $request->shipping_name : $request->c_fname,
+                'shipping_email' => $request->ship_to_different == '1' ? ($request->shipping_email ?: $request->c_email_address) : $request->c_email_address,
+                'shipping_phone' => $request->ship_to_different == '1' ? $request->shipping_phone : $request->c_phone,
+                'shipping_address' => $request->ship_to_different == '1' ? $request->shipping_address : $request->c_address,
                 'payment_method' => $request->payment_method,
                 'payment_status' => 'pending',
                 'shipping_method_id' => null,
@@ -102,6 +113,17 @@ class CheckoutController
                 'voucher_id' => $priceInfo['voucher'] ? $priceInfo['voucher']->id : null,
                 'voucher_code' => $priceInfo['voucher'] ? $priceInfo['voucher']->code : null,
             ]);
+
+            // Nếu đặt hàng hộ, lưu thông tin người đặt vào bảng order_address
+            if ($request->ship_to_different == '1') {
+                \App\Models\OrderAddress::create([
+                    'order_id' => $order->id,
+                    'full_name' => $request->c_fname,
+                    'phone_number' => $request->c_phone,
+                    'address' => $request->c_address,
+                    'note' => "Đơn hàng được đặt hộ cho {$request->shipping_name} - {$request->shipping_phone}"
+                ]);
+            }
 
             // Cập nhật mã đơn hàng
             $order->update([
@@ -297,14 +319,25 @@ class CheckoutController
             DB::beginTransaction();
 
             // Validate dữ liệu đầu vào
-            $request->validate([
+            $validationRules = [
                 'c_fname' => 'required|string|max:255',
                 'c_email_address' => 'required|email|max:255',
                 'c_phone' => 'required|regex:/^([0-9\s\-\+\(\)]*)$/|min:10|max:11',
                 'c_address' => 'required|string|max:255',
                 'payment_method' => 'required|in:cod,bank_transfer,credit_card,vnpay',
                 'selected_items' => 'required|array',
-            ]);
+                'ship_to_different' => 'nullable|in:1',
+            ];
+
+            // Thêm validation rules cho thông tin người nhận nếu đặt hàng hộ
+            if ($request->ship_to_different == '1') {
+                $validationRules['shipping_name'] = 'required|string|max:255';
+                $validationRules['shipping_address'] = 'required|string';
+                $validationRules['shipping_phone'] = 'required|regex:/^([0-9\s\-\+\(\)]*)$/|min:10|max:11';
+                $validationRules['shipping_email'] = 'nullable|email|max:255';
+            }
+
+            $request->validate($validationRules);
 
             // Tính toán subtotal dựa vào giỏ hàng
             $subtotal = $this->calculateSubtotal($request);
@@ -319,10 +352,10 @@ class CheckoutController
                 'discount' => $priceInfo['discount'],
                 'shipping_fee' => $priceInfo['shipping_fee'],
                 'total_price' => $priceInfo['total_price'],
-                'shipping_address' => $request->c_address,
-                'shipping_name' => $request->c_fname,
-                'shipping_phone' => $request->c_phone,
-                'shipping_email' => $request->c_email_address,
+                'shipping_name' => $request->ship_to_different == '1' ? $request->shipping_name : $request->c_fname,
+                'shipping_email' => $request->ship_to_different == '1' ? ($request->shipping_email ?: $request->c_email_address) : $request->c_email_address,
+                'shipping_phone' => $request->ship_to_different == '1' ? $request->shipping_phone : $request->c_phone,
+                'shipping_address' => $request->ship_to_different == '1' ? $request->shipping_address : $request->c_address,
                 'payment_method' => $request->payment_method,
                 'payment_status' => 'pending',
                 'shipping_method_id' => null,
@@ -332,6 +365,17 @@ class CheckoutController
                 'voucher_id' => $priceInfo['voucher'] ? $priceInfo['voucher']->id : null,
                 'voucher_code' => $priceInfo['voucher'] ? $priceInfo['voucher']->code : null,
             ]);
+
+            // Nếu đặt hàng hộ, lưu thông tin người đặt vào bảng order_address
+            if ($request->ship_to_different == '1') {
+                \App\Models\OrderAddress::create([
+                    'order_id' => $order->id,
+                    'full_name' => $request->c_fname,
+                    'phone_number' => $request->c_phone,
+                    'address' => $request->c_address,
+                    'note' => "Đơn hàng được đặt hộ cho {$request->shipping_name} - {$request->shipping_phone}"
+                ]);
+            }
 
             // Cập nhật mã đơn hàng
             $order->update([

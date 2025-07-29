@@ -2,6 +2,7 @@
 
 @section('title', 'Trang chủ - Apple Store')
 
+
 @section('banner')
     <!-- Start Hero Section -->
     <div id="heroCarousel" class="carousel slide" data-bs-ride="carousel">

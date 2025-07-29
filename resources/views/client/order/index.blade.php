@@ -137,6 +137,7 @@
                         <th>Sản phẩm</th>
                         <th>Ngày đặt</th>
                         <th>Tổng tiền</th>
+                        <th>Phương thức</th>
                         <th>Trạng thái</th>
                         <th>Thao tác</th>
                     </tr>
@@ -150,7 +151,7 @@
                             <td>
                                 <div class="d-flex align-items-center">
                                     @php
-                                       // hiển thị ảnh sản phẩm theo array hoặc mảng
+                                        // hiển thị ảnh sản phẩm theo array hoặc mảng
                                         if (!function_exists('getImagesArray')) {
                                             function getImagesArray($images) {
                                                 if (is_array($images)) {
@@ -181,6 +182,79 @@
                             <td>{{ $order->created_at->format('d/m/Y H:i') }}</td>
                             <td>
                                 <span class="price-amount">{{ number_format($order->total_price) }} VNĐ</span>
+                            </td>
+                            <td>
+                                @switch($order->payment_method)
+                                    @case('cod')
+                                        <span class="badge bg-secondary">
+                                            <i class="fas fa-money-bill-wave me-1"></i>COD
+                                        </span>
+                                        @if($order->status == 'cancelled')
+                                            <div class="mt-1">
+                                                <small class="text-danger">
+                                                    <i class="fas fa-times-circle me-1"></i>Đã hủy
+                                                </small>
+                                            </div>
+                                        @elseif($order->payment_status == 'paid')
+                                            <div class="mt-1">
+                                                <small class="text-success">
+                                                    <i class="fas fa-check-circle me-1"></i>Đã thanh toán
+                                                </small>
+                                            </div>
+                                        @else
+                                            <div class="mt-1">
+                                                <small class="text-warning">
+                                                    <i class="fas fa-clock me-1"></i>Chưa thanh toán
+                                                </small>
+                                            </div>
+                                        @endif
+                                        @break
+                                    @case('vnpay')
+                                        <span class="badge" style="background: #00bcd4">
+                                            <i class="fas fa-credit-card me-1"></i>VNPAY
+                                        </span>
+                                        @if($order->status == 'cancelled')
+                                            <div class="mt-1">
+                                                <small class="text-danger">
+                                                    <i class="fas fa-times-circle me-1"></i>Đã hủy
+                                                </small>
+                                            </div>
+                                        @elseif($order->payment_status == 'paid')
+                                            <div class="mt-1">
+                                                <small class="text-success">
+                                                    <i class="fas fa-check-circle me-1"></i>Đã thanh toán
+                                                </small>
+                                            </div>
+                                        @else
+                                            <div class="mt-1">
+                                                <small class="text-warning">
+                                                    <i class="fas fa-clock me-1"></i>Chưa thanh toán
+                                                </small>
+                                            </div>
+                                        @endif
+                                        @break
+                                    @default
+                                        <span class="badge bg-secondary">{{ $order->payment_method }}</span>
+                                        @if($order->status == 'cancelled')
+                                            <div class="mt-1">
+                                                <small class="text-danger">
+                                                    <i class="fas fa-times-circle me-1"></i>Đã hủy
+                                                </small>
+                                            </div>
+                                        @elseif($order->payment_status == 'paid')
+                                            <div class="mt-1">
+                                                <small class="text-success">
+                                                    <i class="fas fa-check-circle me-1"></i>Đã thanh toán
+                                                </small>
+                                            </div>
+                                        @else
+                                            <div class="mt-1">
+                                                <small class="text-warning">
+                                                    <i class="fas fa-clock me-1"></i>Chưa thanh toán
+                                                </small>
+                                            </div>
+                                        @endif
+                                @endswitch
                             </td>
                             <td>
                                 @php
@@ -457,11 +531,18 @@
 
 /* Product Image */
 .product-image {
-    width: 50px;
-    height: 50px;
+    width: 80px;
+    height: 80px;
     border-radius: 10px;
     object-fit: cover;
     border: 2px solid #f8f9fa;
+    transition: all 0.3s ease;
+}
+
+.product-image:hover {
+    transform: scale(1.05);
+    border-color: #007bff;
+    box-shadow: 0 4px 15px rgba(0, 123, 255, 0.2);
 }
 
 /* Status Badge */

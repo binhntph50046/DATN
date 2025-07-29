@@ -12,6 +12,9 @@ use App\Models\Invoice;
 use App\Mail\InvoicePdfMail;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
+use App\Models\OrderAddress;
+use App\Models\OrderItem;
 
 class OrderController extends Controller
 {
@@ -32,7 +35,17 @@ class OrderController extends Controller
             $query->where('status', $request->status);
         }
 
-        $orders = $query->latest()->paginate(10)->appends($request->all());
+        if ($request->filled('payment_status')) {
+            $query->where('payment_status', $request->payment_status);
+        }
+
+        $orders = $query->with(['items.product' => function($query) {
+                $query->withTrashed();
+            }, 'items.variant'])
+            ->latest()
+            ->paginate(10)
+            ->appends($request->all());
+
         return view('admin.orders.index', compact('orders'));
     }
     public function show($id)
@@ -114,8 +127,6 @@ class OrderController extends Controller
 
                 // Refresh order model để đảm bảo có dữ liệu mới nhất
                 $order->refresh();
-                
-                // Broadcast ngay lập tức và không dùng queue
                 event(new OrderStatusUpdated($order));
                 
                 Log::info('Đã gửi sự kiện thành công');
@@ -140,5 +151,91 @@ class OrderController extends Controller
         }
         return redirect()->route('admin.orders.show', $order->id)
             ->with('error', 'Không thể cập nhật trạng thái đơn hàng');
+    }
+
+    public function store(Request $request)
+    {
+        try {
+            DB::beginTransaction();
+            
+            // Get cart items from session if not buying directly
+            $cartItems = [];
+            if (!isset($variant)) {
+                $cartItems = session()->get('cart', []);
+            }
+            
+            // Validate dữ liệu
+            $request->validate([
+                'c_fname' => 'required|string|max:255',
+                'c_address' => 'required|string',
+                'c_phone' => 'required|string',
+                'c_email_address' => 'required|email',
+                'shipping_name' => 'required_if:ship_to_different,1|string|max:255',
+                'shipping_address' => 'required_if:ship_to_different,1|string',
+                'shipping_phone' => 'required_if:ship_to_different,1|string',
+                'shipping_email' => 'nullable|email',
+            ]);
+
+            // Tạo đơn hàng với thông tin người đặt/nhận tương ứng
+            $order = Order::create([
+                'user_id' => Auth::id(),
+                'shipping_name' => $request->ship_to_different == '1' ? $request->shipping_name : $request->c_fname,
+                'shipping_email' => $request->ship_to_different == '1' ? ($request->shipping_email ?: $request->c_email_address) : $request->c_email_address,
+                'shipping_phone' => $request->ship_to_different == '1' ? $request->shipping_phone : $request->c_phone,
+                'shipping_address' => $request->ship_to_different == '1' ? $request->shipping_address : $request->c_address,
+                'payment_method' => $request->payment_method,
+                'notes' => $request->c_order_notes,
+                'status' => 'pending',
+                'payment_status' => 'unpaid'
+            ]);
+
+            // Nếu đặt hàng hộ, lưu thông tin người đặt vào bảng order_address
+            if ($request->ship_to_different == '1') {
+                OrderAddress::create([
+                    'order_id' => $order->id,
+                    'full_name' => $request->c_fname,
+                    'phone_number' => $request->c_phone,
+                    'address' => $request->c_address,
+                    'note' => "Đơn hàng được đặt hộ cho {$request->shipping_name} - {$request->shipping_phone}"
+                ]);
+            }
+
+            // Xử lý thêm các items vào đơn hàng
+            if (isset($variant)) {
+                OrderItem::create([
+                    'order_id' => $order->id,
+                    'product_id' => $variant->product_id,
+                    'product_variant_id' => $variant->id,
+                    'quantity' => $request->quantity,
+                    'price' => $variant->selling_price,
+                    'total' => $variant->selling_price * $request->quantity
+                ]);
+            } else {
+                foreach($cartItems as $item) {
+                    OrderItem::create([
+                        'order_id' => $order->id,
+                        'product_id' => $item->product_id,
+                        'product_variant_id' => $item->variant_id,
+                        'quantity' => $item->quantity,
+                        'price' => $item->variant ? $item->variant->selling_price : $item->product->selling_price,
+                        'total' => ($item->variant ? $item->variant->selling_price : $item->product->selling_price) * $item->quantity
+                    ]);
+                }
+            }
+
+            DB::commit();
+
+            // Xử lý thanh toán VNPay nếu cần
+            if ($request->payment_method === 'vnpay') {
+                return $this->processVnPayPayment($order);
+            }
+
+            return redirect()->route('order.success', $order->id)
+                ->with('success', 'Đặt hàng thành công!');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return back()->with('error', 'Có lỗi xảy ra: ' . $e->getMessage());
+        }
     }
 }

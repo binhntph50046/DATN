@@ -5,6 +5,8 @@ namespace App\Http\Controllers\client;
 use Illuminate\Http\Request;
 use App\Models\Product;
 use App\Models\Blog;
+use App\Models\SearchHistory;
+use Illuminate\Support\Facades\Auth;
 
 class SearchController
 {
@@ -13,6 +15,12 @@ class SearchController
         $query = $request->input('q');
         if (!$query) {
             return view('client.search.index', ['query' => '', 'products' => collect(), 'blogs' => collect()]);
+        }
+        if (Auth::check()) {
+            SearchHistory::create([
+                'user_id' => Auth::id(),
+                'keyword' => $query,
+            ]);
         }
 
         // Tìm kiếm sản phẩm

@@ -10,11 +10,11 @@
                 <div class="row align-items-center">
                     <div class="col-md-12">
                         <div class="page-header-title">
-                            <h5 class="m-b-10">Banners</h5>
+                            <h5 class="m-b-10">Biểu ngữ</h5>
                         </div>
                         <ul class="breadcrumb">
                             <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Home</a></li>
-                            <li class="breadcrumb-item" aria-current="page">Banners</li>
+                            <li class="breadcrumb-item" aria-current="page">Biểu ngữ</li>
                         </ul>
                     </div>
                 </div>
@@ -27,10 +27,10 @@
             <div class="col-12">
                 <div class="card">
                     <div class="card-header">
-                        <h5>Banners List</h5>
+                        <h5>Danh sách biểu ngữ</h5>
                         <div class="card-header-right">
-                            <a href="{{ route('admin.banners.create') }}" class="btn btn-primary btn-sm" title="Add New Banner">
-                                <i class="ti ti-plus"></i> Add New Banner
+                            <a href="{{ route('admin.banners.create') }}" class="btn btn-primary btn-sm" title="Thêm biểu ngữ mới">
+                                <i class="ti ti-plus"></i> Thêm biểu ngữ mới
                             </a>
                         </div>
                     </div>
@@ -45,12 +45,12 @@
                                 <thead>
                                     <tr>
                                         <th>ID</th>
-                                        <th>Title</th>
-                                        <th>Image</th>
-                                        <th>Status</th>
+                                        <th>Tiêu đề</th>
+                                        <th>Hình ảnh</th>
+                                        <th>Trạng thái</th>
                                         {{-- <th>Order</th> --}}
-                                        <th>Description</th>
-                                        <th class="text-center">Actions</th>
+                                        <th>Mô tả</th>
+                                        <th class="text-center">Hành động</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -71,7 +71,7 @@
                                         </td>
                                         <td>
                                             <span class="badge {{ $banner->status == 'active' ? 'bg-success' : 'bg-danger' }}">
-                                                {{ ucfirst($banner->status) }}
+                                                {{ $banner->status == 'active' ? 'Hoạt động' : 'Không hoạt động' }}
                                             </span>
                                         </td>
                                         {{-- <td>{{ $banner->order }}</td> --}}
@@ -80,20 +80,20 @@
                                             <!-- Thay đổi thứ tự -->
                                             <form action="{{ route('admin.banners.moveUp', $banner->id) }}" method="POST" class="d-inline">
                                                 @csrf
-                                                <button type="submit" class="btn btn-warning btn-sm" title="Move Up"><i class="ti ti-arrow-up"></i></button>
+                                                <button type="submit" class="btn btn-warning btn-sm" title="Di chuyển lên"><i class="ti ti-arrow-up"></i></button>
                                             </form>
                                             <form action="{{ route('admin.banners.moveDown', $banner->id) }}" method="POST" class="d-inline">
                                                 @csrf
-                                                <button type="submit" class="btn btn-warning btn-sm" title="Move Down"><i class="ti ti-arrow-down"></i></button>
+                                                <button type="submit" class="btn btn-warning btn-sm" title="Di chuyển xuống"><i class="ti ti-arrow-down"></i></button>
                                             </form>
                                             <!-- Edit và Delete -->
-                                            <a href="{{ route('admin.banners.edit', $banner->id) }}" class="btn btn-info btn-sm" title="Edit"><i class="ti ti-edit"></i>
+                                            <a href="{{ route('admin.banners.edit', $banner->id) }}" class="btn btn-info btn-sm" title="Chỉnh sửa"><i class="ti ti-edit"></i>
                                                  {{-- Edit --}}
                                                 </a>
                                             <form action="{{ route('admin.banners.destroy', $banner->id) }}" method="POST" class="d-inline">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" class="btn btn-danger btn-sm" title="Delete" onclick="return confirm('Are you sure you want to delete this banner?')">
+                                                <button type="submit" class="btn btn-danger btn-sm" title="Xóa" onclick="return confirm('Bạn có chắc chắn muốn xóa biểu ngữ này không?')">
                                                     <i class="ti ti-trash"></i>
                                                      {{-- Delete --}}
                                                 </button>

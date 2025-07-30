@@ -43,9 +43,9 @@
         <div class="row">
             <div class="col-12">
                 <div class="card">
-                    <div class="card-header d-flex justify-content-between align-items-center">
+                    <div class="card-header">
                         <h5>FAQs List</h5>
-                        <div>
+                        <div class="card-header-right">
                             <a href="{{ route('admin.faqs.create') }}" class="btn btn-primary btn-sm rounded-3 me-2">
                                 <i class="ti ti-plus"></i> Add FAQ
                             </a>
@@ -63,19 +63,19 @@
                         <div class="card shadow-sm mb-4">
                             <div class="card-body">
                                 <form method="GET" action="{{ route('admin.faqs.index') }}" class="row g-3 mb-3">
-                                    <div class="col-md-6">
+                                    <div class="col-md-5">
                                         <input type="text" name="question" class="form-control" placeholder="Search by question..." value="{{ request('question') }}">
                                     </div>
-                                    <div class="col-md-6">
+                                    <div class="col-md-5">
                                         <select name="status" class="form-control">
                                             <option value="">All Statuses</option>
                                             <option value="active" {{ request('status') == 'active' ? 'selected' : '' }}>Active</option>
                                             <option value="inactive" {{ request('status') == 'inactive' ? 'selected' : '' }}>Inactive</option>
                                         </select>
                                     </div>
-                                    <div class="col-12 mt-3">
-                                        <button type="submit" class="btn btn-primary btn-sm">Filter</button>
-                                        <a href="{{ route('admin.faqs.index') }}" class="btn btn-secondary btn-sm">Reset</a>
+                                    <div class="col-md-2 mt-3">
+                                        <button type="submit" class="btn btn-primary">Filter</button>
+                                        <a href="{{ route('admin.faqs.index') }}" class="btn btn-secondary">Reset</a>
                                     </div>
                                 </form>
                             </div>
@@ -85,11 +85,11 @@
                                 <thead>
                                     <tr>
                                         <th>ID</th>
-                                        <th>Question</th>
-                                        <th>Answer</th>
-                                        <th>Status</th>
-                                        <th>Date</th>
-                                        <th class="text-center">Actions</th>
+                                        <th>Câu hỏi</th>
+                                        <th>Trả lời</th>
+                                        <th>Trạng thái</th>
+                                        <th>Ngày tạo</th>
+                                        <th class="text-center">Hành động</th>
                                     </tr>
                                 </thead>
                                 <tbody>

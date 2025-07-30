@@ -1,6 +1,6 @@
 @extends('admin.layouts.app')
 
-@section('title', 'Dánh sách bài viết')
+@section('title', 'Quản lý bài viết')
 
 <style>
     .custom-shadow {

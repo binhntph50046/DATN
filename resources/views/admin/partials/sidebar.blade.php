@@ -155,7 +155,7 @@
                         <li class="pc-item">
                             <a href="{{ route('admin.banners.index') }}" class="pc-link">
                                 <span class="pc-micon"><i class="ti ti-photo"></i></span>
-                                <span class="pc-mtext">Biểu ngữ</span>
+                                <span class="pc-mtext">Banner</span>
                             </a>
                         </li>
                         <li class="pc-item">

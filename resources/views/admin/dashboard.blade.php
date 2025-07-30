@@ -140,7 +140,7 @@
                     </div>
                 </div>
 
-                <div class="col-md-12 col-xl-8">
+                <div class="col-md-12 col-xl-7">
                     <div class="d-flex align-items-center justify-content-between mb-3">
                         <h5 class="mb-0">Khách truy cập</h5>
                         <ul class="nav nav-pills justify-content-end mb-0" id="chart-tab-tab" role="tablist">
@@ -171,18 +171,43 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-md-12 col-xl-4">
-                    <h5 class="mb-3">Tổng quan về thu nhập</h5>
+                <div class="col-md-12 col-xl-5">
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <h5 class="mb-3">Tổng quan về thu nhập</h5>
+                        <ul class="nav nav-pills justify-content-end mb-0" id="income-tab" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="income-month-tab" data-bs-toggle="pill"
+                                    data-bs-target="#income-month" type="button" role="tab"
+                                    aria-controls="income-month" aria-selected="false">Tháng</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active" id="income-week-tab" data-bs-toggle="pill"
+                                    data-bs-target="#income-week" type="button" role="tab"
+                                    aria-controls="income-week" aria-selected="true">Tuần</button>
+                            </li>
+                        </ul>
+                    </div>
                     <div class="card">
                         <div class="card-body">
-                            <h6 class="mb-2 f-w-400 text-muted">Thống kê tuần này</h6>
-                            <h3 class="mb-3">{{ number_format($weeklyTotalIncome, 0, ',', '.') }} đ</h3>
-                            <div id="income-overview-chart" data-weekly-income='@json($weeklyIncome)'></div>
+                            <div class="tab-content" id="income-tab-content">
+                                <div class="tab-pane fade" id="income-month" role="tabpanel"
+                                    aria-labelledby="income-month-tab">
+                                    <h6 class="mb-2 f-w-400 text-muted">Thống kê tháng này</h6>
+                                    <h3 class="mb-3">{{ number_format($monthlyTotalIncome, 0, ',', '.') }} đ</h3>
+                                    <div id="income-chart-month" data-monthly-income='@json($monthlyIncome)'></div>
+                                </div>
+                                <div class="tab-pane fade show active" id="income-week" role="tabpanel"
+                                    aria-labelledby="income-week-tab">
+                                    <h6 class="mb-2 f-w-400 text-muted">Thống kê tuần này</h6>
+                                    <h3 class="mb-3">{{ number_format($weeklyTotalIncome, 0, ',', '.') }} đ</h3>
+                                    <div id="income-chart-week" data-weekly-income='@json($weeklyIncome)'></div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="col-md-12 col-xl-8">
+                <div class="col-md-12 col-xl-7">
                     <h5 class="mb-3">Đơn hàng gần đây</h5>
                     <div class="card tbl-card">
                         <div class="card-body">
@@ -198,85 +223,70 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        {{-- <tr>
-                                            <td><a href="#" class="text-muted">84564564</a></td>
-                                            <td>Camera Lens</td>
-                                            <td>40</td>
-                                            <td><span class="d-flex align-items-center gap-2"><i
-                                                        class="fas fa-circle text-danger f-10 m-r-5"></i>Rejected</span>
-                                            </td>
-                                            <td class="text-end">$40,570</td>
-                                        </tr>
-                                        <tr>
-                                            <td><a href="#" class="text-muted">84564564</a></td>
-                                            <td>Laptop</td>
-                                            <td>300</td>
-                                            <td><span class="d-flex align-items-center gap-2"><i
-                                                        class="fas fa-circle text-warning f-10 m-r-5"></i>Pending</span>
-                                            </td>
-                                            <td class="text-end">$180,139</td>
-                                        </tr>
-                                        <tr>
-                                            <td><a href="#" class="text-muted">84564564</a></td>
-                                            <td>Mobile</td>
-                                            <td>355</td>
-                                            <td><span class="d-flex align-items-center gap-2"><i
-                                                        class="fas fa-circle text-success f-10 m-r-5"></i>Approved</span>
-                                            </td>
-                                            <td class="text-end">$180,139</td>
-                                        </tr> --}}
                                         @foreach ($recentOrders as $order)
-                                            @foreach ($order->items as $item)
-                                                <tr>
-                                                    <td><a href="{{ route('admin.orders.show', $order->id) }}"
-                                                            class="text-muted">{{ $order->id }}</a></td>
-                                                    <td>{{ $item->product->name ?? 'N/A' }}</td>
-                                                    <td>{{ $item->quantity }}</td>
-                                                    <td>
-                                                        @php
-                                                            $statusColors = [
-                                                                'pending' => 'text-secondary',
-                                                                'confirmed' => 'text-primary',
-                                                                'preparing' => 'text-warning',
-                                                                'shipping' => 'text-info',
-                                                                'completed' => 'text-success',
-                                                                'cancelled' => 'text-danger',
-                                                                'returned' => 'text-muted',
-                                                                'partially_returned' => 'text-dark',
-                                                            ];
+                                            <tr>
+                                                <td>
+                                                    <a href="{{ route('admin.orders.show', $order->id) }}"
+                                                        class="text-muted">
+                                                        <strong>#{{ $order->id }}</strong>
+                                                    </a>
+                                                </td>
 
-                                                            $statusLabels = [
-                                                                'pending' => 'Chờ xử lý',
-                                                                'confirmed' => 'Đã xác nhận',
-                                                                'preparing' => 'Đang chuẩn bị',
-                                                                'shipping' => 'Đang giao hàng',
-                                                                'completed' => 'Hoàn thành',
-                                                                'cancelled' => 'Đã hủy',
-                                                                'returned' => 'Đã trả hàng',
-                                                                'partially_returned' => 'Trả hàng một phần',
-                                                            ];
+                                                <td>
+                                                    @foreach ($order->items as $item)
+                                                        {{ $item->product->name ?? 'N/A' }} (x{{ $item->quantity }})<br>
+                                                    @endforeach
+                                                </td>
 
-                                                            $status = $order->status;
-                                                            $colorClass = $statusColors[$status] ?? 'text-muted';
-                                                            $label = $statusLabels[$status] ?? 'Không rõ';
-                                                        @endphp
-                                                        <span class="d-flex align-items-center gap-2">
-                                                            <i class="fas fa-circle f-10 m-r-5 {{ $colorClass }}"></i>
-                                                            {{ $label }}
-                                                        </span>
-                                                    </td>
-                                                    <td class="text-end">{{ number_format($order->total_price) }} VNĐ</td>
-                                                </tr>
-                                            @endforeach
+                                                <td>
+                                                    {{ $order->items->sum('quantity') }}
+                                                </td>
+
+                                                <td>
+                                                    @php
+                                                        $statusColors = [
+                                                            'pending' => 'text-secondary',
+                                                            'confirmed' => 'text-primary',
+                                                            'preparing' => 'text-warning',
+                                                            'shipping' => 'text-info',
+                                                            'completed' => 'text-success',
+                                                            'cancelled' => 'text-danger',
+                                                            'returned' => 'text-muted',
+                                                            'partially_returned' => 'text-dark',
+                                                        ];
+
+                                                        $statusLabels = [
+                                                            'pending' => 'Chờ xử lý',
+                                                            'confirmed' => 'Đã xác nhận',
+                                                            'preparing' => 'Đang chuẩn bị',
+                                                            'shipping' => 'Đang giao hàng',
+                                                            'completed' => 'Hoàn thành',
+                                                            'cancelled' => 'Đã hủy',
+                                                            'returned' => 'Đã trả hàng',
+                                                            'partially_returned' => 'Trả hàng một phần',
+                                                        ];
+
+                                                        $status = $order->status;
+                                                        $colorClass = $statusColors[$status] ?? 'text-muted';
+                                                        $label = $statusLabels[$status] ?? 'Không rõ';
+                                                    @endphp
+                                                    <span class="d-flex align-items-center gap-2">
+                                                        <i class="fas fa-circle f-10 m-r-5 {{ $colorClass }}"></i>
+                                                        {{ $label }}
+                                                    </span>
+                                                </td>
+
+                                                <td class="text-end">{{ number_format($order->total_price) }} VNĐ</td>
+                                            </tr>
                                         @endforeach
-
                                     </tbody>
+
                                 </table>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="col-md-12 col-xl-4">
+                <div class="col-md-12 col-xl-5">
                     <h5 class="mb-3">Sản phẩm đã bán theo danh mục</h5>
                     <div class="card">
                         <div class="card-body px-2">

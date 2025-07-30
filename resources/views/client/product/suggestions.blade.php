@@ -19,9 +19,9 @@
                 <div class="mb-5">
                     <h5 class="mb-3">{{ $groups[$key] ?? ucfirst($key) }}</h5>
 
-                    <div class="product-slider d-flex overflow-auto gap-3 pb-2">
+                    <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-5 row-cols-xl-6 g-3">
                         @foreach ($products as $product)
-                            <div class="flex-shrink-0" style="width: 250px;" data-aos="fade-up"
+                            <div class="col" data-aos="fade-up" ...
                                 data-aos-delay="{{ $loop->iteration * 100 }}">
                                 <a class="product-item d-block text-decoration-none"
                                     href="{{ route('product.detail', $product->slug) }}"
@@ -90,7 +90,7 @@
                                                     <i class="far fa-star"></i>
                                                 @endif
                                             @endfor
-                                            <span>({{ number_format($product->views) }} lượt xem)</span>
+                                            {{-- <span style="font-size: 0.75rem;">({{ number_format($product->views) }} lượt xem)</span> --}}
                                         </div>
                                     </div>
 

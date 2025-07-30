@@ -12,22 +12,24 @@ class UserController
 {
     public function index(Request $request)
     {
-        $roles = Role::all()->pluck('name')->toArray(); // Lấy danh sách tên vai trò: ['admin', 'staff', 'user']
+        $currentUser = Auth::user();
         $query = User::query();
-
-        // Không hiển thị tài khoản admin hiện tại
         $query->where('id', '!=', Auth::id());
 
-        // Nếu là staff, chỉ thấy tài khoản có vai trò user
-        /** @var \App\Models\User $currentUser */
-        $currentUser = Auth::user();
-        if ($currentUser && $currentUser->hasRole('staff')) {
+        if ($currentUser && $currentUser->hasRole('admin')) {
+            $roles = ['user', 'staff'];
+            $query->whereHas('roles', function ($q) {
+                $q->whereIn('name', ['user', 'staff']);
+            });
+        } elseif ($currentUser && $currentUser->hasRole('staff')) {
+            $roles = ['user'];
             $query->whereHas('roles', function ($q) {
                 $q->where('name', 'user');
             });
+        } else {
+            $roles = [];
         }
 
-        // Lọc theo tìm kiếm
         if ($request->filled('search')) {
             $query->where(function ($q) use ($request) {
                 $q->where('name', 'like', "%{$request->search}%")
@@ -35,14 +37,12 @@ class UserController
             });
         }
 
-        // Lọc theo vai trò
         if ($request->filled('role')) {
             $query->whereHas('roles', function ($q) use ($request) {
                 $q->where('name', $request->role);
             });
         }
 
-        // Lọc theo trạng thái
         if ($request->filled('status')) {
             $query->where('status', $request->status);
         }

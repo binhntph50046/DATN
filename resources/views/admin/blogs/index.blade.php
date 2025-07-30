@@ -23,7 +23,7 @@
                                 <h5 class="m-b-10">Bài viết</h5>
                             </div>
                             <ul class="breadcrumb">
-                                <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Home</a></li>
+                                <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Trang chủ</a></li>
                                 <li class="breadcrumb-item" aria-current="page">Bài viết</li>
                             </ul>
                         </div>
@@ -60,7 +60,7 @@
                                     <form action="{{ route('admin.blogs.index') }}" method="GET" class="row g-3">
                                         <div class="col-md-4">
                                             <label for="category_id" class="form-label mb-1">Danh mục</label>
-                                            <select name="category_id" id="category_id" class="form-select form-select-sm">
+                                            <select name="category_id" id="category_id" class="form-select">
                                                 <option value="">-- tất cả --</option>
                                                 @foreach ($categories as $category)
                                                     <option value="{{ $category->id }}"
@@ -72,7 +72,7 @@
                                         </div>
                                         <div class="col-md-4">
                                             <label for="author_id" class="form-label mb-1">Tác giả</label>
-                                            <select name="author_id" id="author_id" class="form-select form-select-sm">
+                                            <select name="author_id" id="author_id" class="form-select">
                                                 <option value="">-- tất cả --</option>
                                                 @foreach ($authors as $author)
                                                     <option value="{{ $author->id }}"
@@ -84,8 +84,8 @@
                                         </div>
                                           
                                     <div class="col-md-4 d-flex align-items-end">
-                                        <button type="submit" class="btn btn-primary btn-sm  me-2">Lọc</button>
-                                        <a href="{{ route('admin.blogs.index') }}" class="btn btn-secondary btn-sm ">Đặt lại</a>
+                                        <button type="submit" class="btn btn-primary me-2">Lọc</button>
+                                        <a href="{{ route('admin.blogs.index') }}" class="btn btn-secondary">Đặt lại</a>
                                     </div>
                                     </form>
 

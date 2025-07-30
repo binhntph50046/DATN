@@ -1,5 +1,5 @@
 @extends('admin.layouts.app')
-@section('title', 'Flash Sale Management')
+@section('title', 'Danh sách khuyến mãi')
 
 @section('content')
     <div class="pc-container">
@@ -29,7 +29,7 @@
                         <div class="card-header">
                             <h5>Danh sách khuyến mãi</h5>
                             <div class="card-header-right">
-                                <a href="{{ route('admin.flash-sales.create') }}" class="btn btn-primary btn-sm"
+                                <a href="{{ route('admin.flash-sales.create') }}" class="btn btn-primary btn-sm rounded-3 me-2"
                                     title="Thêm khuyến mãi mới">
                                     <i class="ti ti-plus"></i> Thêm khuyến mãi mới
                                 </a>
@@ -51,7 +51,7 @@
                                         class="form-control" placeholder="Tìm kiếm theo tên...">
                                 </div>
 
-                                <div class="col-md-2">
+                                <div class="col-md-3">
                                     <label for="status" class="form-label">Trạng thái</label>
                                     <select name="status" id="status" class="form-select">
                                         <option value="">-- Tất cả --</option>
@@ -75,9 +75,9 @@
                                 </div>
 
                                 <div class="col-md-3 d-flex align-items-end">
-                                    <button type="submit" class="btn btn-primary btn-sm me-2">Lọc</button>
+                                    <button type="submit" class="btn btn-primary me-2">Lọc</button>
                                     <a href="{{ route('admin.flash-sales.index') }}"
-                                        class="btn btn-secondary btn-sm">Đặt lại</a>
+                                        class="btn btn-secondary">Đặt lại</a>
                                 </div>
                             </form>
 
@@ -123,7 +123,7 @@
                                                 </td>
                                                 <td class="text-center">
                                                     <a href="{{ route('admin.flash-sales.edit', $flashSale->id) }}"
-                                                        class="btn btn-info btn-sm" title="Chỉnh sửa">
+                                                        class="btn btn-warning btn-sm rounded-3 me-2" title="Chỉnh sửa">
                                                         <i class="ti ti-edit"></i>
                                                     </a>
                                                     {{-- <form action="{{ route('admin.flash-sales.destroy', $flashSale->id) }}"

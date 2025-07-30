@@ -95,12 +95,12 @@
                                 <thead>
                                     <tr>
                                         <th>ID</th>
-                                        <th>Name</th>
-                                        <th>Categories</th>
-                                        <th>Values</th>
-                                        <th>Colors</th>
-                                        <th>Status</th>
-                                        <th>Actions</th>
+                                        <th>Tên thuộc tính</th>
+                                        <th>Danh mục</th>
+                                        <th>Giá trị</th>
+                                        <th>Màu sắc</th>
+                                        <th>Trạng thái</th>
+                                        <th>Hành động</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -120,7 +120,7 @@
                                                             @endif
                                                         @endforeach
                                                     @else
-                                                        <span class="text-muted">No categories</span>
+                                                        <span class="text-muted">Không có danh mục</span>
                                                     @endif
                                                 </div>
                                             </td>
@@ -134,7 +134,7 @@
                                                         @endforeach
                                                     </div>
                                                 @else
-                                                    <span class="text-muted">No values</span>
+                                                    <span class="text-muted">Không có giá trị</span>
                                                 @endif
                                             </td>
                                             <td>
@@ -146,13 +146,13 @@
                                                                     <div class="color-preview" style="background-color: {{ $value->hex[0] }}"></div>
                                                                     <span class="small">{{ $value->hex[0] }}</span>
                                                                 @else
-                                                                    <span class="text-muted">No color</span>
+                                                                    <span class="text-muted">Không có màu sắc</span>
                                                                 @endif
                                                             </div>
                                                         @endforeach
                                                     </div>
                                                 @else
-                                                    <span class="text-muted">No colors</span>
+                                                    <span class="text-muted">Không có màu sắc</span>
                                                 @endif
                                             </td>
                                             <td>
@@ -161,11 +161,11 @@
                                                 </span>
                                             </td>
                                             <td>
-                                                <a href="{{ route('admin.attributes.edit', $attributeType) }}" class="btn btn-sm btn-warning">Edit</a>
-                                                <form action="{{ route('admin.attributes.destroy', $attributeType) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this attribute type?');">
+                                                <a href="{{ route('admin.attributes.edit', $attributeType) }}" class="btn btn-warning btn-sm rounded-3 me-2"><i class="ti ti-edit"></i></a>
+                                                <form action="{{ route('admin.attributes.destroy', $attributeType) }}" method="POST" class="d-inline" onsubmit="return confirm('Bạn có chắc chắn muốn xóa loại thuộc tính này không??');">
                                                     @csrf
                                                     @method('DELETE')
-                                                    <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                                                    <button type="submit" class="btn btn-danger btn-sm rounded-3"><i class="ti ti-trash"></i></button>
                                                 </form>
                                             </td>
                                         </tr>

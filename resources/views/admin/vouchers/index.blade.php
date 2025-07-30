@@ -1,5 +1,5 @@
 @extends('admin.layouts.app')
-@section('title', 'Voucher Management')
+@section('title', 'Danh sách mã giảm giá')
 
 @section('content')
     <div class="pc-container">
@@ -28,7 +28,7 @@
                     <div class="card">
                         <div class="card-header d-flex justify-content-between align-items-center">
                             <h5>Danh sách mã giảm giá</h5>
-                            <a href="{{ route('admin.vouchers.create') }}" class="btn btn-primary btn-sm"
+                            <a href="{{ route('admin.vouchers.create') }}" class="btn btn-primary btn-sm rounded-3 me-2"
                                 title="Thêm mã giảm giá mới">
                                 <i class="ti ti-plus"></i> Thêm mã giảm giá mới
                             </a>
@@ -100,9 +100,9 @@
                                     </div>
 
                                     <div class="col-md-3 d-flex align-items-end">
-                                        <button type="submit" class="btn btn-primary btn-sm me-2">Lọc</button>
+                                        <button type="submit" class="btn btn-primary me-2">Lọc</button>
                                         <a href="{{ route('admin.vouchers.index') }}"
-                                            class="btn btn-secondary btn-sm">Đặt lại</a>
+                                            class="btn btn-secondary">Đặt lại</a>
                                     </div>
                                 </form>
                             </div>
@@ -145,11 +145,11 @@
                                                 </td>
                                                 <td>
                                                     <a href="{{ route('admin.vouchers.show', $voucher->id) }}"
-                                                        class="btn btn-info btn-sm" title="Xem chi tiết">
+                                                        class="btn btn-info btn-sm rounded-3 me-2" title="Xem chi tiết">
                                                         <i class="ti ti-eye"></i>
                                                     </a>
                                                     <a href="{{ route('admin.vouchers.edit', $voucher->id) }}"
-                                                        class="btn btn-warning btn-sm" title="Chỉnh sửa">
+                                                        class="btn btn-warning btn-sm rounded-3 me-2" title="Chỉnh sửa">
                                                         <i class="ti ti-edit"></i>
                                                     </a>
                                                     <form action="{{ route('admin.vouchers.destroy', $voucher->id) }}"
@@ -157,7 +157,7 @@
                                                         onsubmit="return confirm('Bạn có chắc chắn muốn xóa cái này không?');">
                                                         @csrf
                                                         @method('DELETE')
-                                                        <button type="submit" class="btn btn-danger btn-sm" title="Xóa">
+                                                        <button type="submit" class="btn btn-danger btn-sm rounded-3" title="Xóa">
                                                             <i class="ti ti-trash"></i>
                                                         </button>
                                                     </form>

@@ -51,6 +51,24 @@ class CategoryController
             'icon' => 'nullable|string|max:255'
         ]);
 
+        // Kiểm tra trùng tên với danh mục đã xóa mềm
+        $existing = Category::withTrashed()
+            ->where('slug', Str::slug($request->name))
+            ->where('type', $request->type)
+            ->first();
+
+        if ($existing) {
+            if ($existing->trashed()) {
+                return redirect()->back()->withInput()->withErrors([
+                    'name' => 'Tên danh mục này đang ở trong thùng rác. Vui lòng khôi phục hoặc chọn tên khác.'
+                ]);
+            } else {
+                return redirect()->back()->withInput()->withErrors([
+                    'name' => 'Tên danh mục này đã tồn tại.'
+                ]);
+            }
+        }
+
         $data = $request->all();
         $data['slug'] = Str::slug($request->name);
 

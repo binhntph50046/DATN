@@ -71,13 +71,45 @@ class VoucherController
             'type' => 'required|in:fixed,percentage',
             'value' => 'required|numeric|min:0',
             'min_order_amount' => 'nullable|numeric|min:0',
-            'expires_at' => 'date',
+            'expires_at' => 'required|date|after_or_equal:today',
             'usage_limit' => 'integer|min:0',
             'per_user_limit' => 'integer|min:0',
             'is_active' => 'boolean',
             'purpose' => 'required|in:product_discount,free_shipping',
             'description' => 'nullable|string|max:255',
+        ], [
+            'code.required' => 'Mã voucher là bắt buộc.',
+            'code.string' => 'Mã voucher phải là chuỗi ký tự.',
+            'code.unique' => 'Mã voucher đã tồn tại.',
+
+            'type.required' => 'Vui lòng chọn loại giảm giá.',
+            'type.in' => 'Loại giảm giá không hợp lệ.',
+
+            'value.required' => 'Giá trị giảm là bắt buộc.',
+            'value.numeric' => 'Giá trị giảm phải là số.',
+            'value.min' => 'Giá trị giảm không được nhỏ hơn 0.',
+
+            'min_order_amount.numeric' => 'Giá trị đơn hàng tối thiểu phải là số.',
+            'min_order_amount.min' => 'Giá trị đơn hàng tối thiểu không được nhỏ hơn 0.',
+
+            'expires_at.required' => 'Vui lòng nhập ngày hết hạn.',
+            'expires_at.date' => 'Ngày hết hạn không hợp lệ.',
+            'expires_at.after_or_equal' => 'Ngày hết hạn phải từ hôm nay trở đi.',
+
+            'usage_limit.integer' => 'Giới hạn sử dụng phải là số nguyên.',
+            'usage_limit.min' => 'Giới hạn sử dụng không được nhỏ hơn 0.',
+
+            'per_user_limit.integer' => 'Giới hạn mỗi người dùng phải là số nguyên.',
+            'per_user_limit.min' => 'Giới hạn mỗi người dùng không được nhỏ hơn 0.',
+
+            'is_active.boolean' => 'Trạng thái hoạt động không hợp lệ.',
+
+            'purpose.required' => 'Vui lòng chọn mục đích sử dụng voucher.',
+            'purpose.in' => 'Mục đích sử dụng không hợp lệ.',
+
+            'description.max' => 'Mô tả không được vượt quá 255 ký tự.',
         ]);
+
         Voucher::create($data);
         return redirect()->route('admin.vouchers.index')->with('success', 'Voucher đã được tạo thành công.');
     }
@@ -104,16 +136,29 @@ class VoucherController
     public function update(Request $request, Voucher $voucher)
     {
         $data = $request->validate([
-            // 'code' => 'required|string|unique:vouchers,code,' . $voucher->id,
-            // 'type' => 'required|in:fixed,percentage',
-            // 'value' => 'required|numeric|min:0',
             'min_order_amount' => 'nullable|numeric|min:0',
-            'expires_at' => 'date',
+            'expires_at' => 'required|date|after_or_equal:today',
             'usage_limit' => 'integer|min:0',
             'per_user_limit' => 'integer|min:0',
             'is_active' => 'boolean',
-            // 'purpose' => 'required|in:product_discount,free_shipping',
             'description' => 'nullable|string|max:255',
+        ], [
+            'min_order_amount.numeric' => 'Giá trị đơn hàng tối thiểu phải là số.',
+            'min_order_amount.min' => 'Giá trị đơn hàng tối thiểu không được nhỏ hơn 0.',
+
+            'expires_at.required' => 'Vui lòng nhập ngày hết hạn.',
+            'expires_at.date' => 'Ngày hết hạn không hợp lệ.',
+            'expires_at.after_or_equal' => 'Ngày hết hạn phải từ hôm nay trở đi.',
+
+            'usage_limit.integer' => 'Giới hạn sử dụng phải là số nguyên.',
+            'usage_limit.min' => 'Giới hạn sử dụng không được nhỏ hơn 0.',
+
+            'per_user_limit.integer' => 'Giới hạn mỗi người dùng phải là số nguyên.',
+            'per_user_limit.min' => 'Giới hạn mỗi người dùng không được nhỏ hơn 0.',
+
+            'is_active.boolean' => 'Trạng thái hoạt động không hợp lệ.',
+
+            'description.max' => 'Mô tả không được vượt quá 255 ký tự.',
         ]);
         $voucher->update($data);
         return redirect()->route('admin.vouchers.index')->with('success', 'Voucher đã được cập nhật thành công.');

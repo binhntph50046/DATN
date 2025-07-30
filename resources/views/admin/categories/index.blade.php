@@ -87,8 +87,8 @@
                                     </div>
                                 
                                     <div class="col-12 mt-3">
-                                        <button type="submit" class="btn btn-primary btn-sm">Lọc</button>
-                                        <a href="{{ route('admin.categories.index') }}" class="btn btn-secondary btn-sm">Reset</a>
+                                        <button type="submit" class="btn btn-primary">Lọc</button>
+                                        <a href="{{ route('admin.categories.index') }}" class="btn btn-secondary">Đặt lại</a>
                                     </div>
                                 </form>
                             </div>
@@ -164,11 +164,11 @@
                                                 echo '</td>';
 
                                                 echo '<td class="text-center">';
-                                                echo '<a href="' . route('admin.categories.edit', $category->id) . '" class="btn btn-info btn-sm rounded-3 me-2"><i class="ti ti-edit"></i> Sửa</a>';
+                                                echo '<a href="' . route('admin.categories.edit', $category->id) . '" class="btn btn-warning btn-sm rounded-3 me-2"><i class="ti ti-edit"></i></a>';
                                                 echo '<form action="' . route('admin.categories.destroy', $category->id) . '" method="POST" class="d-inline">';
                                                 echo csrf_field();
                                                 echo method_field('DELETE');
-                                                echo '<button type="submit" class="btn btn-danger btn-sm rounded-3" onclick="return confirm(\'Bạn có chắc chắn muốn xóa danh mục này không??\')"><i class="ti ti-trash"></i> Xóa</button>';
+                                                echo '<button type="submit" class="btn btn-danger btn-sm rounded-3" onclick="return confirm(\'Bạn có chắc chắn muốn xóa danh mục này không??\')"><i class="ti ti-trash"></i></button>';
                                                 echo '</form>';
                                                 echo '</td>';
                                                 echo '</tr>';

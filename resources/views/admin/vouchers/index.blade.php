@@ -13,7 +13,7 @@
                                 <h5 class="m-b-10">Vouchers</h5>
                             </div>
                             <ul class="breadcrumb">
-                                <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Home</a></li>
+                                <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Trang chủ</a></li>
                                 <li class="breadcrumb-item" aria-current="page">Vouchers</li>
                             </ul>
                         </div>
@@ -50,11 +50,11 @@
                                             <option value="">All Purposes</option>
                                             <option value="product_discount"
                                                 {{ request('purpose') == 'product_discount' ? 'selected' : '' }}>
-                                                Product Discount
+                                                Giảm giá sản phẩm
                                             </option>
                                             <option value="free_shipping"
                                                 {{ request('purpose') == 'free_shipping' ? 'selected' : '' }}>
-                                                Free Shipping
+                                                Miễn phí vận chuyển
                                             </option>
                                         </select>
                                     </div>
@@ -128,7 +128,7 @@
                                                 <td class="text-start">{{ $voucher->code }}</td>
                                                 <td>{{ ucfirst($voucher->type) }}</td>
                                                 <td>
-                                                    {{ $voucher->purpose == 'free_shipping' ? 'Free Shipping' : 'Product Discount' }}
+                                                    {{ $voucher->purpose == 'free_shipping' ? 'Miễn phí vận chuyển' : 'Giảm giá sản phẩm' }}
                                                 </td>
                                                 <td class="text-start">{{ $voucher->description ?? '-' }}</td>
                                                 <td>

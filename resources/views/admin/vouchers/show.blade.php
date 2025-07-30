@@ -13,9 +13,9 @@
                                 <h5 class="m-b-10">Voucher Details</h5>
                             </div>
                             <ul class="breadcrumb">
-                                <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Home</a></li>
+                                <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Trang chủ</a></li>
                                 <li class="breadcrumb-item"><a href="{{ route('admin.vouchers.index') }}">Vouchers</a></li>
-                                <li class="breadcrumb-item" aria-current="page">Details</li>
+                                <li class="breadcrumb-item" aria-current="page">Chi tiết</li>
                             </ul>
                         </div>
                     </div>
@@ -38,11 +38,9 @@
                                 <dt class="col-sm-3">Purpose</dt>
                                 <dd class="col-sm-9">
                                     @if ($voucher->purpose === 'product_discount')
-                                        Product Discount
-                                    @elseif ($voucher->purpose === 'free_shipping')
-                                        Free Shipping
+                                        Giảm giá sản phẩm
                                     @else
-                                        Unknown
+                                        Miễn phí vận chuyển
                                     @endif
                                 </dd>
 

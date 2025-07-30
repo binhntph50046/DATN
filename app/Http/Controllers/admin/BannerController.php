@@ -84,7 +84,7 @@ class BannerController
         $banner->save();
 
         // Chuyển hướng và thông báo thành công
-        return redirect()->route('admin.banners.index')->with('success', 'Banner created successfully');
+        return redirect()->route('admin.banners.index')->with('success', 'Banner đã được tạo thành công');
     }
 
     /**
@@ -145,7 +145,7 @@ class BannerController
 
         $banner->save();
 
-        return redirect()->route('admin.banners.index')->with('success', 'Banner updated successfully');
+        return redirect()->route('admin.banners.index')->with('success', 'Banner đã được cập nhật thành công');
     }
 
     /**
@@ -160,7 +160,7 @@ class BannerController
 
         $banner->delete();
 
-        return redirect()->route('admin.banners.index')->with('success', 'Successfully deleted');
+        return redirect()->route('admin.banners.index')->with('success', 'Banner đã được xóa thành công');
     }
     public function moveUp(Banner $banner)
     {

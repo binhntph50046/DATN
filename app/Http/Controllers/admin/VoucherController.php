@@ -79,7 +79,7 @@ class VoucherController
             'description' => 'nullable|string|max:255',
         ]);
         Voucher::create($data);
-        return redirect()->route('admin.vouchers.index')->with('success', 'Successfully created');
+        return redirect()->route('admin.vouchers.index')->with('success', 'Voucher đã được tạo thành công.');
     }
 
     /**
@@ -116,7 +116,7 @@ class VoucherController
             'description' => 'nullable|string|max:255',
         ]);
         $voucher->update($data);
-        return redirect()->route('admin.vouchers.index')->with('success', 'Successfully updated');
+        return redirect()->route('admin.vouchers.index')->with('success', 'Voucher đã được cập nhật thành công.');
     }
 
     /**
@@ -125,6 +125,6 @@ class VoucherController
     public function destroy(Voucher $voucher)
     {
         $voucher->delete();
-        return redirect()->route('admin.vouchers.index')->with('success', 'Successfully deleted');
+        return redirect()->route('admin.vouchers.index')->with('success', 'Voucher đã được xóa thành công.');
     }
 }

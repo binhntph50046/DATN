@@ -1,5 +1,5 @@
 @extends('admin.layouts.app')
-@section('title', 'Attribute Types Management')
+@section('title', 'Quản lý loại thuộc tính')
 
 <style>
     .custom-shadow {
@@ -48,11 +48,11 @@
                 <div class="row align-items-center">
                     <div class="col-md-12">
                         <div class="page-header-title">
-                            <h5 class="m-b-10">Attribute Types</h5>
+                            <h5 class="m-b-10">Loại thuộc tính</h5>
                         </div>
                         <ul class="breadcrumb">
-                            <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Home</a></li>
-                            <li class="breadcrumb-item" aria-current="page">Attribute Types</li>
+                            <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Trang chủ</a></li>
+                            <li class="breadcrumb-item" aria-current="page">Loại thuộc tính</li>
                         </ul>
                     </div>
                 </div>
@@ -65,21 +65,21 @@
             <div class="col-12">
                 <div class="card custom-shadow">
                     <div class="card-header">
-                        <h5>Attribute Types List</h5>
+                        <h5>Danh sách loại thuộc tính</h5>
                         <div class="card-header-right">
                             <form method="GET" action="" class="d-inline-block me-2">
                                 <select name="category_id" class="form-select form-select-sm" onchange="this.form.submit()" style="width:auto;display:inline-block;">
-                                    <option value="">-- All Categories --</option>
+                                    <option value="">-- Tất cả danh mục --</option>
                                     @foreach($categories as $category)
                                         <option value="{{ $category->id }}" {{ request('category_id') == $category->id ? 'selected' : '' }}>{{ $category->name }}</option>
                                     @endforeach
                                 </select>
                             </form>
                             <a href="{{ route('admin.attributes.create') }}" class="btn btn-primary btn-sm rounded-3 me-2">
-                                <i class="ti ti-plus"></i> Add New Attribute Type
+                                <i class="ti ti-plus"></i> Thêm loại thuộc tính mới
                             </a>
                             <a href="{{ route('admin.attributes.trash') }}" class="btn btn-danger btn-sm rounded-3">
-                                <i class="ti ti-trash"></i> Trash
+                                <i class="ti ti-trash"></i> Thùng rác
                             </a>
                         </div>
                     </div>
@@ -88,19 +88,19 @@
                             <div class="alert alert-success">{{ session('success') }}</div>
                         @endif
                         @if ($attributeTypes->isEmpty())
-                            <p>No attribute types found.</p>
+                            <p>Không tìm thấy loại thuộc tính nào.</p>
                         @else
                         <div class="table custom-shadow">
                             <table class="table table-hover table-borderless">
                                 <thead>
                                     <tr>
                                         <th>ID</th>
-                                        <th>Name</th>
-                                        <th>Categories</th>
-                                        <th>Values</th>
-                                        <th>Colors</th>
-                                        <th>Status</th>
-                                        <th>Actions</th>
+                                        <th>Tên</th>
+                                        <th>Danh mục</th>
+                                        <th>Giá trị</th>
+                                        <th>Màu sắc</th>
+                                        <th>Trạng thái</th>
+                                        <th>Thao tác</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -120,7 +120,7 @@
                                                             @endif
                                                         @endforeach
                                                     @else
-                                                        <span class="text-muted">No categories</span>
+                                                        <span class="text-muted">Không có danh mục</span>
                                                     @endif
                                                 </div>
                                             </td>
@@ -134,7 +134,7 @@
                                                         @endforeach
                                                     </div>
                                                 @else
-                                                    <span class="text-muted">No values</span>
+                                                    <span class="text-muted">Không có giá trị</span>
                                                 @endif
                                             </td>
                                             <td>
@@ -146,26 +146,26 @@
                                                                     <div class="color-preview" style="background-color: {{ $value->hex[0] }}"></div>
                                                                     <span class="small">{{ $value->hex[0] }}</span>
                                                                 @else
-                                                                    <span class="text-muted">No color</span>
+                                                                    <span class="text-muted">Không có màu</span>
                                                                 @endif
                                                             </div>
                                                         @endforeach
                                                     </div>
                                                 @else
-                                                    <span class="text-muted">No colors</span>
+                                                    <span class="text-muted">Không có màu</span>
                                                 @endif
                                             </td>
                                             <td>
                                                 <span class="badge {{ $attributeType->status == 'active' ? 'bg-success' : 'bg-danger' }}">
-                                                    {{ ucfirst($attributeType->status) }}
+                                                    {{ $attributeType->status == 'active' ? 'Hoạt động' : 'Không hoạt động' }}
                                                 </span>
                                             </td>
                                             <td>
-                                                <a href="{{ route('admin.attributes.edit', $attributeType) }}" class="btn btn-sm btn-warning">Edit</a>
-                                                <form action="{{ route('admin.attributes.destroy', $attributeType) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this attribute type?');">
+                                                <a href="{{ route('admin.attributes.edit', $attributeType) }}" class="btn btn-sm btn-warning">Sửa</a>
+                                                <form action="{{ route('admin.attributes.destroy', $attributeType) }}" method="POST" class="d-inline" onsubmit="return confirm('Bạn có chắc chắn muốn xóa loại thuộc tính này?');">
                                                     @csrf
                                                     @method('DELETE')
-                                                    <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                                                    <button type="submit" class="btn btn-sm btn-danger">Xóa</button>
                                                 </form>
                                             </td>
                                         </tr>

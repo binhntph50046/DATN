@@ -1,5 +1,5 @@
 @extends('admin.layouts.app')
-@section('title', 'View Product')
+@section('title', 'Xem chi tiết sản phẩm')
 
 <style>
     .custom-shadow {
@@ -275,11 +275,11 @@
                     <div class="row align-items-center">
                         <div class="col-md-12">
                             <div class="page-header-title">
-                                <h5 class="m-b-10">Product Details</h5>
+                                <h5 class="m-b-10">Chi tiết sản phẩm</h5>
                             </div>
                             <ul class="breadcrumb">
-                                <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Home</a></li>
-                                <li class="breadcrumb-item"><a href="{{ route('admin.products.index') }}">Products</a></li>
+                                <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Trang chủ</a></li>
+                                <li class="breadcrumb-item"><a href="{{ route('admin.products.index') }}">Sản phẩm</a></li>
                                 <li class="breadcrumb-item" aria-current="page">{{ $product->name }}</li>
                             </ul>
                         </div>
@@ -293,15 +293,15 @@
                 <div class="col-12">
                     <div class="card custom-shadow">
                         <div class="card-header d-flex justify-content-between align-items-center">
-                            <h5>Product Information</h5>
+                            <h5>Thông tin sản phẩm</h5>
                             <div>
                                 <a href="{{ route('admin.products.edit', $product) }}"
                                     class="btn btn-info btn-sm btn-action rounded-3 me-2">
-                                    <i class="ti ti-edit"></i> Edit Product
+                                    <i class="ti ti-edit"></i> Sửa sản phẩm
                                 </a>
                                 <a href="{{ route('admin.products.index') }}"
                                     class="btn btn-secondary btn-sm btn-action rounded-3">
-                                    <i class="ti ti-arrow-left"></i> Back to List
+                                    <i class="ti ti-arrow-left"></i> Quay lại
                                 </a>
                             </div>
                         </div>
@@ -316,7 +316,7 @@
                                                 alt="{{ $product->name }}" class="product-img-thumb"
                                                 style="max-width:300px;max-height:300px;object-fit:cover">
                                         @else
-                                            <img src="{{ asset('uploads/default/default.jpg') }}" alt="default image"
+                                            <img src="{{ asset('uploads/default/default.jpg') }}" alt="Ảnh mặc định"
                                                 class="product-img-thumb"
                                                 style="width: 100px; height: 100px; object-fit: cover; border-radius: 8px;">
                                         @endif
@@ -328,24 +328,24 @@
                                         <h2 class="fw-bold mb-3">
                                             {{ is_array($product->name) ? implode(', ', $product->name) : $product->name }}
                                         </h2>
-                                        <div class="mb-2"><strong>Category:</strong>
+                                        <div class="mb-2"><strong>Danh mục:</strong>
                                             {{ is_array($product->category && $product->category->name) ? implode(', ', $product->category->name) : ($product->category ? $product->category->name : 'N/A') }}
                                         </div>
-                                        <div class="mb-2"><strong>Warranty:</strong>
-                                            {{ $product->warranty_months ?? 'N/A' }} months</div>
-                                        <div class="mb-2"><strong>Status:</strong>
+                                        <div class="mb-2"><strong>Bảo hành:</strong>
+                                            {{ $product->warranty_months ?? 'N/A' }} tháng</div>
+                                        <div class="mb-2"><strong>Trạng thái:</strong>
                                             <span
                                                 class="status-badge {{ $product->status === 'active' ? 'status-active' : 'status-inactive' }}">
-                                                {{ ucfirst($product->status) }}
+                                                {{ $product->status === 'active' ? 'Hoạt động' : 'Không hoạt động' }}
                                             </span>
                                             @if ($product->is_featured)
-                                                <span class="badge badge-featured ms-2">Featured</span>
+                                                <span class="badge badge-featured ms-2">Nổi bật</span>
                                             @endif
                                         </div>
                                         <!-- Specifications -->
                                         @if ($product->specifications && $product->specifications->isNotEmpty())
                                             <div class="mt-4">
-                                                <h5 class="mb-3">Specifications</h5>
+                                                <h5 class="mb-3">Thông số kỹ thuật</h5>
                                                 @foreach ($product->specifications as $spec)
                                                     @if($spec->specification)
                                                         <div class="spec-item mb-2">
@@ -365,7 +365,7 @@
                                 <div class="col-md-6">
                                     @if ($product->features)
                                         <div class="info-section">
-                                            <h5 class="mb-3">Features</h5>
+                                            <h5 class="mb-3">Tính năng</h5>
                                             @if (is_array($product->features))
                                                 @foreach ($product->features as $feature)
                                                     <div class="feature-item">
@@ -389,7 +389,7 @@
                                 <div class="row mt-4">
                                     <div class="col-12">
                                         <div class="custom-shadow">
-                                            <h5 class="mb-3">Description</h5>
+                                            <h5 class="mb-3">Mô tả</h5>
                                             <p class="text-muted">{!! is_array($product->description) ? implode(', ', $product->description) : nl2br(e($product->description)) !!}</p>
                                         </div>
                                     </div>
@@ -401,7 +401,7 @@
                                 <div class="row mt-4">
                                     <div class="col-12">
                                         <div class="custom-shadow content-section">
-                                            <h5 class="mb-3">Detailed Content</h5>
+                                            <h5 class="mb-3">Nội dung chi tiết</h5>
                                             <div class="content">{!! is_array($product->content) ? implode(', ', $product->content) : $product->content !!}</div>
                                         </div>
                                     </div>
@@ -411,102 +411,101 @@
                             <!-- Product Variants -->
                             @if ($product->variants && $product->variants->isNotEmpty())
                                 <div class="variant-section mt-4">
-                                    <h5 class="variant-title">Product Variants</h5>
+                                    <h5 class="variant-title">Biến thể sản phẩm</h5>
                                     <div class="table-responsive">
                                         <table class="table variant-table align-middle text-center"
                                             style="font-size: 0.95em;">
                                             <thead>
                                                 <tr>
-                                                    <th>ID</th>
-                                                    <th style="width:90px;">Variant Image</th>
-                                                    <th>Name</th>
-                                                    <th>Attributes</th>
-                                                    <th>Purchase Price</th>
-                                                    <th>Selling Price</th>
-                                                    <th>Stock</th>
-                                                    <th>Status</th>
-                                                    <th>Default</th>
+                                                    <th>Ảnh</th>
+                                                    <th style="width:90px;">Ảnh biến thể</th>
+                                                    <th>Tên biến thể</th>
+                                                    <th>Thuộc tính</th>
+                                                    <th>Giá nhập</th>
+                                                    <th>Giá bán</th>
+                                                    <th>Tồn kho</th>
+                                                    <th>Trạng thái</th>
+                                                    <th>Mặc định</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
                                                 @foreach ($product->variants as $variant)
-                                                    <tr class="{{ $variant->is_default ? 'table-success' : '' }}">
-                                                        <td>{{ $variant->id }}</td>
-                                                        <!-- Variant Image -->
-                                                        <td>
-                                                            @if ($variant->images)
-                                                                @php
-                                                                    $images = null;
-                                                                    if (is_string($variant->images)) {
-                                                                        $images = json_decode($variant->images, true);
-                                                                    } elseif (is_array($variant->images)) {
-                                                                        $images = $variant->images;
-                                                                    }
-                                                                    $firstImage = null;
-                                                                    if (is_array($images) && !empty($images)) {
-                                                                        $firstImage = $images[0];
-                                                                    }
-                                                                @endphp
-                                                                @if ($firstImage)
-                                                                    <img src="{{ asset($firstImage) }}" alt="Variant Image"
-                                                                        style="width:80px;height:80px;object-fit:cover;border-radius:8px;">
+                                                    @if ($variant->deleted_at === null)
+                                                        <tr class="{{ $variant->is_default ? 'table-success' : '' }}">
+                                                            <td>{{ $variant->id }}</td>
+                                                            <!-- Variant Image -->
+                                                            <td>
+                                                                @if ($variant->images)
+                                                                    @php
+                                                                        $images = null;
+                                                                        if (is_string($variant->images)) {
+                                                                            $images = json_decode($variant->images, true);
+                                                                        } elseif (is_array($variant->images)) {
+                                                                            $images = $variant->images;
+                                                                        }
+                                                                        $firstImage = null;
+                                                                        if (is_array($images) && !empty($images)) {
+                                                                            $firstImage = $images[0];
+                                                                        }
+                                                                    @endphp
+                                                                    @if ($firstImage)
+                                                                        <img src="{{ asset($firstImage) }}" alt="Ảnh biến thể">
+                                                                    @else
+                                                                        <img src="{{ asset('uploads/default/default.jpg') }}"
+                                                                            alt="Ảnh mặc định">
+                                                                    @endif
                                                                 @else
                                                                     <img src="{{ asset('uploads/default/default.jpg') }}"
-                                                                        alt="Default Image"
-                                                                        style="width:80px;height:80px;object-fit:cover;border-radius:8px;">
+                                                                        alt="Ảnh mặc định">
                                                                 @endif
-                                                            @else
-                                                                <img src="{{ asset('uploads/default/default.jpg') }}"
-                                                                    alt="Default Image"
-                                                                    style="width:80px;height:80px;object-fit:cover;border-radius:8px;">
-                                                            @endif
-                                                        </td>
-                                                        <td style="max-width:140px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
-                                                            {{ is_array($variant->name) ? implode(', ', $variant->name) : $variant->name }}
-                                                        </td>
-                                                        <td>
-                                                            <div style="display: flex; flex-direction: column; gap: 8px; align-items: flex-start;">
-                                                                @foreach ($variant->combinations as $combination)
-                                                                    <div class="variant-attribute mb-1" style="font-size:0.95em; display: flex; align-items: center; gap: 8px; background: #f4f6f8; padding: 8px 14px; border-radius: 8px;">
-                                                                        <span class="variant-attribute-name" style="color: #6c757d; min-width: 60px;">{{ is_array($combination->attributeValue->attributeType->name) ? implode(', ', $combination->attributeValue->attributeType->name) : $combination->attributeValue->attributeType->name }}:</span>
-                                                                        <span class="variant-attribute-value" style="color: #222; font-weight: 500;">
-                                                                            @if (is_array($combination->attributeValue->value))
-                                                                                {{ implode(', ', $combination->attributeValue->value) }}
-                                                                            @else
-                                                                                {{ $combination->attributeValue->value }}
+                                                            </td>
+                                                            <td style="max-width:140px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+                                                                {{ is_array($variant->name) ? implode(', ', $variant->name) : $variant->name }}
+                                                            </td>
+                                                            <td>
+                                                                <div style="display: flex; flex-direction: column; gap: 8px; align-items: flex-start;">
+                                                                    @foreach ($variant->combinations as $combination)
+                                                                        <div class="variant-attribute mb-1" style="font-size:0.95em; display: flex; align-items: center; gap: 8px; background: #f4f6f8; padding: 8px 14px; border-radius: 8px;">
+                                                                            <span class="variant-attribute-name" style="color: #6c757d; min-width: 60px;">{{ is_array($combination->attributeValue->attributeType->name) ? implode(', ', $combination->attributeValue->attributeType->name) : $combination->attributeValue->attributeType->name }}:</span>
+                                                                            <span class="variant-attribute-value" style="color: #222; font-weight: 500;">
+                                                                                @if (is_array($combination->attributeValue->value))
+                                                                                    {{ implode(', ', $combination->attributeValue->value) }}
+                                                                                @else
+                                                                                    {{ $combination->attributeValue->value }}
+                                                                                @endif
+                                                                            </span>
+                                                                            @if ($combination->attributeValue->hex)
+                                                                                <span class="color-box ms-2" style="display:inline-block;width:20px;height:20px;border-radius:50%;border:1px solid #ccc;box-shadow:0 1px 4px rgba(0,0,0,0.10);background:{{ is_array($combination->attributeValue->hex) ? implode(', ', $combination->attributeValue->hex) : $combination->attributeValue->hex }};"></span>
                                                                             @endif
-                                                                        </span>
-                                                                        @if ($combination->attributeValue->hex)
-                                                                            <span class="color-box ms-2" style="display:inline-block;width:20px;height:20px;border-radius:50%;border:1px solid #ccc;box-shadow:0 1px 4px rgba(0,0,0,0.10);background:{{ is_array($combination->attributeValue->hex) ? implode(', ', $combination->attributeValue->hex) : $combination->attributeValue->hex }};"></span>
-                                                                        @endif
-                                                                    </div>
-                                                                @endforeach
-                                                            </div>
-                                                        </td>
-                                                        <td>{{ number_format($variant->purchase_price, 0, ',', '.') }} VNĐ
-                                                        </td>
-                                                        <td><span
-                                                                class="text-success fw-bold">{{ number_format($variant->selling_price, 0, ',', '.') }}
-                                                                VNĐ</span></td>
-                                                        <td>
-                                                            <span
-                                                                class="stock-badge {{ $variant->stock > 0 ? 'stock-in' : 'stock-out' }}">
-                                                                {{ $variant->stock }}
-                                                            </span>
-                                                        </td>
-                                                        <td>
-                                                            <span
-                                                                class="status-badge {{ $variant->status === 'active' ? 'status-active' : 'status-inactive' }}">
-                                                                {{ ucfirst(is_array($variant->status) ? implode(', ', $variant->status) : $variant->status) }}
-                                                            </span>
-                                                        </td>
-                                                        <td>
-                                                            <span
-                                                                class="badge bg-{{ $variant->is_default ? 'success' : 'secondary' }}">
-                                                                {{ $variant->is_default ? 'Default' : 'No' }}
-                                                            </span>
-                                                        </td>
-                                                    </tr>
+                                                                        </div>
+                                                                    @endforeach
+                                                                </div>
+                                                            </td>
+                                                            <td>{{ number_format($variant->purchase_price, 0, ',', '.') }} VNĐ
+                                                            </td>
+                                                            <td><span
+                                                                    class="text-success fw-bold">{{ number_format($variant->selling_price, 0, ',', '.') }}
+                                                                    VNĐ</span></td>
+                                                            <td>
+                                                                <span
+                                                                    class="stock-badge {{ $variant->stock > 0 ? 'stock-in' : 'stock-out' }}">
+                                                                    {{ $variant->stock }}
+                                                                </span>
+                                                            </td>
+                                                            <td>
+                                                                <span
+                                                                    class="status-badge {{ $variant->status === 'active' ? 'status-active' : 'status-inactive' }}">
+                                                                    {{ ucfirst(is_array($variant->status) ? implode(', ', $variant->status) : $variant->status) }}
+                                                                </span>
+                                                            </td>
+                                                            <td>
+                                                                <span
+                                                                    class="badge bg-{{ $variant->is_default ? 'success' : 'secondary' }}">
+                                                                    {{ $variant->is_default ? 'Mặc định' : 'Không' }}
+                                                                </span>
+                                                            </td>
+                                                        </tr>
+                                                    @endif
                                                 @endforeach
                                             </tbody>
                                         </table>

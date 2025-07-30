@@ -14,7 +14,7 @@
                             <h5 class="m-b-10">Thêm thông số kỹ thuật mới</h5>
                         </div>
                         <ul class="breadcrumb">
-                            <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Home</a></li>
+                            <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Trang chủ</a></li>
                             <li class="breadcrumb-item"><a href="{{ route('admin.specifications.index') }}">Thông số kỹ thuật</a></li>
                             <li class="breadcrumb-item" aria-current="page">Thêm mới</li>
                         </ul>

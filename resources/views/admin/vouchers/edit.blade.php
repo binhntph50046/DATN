@@ -13,9 +13,9 @@
                                 <h5 class="m-b-10">Edit Voucher</h5>
                             </div>
                             <ul class="breadcrumb">
-                                <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Home</a></li>
+                                <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Trang chủ</a></li>
                                 <li class="breadcrumb-item"><a href="{{ route('admin.vouchers.index') }}">Vouchers</a></li>
-                                <li class="breadcrumb-item" aria-current="page">Edit</li>
+                                <li class="breadcrumb-item" aria-current="page">Sửa</li>
                             </ul>
                         </div>
                     </div>
@@ -56,9 +56,9 @@
                                     <label for="purpose" class="form-label">Purpose</label>
                                     <select name="purpose" id="purpose"
                                         class="form-control @error('purpose') is-invalid @enderror" required>
-                                        <option value="product_discount"
-                                            {{ old('purpose', $voucher->purpose) == 'product_discount' ? 'selected' : '' }}>
-                                            Product Discount</option>
+                                        <option value="product_discount" {{ old('purpose', $voucher->purpose) == 'product_discount' ? 'selected' : '' }}>
+                                            Giảm giá sản phẩm
+                                        </option>
                                         <option value="free_shipping"
                                             {{ old('purpose', $voucher->purpose) == 'free_shipping' ? 'selected' : '' }}>
                                             Free Shipping</option>

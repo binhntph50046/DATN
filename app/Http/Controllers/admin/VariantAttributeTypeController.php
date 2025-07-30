@@ -45,11 +45,11 @@ class VariantAttributeTypeController
             'category_ids' => 'required|array',
             'category_ids.*' => 'exists:categories,id'
         ], [
-            'name.required' => 'The attribute type name is required.',
-            'name.max' => 'The attribute type name must not exceed 255 characters.',
-            'name.unique' => 'This attribute type name already exists.',
-            'category_ids.required' => 'Please select at least one category.',
-            'category_ids.*.exists' => 'One or more selected categories are invalid.'
+            'name.required' => 'Tên loại thuộc tính là bắt buộc.',
+            'name.max' => 'Tên loại thuộc tính không được vượt quá 255 ký tự.',
+            'name.unique' => 'Tên loại thuộc tính này đã tồn tại.',
+            'category_ids.required' => 'Vui lòng chọn ít nhất một danh mục.',
+            'category_ids.*.exists' => 'Một hoặc nhiều danh mục được chọn không hợp lệ.'
         ]);
 
         $attributeType = VariantAttributeType::create($validated);
@@ -57,12 +57,12 @@ class VariantAttributeTypeController
         if ($request->ajax()) {
             return response()->json([
                 'success' => true,
-                'message' => 'Attribute type created successfully.',
+                'message' => 'Loại thuộc tính đã được tạo thành công.',
                 'attributeType' => $attributeType
             ]);
         }
         
-        return redirect()->route('admin.attributes.index')->with('success', 'Attribute type created successfully.');
+        return redirect()->route('admin.attributes.index')->with('success', 'Loại thuộc tính đã được tạo thành công.');
     }
 
     public function storeValues(Request $request)
@@ -89,7 +89,7 @@ class VariantAttributeTypeController
                     })->count();
                     
                     if ($duplicateCount > 1) {
-                        $fail('This combination of value and color has been used multiple times in your submission.');
+                        $fail('Sự kết hợp giá trị và màu sắc này đã được sử dụng nhiều lần trong yêu cầu của bạn.');
                         return;
                     }
 
@@ -110,17 +110,17 @@ class VariantAttributeTypeController
                         ->exists();
 
                     if ($exists) {
-                        $fail('This combination of value and color already exists for this attribute type.');
+                        $fail('Sự kết hợp giá trị và màu sắc này đã tồn tại cho loại thuộc tính này.');
                     }
                 }
             ],
             'values.*.hex_color' => 'nullable|string|regex:/^#[0-9A-F]{6}$/i'
         ], [
-            'values.required' => 'At least one value is required.',
-            'values.min' => 'At least one value is required.',
-            'values.*.value.required' => 'The attribute value is required.',
-            'values.*.value.max' => 'The attribute value must not exceed 255 characters.',
-            'values.*.hex_color.regex' => 'The color must be a valid hex color code (e.g. #FF0000).'
+            'values.required' => 'Cần ít nhất một giá trị.',
+            'values.min' => 'Cần ít nhất một giá trị.',
+            'values.*.value.required' => 'Giá trị thuộc tính là bắt buộc.',
+            'values.*.value.max' => 'Giá trị thuộc tính không được vượt quá 255 ký tự.',
+            'values.*.hex_color.regex' => 'Màu sắc phải là mã hex hợp lệ (ví dụ: #FF0000).'
         ]);
 
         try {
@@ -135,14 +135,13 @@ class VariantAttributeTypeController
 
             return response()->json([
                 'success' => true,
-                'message' => 'Attribute values added successfully.'
+                'message' => 'Giá trị thuộc tính đã được thêm thành công.'
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Error saving attribute values.',
-                'errors' => ['general' => [$e->getMessage()]]
-            ], 422);
+                'message' => 'Lỗi khi lưu giá trị thuộc tính.'
+            ]);
         }
     }
 
@@ -204,7 +203,7 @@ class VariantAttributeTypeController
                             })->count();
                             
                             if ($duplicateCount > 1) {
-                                $fail('This combination of value and color has been used multiple times in your submission.');
+                                $fail('Sự kết hợp giá trị và màu sắc này đã được sử dụng nhiều lần trong yêu cầu của bạn.');
                                 return;
                             }
 
@@ -226,7 +225,7 @@ class VariantAttributeTypeController
                                 ->exists();
 
                             if ($exists) {
-                                $fail('This combination of value and color already exists for this attribute type.');
+                                $fail('Sự kết hợp giá trị và màu sắc này đã tồn tại cho loại thuộc tính này.');
                             }
                         }
                     ],
@@ -261,17 +260,17 @@ class VariantAttributeTypeController
             }
 
             DB::commit();
-            return redirect()->route('admin.attributes.index')->with('success', 'Attribute type and values updated successfully.');
+            return redirect()->route('admin.attributes.index')->with('success', 'Loại thuộc tính và giá trị đã được cập nhật thành công.');
         } catch (\Exception $e) {
             DB::rollBack();
-            return redirect()->back()->with('error', 'Error updating attribute type: ' . $e->getMessage())->withInput();
+            return redirect()->back()->with('error', 'Lỗi khi cập nhật loại thuộc tính: ' . $e->getMessage())->withInput();
         }
     }
 
     public function destroy(VariantAttributeType $attributeType)
     {
         $attributeType->delete();
-        return redirect()->route('admin.attributes.index')->with('success', 'Attribute type deleted successfully.');
+        return redirect()->route('admin.attributes.index')->with('success', 'Loại thuộc tính đã được xóa thành công.');
     }
 
     public function trash()

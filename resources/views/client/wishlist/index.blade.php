@@ -238,7 +238,7 @@
         document.querySelectorAll('.product-item').forEach(wishlist => {
             wishlist.querySelector('.icon-add-to-cart').addEventListener('click', (e) => {
                 e.preventDefault();
-                alert('Added to Cart: ' + wishlist.querySelector('.product-title').textContent);
+                alert('Đã thêm vào giỏ hàng: ' + wishlist.querySelector('.product-title').textContent);
             });
         });
 
@@ -254,7 +254,7 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        console.log('View incremented');
+                        console.log('Đã tăng lượt xem');
                     }
                 });
         }
@@ -282,7 +282,7 @@
                     });
                     modal.show();
                 })
-                .catch(error => console.error('Error fetching product:', error));
+                .catch(error => console.error('Lỗi khi tải thông tin sản phẩm:', error));
         }
 
         // Quick View Modal Functionality
@@ -339,7 +339,7 @@
                     .dataset.storage;
 
                 alert(
-                    `Added to cart:\nQuantity: ${quantity}\nColor: ${selectedColor}\nStorage: ${selectedStorage}GB`
+                    `Đã thêm vào giỏ:\nSố lượng: ${quantity}\nMàu: ${selectedColor}\nDung lượng: ${selectedStorage}GB`
                 );
             });
 
@@ -352,7 +352,7 @@
                     .dataset.storage;
 
                 alert(
-                    `Proceeding to checkout:\nQuantity: ${quantity}\nColor: ${selectedColor}\nStorage: ${selectedStorage}GB`
+                    `Đang chuyển đến thanh toán:\nSố lượng: ${quantity}\nMàu: ${selectedColor}\nDung lượng: ${selectedStorage}GB`
                 );
             });
         });

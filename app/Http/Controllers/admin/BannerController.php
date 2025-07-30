@@ -98,7 +98,7 @@ class BannerController
         $banner->save();
 
         // Chuyển hướng và thông báo thành công
-        return redirect()->route('admin.banners.index')->with('success', 'Tạo mới thành công');
+        return redirect()->route('admin.banners.index')->with('success', 'Banner đã được tạo thành công');
     }
 
     /**
@@ -132,7 +132,7 @@ class BannerController
         ], [
             'title.required' => 'Tiêu đề là bắt buộc.',
             'title.max' => 'Tiêu đề không được vượt quá 255 ký tự.',
-            
+
             'image.image' => 'Tệp phải là hình ảnh.',
             'image.mimes' => 'Hình ảnh phải có định dạng: jpeg, png, jpg, gif.',
 
@@ -172,7 +172,7 @@ class BannerController
 
         $banner->save();
 
-        return redirect()->route('admin.banners.index')->with('success', 'Cập nhật thành công');
+        return redirect()->route('admin.banners.index')->with('success', 'Banner đã được cập nhật thành công');
     }
 
     /**
@@ -187,7 +187,7 @@ class BannerController
 
         $banner->delete();
 
-        return redirect()->route('admin.banners.index')->with('success', 'Xóa thành công');
+        return redirect()->route('admin.banners.index')->with('success', 'Banner đã được xóa thành công');
     }
     public function moveUp(Banner $banner)
     {

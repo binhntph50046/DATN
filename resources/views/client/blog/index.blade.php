@@ -1,4 +1,5 @@
 @extends('client.layouts.app')
+@section('title', 'Bài viết - Apple Store')
 
 @section('content')
     <!-- Shop Banner -->
@@ -23,141 +24,25 @@
     <!-- Start Blog Section -->
     <div class="blog-section">
         <div class="container">
-
             <div class="row">
-
-                <div class="col-12 col-sm-6 col-md-4 mb-5">
-                    <div class="post-entry">
-                        <a href="#" class="post-thumbnail"><img src="images/post-1.jpg" alt="Image"
-                                class="img-fluid"></a>
-                        <div class="post-content-entry">
-                            <h3><a href="#">First Time Home Owner Ideas</a></h3>
-                            <div class="meta">
-                                <span>by <a href="#">Kristin Watson</a></span> <span>on <a href="#">Dec 19,
-                                        2021</a></span>
+                @foreach($blogs as $blog)
+                    <div class="col-12 col-sm-6 col-md-4 mb-5">
+                        <div class="post-entry">
+                            <a href="{{ route('blog.show',$blog->slug) }}" class="post-thumbnail"><img src="{{ asset($blog->image) }}" alt="Image" class="img-fluid"></a>
+                            <div class="post-content-entry">
+                                <h3><a href="#">{{ $blog->title }}</a></h3>
+                                <div class="meta">
+                                    <span>by <a href="#">{{ $blog->author->name }}</a></span> 
+                                    <span>on <a href="#">{{ $blog->created_at->format('M d, Y') }}</a></span>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-
-                <div class="col-12 col-sm-6 col-md-4 mb-5">
-                    <div class="post-entry">
-                        <a href="#" class="post-thumbnail"><img src="images/post-2.jpg" alt="Image"
-                                class="img-fluid"></a>
-                        <div class="post-content-entry">
-                            <h3><a href="#">How To Keep Your Furniture Clean</a></h3>
-                            <div class="meta">
-                                <span>by <a href="#">Robert Fox</a></span> <span>on <a href="#">Dec 15,
-                                        2021</a></span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-12 col-sm-6 col-md-4 mb-5">
-                    <div class="post-entry">
-                        <a href="#" class="post-thumbnail"><img src="images/post-3.jpg" alt="Image"
-                                class="img-fluid"></a>
-                        <div class="post-content-entry">
-                            <h3><a href="#">Small Space Furniture Apartment Ideas</a></h3>
-                            <div class="meta">
-                                <span>by <a href="#">Kristin Watson</a></span> <span>on <a href="#">Dec 12,
-                                        2021</a></span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-12 col-sm-6 col-md-4 mb-5">
-                    <div class="post-entry">
-                        <a href="#" class="post-thumbnail"><img src="images/post-1.jpg" alt="Image"
-                                class="img-fluid"></a>
-                        <div class="post-content-entry">
-                            <h3><a href="#">First Time Home Owner Ideas</a></h3>
-                            <div class="meta">
-                                <span>by <a href="#">Kristin Watson</a></span> <span>on <a href="#">Dec 19,
-                                        2021</a></span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-12 col-sm-6 col-md-4 mb-5">
-                    <div class="post-entry">
-                        <a href="#" class="post-thumbnail"><img src="images/post-2.jpg" alt="Image"
-                                class="img-fluid"></a>
-                        <div class="post-content-entry">
-                            <h3><a href="#">How To Keep Your Furniture Clean</a></h3>
-                            <div class="meta">
-                                <span>by <a href="#">Robert Fox</a></span> <span>on <a href="#">Dec 15,
-                                        2021</a></span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-12 col-sm-6 col-md-4 mb-5">
-                    <div class="post-entry">
-                        <a href="#" class="post-thumbnail"><img src="images/post-3.jpg" alt="Image"
-                                class="img-fluid"></a>
-                        <div class="post-content-entry">
-                            <h3><a href="#">Small Space Furniture Apartment Ideas</a></h3>
-                            <div class="meta">
-                                <span>by <a href="#">Kristin Watson</a></span> <span>on <a href="#">Dec 12,
-                                        2021</a></span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-12 col-sm-6 col-md-4 mb-5">
-                    <div class="post-entry">
-                        <a href="#" class="post-thumbnail"><img src="images/post-1.jpg" alt="Image"
-                                class="img-fluid"></a>
-                        <div class="post-content-entry">
-                            <h3><a href="#">First Time Home Owner Ideas</a></h3>
-                            <div class="meta">
-                                <span>by <a href="#">Kristin Watson</a></span> <span>on <a href="#">Dec 19,
-                                        2021</a></span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-12 col-sm-6 col-md-4 mb-5">
-                    <div class="post-entry">
-                        <a href="#" class="post-thumbnail"><img src="images/post-2.jpg" alt="Image"
-                                class="img-fluid"></a>
-                        <div class="post-content-entry">
-                            <h3><a href="#">How To Keep Your Furniture Clean</a></h3>
-                            <div class="meta">
-                                <span>by <a href="#">Robert Fox</a></span> <span>on <a href="#">Dec 15,
-                                        2021</a></span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-12 col-sm-6 col-md-4 mb-5">
-                    <div class="post-entry">
-                        <a href="#" class="post-thumbnail"><img src="images/post-3.jpg" alt="Image"
-                                class="img-fluid"></a>
-                        <div class="post-content-entry">
-                            <h3><a href="#">Small Space Furniture Apartment Ideas</a></h3>
-                            <div class="meta">
-                                <span>by <a href="#">Kristin Watson</a></span> <span>on <a href="#">Dec 12,
-                                        2021</a></span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
+                @endforeach
             </div>
         </div>
     </div>
     <!-- End Blog Section -->
-
-
 
     <!-- Start Testimonial Slider -->
     <div class="testimonial-section before-footer-section">
@@ -171,18 +56,15 @@
             <div class="row justify-content-center">
                 <div class="col-lg-12">
                     <div class="testimonial-slider-wrap text-center">
-
                         <div id="testimonial-nav">
                             <span class="prev" data-controls="prev"><span class="fa fa-chevron-left"></span></span>
                             <span class="next" data-controls="next"><span class="fa fa-chevron-right"></span></span>
                         </div>
 
                         <div class="testimonial-slider">
-
                             <div class="item">
                                 <div class="row justify-content-center">
                                     <div class="col-lg-8 mx-auto">
-
                                         <div class="testimonial-block text-center d-flex justify-content-center">
                                             <div class="author-info col-lg-4">
                                                 <div class="author-pic">
@@ -192,15 +74,14 @@
                                                 <span class="position d-block mb-3">CEO, Co-Founder, XYZ Inc.</span>
                                             </div>
                                             <blockquote class="mb-5 col-lg-8">
-                                                <p>&ldquo;Donec facilisis quam ut purus rutrum lobortis. Donec vitae
+                                                <p>“Donec facilisis quam ut purus rutrum lobortis. Donec vitae
                                                     odio quis nisl dapibus malesuada. Nullam ac aliquet velit. Aliquam
                                                     vulputate velit imperdiet dolor tempor tristique. Pellentesque
                                                     habitant morbi tristique senectus et netus et malesuada fames ac
                                                     turpis egestas. Integer convallis volutpat dui quis
-                                                    scelerisque.&rdquo;</p>
+                                                    scelerisque.”</p>
                                             </blockquote>
                                         </div>
-
                                     </div>
                                 </div>
                             </div>
@@ -209,7 +90,6 @@
                             <div class="item">
                                 <div class="row justify-content-center">
                                     <div class="col-lg-8 mx-auto">
-
                                         <div class="testimonial-block text-center d-flex justify-content-center">
                                             <div class="author-info col-lg-4">
                                                 <div class="author-pic">
@@ -219,15 +99,14 @@
                                                 <span class="position d-block mb-3">CEO, Co-Founder, XYZ Inc.</span>
                                             </div>
                                             <blockquote class="mb-5 col-lg-8">
-                                                <p>&ldquo;Donec facilisis quam ut purus rutrum lobortis. Donec vitae
+                                                <p>“Donec facilisis quam ut purus rutrum lobortis. Donec vitae
                                                     odio quis nisl dapibus malesuada. Nullam ac aliquet velit. Aliquam
                                                     vulputate velit imperdiet dolor tempor tristique. Pellentesque
                                                     habitant morbi tristique senectus et netus et malesuada fames ac
                                                     turpis egestas. Integer convallis volutpat dui quis
-                                                    scelerisque.&rdquo;</p>
+                                                    scelerisque.”</p>
                                             </blockquote>
                                         </div>
-
                                     </div>
                                 </div>
                             </div>
@@ -236,7 +115,6 @@
                             <div class="item">
                                 <div class="row justify-content-center">
                                     <div class="col-lg-8 mx-auto">
-
                                         <div class="testimonial-block text-center d-flex justify-content-center">
                                             <div class="author-info col-lg-4">
                                                 <div class="author-pic">
@@ -246,22 +124,19 @@
                                                 <span class="position d-block mb-3">CEO, Co-Founder, XYZ Inc.</span>
                                             </div>
                                             <blockquote class="mb-5 col-lg-8">
-                                                <p>&ldquo;Donec facilisis quam ut purus rutrum lobortis. Donec vitae
+                                                <p>“Donec facilisis quam ut purus rutrum lobortis. Donec vitae
                                                     odio quis nisl dapibus malesuada. Nullam ac aliquet velit. Aliquam
                                                     vulputate velit imperdiet dolor tempor tristique. Pellentesque
                                                     habitant morbi tristique senectus et netus et malesuada fames ac
                                                     turpis egestas. Integer convallis volutpat dui quis
-                                                    scelerisque.&rdquo;</p>
+                                                    scelerisque.”</p>
                                             </blockquote>
                                         </div>
-
                                     </div>
                                 </div>
                             </div>
                             <!-- END item -->
-
                         </div>
-
                     </div>
                 </div>
             </div>

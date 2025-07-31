@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\OrderItem;
+use App\Models\OrderReturn;
 
 class Order extends Model
 {
@@ -13,6 +14,7 @@ class Order extends Model
 
     protected $fillable = [
         'user_id',
+        'order_code',
         'subtotal',
         'discount',
         'shipping_fee',
@@ -25,8 +27,10 @@ class Order extends Model
         'payment_status',
         'shipping_method_id',
         'status',
+        
         'is_paid',
-        'notes'
+        'notes',
+        'cancel_reason',
     ];
 
     protected $casts = [
@@ -34,7 +38,7 @@ class Order extends Model
         'subtotal' => 'decimal:2',
         'discount' => 'decimal:2',
         'shipping_fee' => 'decimal:2',
-        'total_price' => 'decimal:2'
+        'total_price' => 'decimal:2',
     ];
 
     // Relationships
@@ -53,6 +57,11 @@ class Order extends Model
         return $this->hasMany(OrderItem::class);
     }
 
+    public function returns()
+    {
+        return $this->hasMany(OrderReturn::class);
+    }
+
     // Scopes
     public function scopePending($query)
     {
@@ -67,5 +76,59 @@ class Order extends Model
     public function scopeCancelled($query)
     {
         return $query->where('status', 'cancelled');
+    }
+    /**
+     * Lấy trạng thái đơn hàng dạng text
+     */
+    public function getStatusTextAttribute()
+    {
+        $statuses = [
+            'pending' => 'Chờ xử lý',
+            'confirmed' => 'Đã xác nhận',
+            'preparing' => 'Đang chuẩn bị',
+            'shipping' => 'Đang giao hàng',
+            'completed' => 'Đã hoàn thành',
+            'cancelled' => 'Đã hủy',
+            'returned' => 'Đã hoàn đơn',
+            'partially_returned' => 'Hoàn một phần',
+        ];
+        return $statuses[$this->status] ?? $this->status;
+    }
+
+    /**
+     * Lấy trạng thái thanh toán dạng text
+     */
+    public function getPaymentStatusTextAttribute()
+    {
+        $statuses = [
+            'pending' => 'Chờ thanh toán',
+            'paid' => 'Đã thanh toán',
+            'failed' => 'Thanh toán thất bại',
+            'refunded' => 'Đã hoàn tiền',
+        ];
+        return $statuses[$this->payment_status] ?? $this->payment_status;
+    }
+
+    /**
+     * Lấy phương thức thanh toán dạng text
+     */
+    public function getPaymentMethodTextAttribute()
+    {
+        $methods = [
+            'cod' => 'Thanh toán khi nhận hàng',
+            'bank_transfer' => 'Chuyển khoản/QR/VNPay',
+            'credit_card' => 'Thẻ tín dụng',
+        ];
+        return $methods[$this->payment_method] ?? $this->payment_method;
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($order) {
+            // Tạo mã đơn hàng theo format: ORD + YYYYMMDD + 4 số ngẫu nhiên
+            $order->order_code = 'DH' . str_pad(mt_rand(1, 9999), 4, '0', STR_PAD_LEFT);
+        });
     }
 }

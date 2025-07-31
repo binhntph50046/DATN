@@ -30,6 +30,9 @@
 </style>
 
 @section('content')
+    <!-- Add Select2 CSS at the top of the file -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
     <div class="pc-container">
         <div class="pc-content">
             <div class="page-header">
@@ -206,35 +209,16 @@
                                     </div>
                                 </div>
 
-                                <!-- Category Specifications -->
-                                <div class="mb-3">
-                                    <label class="form-label">Thông số danh mục</label>
+                                <!-- Technical Specifications -->
+                                <div class="mb-3" id="specifications-section" style="display: none;">
+                                    <label class="form-label">Thông số kỹ thuật</label>
                                     <div id="categorySpecifications">
-                                        @if (old('specifications'))
-                                            <div id="specifications-wrapper">
-                                                <div class="row mb-2 spec-row">
-                                                    @foreach (old('specifications') as $idx => $spec)
-                                                        <div class="col-md-6">
-                                                            <div class="mb-3">
-                                                                <label class="form-label">Thông số
-                                                                    {{ $idx + 1 }}</label>
-                                                                <input type="hidden"
-                                                                    name="specifications[{{ $idx }}][specification_id]"
-                                                                    value="{{ $spec['specification_id'] }}">
-                                                                <input type="text" class="form-control"
-                                                                    name="specifications[{{ $idx }}][value]"
-                                                                    value="{{ $spec['value'] }}">
-                                                            </div>
-                                                        </div>
-                                                    @endforeach
-                                                </div>
-                                            </div>
-                                        @endif
+                                        <p class="text-muted">Vui lòng chọn danh mục để hiển thị thông số kỹ thuật.</p>
                                     </div>
                                 </div>
 
                                 <!-- Variant Attributes -->
-                                <div class="mb-3">
+                                <div class="mb-3" id="variant-attributes-section" style="display: none;">
                                     <label class="form-label">Thuộc tính biến thể <span
                                             class="text-danger">*</span></label>
                                     <div id="variant-attributes">
@@ -242,11 +226,9 @@
                                             <div class="row mb-2 attribute-row">
                                                 <div class="col-md-6">
                                                     <div class="mb-3">
-                                                        <label class="form-label">Thuộc tính 1 <span
-                                                                class="text-danger">*</span></label>
+                                                        <label class="form-label">Thuộc tính 1</label>
                                                         <select class="form-select attribute-type"
-                                                            name="attributes[0][attribute_type_id]" id="attribute_type_0"
-                                                            required>
+                                                            name="attributes[0][attribute_type_id]" id="attribute_type_0">
                                                             <option value="">-- Chọn thuộc tính --</option>
                                                             @foreach ($attributeTypes as $type)
                                                                 <option value="{{ $type->id }}"
@@ -255,27 +237,18 @@
                                                                 </option>
                                                             @endforeach
                                                         </select>
-                                                        <div class="error-message" id="error-type-0">Vui lòng chọn loại
-                                                            thuộc tính.</div>
+                                                        {{-- <div class="error-message" id="error-type-0">Vui lòng chọn loại
+                                                            thuộc tính.</div> --}}
                                                     </div>
                                                     <div class="mb-3">
-                                                        <label class="form-label">Giá trị <span
-                                                                class="text-danger">*</span></label>
-                                                        <input type="text" class="form-control attribute-values"
-                                                            name="attributes[0][value]" id="values_0"
-                                                            placeholder="Giá trị (ví dụ: Đỏ, Xanh)"
-                                                            value="{{ old('attributes.0.value') }}" required>
-                                                        <div class="error-message" id="error-values-0">Vui lòng nhập giá
-                                                            trị hợp lệ.</div>
-                                                    </div>
-                                                    <div class="mb-3">
-                                                        <label class="form-label">Mã màu Hex (Tùy chọn)</label>
-                                                        <input type="text" class="form-control attribute-hex"
-                                                            name="attributes[0][hex]" id="hex_0"
-                                                            placeholder="Mã màu Hex (ví dụ: #FFFFFF)"
-                                                            value="{{ old('attributes.0.hex') }}">
-                                                        <div class="error-message" id="error-hex-0">Vui lòng nhập mã màu
-                                                            hex hợp lệ hoặc để trống.</div>
+                                                        <label class="form-label">Giá trị</label>
+                                                        <select class="form-select attribute-values"
+                                                            name="attributes[0][selected_values][]" id="values_0"
+                                                            multiple>
+                                                            <option value="">-- Chọn giá trị --</option>
+                                                        </select>
+                                                        <div class="error-message" id="error-values-0">Vui lòng chọn ít
+                                                            nhất một giá trị.</div>
                                                     </div>
                                                 </div>
                                                 <div class="col-md-6">
@@ -291,26 +264,18 @@
                                                                 </option>
                                                             @endforeach
                                                         </select>
-                                                        <div class="error-message" id="error-type-1">Vui lòng chọn loại
-                                                            thuộc tính.</div>
+                                                        {{-- <div class="error-message" id="error-type-1">Vui lòng chọn loại
+                                                            thuộc tính.</div> --}}
                                                     </div>
                                                     <div class="mb-3">
                                                         <label class="form-label">Giá trị</label>
-                                                        <input type="text" class="form-control attribute-values"
-                                                            name="attributes[1][value]" id="values_1"
-                                                            placeholder="Giá trị (ví dụ: Xanh, Vàng)"
-                                                            value="{{ old('attributes.1.value') }}">
-                                                        <div class="error-message" id="error-values-1">Vui lòng nhập giá
-                                                            trị hợp lệ.</div>
-                                                    </div>
-                                                    <div class="mb-3">
-                                                        <label class="form-label">Mã màu Hex (Tùy chọn)</label>
-                                                        <input type="text" class="form-control attribute-hex"
-                                                            name="attributes[1][hex]" id="hex_1"
-                                                            placeholder="Mã màu Hex (ví dụ: #0000FF)"
-                                                            value="{{ old('attributes.1.hex') }}">
-                                                        <div class="error-message" id="error-hex-1">Vui lòng nhập mã màu
-                                                            hex hợp lệ hoặc để trống.</div>
+                                                        <select class="form-select attribute-values"
+                                                            name="attributes[1][selected_values][]" id="values_1"
+                                                            multiple>
+                                                            <option value="">-- Chọn giá trị --</option>
+                                                        </select>
+                                                        <div class="error-message" id="error-values-1">Vui lòng chọn ít
+                                                            nhất một giá trị.</div>
                                                     </div>
                                                 </div>
                                             </div>
@@ -409,7 +374,7 @@
                                                                 value="{{ $attr['attribute_type_id'] }}">
                                                             <input type="hidden"
                                                                 name="variants[{{ $index }}][attributes][{{ $attrIdx }}][value]"
-                                                                value="{{ $attr['value'] }}">
+                                                                value="{{ $attr['value'] ?? '' }}">
                                                             <input type="hidden"
                                                                 name="variants[{{ $index }}][attributes][{{ $attrIdx }}][hex]"
                                                                 value="{{ $attr['hex'] ?? '' }}">
@@ -437,34 +402,104 @@
         // Truyền dữ liệu old specifications từ Blade sang JavaScript
         const oldSpecifications = @json(old('specifications', []));
 
-        let attributeIndex = 0;
-        let selectedTypes = new Set();
-
         document.addEventListener('DOMContentLoaded', function() {
             const categorySelect = document.getElementById('category_id');
             if (categorySelect.value) {
-                categorySelect.dispatchEvent(new Event('change'));
+                loadCategoryData(categorySelect.value);
             }
+
+            // Khởi tạo Select2 cho tất cả select box thuộc tính
+            $('.attribute-values').select2({
+                width: '100%',
+                placeholder: 'Chọn giá trị',
+                allowClear: true,
+                multiple: true,
+                templateResult: formatAttributeValue,
+                templateSelection: formatAttributeValue
+            });
+
+            function formatAttributeValue(data) {
+                if (!data.id) return data.text;
+
+                const option = data.element;
+                const hex = option ? option.getAttribute('data-hex') : null;
+
+                if (hex) {
+                    return $(
+                        `<span>${data.text} <span style="display:inline-block;width:15px;height:15px;background-color:${hex};margin-left:5px;vertical-align:middle;border:1px solid #ddd;"></span></span>`
+                    );
+                }
+
+                return data.text;
+            }
+
+            // Xử lý khi thay đổi loại thuộc tính
+            $('.attribute-type').on('change', function() {
+                const index = $(this).attr('id').replace('attribute_type_', '');
+                const valueSelect = $(`#values_${index}`);
+                const attributeTypeId = $(this).val();
+
+                if (attributeTypeId) {
+                    // Load giá trị thuộc tính
+                    fetch(`/admin/attributes/${attributeTypeId}/values`)
+                        .then(response => response.json())
+                        .then(data => {
+                            valueSelect.empty().trigger('change');
+
+                            data.forEach(item => {
+                                const option = new Option(item.value, item.id, false, false);
+                                if (item.hex) {
+                                    option.setAttribute('data-hex', item.hex);
+                                }
+                                valueSelect.append(option);
+                            });
+
+                            // Nếu có dữ liệu cũ, khôi phục lại
+                            const oldAttributes = @json(old('attributes', []));
+                            if (oldAttributes[index] && oldAttributes[index].selected_values) {
+                                const oldValues = oldAttributes[index].selected_values.map(v =>
+                                    parseInt(v)).filter(v => !isNaN(v));
+                                $(valueSelect).val(oldValues).trigger('change');
+                            }
+                        });
+                } else {
+                    valueSelect.empty().trigger('change');
+                }
+            });
+
+            // Khôi phục giá trị đã chọn sau khi validate
+            const oldAttributes = @json(old('attributes', []));
+            if (oldAttributes.length > 0) {
+                oldAttributes.forEach((attr, idx) => {
+                    const typeSelect = document.getElementById(`attribute_type_${idx}`);
+                    const valueSelect = document.getElementById(`values_${idx}`);
+
+                    if (typeSelect && valueSelect) {
+                        // Set attribute type
+                        if (attr.attribute_type_id) {
+                            typeSelect.value = attr.attribute_type_id;
+                            typeSelect.dispatchEvent(new Event('change'));
+                        }
+                    }
+                });
+            }
+
             validateAttributeType(0);
             validateAttributeType(1);
             validateAttributeValues(0);
             validateAttributeValues(1);
-            validateHexValues(0);
-            validateHexValues(1);
         });
 
-        document.getElementById('category_id').addEventListener('change', function() {
-            const categoryId = this.value;
-            const selects = [document.getElementById('attribute_type_0'), document.getElementById(
-                'attribute_type_1')];
-            const valueInputs = [document.getElementById('values_0'), document.getElementById('values_1')];
-            const hexInputs = [document.getElementById('hex_0'), document.getElementById('hex_1')];
+        function loadCategoryData(categoryId) {
+            // Show/hide sections based on category selection
+            const variantAttributesSection = document.getElementById('variant-attributes-section');
+            const specificationsSection = document.getElementById('specifications-section');
 
+            variantAttributesSection.style.display = categoryId ? 'block' : 'none';
+            specificationsSection.style.display = categoryId ? 'block' : 'none';
+
+            // Load specifications
             if (categoryId) {
-                selects.forEach(s => s.disabled = false);
-                valueInputs.forEach(i => i.disabled = false);
-                hexInputs.forEach(i => i.disabled = false);
-
                 fetch(`/admin/categories/${categoryId}/specifications`)
                     .then(response => response.json())
                     .then(data => {
@@ -484,18 +519,18 @@
                                 const col = document.createElement('div');
                                 col.className = 'col-md-6';
                                 // Lấy giá trị từ oldSpecifications nếu có
-                                const oldValue = oldSpecifications[idx] ? oldSpecifications[idx].value :
-                                    '';
+                                const oldValue = oldSpecifications[idx] ? oldSpecifications[idx].value : '';
                                 col.innerHTML = `
                                     <div class="mb-3">
-                                        <label class="form-label">${spec.name} <span class="text-danger">*</span></label>
+                                        <label class="form-label">${spec.name}</label>
                                         <input type="hidden" name="specifications[${idx}][specification_id]" value="${spec.id}">
-                                        <input type="text" class="form-control" name="specifications[${idx}][value]" value="${oldValue}">
+                                        <input type="text" class="form-control" name="specifications[${idx}][value]" value="${oldValue || ''}" placeholder="Nhập thông số (không bắt buộc)">
                                     </div>
                                 `;
                                 row.appendChild(col);
                             });
                             container.appendChild(wrapper);
+
                             if (data.length > 6) {
                                 const seeMoreBtn = document.createElement('button');
                                 seeMoreBtn.type = 'button';
@@ -510,62 +545,69 @@
                                 container.appendChild(seeMoreBtn);
                             }
                         } else {
-                            container.innerHTML =
-                                '<p class="text-muted">Không tìm thấy thông số cho danh mục này.</p>';
+                            container.innerHTML = '<p class="text-muted">Không tìm thấy thông số cho danh mục này.</p>';
                         }
                     });
 
+                // Load attribute types
                 fetch(`/admin/categories/${categoryId}/attributes`)
                     .then(response => response.json())
                     .then(data => {
-                        selects.forEach(select => {
-                            const selectedValue = select.value; // Giữ giá trị đã chọn
-                            select.options.length = 1;
+                        const selects = [
+                            document.getElementById('attribute_type_0'),
+                            document.getElementById('attribute_type_1')
+                        ];
+                        const valueSelects = [
+                            document.getElementById('values_0'),
+                            document.getElementById('values_1')
+                        ];
+
+                        selects.forEach((select, idx) => {
+                            select.disabled = false;
+                            valueSelects[idx].disabled = false;
+
+                            const selectedValue = select.value;
+                            select.options.length = 1; // Giữ lại option đầu tiên
                             data.forEach(attr => {
-                                const opt = document.createElement('option');
-                                opt.value = attr.id;
-                                opt.textContent = attr.name;
-                                select.appendChild(opt);
+                                const option = document.createElement('option');
+                                option.value = attr.id;
+                                option.textContent = attr.name;
+                                select.appendChild(option);
                             });
-                            // Khôi phục giá trị đã chọn
                             if (selectedValue) {
                                 select.value = selectedValue;
+                                select.dispatchEvent(new Event('change'));
                             }
                         });
-                        selects.forEach((select, idx) => {
-                            select.addEventListener('change', function() {
-                                const selectedValue = this.value;
-                                const otherSelect = selects[idx === 0 ? 1 : 0];
-                                selects.forEach(s => {
-                                    Array.from(s.options).forEach(opt => {
-                                        if (opt.value) opt.disabled = false;
-                                    });
-                                });
-                                if (selectedValue) {
-                                    Array.from(otherSelect.options).forEach(opt => {
-                                        if (opt.value === selectedValue) opt.disabled =
-                                            true;
-                                    });
-                                }
-                                validateAttributeType(idx);
-                            });
-                        });
-                        // Gọi validate sau khi load attributes để kiểm tra lại trạng thái
-                        validateAttributeType(0);
-                        validateAttributeType(1);
                     });
+            }
+        }
+
+        // Thêm event listener cho category select
+        document.getElementById('category_id').addEventListener('change', function() {
+            const categoryId = this.value;
+            const variantAttributesSection = document.getElementById('variant-attributes-section');
+
+            if (categoryId) {
+                loadCategoryData(categoryId);
+                variantAttributesSection.style.display = 'block';
             } else {
-                selects.forEach(s => {
-                    s.disabled = true;
-                    s.selectedIndex = 0;
-                });
-                valueInputs.forEach(i => {
-                    i.disabled = true;
-                    i.value = '';
-                });
-                hexInputs.forEach(i => {
-                    i.disabled = true;
-                    i.value = '';
+                // Reset specifications
+                document.getElementById('categorySpecifications').innerHTML = '';
+                // Reset and hide attribute types
+                variantAttributesSection.style.display = 'none';
+                const selects = [
+                    document.getElementById('attribute_type_0'),
+                    document.getElementById('attribute_type_1')
+                ];
+                const valueSelects = [
+                    document.getElementById('values_0'),
+                    document.getElementById('values_1')
+                ];
+                selects.forEach((select, idx) => {
+                    select.options.length = 1;
+                    select.disabled = true;
+                    valueSelects[idx].disabled = true;
                 });
             }
         });
@@ -576,13 +618,10 @@
             if (select) {
                 const value = select.value;
                 if (value) {
-                    selectedTypes.add(value);
-                    error.style.display = index === 0 ? 'none' : 'none';
+                    error.style.display = 'none';
                 } else {
-                    selectedTypes.delete(value);
-                    error.style.display = index === 0 ? 'block' : 'none';
+                    error.style.display = 'block';
                 }
-                validateAllAttributes();
             }
         }
 
@@ -593,11 +632,10 @@
                 input.addEventListener('input', function() {
                     const values = this.value.split(',').map(v => v.trim()).filter(v => v.length > 0);
                     if (values.length > 0) {
-                        error.style.display = index === 0 ? 'none' : 'none';
+                        error.style.display = 'none';
                     } else {
-                        error.style.display = index === 0 ? 'block' : 'none';
+                        error.style.display = 'block';
                     }
-                    validateAllAttributes();
                 });
             }
         }
@@ -615,54 +653,62 @@
 
         function validateAllAttributes() {
             const selects = document.querySelectorAll('.attribute-type');
-            const valueInputs = document.querySelectorAll('.attribute-values');
+            const valueSelects = document.querySelectorAll('.attribute-values');
             let valid = false;
-            let errorShown = false;
+            let hasError = false;
 
+            // Reset error messages
+            document.querySelectorAll('.error-message').forEach(error => {
+                error.style.display = 'none';
+            });
+
+            // Validate first attribute (required)
             const firstSelect = selects[0];
-            const firstValueInput = valueInputs[0];
+            const firstValueSelect = valueSelects[0];
             const errorType0 = document.getElementById('error-type-0');
             const errorValue0 = document.getElementById('error-values-0');
-            if (firstSelect.value && firstValueInput.value.trim()) {
+
+            // Validate second attribute (optional)
+            const secondSelect = selects[1];
+            const secondValueSelect = valueSelects[1];
+            const errorType1 = document.getElementById('error-type-1');
+            const errorValue1 = document.getElementById('error-values-1');
+
+            // Check if at least one attribute is selected and valid
+            if (firstSelect.value && $(firstValueSelect).val() && $(firstValueSelect).val().length > 0) {
                 valid = true;
-                errorType0.style.display = 'none';
-                errorValue0.style.display = 'none';
-            } else {
-                if (!firstSelect.value) errorType0.style.display = 'block';
-                if (!firstValueInput.value.trim()) errorValue0.style.display = 'block';
-                errorShown = true;
+            } else if (secondSelect && secondSelect.value && $(secondValueSelect).val() && $(secondValueSelect).val()
+                .length > 0) {
+                valid = true;
             }
 
-            if (selects[1]) {
-                const secondSelect = selects[1];
-                const secondValueInput = valueInputs[1];
-                const errorType1 = document.getElementById('error-type-1');
-                const errorValue1 = document.getElementById('error-values-1');
-                if (secondSelect.value && secondValueInput.value.trim()) {
-                    if (selectedTypes.has(secondSelect.value) && firstSelect.value === secondSelect.value) {
-                        errorType1.style.display = 'block';
-                        errorShown = true;
-                    } else {
-                        errorType1.style.display = 'none';
-                        errorValue1.style.display = 'none';
-                    }
-                } else if (secondSelect.value || secondValueInput.value.trim()) {
-                    if (!secondSelect.value) errorType1.style.display = 'block';
-                    if (!secondValueInput.value.trim()) errorValue1.style.display = 'block';
-                    errorShown = true;
-                } else {
-                    errorType1.style.display = 'none';
-                    errorValue1.style.display = 'none';
-                }
+            // If first attribute is selected but no values chosen
+            if (firstSelect.value && (!$(firstValueSelect).val() || $(firstValueSelect).val().length === 0)) {
+                errorValue0.style.display = 'block';
+                hasError = true;
+            }
+
+            // If second attribute is selected but no values chosen
+            if (secondSelect && secondSelect.value && (!$(secondValueSelect).val() || $(secondValueSelect).val().length ===
+                    0)) {
+                errorValue1.style.display = 'block';
+                hasError = true;
+            }
+
+            // Check for duplicate attribute types
+            if (firstSelect.value && secondSelect && secondSelect.value && firstSelect.value === secondSelect.value) {
+                errorType1.style.display = 'block';
+                errorType1.textContent = 'Không được chọn trùng loại thuộc tính.';
+                hasError = true;
             }
 
             const errorMinAttributes = document.getElementById('error-min-attributes');
             if (!valid) {
                 errorMinAttributes.style.display = 'block';
-            } else {
-                errorMinAttributes.style.display = 'none';
+                errorMinAttributes.textContent = 'Vui lòng chọn ít nhất một thuộc tính với giá trị hợp lệ.';
             }
-            return valid && !errorShown;
+
+            return valid && !hasError;
         }
 
         document.getElementById('generate-variants').addEventListener('click', function() {
@@ -672,59 +718,81 @@
                 return;
             }
 
-            if (!validateAllAttributes()) {
-                alert('Vui lòng chọn ít nhất một thuộc tính với giá trị hợp lệ và không trùng lặp.');
+            // Kiểm tra trùng lặp thuộc tính
+            const attributeType0 = document.getElementById('attribute_type_0');
+            const attributeType1 = document.getElementById('attribute_type_1');
+            
+            if (attributeType0.value && attributeType1.value && attributeType0.value === attributeType1.value) {
+                alert('Không được chọn trùng loại thuộc tính!');
                 return;
             }
 
-            const selects = [document.getElementById('attribute_type_0'), document.getElementById(
-                'attribute_type_1')];
-            const valueInputs = [document.getElementById('values_0'), document.getElementById('values_1')];
-            const hexInputs = [document.getElementById('hex_0'), document.getElementById('hex_1')];
-            const attributeValues = [];
+            if (!validateAllAttributes()) {
+                alert('Vui lòng chọn ít nhất một thuộc tính với giá trị hợp lệ.');
+                return;
+            }
+
+            // Thu thập dữ liệu thuộc tính
+            const attributeData = [];
+            const selects = document.querySelectorAll('.attribute-type');
+            const valueSelects = document.querySelectorAll('.attribute-values');
 
             selects.forEach((select, idx) => {
-                const typeId = select.value;
-                const values = valueInputs[idx].value.split(',').map(v => v.trim()).filter(v => v.length >
-                    0);
-                const hexes = hexInputs[idx].value.split(',').map(h => h.trim()).filter(h => h.length > 0);
+                if (select && select.value) {
+                    const valueSelect = valueSelects[idx];
+                    if (valueSelect && $(valueSelect).val() && $(valueSelect).val().length > 0) {
+                        const selectedValues = Array.from(valueSelect.selectedOptions).map(opt => ({
+                            id: parseInt(opt.value),
+                            value: opt.text,
+                            attribute_type_id: parseInt(select.value),
+                            hex: opt.getAttribute('data-hex')
+                        }));
 
-                if (typeId && values.length > 0) {
-                    while (hexes.length < values.length) hexes.push(null);
-                    attributeValues.push({
-                        attribute_type_id: typeId,
-                        values: values,
-                        hex: hexes
-                    });
+                        if (selectedValues.length > 0) {
+                            attributeData.push({
+                                attribute_type_id: parseInt(select.value),
+                                selected_values: selectedValues
+                            });
+                        }
+                    }
                 }
             });
 
-            if (attributeValues.length === 0) {
-                alert('Vui lòng thêm ít nhất một thuộc tính với giá trị hợp lệ.');
+            if (attributeData.length === 0) {
+                alert('Vui lòng chọn ít nhất một thuộc tính với giá trị.');
                 return;
             }
 
-            const uniqueTypes = new Set(attributeValues.map(attr => attr.attribute_type_id));
-            if (uniqueTypes.size !== attributeValues.length) {
-                alert('Không được phép chọn trùng loại thuộc tính.');
-                return;
-            }
-
+            // Tạo HTML cho các biến thể
             const variantsContainer = document.getElementById('variantsContainer');
             variantsContainer.innerHTML = '';
 
-            const combinations = generateCombinations(attributeValues);
+            // Tạo tổ hợp từ các giá trị đã chọn
+            const combinations = generateCombinations(attributeData);
 
+            // Render từng biến thể
             combinations.forEach((combination, index) => {
-                const variantName = [nameInput.value, ...combination.map(c => c.value)].join(' - ');
-                const variantSlug = variantName.toLowerCase().replace(/[^a-z0-9-]/g, '-').replace(/-+/g,
-                    '-').replace(/^-|-$/g, '');
+                const variantValues = combination.map(item => item.value).filter(Boolean);
+                const variantName = nameInput.value + (variantValues.length > 0 ? ' - ' + variantValues
+                    .join(' - ') : '');
+                const variantSlug = variantName
+                    .toLowerCase()
+                    .normalize('NFD')
+                    .replace(/[\u0300-\u036f]/g, '')
+                    .replace(/[^a-z0-9]+/g, '-')
+                    .replace(/^-+|-+$/g, '');
 
-                const variantAttributes = combination.map(attr => ({
-                    attribute_type_id: parseInt(attr.attribute_type_id),
-                    value: attr.value,
-                    hex: attr.hex || null
-                }));
+                const oldVariant = @json(old('variants', []));
+                const oldData = oldVariant[index] || {};
+
+                // Tạo input hidden cho mỗi giá trị thuộc tính
+                const attributeInputs = combination.map((attrValue, attrIdx) => {
+                    if (!attrValue || !attrValue.id) return '';
+                    return `
+                        <input type="hidden" name="variants[${index}][attributes][${attrIdx}][attribute_type_id]" value="${attrValue.attribute_type_id}">
+                        <input type="hidden" name="variants[${index}][attributes][${attrIdx}][selected_values]" value="${attrValue.id}">
+                    `;
+                }).join('');
 
                 const variantHtml = `
                     <div class="variant-row" data-index="${index}">
@@ -735,19 +803,19 @@
                             <div class="col-md-3">
                                 <div class="mb-3">
                                     <label class="form-label">Tồn kho</label>
-                                    <input type="number" class="form-control" name="variants[${index}][stock]" min="0" required>
+                                    <input type="number" class="form-control" name="variants[${index}][stock]" min="0" value="${oldData.stock || ''}" required>
                                 </div>
                             </div>
                             <div class="col-md-3">
                                 <div class="mb-3">
                                     <label class="form-label">Giá nhập</label>
-                                    <input type="number" class="form-control" name="variants[${index}][purchase_price]" min="0" step="0.01" required>
+                                    <input type="number" class="form-control" name="variants[${index}][purchase_price]" min="0" step="0.01" value="${oldData.purchase_price || ''}" required>
                                 </div>
                             </div>
                             <div class="col-md-3">
                                 <div class="mb-3">
                                     <label class="form-label">Giá bán</label>
-                                    <input type="number" class="form-control" name="variants[${index}][selling_price]" min="0" step="0.01" required>
+                                    <input type="number" class="form-control" name="variants[${index}][selling_price]" min="0" step="0.01" value="${oldData.selling_price || ''}" required>
                                 </div>
                             </div>
                         </div>
@@ -755,7 +823,7 @@
                             <div class="col-md-6">
                                 <div class="mb-3">
                                     <label class="form-label">Hình ảnh</label>
-                                    <input type="file" class="form-control variant-images" name="variants[${index}][images][]" multiple accept="image/*" onchange="previewVariantImages(${index}, this)">
+                                    <input type="file" class="form-control variant-images" name="variants[${index}][images][]" multiple accept="image/*">
                                     <div id="preview-${index}" class="preview-images-container mt-2 d-flex flex-wrap gap-2"></div>
                                 </div>
                             </div>
@@ -763,58 +831,59 @@
                                 <div class="mb-3">
                                     <label class="form-label">Biến thể mặc định</label>
                                     <div class="form-check form-switch">
-                                        <input class="form-check-input default-variant-toggle" type="checkbox" name="variants[${index}][is_default]" id="is_default_${index}" value="1" ${index === 0 ? 'checked' : ''} onchange="toggleDefaultVariant(${index})">
+                                        <input class="form-check-input default-variant-toggle" type="checkbox" name="variants[${index}][is_default]" id="is_default_${index}" value="1" ${index === 0 || oldData.is_default ? 'checked' : ''}>
                                         <label class="form-check-label" for="is_default_${index}">Đặt làm mặc định</label>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        ${variantAttributes.map((attr, attrIdx) => `
-                                    <input type="hidden" name="variants[${index}][attributes][${attrIdx}][attribute_type_id]" value="${attr.attribute_type_id}">
-                                    <input type="hidden" name="variants[${index}][attributes][${attrIdx}][value]" value="${attr.value}">
-                                    <input type="hidden" name="variants[${index}][attributes][${attrIdx}][hex]" value="${attr.hex || ''}">
-                                `).join('')}
-                    </div>`;
+                        ${attributeInputs}
+                    </div>
+                `;
                 variantsContainer.insertAdjacentHTML('beforeend', variantHtml);
             });
+
+            // Khởi tạo các event listeners cho các input mới
+            initializeVariantListeners();
         });
 
-        function generateCombinations(attributes) {
-            const values = attributes.map(attr => {
-                return attr.values.map((value, index) => ({
-                    attribute_type_id: attr.attribute_type_id,
-                    value: value,
-                    hex: attr.hex[index]
-                }));
-            });
+        function generateCombinations(arrays) {
+            if (!arrays || arrays.length === 0) return [];
 
-            if (values.length === 0) return [];
+            const result = arrays.reduce((acc, curr) => {
+                if (acc.length === 0) {
+                    return curr.selected_values.map(value => [value]);
+                }
 
-            function cartesianProduct(arrays) {
-                return arrays.reduce((acc, current) => {
-                    const result = [];
-                    acc.forEach(a => {
-                        current.forEach(b => {
-                            result.push([...a, b]);
-                        });
+                const combinations = [];
+                acc.forEach(combination => {
+                    curr.selected_values.forEach(value => {
+                        combinations.push([...combination, value]);
                     });
-                    return result.length ? result : [
-                        []
-                    ];
-                }, [
-                    []
-                ]);
-            }
+                });
+                return combinations;
+            }, []);
 
-            return cartesianProduct(values).filter(comb => comb.length > 0);
+            return result;
         }
 
-        function toggleDefaultVariant(index) {
-            const toggles = document.querySelectorAll('.default-variant-toggle');
-            toggles.forEach((toggle, i) => {
-                if (i !== index) {
-                    toggle.checked = false;
-                }
+        function initializeVariantListeners() {
+            // Khởi tạo preview ảnh cho các input file mới
+            document.querySelectorAll('.variant-images').forEach((input, index) => {
+                input.addEventListener('change', function() {
+                    previewVariantImages(index, this);
+                });
+            });
+
+            // Khởi tạo xử lý cho các checkbox default
+            document.querySelectorAll('.default-variant-toggle').forEach((checkbox, index) => {
+                checkbox.addEventListener('change', function() {
+                    if (this.checked) {
+                        document.querySelectorAll('.default-variant-toggle').forEach((cb, idx) => {
+                            if (idx !== index) cb.checked = false;
+                        });
+                    }
+                });
             });
         }
 
@@ -827,9 +896,10 @@
                     const reader = new FileReader();
                     reader.onload = function(e) {
                         const wrapper = document.createElement('div');
-                        wrapper.className = 'position-relative';
+                        wrapper.className = 'position-relative d-inline-block';
                         wrapper.style.width = '100px';
                         wrapper.style.height = '100px';
+                        wrapper.style.margin = '5px';
 
                         const img = document.createElement('img');
                         img.src = e.target.result;
@@ -838,24 +908,31 @@
                         img.style.height = '100%';
                         img.style.objectFit = 'cover';
                         img.style.borderRadius = '4px';
+                        img.style.border = '1px solid #ddd';
 
                         const removeBtn = document.createElement('button');
                         removeBtn.type = 'button';
-                        removeBtn.className = 'btn btn-danger btn-sm position-absolute top-0 end-0';
+                        removeBtn.className = 'btn btn-danger btn-sm position-absolute';
                         removeBtn.innerHTML = '×';
+                        removeBtn.style.top = '-5px';
+                        removeBtn.style.right = '-5px';
                         removeBtn.style.padding = '0 6px';
-                        removeBtn.style.fontSize = '16px';
+                        removeBtn.style.fontSize = '12px';
                         removeBtn.style.lineHeight = '1';
+                        removeBtn.style.borderRadius = '50%';
                         removeBtn.onclick = function() {
-                            wrapper.remove();
+                            // Tạo FileList mới không chứa file bị xóa
                             const dt = new DataTransfer();
-                            const files = input.files;
-                            for (let i = 0; i < files.length; i++) {
-                                if (i !== Array.from(input.files).indexOf(file)) {
-                                    dt.items.add(files[i]);
+                            Array.from(input.files).forEach((f, idx) => {
+                                if (idx !== i) {
+                                    dt.items.add(f);
                                 }
-                            }
+                            });
                             input.files = dt.files;
+                            wrapper.remove();
+
+                            // Cập nhật lại preview
+                            previewVariantImages(index, input);
                         };
 
                         wrapper.appendChild(img);
@@ -887,8 +964,6 @@
             }
         `;
         document.head.appendChild(style);
-
-
 
         // Lưu trữ ảnh tạm thời trong localStorage
         let tempImageStorage = {};
@@ -1021,72 +1096,152 @@
                 localStorage.removeItem('tempProductImages');
             }
         });
+    </script>
+@endsection
 
-        // Cập nhật hàm validateAllAttributes để xử lý chính xác validation
-        function validateAllAttributes() {
-            const selects = document.querySelectorAll('.attribute-type');
-            const valueInputs = document.querySelectorAll('.attribute-values');
-            let valid = false;
-            let hasError = false;
+@push('scripts')
+    <!-- Add Select2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
-            // Reset tất cả error messages
-            document.querySelectorAll('.error-message').forEach(error => {
-                error.style.display = 'none';
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Khởi tạo Select2 cho tất cả select box thuộc tính
+            $('.attribute-values').select2({
+                width: '100%',
+                placeholder: 'Chọn giá trị',
+                allowClear: true,
+                multiple: true,
+                templateResult: formatAttributeValue,
+                templateSelection: formatAttributeValue
             });
 
-            // Kiểm tra thuộc tính đầu tiên (bắt buộc)
-            const firstSelect = selects[0];
-            const firstValueInput = valueInputs[0];
-            const errorType0 = document.getElementById('error-type-0');
-            const errorValue0 = document.getElementById('error-values-0');
+            function formatAttributeValue(data) {
+                if (!data.id) return data.text;
 
-            if (!firstSelect.value) {
-                errorType0.style.display = 'block';
-                hasError = true;
+                const option = data.element;
+                const hex = option ? option.getAttribute('data-hex') : null;
+
+                if (hex) {
+                    return $(
+                        `<span>${data.text} <span style="display:inline-block;width:15px;height:15px;background-color:${hex};margin-left:5px;vertical-align:middle;border:1px solid #ddd;"></span></span>`
+                    );
+                }
+
+                return data.text;
             }
 
-            if (!firstValueInput.value.trim()) {
-                errorValue0.style.display = 'block';
-                hasError = true;
+            // Xử lý khi thay đổi loại thuộc tính
+            $('.attribute-type').on('change', function() {
+                const index = $(this).attr('id').replace('attribute_type_', '');
+                const valueSelect = $(`#values_${index}`);
+                const attributeTypeId = $(this).val();
+
+                if (attributeTypeId) {
+                    // Load giá trị thuộc tính
+                    fetch(`/admin/attributes/${attributeTypeId}/values`)
+                        .then(response => response.json())
+                        .then(data => {
+                            valueSelect.empty().trigger('change');
+
+                            data.forEach(item => {
+                                const option = new Option(item.value, item.id, false, false);
+                                if (item.hex) {
+                                    option.setAttribute('data-hex', item.hex);
+                                }
+                                valueSelect.append(option);
+                            });
+
+                            // Nếu có dữ liệu cũ, khôi phục lại
+                            const oldAttributes = @json(old('attributes', []));
+                            if (oldAttributes[index] && oldAttributes[index].selected_values) {
+                                const oldValues = oldAttributes[index].selected_values.map(v =>
+                                    parseInt(v)).filter(v => !isNaN(v));
+                                $(valueSelect).val(oldValues).trigger('change');
+                            }
+                        });
+                } else {
+                    valueSelect.empty().trigger('change');
+                }
+            });
+
+            // Khôi phục giá trị đã chọn sau khi validate
+            const oldAttributes = @json(old('attributes', []));
+            if (oldAttributes.length > 0) {
+                oldAttributes.forEach((attr, idx) => {
+                    const typeSelect = document.getElementById(`attribute_type_${idx}`);
+                    const valueSelect = document.getElementById(`values_${idx}`);
+
+                    if (typeSelect && valueSelect) {
+                        // Set attribute type
+                        if (attr.attribute_type_id) {
+                            typeSelect.value = attr.attribute_type_id;
+                            typeSelect.dispatchEvent(new Event('change'));
+                        }
+                    }
+                });
             }
 
-            if (firstSelect.value && firstValueInput.value.trim()) {
-                valid = true;
-            }
+            // Validate attributes
+            function validateAllAttributes() {
+                const selects = document.querySelectorAll('.attribute-type');
+                const valueSelects = document.querySelectorAll('.attribute-values');
+                let valid = false;
+                let hasError = false;
 
-            // Kiểm tra thuộc tính thứ hai (tùy chọn)
-            if (selects[1]) {
+                // Reset error messages
+                document.querySelectorAll('.error-message').forEach(error => {
+                    error.style.display = 'none';
+                });
+
+                // Validate first attribute (required)
+                const firstSelect = selects[0];
+                const firstValueSelect = valueSelects[0];
+                const errorType0 = document.getElementById('error-type-0');
+                const errorValue0 = document.getElementById('error-values-0');
+
+                // Validate second attribute (optional)
                 const secondSelect = selects[1];
-                const secondValueInput = valueInputs[1];
+                const secondValueSelect = valueSelects[1];
                 const errorType1 = document.getElementById('error-type-1');
                 const errorValue1 = document.getElementById('error-values-1');
 
-                // Nếu có chọn attribute type 2 thì phải có value
-                if (secondSelect.value && !secondValueInput.value.trim()) {
+                // Check if at least one attribute is selected and valid
+                if (firstSelect.value && $(firstValueSelect).val() && $(firstValueSelect).val().length > 0) {
+                    valid = true;
+                } else if (secondSelect && secondSelect.value && $(secondValueSelect).val() && $(secondValueSelect)
+                    .val().length > 0) {
+                    valid = true;
+                }
+
+                // If first attribute is selected but no values chosen
+                if (firstSelect.value && (!$(firstValueSelect).val() || $(firstValueSelect).val().length === 0)) {
+                    errorValue0.style.display = 'block';
+                    hasError = true;
+                }
+
+                // If second attribute is selected but no values chosen
+                if (secondSelect && secondSelect.value && (!$(secondValueSelect).val() || $(secondValueSelect).val()
+                        .length === 0)) {
                     errorValue1.style.display = 'block';
                     hasError = true;
                 }
 
-                // Nếu có nhập value 2 thì phải chọn attribute type
-                if (!secondSelect.value && secondValueInput.value.trim()) {
-                    errorType1.style.display = 'block';
-                    hasError = true;
-                }
-
-                // Kiểm tra trùng lặp
-                if (secondSelect.value && firstSelect.value === secondSelect.value) {
+                // Check for duplicate attribute types
+                if (firstSelect.value && secondSelect && secondSelect.value && firstSelect.value === secondSelect
+                    .value) {
                     errorType1.style.display = 'block';
                     errorType1.textContent = 'Không được chọn trùng loại thuộc tính.';
                     hasError = true;
                 }
-            }
 
-            const errorMinAttributes = document.getElementById('error-min-attributes');
-            if (!valid) {
-                errorMinAttributes.style.display = 'block';
-            }
+                const errorMinAttributes = document.getElementById('error-min-attributes');
+                if (!valid) {
+                    errorMinAttributes.style.display = 'block';
+                    errorMinAttributes.textContent = 'Vui lòng chọn ít nhất một thuộc tính với giá trị hợp lệ.';
+                }
 
-            return valid && !hasError;
-        }
+                return valid && !hasError;
+            }
+        });
     </script>
-@endsection
+@endpush

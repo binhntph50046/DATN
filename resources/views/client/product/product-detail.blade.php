@@ -1,22 +1,59 @@
 @extends('client.layouts.app')
 
 @section('content')
+
     <!-- Start Product Detail Section -->
-    <div class="untree_co-section product-section">
+    <div class="untree_co-section product-section" style="margin-top: 70px">
+        
         <div class="container">
+            <!-- Hiển thị thông báo -->
+            @if (session('success'))
+        <div class="custom-alert success" id="success-alert">
+            <div class="icon"><i class="fas fa-check-circle"></i></div>
+            <div class="content">
+                <strong>SUCCESS</strong>
+                <p>{{ session('success') }}</p>
+            </div>
+            <div class="close" onclick="this.parentElement.style.display='none';">&times;</div>
+        </div>
+    @endif
+
+    @if (session('error'))
+        <div class="custom-alert error" id="error-alert">
+            <div class="icon"><i class="fas fa-times-circle"></i></div>
+            <div class="content">
+                <strong>ERROR</strong>
+                <p>{{ session('error') }}</p>
+            </div>
+            <div class="close" onclick="this.parentElement.style.display='none';">&times;</div>
+        </div>
+    @endif
             <div class="row">
                 <!-- Product Images -->
                 <div class="col-lg-6 mb-5">
                     <div class="product-gallery">
-                        <div class="main-image mb-4">
+                        <div class="main-image mb-4 position-relative">
+                            <button id="prevImageBtn" class="image-nav-btn" style="display:none;" onclick="showPrevImage()"><i class="fas fa-chevron-left"></i></button>
                             @php
+                                // Helper function to safely handle both JSON strings and arrays
+                                function getImagesArray($images) {
+                                    if (is_array($images)) {
+                                        return $images;
+                                    }
+                                    if (is_string($images)) {
+                                        $decoded = json_decode($images, true);
+                                        return is_array($decoded) ? $decoded : [];
+                                    }
+                                    return [];
+                                }
+
                                 $defaultVariant = $product->defaultVariant;
-                                $images = $defaultVariant ? json_decode($defaultVariant->images, true) : [];
+                                $images = $defaultVariant ? getImagesArray($defaultVariant->images) : [];
                                 $mainImage = $images[0] ?? 'uploads/default/default.jpg';
                                 // Gom tất cả ảnh của mọi biến thể
                                 $allImages = [];
                                 foreach ($product->variants as $variant) {
-                                    $imgs = json_decode($variant->images, true) ?? [];
+                                    $imgs = getImagesArray($variant->images);
                                     foreach ($imgs as $img) {
                                         if (!in_array($img, $allImages)) {
                                             $allImages[] = $img;
@@ -29,16 +66,12 @@
                             @endphp
                             <img src="{{ asset($mainImage) }}" class="img-fluid" alt="{{ $product->name }}"
                                 id="mainProductImage">
+                            <button id="nextImageBtn" class="image-nav-btn" style="display:none;" onclick="showNextImage()"><i class="fas fa-chevron-right"></i></button>
                         </div>
-                        <div class="thumbnail-images">
-                            <div class="row" id="thumbnailsRow">
-                                @foreach ($allImages as $image)
-                                    <div class="col-3">
-                                        <img src="{{ asset($image) }}" class="img-fluid thumbnail" alt="Thumbnail"
-                                            onclick="changeMainImage(this.src)">
-                                    </div>
-                                @endforeach
-                            </div>
+                        <div class="thumbnail-slider position-relative">
+                            <button id="thumbPrevBtn" class="image-nav-btn" style="left:0;top:50%;transform:translateY(-50%);" onclick="scrollThumbnails(-1)"><i class="fas fa-chevron-left"></i></button>
+                            <div class="row flex-nowrap overflow-auto" id="thumbnailsRow" style="scroll-behavior:smooth; margin:0 48px;"></div>
+                            <button id="thumbNextBtn" class="image-nav-btn" style="right:0;top:50%;transform:translateY(-50%);" onclick="scrollThumbnails(1)"><i class="fas fa-chevron-right"></i></button>
                         </div>
                     </div>
                 </div>
@@ -68,7 +101,13 @@
                         @php
                             // Gom nhóm các thuộc tính theo loại (Color, Storage, ...)
                             $attributeGroups = [];
+                            $seenValues = []; // Mảng để theo dõi các giá trị đã xuất hiện
+                            
                             foreach ($product->variants as $variant) {
+                                // Bỏ qua các biến thể đã bị xóa mềm
+                                if ($variant->deleted_at !== null) {
+                                    continue;
+                                }
                                 foreach ($variant->combinations as $combination) {
                                     $typeName = $combination->attributeValue->attributeType->name ?? null;
                                     if ($typeName) {
@@ -78,12 +117,20 @@
                                         $hexes = is_array($combination->attributeValue->hex)
                                             ? $combination->attributeValue->hex
                                             : json_decode($combination->attributeValue->hex, true);
-                                        $attributeGroups[$typeName][] = [
-                                            'values' => $values,
-                                            'hexes' => $hexes,
-                                            'variant_id' => $variant->id,
-                                            'is_default' => $variant->is_default,
-                                        ];
+                                        
+                                        // Tạo key duy nhất cho mỗi giá trị
+                                        $valueKey = $typeName . '_' . ($values[0] ?? '');
+                                        
+                                        // Chỉ thêm vào nếu chưa có giá trị này
+                                        if (!isset($seenValues[$valueKey])) {
+                                            $attributeGroups[$typeName][] = [
+                                                'values' => $values,
+                                                'hexes' => $hexes,
+                                                'variant_id' => $variant->id,
+                                                'is_default' => $variant->is_default,
+                                            ];
+                                            $seenValues[$valueKey] = true;
+                                        }
                                     }
                                 }
                             }
@@ -181,9 +228,16 @@
                             <button class="btn btn-primary" id="buyNowBtn">
                                 <i class="fas fa-bolt me-2"></i>Buy Now
                             </button>
-                            <button class="btn btn-outline-primary" id="addToCartBtn">
-                                <i class="fas fa-cart-plus me-2"></i>Add to Cart
-                            </button>
+                            <form action="{{ route('cart.add') }}" method="POST" style="display: inline;"
+                                id="addToCartForm">
+                                @csrf
+                                <input type="hidden" name="product_id" value="{{ $product->id }}">
+                                <input type="hidden" name="variant_id" id="selectedVariantId" value="">
+                                <input type="hidden" name="quantity" id="cartQuantity" value="1">
+                                <button type="submit" class="btn btn-outline-primary" id="addToCartBtn">
+                                    <i class="fas fa-cart-plus me-2"></i>Add to Cart
+                                </button>
+                            </form>
                         </div>
                     </div>
                 </div>
@@ -191,7 +245,7 @@
             <!-- Tabs Section (bên dưới chi tiết sản phẩm) -->
             <div class="container mt-5">
                 <div class="d-flex justify-content-center mb-4" style="gap: 18px;">
-                    <button class="tab-btn-custom" id="tab-desc-btn" onclick="showTab('desc')">Mô tả</button>
+                    <button class="tab-btn-custom active" id="tab-desc-btn" onclick="showTab('desc')">Mô tả</button>
                     <button class="tab-btn-custom" id="tab-spec-btn" onclick="showTab('spec')">Thông số kỹ thuật</button>
                     <button class="tab-btn-custom" id="tab-review-btn" onclick="showTab('review')">Đánh giá sản
                         phẩm</button>
@@ -215,11 +269,13 @@
                                 <tbody>
                                     @if ($product->specifications && $product->specifications->isNotEmpty())
                                         @foreach ($product->specifications as $spec)
-                                            <tr>
-                                                <td class="text-secondary" style="width: 220px;">
-                                                    {{ $spec->specification->name }}</td>
-                                                <td>{{ $spec->value }}</td>
-                                            </tr>
+                                            @if($spec->specification)
+                                                <tr>
+                                                    <td class="text-secondary" style="width: 220px;">
+                                                        {{ $spec->specification->name }}</td>
+                                                    <td>{{ $spec->value }}</td>
+                                                </tr>
+                                            @endif
                                         @endforeach
                                     @else
                                         <tr>
@@ -239,11 +295,91 @@
                     </div>
                 </div>
             </div>
+            @include('client.product.suggestions', ['suggestions' => $suggestions]);
         </div>
     </div>
     <!-- End Product Detail Section -->
 
     <style>
+         .custom-alert {
+        display: flex;
+        align-items: center;
+        background-color: #fff;
+        border-left: 5px solid;
+        border-radius: 4px;
+        padding: 16px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        margin: 10px auto;
+        width: 360px;
+        position: relative;
+        animation: slideIn 0.3s ease;
+    }
+
+    .custom-alert .icon {
+        font-size: 20px;
+        margin-right: 12px;
+    }
+
+    .custom-alert .content {
+        flex-grow: 1;
+    }
+
+    .custom-alert .content strong {
+        display: block;
+        font-weight: bold;
+        color: #333;
+    }
+
+    .custom-alert .content p {
+        margin: 0;
+        color: #666;
+    }
+
+    .custom-alert .close {
+        font-size: 38px;
+        cursor: pointer;
+        color: #333;
+        margin-left: 10px;
+        margin-top: -32px;
+    }
+
+    .custom-alert.success {
+        border-color: #28a745;
+        background-color: #ffffff;
+    }
+
+    .custom-alert.success .icon {
+        color: #28a745;
+    }
+
+    .custom-alert.error {
+        border-color: #dc3545;
+        background-color: #ffffff;
+    }
+
+    .custom-alert.error .icon {
+        color: #dc3545;
+    }
+
+    @keyframes slideIn {
+        from {
+            transform: translateY(-10px);
+            opacity: 0;
+        }
+
+        to {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    }
+
+    .custom-alert {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 9999;
+    }
+
         .color-variants {
             margin-bottom: 2rem;
         }
@@ -407,152 +543,371 @@
         .table th.bg-light {
             background: #f8f9fa !important;
         }
+
+        .image-nav-btn {
+            width: 48px;
+            height: 48px;
+            background: rgba(0,0,0,0.18);
+            border: none;
+            border-radius: 50%;
+            color: #fff;
+            font-size: 2rem;
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 3;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+        }
+        .image-nav-btn:hover {
+            background: rgba(0,0,0,0.35);
+        }
+        #prevImageBtn { left: 12px; }
+        #nextImageBtn { right: 12px; }
+        .thumbnail-slider { position: relative; }
+        #thumbPrevBtn, #thumbNextBtn {
+            top: 50%;
+            transform: translateY(-50%);
+            position: absolute;
+            z-index: 2;
+            background: rgba(0,0,0,0.18);
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            font-size: 1.3rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+        }
+        #thumbPrevBtn { left: 0; }
+        #thumbNextBtn { right: 0; }
+        #thumbPrevBtn:hover, #thumbNextBtn:hover { background: rgba(0,0,0,0.35); }
+        #thumbnailsRow {
+            margin: 0 48px;
+            overflow-x: auto;
+            flex-wrap: nowrap !important;
+            white-space: nowrap;
+            scroll-behavior: smooth;
+        }
+        #thumbnailsRow .col-3 { flex: 0 0 auto; width: 80px; max-width: 80px; padding: 0 4px; }
+        #thumbnailsRow img.thumbnail { border-radius: 8px; border: 2px solid transparent; }
+        #thumbnailsRow img.thumbnail.active { border: 2px solid #007bff; }
     </style>
 
     <script>
+
+function hideAlert(alertId) {
+    const alert = document.getElementById(alertId);
+    if (alert) {
+        setTimeout(() => {
+            alert.style.display = 'none';
+        }, 3000);
+    }
+}
+
+hideAlert('success-alert');
+hideAlert('error-alert');
+        // Khai báo biến toàn cục
+        let selectedValues = {};
+        let selectedVariants = {};
+        let variantData = {};
+        let attributeToVariant = {};
+        let requiredTypes = [];
+        let currentImageIndex = 0;
+        let currentImages = @json($images);
+
         document.addEventListener('DOMContentLoaded', function() {
             // Quantity controls
             const quantityInput = document.getElementById('quantity');
             const minusBtn = document.querySelector('.quantity-btn.minus');
             const plusBtn = document.querySelector('.quantity-btn.plus');
+            const addToCartBtn = document.getElementById('addToCartBtn');
+            const buyNowBtn = document.getElementById('buyNowBtn');
 
             minusBtn.addEventListener('click', () => {
                 const currentValue = parseInt(quantityInput.value);
                 if (currentValue > 1) {
                     quantityInput.value = currentValue - 1;
+                    document.getElementById('cartQuantity').value = quantityInput.value;
                 }
             });
 
             plusBtn.addEventListener('click', () => {
                 const currentValue = parseInt(quantityInput.value);
                 quantityInput.value = currentValue + 1;
+                document.getElementById('cartQuantity').value = quantityInput.value;
+            });
+
+            // Khởi tạo dữ liệu biến thể
+            @foreach ($product->variants as $variant)
+                @if ($variant->deleted_at === null)
+                variantData[{{ $variant->id }}] = {
+                    images: {!! json_encode(getImagesArray($variant->images)) !!},
+                    price: {{ $variant->selling_price }}
+                };
+                @endif
+            @endforeach
+
+            // Khởi tạo mapping attribute -> variant
+            @foreach ($product->variants as $variant)
+                @if ($variant->deleted_at === null)
+                @php
+                    $attrValues = [];
+                    foreach ($variant->combinations as $comb) {
+                        $value = is_array($comb->attributeValue->value) ? $comb->attributeValue->value[0] : json_decode($comb->attributeValue->value, true)[0] ?? '';
+                        $attrValues[] = $value;
+                    }
+                    $key = implode('|', $attrValues);
+                @endphp
+                attributeToVariant["{{ $key }}"] = {{ $variant->id }};
+                @endif
+            @endforeach
+
+            // Lấy danh sách các loại thuộc tính bắt buộc
+            document.querySelectorAll('.variant-group').forEach(function(group) {
+                const label = group.querySelector('label.form-label');
+                if (label) {
+                    let typeName = label.textContent.split(':')[0].trim();
+                    requiredTypes.push(typeName);
+                }
+            });
+
+            // Khởi tạo giá trị mặc định
+            @if ($defaultVariant)
+                @foreach ($defaultVariant->combinations as $comb)
+                    @php
+                        $typeName = $comb->attributeValue->attributeType->name ?? '';
+                        $value = is_array($comb->attributeValue->value) ? $comb->attributeValue->value[0] : json_decode($comb->attributeValue->value, true)[0] ?? '';
+                    @endphp
+                    selectedValues["{{ $typeName }}"] = "{{ addslashes($value) }}";
+                    selectedVariants["{{ $typeName }}"] = {{ $defaultVariant->id }};
+                @endforeach
+                document.getElementById('selectedVariantId').value = {{ $defaultVariant->id }};
+            @endif
+
+            // Khởi tạo thumbnails
+            updateThumbnails(@json($allImages));
+
+            // Add event listeners for buttons
+            addToCartBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                const variantId = getSelectedVariantId();
+                if (!variantId) {
+                    return false;
+                }
+                document.getElementById('selectedVariantId').value = variantId;
+                document.getElementById('addToCartForm').submit();
+            });
+
+            buyNowBtn.addEventListener('click', function(e) {
+                const variantId = getSelectedVariantId();
+                if (!variantId) {
+                    e.preventDefault();
+                    return false;
+                }
+                const quantity = parseInt(quantityInput.value) || 1;
+                const mainImage = document.getElementById('mainProductImage').src;
+                window.location.href = '/checkout?variant_id=' + variantId + '&quantity=' + quantity + '&image=' + encodeURIComponent(mainImage);
             });
         });
 
-        // Lưu thông tin variantId -> ảnh, giá
-        let variantData = {};
-        @foreach ($product->variants as $variant)
-            variantData[{{ $variant->id }}] = {
-                images: {!! json_encode(json_decode($variant->images, true) ?? []) !!},
-                price: {{ $variant->selling_price }}
-            };
-        @endforeach
-
-        // Mapping: key là chuỗi các value thuộc tính, value là variantId
-        let attributeToVariant = {};
-        @foreach ($product->variants as $variant)
-            @php
-                $attrValues = [];
-                foreach ($variant->combinations as $comb) {
-                    $attrValues[] = $comb->attributeValue->value[0] ?? (is_array($comb->attributeValue->value) ? $comb->attributeValue->value[0] : json_decode($comb->attributeValue->value, true)[0]);
-                }
-                $key = implode('|', $attrValues);
-            @endphp
-            attributeToVariant["{{ $key }}"] = {{ $variant->id }};
-        @endforeach
-
-        let selectedVariants = {};
-        let selectedValues = {};
-        let requiredTypes = [];
-        document.querySelectorAll('.variant-group').forEach(function(group) {
-            const label = group.querySelector('label.form-label');
-            if (label) {
-                // Lấy tên thuộc tính từ label
-                let typeName = label.textContent.split(':')[0].trim();
-                requiredTypes.push(typeName);
-            }
-        });
-
         function selectVariant(variantId, value, typeName, el) {
-            // Remove active class from all swatches of this attribute type
-            document.querySelectorAll('.color-option[data-attr-type="' + typeName + '"], .storage-btn[data-attr-type="' +
-                typeName + '"]').forEach(opt => opt.classList.remove('active'));
+            // Nếu là click vào màu sắc thì chọn toàn bộ thuộc tính của biến thể đó
+            if (el.classList.contains('color-option')) {
+                selectAllAttributesOfVariant(variantId);
+                return;
+            }
+
+            // Remove active class from all elements of this type
+            document.querySelectorAll('[data-attr-type="' + typeName + '"]').forEach(opt => opt.classList.remove('active'));
+            
             // Add active to current
             el.classList.add('active');
-            // Update label nếu có
+
+            // Update label if exists
             const labelSpan = document.getElementById('selected-' + typeName + '-value');
             if (labelSpan) labelSpan.textContent = value;
-            // Lưu lựa chọn
-            selectedVariants[typeName] = variantId;
-            selectedValues[typeName] = value;
 
-            // Tìm variant id đúng với tất cả thuộc tính đã chọn
+            // Save selection
+            const matchedType = requiredTypes.find(t => t.toLowerCase() === typeName.toLowerCase()) || typeName;
+            selectedValues[matchedType] = value;
+            selectedVariants[matchedType] = variantId;
+
+            // Find matching variant
             let key = requiredTypes.map(type => selectedValues[type] || '').join('|');
             let matchedVariantId = attributeToVariant[key];
 
-            // Cập nhật ảnh và giá nếu tìm được variant id hợp lệ
+            // Update images and price if valid variant found
             if (matchedVariantId && variantData[matchedVariantId]) {
-                if (variantData[matchedVariantId].images.length > 0) {
-                    document.getElementById('mainProductImage').src = '{{ asset('') }}' + variantData[matchedVariantId]
-                        .images[0];
+                // Cập nhật giá
+                document.getElementById('productPrice').textContent = 
+                    new Intl.NumberFormat('vi-VN').format(variantData[matchedVariantId].price) + ' VNĐ';
+                
+                // Cập nhật ảnh chính và thumbnails
+                if (variantData[matchedVariantId].images && variantData[matchedVariantId].images.length > 0) {
                     updateThumbnails(variantData[matchedVariantId].images);
+                    document.getElementById('mainProductImage').src = '{{ asset('') }}' + variantData[matchedVariantId].images[0];
                 }
-                document.getElementById('productPrice').textContent = variantData[matchedVariantId].price.toLocaleString(
-                    'vi-VN') + ' VNĐ';
+                
+                // Cập nhật variant_id cho form
+                document.getElementById('selectedVariantId').value = matchedVariantId;
+            }
+        }
+
+        function selectAllAttributesOfVariant(variantId) {
+            const variants = @json($product->variants);
+            const selectedVariant = variants.find(v => v.id === variantId);
+            
+            if (selectedVariant) {
+                // Reset all active states
+                document.querySelectorAll('.color-option, .storage-btn').forEach(el => el.classList.remove('active'));
+
+                selectedVariant.combinations.forEach(comb => {
+                    const typeName = comb.attribute_value.attribute_type.name.trim();
+                    const matchedType = requiredTypes.find(t => t.toLowerCase() === typeName.toLowerCase()) || typeName;
+                    
+                    let value = comb.attribute_value.value;
+                    if (typeof value === 'string') {
+                        try { value = JSON.parse(value); } catch { value = [value]; }
+                    }
+                    value = Array.isArray(value) ? value[0] : value;
+
+                    selectedValues[matchedType] = value;
+                    selectedVariants[matchedType] = variantId;
+
+                    // Update UI
+                    document.querySelectorAll('[data-attr-type="' + typeName + '"]').forEach(el => {
+                        let elValue = el.getAttribute('data-color') || el.textContent.trim();
+                        if (elValue == value) {
+                            el.classList.add('active');
+                        }
+                    });
+
+                    const labelSpan = document.getElementById('selected-' + typeName + '-value');
+                    if (labelSpan) labelSpan.textContent = value;
+                });
+
+                // Update images and price
+                if (variantData[variantId]) {
+                    // Cập nhật giá
+                    document.getElementById('productPrice').textContent = 
+                        new Intl.NumberFormat('vi-VN').format(variantData[variantId].price) + ' VNĐ';
+                    
+                    // Cập nhật ảnh chính và thumbnails
+                    if (variantData[variantId].images && variantData[variantId].images.length > 0) {
+                        updateThumbnails(variantData[variantId].images);
+                        document.getElementById('mainProductImage').src = '{{ asset('') }}' + variantData[variantId].images[0];
+                    }
+                    
+                    // Cập nhật variant_id cho form
+                    document.getElementById('selectedVariantId').value = variantId;
+                }
             }
         }
 
         function getSelectedVariantId() {
-            let key = requiredTypes.map(type => selectedValues[type] || '').join('|');
-            return attributeToVariant[key] || null;
+            let missingTypes = [];
+            let key = requiredTypes.map(type => {
+                if (!selectedValues[type]) {
+                    missingTypes.push(type);
+                    return '';
+                }
+                return selectedValues[type];
+            }).join('|');
+
+            if (missingTypes.length > 0) {
+                alert('Vui lòng chọn các thuộc tính sau: ' + missingTypes.join(', '));
+                return null;
+            }
+
+            const variantId = attributeToVariant[key] || null;
+            if (!variantId) {
+                alert('Không tìm thấy biến thể phù hợp với lựa chọn của bạn!');
+            }
+            return variantId;
         }
 
-        document.getElementById('addToCartBtn').addEventListener('click', function(e) {
-            const variantId = getSelectedVariantId();
-            if (!variantId) {
-                alert('Vui lòng chọn đầy đủ thuộc tính sản phẩm trước khi thêm vào giỏ hàng!');
-                e.preventDefault();
-                return false;
-            }
-            // Thực hiện logic thêm vào giỏ hàng với variantId
-            // ...
-        });
-
-        document.getElementById('buyNowBtn').addEventListener('click', function(e) {
-            const variantId = getSelectedVariantId();
-            if (!variantId) {
-                alert('Vui lòng chọn đầy đủ thuộc tính sản phẩm trước khi đặt hàng!');
-                e.preventDefault();
-                return false;
-            }
-            // Thực hiện logic đặt hàng với variantId
-            // ...
-        });
-
-        function changeMainImage(src) {
-            document.getElementById('mainProductImage').src = src;
+        function scrollThumbnails(direction) {
+            const row = document.getElementById('thumbnailsRow');
+            const scrollAmount = 120; // px mỗi lần cuộn
+            row.scrollBy({ left: direction * scrollAmount, behavior: 'smooth' });
         }
 
         function updateThumbnails(images) {
             const container = document.getElementById('thumbnailsRow');
             container.innerHTML = '';
-            images.forEach(img => {
+            currentImages = images;
+            currentImageIndex = 0;
+
+            images.forEach((img, idx) => {
                 const div = document.createElement('div');
                 div.className = 'col-3';
-                div.innerHTML =
-                    `<img src=\"{{ asset('') }}${img}\" class=\"img-fluid thumbnail\" alt=\"Thumbnail\" onclick=\"changeMainImage(this.src)\">`;
+                const imgElement = document.createElement('img');
+                imgElement.src = '{{ asset('') }}' + img;
+                imgElement.className = 'img-fluid thumbnail' + (idx === 0 ? ' active' : '');
+                imgElement.alt = 'Thumbnail';
+                imgElement.onclick = () => updateMainImageByIndex(idx);
+                div.appendChild(imgElement);
                 container.appendChild(div);
             });
+
+            // Update navigation buttons
+            updateImageNavButtons();
         }
 
-        // Khi vào trang, hiển thị tất cả ảnh nhỏ
-        window.addEventListener('DOMContentLoaded', function() {
-            updateThumbnails(@json($allImages));
-        });
+        function updateMainImageByIndex(idx) {
+            if (currentImages.length > 0) {
+                document.getElementById('mainProductImage').src = '{{ asset('') }}' + currentImages[idx];
+                currentImageIndex = idx;
+                updateImageNavButtons();
+                // Highlight thumbnail
+                document.querySelectorAll('#thumbnailsRow img.thumbnail').forEach((el, i) => {
+                    if (i === idx) el.classList.add('active');
+                    else el.classList.remove('active');
+                });
+            }
+        }
+
+        function updateImageNavButtons() {
+            document.getElementById('prevImageBtn').style.display = 
+                (currentImages.length > 1 && currentImageIndex > 0) ? '' : 'none';
+            document.getElementById('nextImageBtn').style.display = 
+                (currentImages.length > 1 && currentImageIndex < currentImages.length - 1) ? '' : 'none';
+        }
+
+        function showPrevImage() {
+            if (currentImages.length > 1 && currentImageIndex > 0) {
+                updateMainImageByIndex(currentImageIndex - 1);
+            }
+        }
+
+        function showNextImage() {
+            if (currentImages.length > 1 && currentImageIndex < currentImages.length - 1) {
+                updateMainImageByIndex(currentImageIndex + 1);
+            }
+        }
 
         function showTab(tab) {
-            document.getElementById('tab-desc').style.display = 'none';
-            document.getElementById('tab-spec').style.display = 'none';
-            document.getElementById('tab-review').style.display = 'none';
-            document.getElementById('tab-desc-btn').classList.remove('active');
-            document.getElementById('tab-spec-btn').classList.remove('active');
-            document.getElementById('tab-review-btn').classList.remove('active');
+            // Ẩn tất cả các tab content
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.style.display = 'none';
+            });
+            
+            // Bỏ active khỏi tất cả các tab button
+            document.querySelectorAll('.tab-btn-custom').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Hiển thị tab được chọn
             document.getElementById('tab-' + tab).style.display = 'block';
+            // Active tab button tương ứng
             document.getElementById('tab-' + tab + '-btn').classList.add('active');
         }
-        // Mặc định tab đầu tiên active
-        document.addEventListener('DOMContentLoaded', function() {
-            showTab('desc');
-        });
     </script>
 @endsection

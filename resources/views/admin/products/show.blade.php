@@ -347,10 +347,12 @@
                                             <div class="mt-4">
                                                 <h5 class="mb-3">Specifications</h5>
                                                 @foreach ($product->specifications as $spec)
-                                                    <div class="spec-item mb-2">
-                                                        <strong>{{ is_array($spec->specification->name) ? implode(', ', $spec->specification->name) : $spec->specification->name }}:</strong>
-                                                        <span>{{ is_array($spec->value) ? implode(', ', $spec->value) : $spec->value }}</span>
-                                                    </div>
+                                                    @if($spec->specification)
+                                                        <div class="spec-item mb-2">
+                                                            <strong>{{ is_array($spec->specification->name) ? implode(', ', $spec->specification->name) : $spec->specification->name }}:</strong>
+                                                            <span>{{ is_array($spec->value) ? implode(', ', $spec->value) : $spec->value }}</span>
+                                                        </div>
+                                                    @endif
                                                 @endforeach
                                             </div>
                                         @endif
@@ -434,21 +436,27 @@
                                                         <td>
                                                             @if ($variant->images)
                                                                 @php
-                                                                    $images = is_string($variant->images)
-                                                                        ? json_decode($variant->images, true)
-                                                                        : $variant->images;
-                                                                    $firstImage = is_array($images) ? $images[0] : null;
+                                                                    $images = null;
+                                                                    if (is_string($variant->images)) {
+                                                                        $images = json_decode($variant->images, true);
+                                                                    } elseif (is_array($variant->images)) {
+                                                                        $images = $variant->images;
+                                                                    }
+                                                                    $firstImage = null;
+                                                                    if (is_array($images) && !empty($images)) {
+                                                                        $firstImage = $images[0];
+                                                                    }
                                                                 @endphp
                                                                 @if ($firstImage)
                                                                     <img src="{{ asset($firstImage) }}" alt="Variant Image"
                                                                         style="width:80px;height:80px;object-fit:cover;border-radius:8px;">
                                                                 @else
-                                                                    <img src="{{ asset('Uploads/default/default.jpg') }}"
+                                                                    <img src="{{ asset('uploads/default/default.jpg') }}"
                                                                         alt="Default Image"
                                                                         style="width:80px;height:80px;object-fit:cover;border-radius:8px;">
                                                                 @endif
                                                             @else
-                                                                <img src="{{ asset('Uploads/default/default.jpg') }}"
+                                                                <img src="{{ asset('uploads/default/default.jpg') }}"
                                                                     alt="Default Image"
                                                                     style="width:80px;height:80px;object-fit:cover;border-radius:8px;">
                                                             @endif

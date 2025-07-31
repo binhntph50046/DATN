@@ -1095,6 +1095,14 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+// hàm giúp tải lại trang khi người dùng quay lại từ nút back khi đang realtime
+window.addEventListener('pageshow', function(event) {
+    if (event.persisted || (window.performance && window.performance.navigation.type === 2)) {
+        window.location.reload(); // Tải lại trang nếu quay lại từ nút back
+    }
+});
+
+
 </script>
 <style>
 /* Custom styles cho SweetAlert2 */

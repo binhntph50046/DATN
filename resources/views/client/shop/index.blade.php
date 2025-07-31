@@ -466,10 +466,10 @@
                             </div>
                             <div class="product-actions mb-4">
                                 <button class="btn btn-primary buy-now-btn" id="quickViewBuyNowBtn">
-                                    <i class="fas fa-bolt me-2"></i>Buy Now
+                                    <i class="fas fa-bolt me-2"></i>Mua ngay
                                 </button>
                                 <button class="btn btn-outline-primary add-to-cart-btn" id="quickViewAddToCartBtn">
-                                    <i class="fas fa-cart-plus me-2"></i>Add to Cart
+                                    <i class="fas fa-cart-plus me-2"></i>Thêm vào giỏ hàng
                                 </button>
                             </div>
                         </div>

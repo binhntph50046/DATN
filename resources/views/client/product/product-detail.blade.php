@@ -213,7 +213,7 @@
                         <!-- Action Buttons -->
                         <div class="product-actions mb-4">
                             <button class="btn btn-primary" id="buyNowBtn">
-                                <i class="fas fa-bolt me-2"></i>Buy Now
+                                <i class="fas fa-bolt me-2"></i>Mua ngay
                             </button>
                             <form action="{{ route('cart.add') }}" method="POST" style="display: inline;"
                                 id="addToCartForm">
@@ -222,7 +222,7 @@
                                 <input type="hidden" name="variant_id" id="selectedVariantId" value="">
                                 <input type="hidden" name="quantity" id="cartQuantity" value="1">
                                 <button type="submit" class="btn btn-outline-primary" id="addToCartBtn">
-                                    <i class="fas fa-cart-plus me-2"></i>Add to Cart
+                                    <i class="fas fa-cart-plus me-2"></i> Thêm vào giỏ hàng
                                 </button>
                             </form>
                         </div>

@@ -1,5 +1,5 @@
 @extends('admin.layouts.app')
-
+@section('title', 'Yêu cầu hoàn hàng')
 @section('content')
 <div class="pc-container">
     <div class="pc-content">

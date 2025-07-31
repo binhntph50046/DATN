@@ -8,7 +8,7 @@
                 <span class="badge bg-primary fs-6">Tổng: {{ $orders->total() }} đơn</span>
             </div>
             <div class="card custom-shadow border-0" style="border-radius:0;">
-                <div class="card-body">
+                <div class="card-body"></div>
                     <form method="GET" action="{{ route('admin.orders.index') }}" class="row g-2 mb-4">
                         <div class="col-md-3">
                             <input type="text" name="search" class="form-control"
@@ -123,18 +123,18 @@
                                         <td>
                                             @switch($order->payment_method)
                                                 @case('cod')
-                                                    <span class="badge bg-secondary">COD</span>
+                                                    <span class="badge rounded-pill bg-secondary">COD</span>
                                                     @break
                                                 @case('vnpay')
-                                                    <span class="badge" style="background: #00bcd4">VNPAY</span>
+                                                    <span class="badge rounded-pill" style="background: #00bcd4">VNPAY</span>
                                                     @break
                                                 @default
-                                                    <span class="badge bg-secondary">{{ $order->payment_method }}</span>
+                                                    <span class="badge rounded-pill bg-secondary">{{ $order->payment_method }}</span>
                                             @endswitch
                                         </td>
                                         <td>
                                             <span
-                                                class="badge {{ $order->payment_status == 'paid' ? 'bg-success' : 'bg-danger' }}">
+                                                class="badge rounded-pill {{ $order->payment_status == 'paid' ? 'bg-success' : 'bg-danger' }}">
                                                 {{ $order->payment_status == 'paid' ? 'Đã thanh toán' : 'Chưa thanh toán' }}
                                             </span>
                                         </td>

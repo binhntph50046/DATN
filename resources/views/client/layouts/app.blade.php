@@ -53,6 +53,8 @@
     <!-- Finally load Vite build -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         console.log('Layout loaded, checking Echo...');
         document.addEventListener('DOMContentLoaded', () => {
@@ -61,6 +63,81 @@
             } else {
                 console.error('Echo is not available in layout');
             }
+
+            // Debug SweetAlert2
+            console.log('Checking SweetAlert2...');
+            if (typeof Swal !== 'undefined') {
+                console.log('SweetAlert2 is loaded successfully');
+            } else {
+                console.error('SweetAlert2 is not loaded');
+                return;
+            }
+
+            // Custom styling cho SweetAlert2 - sửa position để không bị header che
+            const Toast = Swal.mixin({
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true,
+                customClass: {
+                    popup: 'swal-toast-custom'
+                },
+                didOpen: (toast) => {
+                    toast.addEventListener('mouseenter', Swal.stopTimer)
+                    toast.addEventListener('mouseleave', Swal.resumeTimer)
+                }
+            });
+
+            // Thêm CSS để đảm bảo toast hiển thị trên header
+            const style = document.createElement('style');
+            style.textContent = `
+                .swal-toast-custom {
+                    z-index: 10000 !important;
+                    margin-top: 5px !important;
+                }
+                .swal2-container {
+                    z-index: 10000 !important;
+                }
+            `;
+            document.head.appendChild(style);
+
+            // Handle session flash messages
+            @if(session('success'))
+                console.log('Session success found:', '{{ session('success') }}');
+                Toast.fire({
+                    icon: 'success',
+                    title: 'Thành công',
+                    text: '{{ session('success') }}'
+                });
+            @endif
+
+            @if(session('error'))
+                console.log('Session error found:', '{{ session('error') }}');
+                Toast.fire({
+                    icon: 'error',
+                    title: 'Lỗi',
+                    text: '{{ session('error') }}'
+                });
+            @endif
+
+            @if(session('warning'))
+                console.log('Session warning found:', '{{ session('warning') }}');
+                Toast.fire({
+                    icon: 'warning',
+                    title: 'Cảnh báo',
+                    text: '{{ session('warning') }}'
+                });
+            @endif
+
+            @if(session('info'))
+                console.log('Session info found:', '{{ session('info') }}');
+                Toast.fire({
+                    icon: 'info',
+                    title: 'Thông tin',
+                    text: '{{ session('info') }}'
+                });
+            @endif
         });
     </script>
     

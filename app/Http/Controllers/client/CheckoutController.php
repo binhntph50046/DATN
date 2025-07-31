@@ -71,13 +71,24 @@ class CheckoutController
             DB::beginTransaction();
             
             // Validate dữ liệu đầu vào
-            $request->validate([
+            $validationRules = [
                 'c_fname' => 'required|string|max:255',
                 'c_email_address' => 'required|email|max:255',
                 'c_phone' => 'required|regex:/^([0-9\s\-\+\(\)]*)$/|min:10|max:11',
                 'c_address' => 'required|string|max:255',
-                'payment_method' => 'required|in:cod,bank_transfer,credit_card,vnpay',
-            ]);
+                'payment_method' => 'required|in:cod,vnpay',
+                'ship_to_different' => 'nullable|in:1',
+            ];
+
+            // Thêm validation rules cho thông tin người nhận nếu đặt hàng hộ
+            if ($request->ship_to_different == '1') {
+                $validationRules['shipping_name'] = 'required|string|max:255';
+                $validationRules['shipping_address'] = 'required|string';
+                $validationRules['shipping_phone'] = 'required|regex:/^([0-9\s\-\+\(\)]*)$/|min:10|max:11';
+                $validationRules['shipping_email'] = 'nullable|email|max:255';
+            }
+
+            $request->validate($validationRules);
 
             // Tính toán subtotal dựa vào variant hoặc giỏ hàng
             $subtotal = $this->calculateSubtotal($request);
@@ -92,10 +103,10 @@ class CheckoutController
                 'discount' => $priceInfo['discount'],
                 'shipping_fee' => $priceInfo['shipping_fee'],
                 'total_price' => $priceInfo['total_price'],
-                'shipping_address' => $request->c_address,
-                'shipping_name' => $request->c_fname,
-                'shipping_phone' => $request->c_phone,
-                'shipping_email' => $request->c_email_address,
+                'shipping_name' => $request->ship_to_different == '1' ? $request->shipping_name : $request->c_fname,
+                'shipping_email' => $request->ship_to_different == '1' ? ($request->shipping_email ?: $request->c_email_address) : $request->c_email_address,
+                'shipping_phone' => $request->ship_to_different == '1' ? $request->shipping_phone : $request->c_phone,
+                'shipping_address' => $request->ship_to_different == '1' ? $request->shipping_address : $request->c_address,
                 'payment_method' => $request->payment_method,
                 'payment_status' => 'pending',
                 'shipping_method_id' => null,
@@ -105,6 +116,17 @@ class CheckoutController
                 'voucher_id' => $priceInfo['voucher'] ? $priceInfo['voucher']->id : null,
                 'voucher_code' => $priceInfo['voucher'] ? $priceInfo['voucher']->code : null,
             ]);
+
+            // Nếu đặt hàng hộ, lưu thông tin người đặt vào bảng order_address
+            if ($request->ship_to_different == '1') {
+                \App\Models\OrderAddress::create([
+                    'order_id' => $order->id,
+                    'full_name' => $request->c_fname,
+                    'phone_number' => $request->c_phone,
+                    'address' => $request->c_address,
+                    'note' => "Đơn hàng được đặt hộ cho {$request->shipping_name} - {$request->shipping_phone}"
+                ]);
+            }
 
             event(new OrderCreated($order));
 
@@ -130,7 +152,20 @@ class CheckoutController
 
             // Tạo chi tiết đơn hàng (order_items)
             if ($request->has('variant_id')) {
-                $variant = ProductVariant::with('product')->findOrFail($request->variant_id);
+                // Lock variant để tránh race condition
+                $variant = ProductVariant::lockForUpdate()->with('product')->findOrFail($request->variant_id);
+                
+                // Kiểm tra số lượng tồn kho
+                if ($variant->stock < 1) {
+                    throw new \Exception('⚠️ Hết số lượng tồn kho!');
+                }
+                if ($variant->stock < $request->quantity) {
+                    throw new \Exception('⚠️ Hết số lượng tồn kho!');
+                }
+                if ($request->quantity < 1) {
+                    throw new \Exception('⚠️ Số lượng sản phẩm phải lớn hơn 0!');
+                }
+
                 OrderItem::create([
                     'order_id' => $order->id,
                     'product_id' => $variant->product->id,
@@ -147,6 +182,20 @@ class CheckoutController
                 }
                 $cartItems = $cart->cartItems()->with(['product', 'variant'])->get();
                 foreach ($cartItems as $item) {
+                    // Lock variant để tránh khi có nhiều người cùng mua 1 sản phẩm
+                    if ($item->variant) {
+                        $variant = ProductVariant::lockForUpdate()->find($item->variant->id);
+                        if ($variant->stock < 1) {
+                            throw new \Exception('⚠️ Hết số lượng tồn kho!');
+                        }
+                        if ($variant->stock < $item->quantity) {
+                            throw new \Exception('⚠️ Hết số lượng tồn kho!');
+                        }
+                        if ($item->quantity < 1) {
+                            throw new \Exception('⚠️ Số lượng sản phẩm phải lớn hơn 0!');
+                        }
+                    }
+
                     $price = $item->variant ? $item->variant->selling_price : $item->product->selling_price;
                     $total = $price * $item->quantity;
                     OrderItem::create([
@@ -158,7 +207,7 @@ class CheckoutController
                         'total' => $total,
                     ]);
                     if ($item->variant) {
-                        $item->variant->decrement('stock', $item->quantity);
+                        $variant->decrement('stock', $item->quantity);
                     }
                 }
                 $cartItems->each->delete();
@@ -290,14 +339,25 @@ class CheckoutController
             DB::beginTransaction();
 
             // Validate dữ liệu đầu vào
-            $request->validate([
+            $validationRules = [
                 'c_fname' => 'required|string|max:255',
                 'c_email_address' => 'required|email|max:255',
                 'c_phone' => 'required|regex:/^([0-9\s\-\+\(\)]*)$/|min:10|max:11',
                 'c_address' => 'required|string|max:255',
                 'payment_method' => 'required|in:cod,bank_transfer,credit_card,vnpay',
                 'selected_items' => 'required|array',
-            ]);
+                'ship_to_different' => 'nullable|in:1',
+            ];
+
+            // Thêm validation rules cho thông tin người nhận nếu đặt hàng hộ
+            if ($request->ship_to_different == '1') {
+                $validationRules['shipping_name'] = 'required|string|max:255';
+                $validationRules['shipping_address'] = 'required|string';
+                $validationRules['shipping_phone'] = 'required|regex:/^([0-9\s\-\+\(\)]*)$/|min:10|max:11';
+                $validationRules['shipping_email'] = 'nullable|email|max:255';
+            }
+
+            $request->validate($validationRules);
 
             // Tính toán subtotal dựa vào giỏ hàng
             $subtotal = $this->calculateSubtotal($request);
@@ -312,10 +372,10 @@ class CheckoutController
                 'discount' => $priceInfo['discount'],
                 'shipping_fee' => $priceInfo['shipping_fee'],
                 'total_price' => $priceInfo['total_price'],
-                'shipping_address' => $request->c_address,
-                'shipping_name' => $request->c_fname,
-                'shipping_phone' => $request->c_phone,
-                'shipping_email' => $request->c_email_address,
+                'shipping_name' => $request->ship_to_different == '1' ? $request->shipping_name : $request->c_fname,
+                'shipping_email' => $request->ship_to_different == '1' ? ($request->shipping_email ?: $request->c_email_address) : $request->c_email_address,
+                'shipping_phone' => $request->ship_to_different == '1' ? $request->shipping_phone : $request->c_phone,
+                'shipping_address' => $request->ship_to_different == '1' ? $request->shipping_address : $request->c_address,
                 'payment_method' => $request->payment_method,
                 'payment_status' => 'pending',
                 'shipping_method_id' => null,
@@ -325,6 +385,17 @@ class CheckoutController
                 'voucher_id' => $priceInfo['voucher'] ? $priceInfo['voucher']->id : null,
                 'voucher_code' => $priceInfo['voucher'] ? $priceInfo['voucher']->code : null,
             ]);
+
+            // Nếu đặt hàng hộ, lưu thông tin người đặt vào bảng order_address
+            if ($request->ship_to_different == '1') {
+                \App\Models\OrderAddress::create([
+                    'order_id' => $order->id,
+                    'full_name' => $request->c_fname,
+                    'phone_number' => $request->c_phone,
+                    'address' => $request->c_address,
+                    'note' => "Đơn hàng được đặt hộ cho {$request->shipping_name} - {$request->shipping_phone}"
+                ]);
+            }
 
             // Cập nhật mã đơn hàng
             $order->update([
@@ -385,7 +456,7 @@ class CheckoutController
     private function processVoucherAndPrice($request, $subtotal)
     {
         $voucher = null;
-        $voucherDiscount = 0; // Mặc định discount là 0 thay vì null
+        $voucherDiscount = 0;
         $shipping_fee = 0;
 
         if ($request->filled('voucher_code')) {
@@ -395,13 +466,38 @@ class CheckoutController
                 ->first();
             
             if ($voucher) {
+                // Kiểm tra sản phẩm có đang khuyến mãi không
+                if ($request->has('variant_id')) {
+                    $variant = ProductVariant::with('product')->find($request->variant_id);
+                    if ($variant && $variant->product->is_discount) {
+                        throw new \Exception('⚠️ Không thể áp dụng mã giảm giá cho sản phẩm đang khuyến mãi!');
+                    }
+                } else {
+                    $cart = \App\Models\Cart::where('user_id', Auth::id())->first();
+                    if ($cart) {
+                        foreach ($cart->cartItems()->with('product') as $item) {
+                            if ($item->product->is_discount) {
+                                throw new \Exception('⚠️ Không thể áp dụng mã giảm giá cho đơn hàng có sản phẩm đang khuyến mãi!');
+                            }
+                        }
+                    }
+                }
+
                 // Tính số tiền giảm giá
-                $voucherDiscount = $voucher->type == 'percentage' 
-                    ? round(($subtotal * $voucher->value) / 100) 
-                    : $voucher->value;
+                if ($voucher->type == 'percentage') {
+                    $voucherDiscount = round(($subtotal * $voucher->value) / 100);
+                } else {
+                    // Nếu giá trị voucher lớn hơn tổng tiền hàng
+                    if ($voucher->value > $subtotal) {
+                        throw new \Exception('⚠️ Không thể áp dụng mã giảm giá này cho đơn hàng vì giá trị voucher lớn hơn tổng tiền hàng!');
+                    }
+                    $voucherDiscount = $voucher->value;
+                }
 
                 // Đảm bảo số tiền giảm không vượt quá tổng đơn hàng
-                $voucherDiscount = min($voucherDiscount, $subtotal);
+                if ($voucherDiscount >= $subtotal) {
+                    throw new \Exception('⚠️ Không thể áp dụng mã giảm giá này cho đơn hàng!');
+                }
             }
         }
 

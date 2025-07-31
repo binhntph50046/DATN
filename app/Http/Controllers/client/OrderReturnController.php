@@ -52,7 +52,8 @@ class OrderReturnController
         $request->validate([
             'reason' => 'required|string|min:10',
             'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
-            'proof_video' => 'nullable|mimes:mp4,mov,avi|max:20480' // Max 20MB cho video
+            'proof_video' => 'nullable|mimes:mp4,mov,avi|max:20480', // Max 20MB cho video
+            'bank_info' => 'required|string|min:10'
         ]);
 
         $selectedItems = $request->input('items', []);
@@ -100,6 +101,7 @@ class OrderReturnController
             'reason' => $request->reason,
             'image' => $imagePath,
             'proof_video' => $videoPath,
+            'bank_info' => $request->bank_info,
             'status' => 'pending'
         ]);
 

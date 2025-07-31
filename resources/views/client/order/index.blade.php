@@ -137,6 +137,7 @@
                         <th>Sản phẩm</th>
                         <th>Ngày đặt</th>
                         <th>Tổng tiền</th>
+                        <th>Phương thức</th>
                         <th>Trạng thái</th>
                         <th>Thao tác</th>
                     </tr>
@@ -150,7 +151,7 @@
                             <td>
                                 <div class="d-flex align-items-center">
                                     @php
-                                       // hiển thị ảnh sản phẩm theo array hoặc mảng
+                                        // hiển thị ảnh sản phẩm theo array hoặc mảng
                                         if (!function_exists('getImagesArray')) {
                                             function getImagesArray($images) {
                                                 if (is_array($images)) {
@@ -183,6 +184,79 @@
                                 <span class="price-amount">{{ number_format($order->total_price) }} VNĐ</span>
                             </td>
                             <td>
+                                @switch($order->payment_method)
+                                    @case('cod')
+                                        <span class="badge bg-secondary">
+                                            <i class="fas fa-money-bill-wave me-1"></i>COD
+                                        </span>
+                                        @if($order->status == 'cancelled')
+                                            <div class="mt-1">
+                                                <small class="text-danger">
+                                                    <i class="fas fa-times-circle me-1"></i>Đã hủy
+                                                </small>
+                                            </div>
+                                        @elseif($order->payment_status == 'paid')
+                                            <div class="mt-1">
+                                                <small class="text-success">
+                                                    <i class="fas fa-check-circle me-1"></i>Đã thanh toán
+                                                </small>
+                                            </div>
+                                        @else
+                                            <div class="mt-1">
+                                                <small class="text-warning">
+                                                    <i class="fas fa-clock me-1"></i>Chưa thanh toán
+                                                </small>
+                                            </div>
+                                        @endif
+                                        @break
+                                    @case('vnpay')
+                                        <span class="badge" style="background: #00bcd4">
+                                            <i class="fas fa-credit-card me-1"></i>VNPAY
+                                        </span>
+                                        @if($order->status == 'cancelled')
+                                            <div class="mt-1">
+                                                <small class="text-danger">
+                                                    <i class="fas fa-times-circle me-1"></i>Đã hủy
+                                                </small>
+                                            </div>
+                                        @elseif($order->payment_status == 'paid')
+                                            <div class="mt-1">
+                                                <small class="text-success">
+                                                    <i class="fas fa-check-circle me-1"></i>Đã thanh toán
+                                                </small>
+                                            </div>
+                                        @else
+                                            <div class="mt-1">
+                                                <small class="text-warning">
+                                                    <i class="fas fa-clock me-1"></i>Chưa thanh toán
+                                                </small>
+                                            </div>
+                                        @endif
+                                        @break
+                                    @default
+                                        <span class="badge bg-secondary">{{ $order->payment_method }}</span>
+                                        @if($order->status == 'cancelled')
+                                            <div class="mt-1">
+                                                <small class="text-danger">
+                                                    <i class="fas fa-times-circle me-1"></i>Đã hủy
+                                                </small>
+                                            </div>
+                                        @elseif($order->payment_status == 'paid')
+                                            <div class="mt-1">
+                                                <small class="text-success">
+                                                    <i class="fas fa-check-circle me-1"></i>Đã thanh toán
+                                                </small>
+                                            </div>
+                                        @else
+                                            <div class="mt-1">
+                                                <small class="text-warning">
+                                                    <i class="fas fa-clock me-1"></i>Chưa thanh toán
+                                                </small>
+                                            </div>
+                                        @endif
+                                @endswitch
+                            </td>
+                            <td>
                                 @php
                                     $statusClass = [
                                         'pending' => 'warning',
@@ -203,7 +277,7 @@
                                         'completed' => 'fa-circle-check',
                                         'cancelled' => 'fa-ban',
                                         'returned' => 'fa-undo',
-                                        '' => 'fa-undo',
+                                        '' => 'fa-circle',
                                     ][$order->status] ?? 'fa-circle';
                                 @endphp
                                 <span class="status-badge status-{{ $statusClass }}">
@@ -457,11 +531,18 @@
 
 /* Product Image */
 .product-image {
-    width: 50px;
-    height: 50px;
+    width: 80px;
+    height: 80px;
     border-radius: 10px;
     object-fit: cover;
     border: 2px solid #f8f9fa;
+    transition: all 0.3s ease;
+}
+
+.product-image:hover {
+    transform: scale(1.05);
+    border-color: #007bff;
+    box-shadow: 0 4px 15px rgba(0, 123, 255, 0.2);
 }
 
 /* Status Badge */
@@ -734,348 +815,347 @@
 </style>
 
 @section('scripts')
+<!-- SweetAlert2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-// Route helper
-const route = (name, params) => {
-    let url = {
-        'order.returns.create': '/order/return/',
-        'order.review': '/order/review/'
-    }[name];
-    return url + params;
-};
+    // Định nghĩa các route URLs
+    const ROUTE_URLS = {
+        orderTracking: "{{ route('order.tracking', ':id') }}",
+        orderReturnsShow: "{{ route('order.returns.show', [':orderId', ':returnId']) }}",
+        orderReturnsCreate: "{{ route('order.returns.create', ':id') }}",
+        orderReview: "{{ route('order.review', ':id') }}"
+    };
+
+    // Hàm helper để thay thế params trong URL
+    function generateUrl(template, params) {
+        let url = template;
+        for (let key in params) {
+            url = url.replace(':' + key, params[key]);
+        }
+        return url;
+    }
 
 document.addEventListener('DOMContentLoaded', function() {
+    // Custom styling cho SweetAlert2
+    const Toast = Swal.mixin({
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+        didOpen: (toast) => {
+            toast.addEventListener('mouseenter', Swal.stopTimer)
+            toast.addEventListener('mouseleave', Swal.resumeTimer)
+        }
+    });
+
+    // Handle session flash messages
+    @if(session('success'))
+        Toast.fire({
+            icon: 'success',
+            title: 'Thành công',
+            text: '{{ session('success') }}'
+        });
+    @endif
+
+    @if(session('error'))
+        Toast.fire({
+            icon: 'error',
+            title: 'Lỗi',
+            text: '{{ session('error') }}'
+        });
+    @endif
+
+    @if(session('warning'))
+        Toast.fire({
+            icon: 'warning',
+            title: 'Cảnh báo',
+            text: '{{ session('warning') }}'
+        });
+    @endif
+
+    // Hàm xử lý sự kiện hủy đơn hàng
+    function handleCancelButtonClick(event) {
+        const orderId = event.currentTarget.dataset.orderId;
+
+        // Hiển thị modal xác nhận hủy đơn
+        Swal.fire({
+            title: 'Hủy đơn hàng',
+            text: 'Vui lòng cho chúng tôi biết lý do bạn muốn hủy đơn hàng này:',
+            input: 'text',
+            inputAttributes: {
+                autocapitalize: 'off',
+                maxlength: 255,
+                placeholder: 'Nhập lý do hủy đơn hàng'
+            },
+            showCancelButton: true,
+            confirmButtonText: 'Xác nhận hủy',
+            cancelButtonText: 'Đóng',
+            showLoaderOnConfirm: true,
+            width: '32em',
+            preConfirm: (reason) => {
+                if (!reason) {
+                    Swal.showValidationMessage('Vui lòng nhập lý do hủy đơn hàng');
+                    return false;
+                }
+
+                const formData = new FormData();
+                formData.append('_token', document.querySelector('meta[name="csrf-token"]').content);
+                formData.append('cancellation_reason', reason);
+                
+                return fetch(`/order/cancel/${orderId}`, {
+                    method: 'POST',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: formData,
+                    credentials: 'same-origin'
+                })
+                .then(async response => {
+                    const data = await response.json();
+                    
+                    if (!response.ok) {
+                        if (response.status === 419) {
+                            throw new Error('Phiên làm việc đã hết hạn, vui lòng tải lại trang');
+                        }
+                        throw new Error(data.message || 'Có lỗi xảy ra khi hủy đơn hàng');
+                    }
+                    
+                    return data;
+                })
+                .catch(error => {
+                    if (error.message.includes('Phiên làm việc đã hết hạn')) {
+                        Toast.fire({
+                            icon: 'warning',
+                            title: 'Phiên làm việc đã hết hạn',
+                            text: 'Trang sẽ tự động tải lại...'
+                        });
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 2000);
+                        return false;
+                    }
+                    Swal.showValidationMessage(error.message);
+                    return false;
+                });
+            },
+            allowOutsideClick: () => !Swal.isLoading()
+        }).then((result) => {
+            if (result.isConfirmed && result.value && result.value.success) {
+                Toast.fire({
+                    icon: 'success',
+                    title: 'Thành công!',
+                    text: result.value.message || 'Đã hủy đơn hàng thành công'
+                }).then(() => {
+                    window.location.reload();
+                });
+            }
+        });
+    }
+
     // Xử lý sự kiện cho nút hủy đơn
     document.querySelectorAll('.btn-cancel-order').forEach(button => {
-        button.addEventListener('click', function(e) {
-            e.preventDefault();
-            const orderId = this.getAttribute('data-order-id');
-            const modalId = `cancelModal${orderId}`;
-            
-            // Tìm modal có sẵn
-            let modal = document.getElementById(modalId);
-            if (!modal) {
-                // Nếu không có modal, tạo mới
-                const modalHtml = `
-                    <div class="modal fade" id="${modalId}" tabindex="-1" aria-labelledby="cancelModalLabel${orderId}" aria-hidden="true">
-                        <div class="modal-dialog modal-dialog-centered">
-                            <div class="modal-content">
-                                <form action="/order/cancel/${orderId}" method="POST">
-                                    @csrf
-                                    <div class="modal-header">
-                                        <h5 class="modal-title" id="cancelModalLabel${orderId}">
-                                            <i class="fas fa-times text-danger me-2"></i>Hủy đơn hàng #${orderId}
-                                        </h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                    </div>
-                                    <div class="modal-body">
-                                        <div class="mb-3">
-                                            <label for="cancellation_reason_${orderId}" class="form-label">Lý do hủy đơn</label>
-                                            <input type="text" class="form-control" name="cancellation_reason" 
-                                                id="cancellation_reason_${orderId}" required 
-                                                placeholder="Vui lòng nhập lý do hủy đơn...">
-                                        </div>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
-                                        <button type="submit" class="btn btn-danger text-black">
-                                            <i class="fas fa-times me-2" style="color: red !important;"></i><span style="color: black !important;">Xác nhận hủy</span>
-                                        </button>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                `;
-                document.body.insertAdjacentHTML('beforeend', modalHtml);
-                modal = document.getElementById(modalId);
-            }
-            
-            // Hiển thị modal
-            const bsModal = new bootstrap.Modal(modal);
-            bsModal.show();
-        });
+        button.addEventListener('click', handleCancelButtonClick);
     });
 
     // Lắng nghe sự kiện cập nhật trạng thái realtime
     let orderIds = @json($orders->pluck('id'));
-    orderIds.forEach(orderId => {
-        window.Echo.channel('orderStatus.' + orderId)
-            .listen('.OrderStatusUpdated', (e) => {
-                const row = document.querySelector(`[data-order-id="${orderId}"]`);
-                if (row) {
-                    // Lưu trạng thái mới vào localStorage
-                    localStorage.setItem(`order_${orderId}_status`, e.status);
-                    localStorage.setItem(`order_${orderId}_status_text`, e.status_text);
+    
+    if (window.Echo) {
+        orderIds.forEach(orderId => {
+            const channel = window.Echo.channel(`orderStatus.${orderId}`);
 
-                    // Cập nhật trạng thái trong data attribute
-                    row.setAttribute('data-status', e.status);
-
-                    // Cập nhật badge trạng thái
-                    const statusBadge = row.querySelector('.status-badge');
-                    if (statusBadge) {
-                        const statusClass = {
-                            'pending': 'warning',
-                            'confirmed': 'info',
-                            'preparing': 'primary',
-                            'shipping': 'info',
-                            'completed': 'success',
-                            'cancelled': 'danger',
-                            'returned': 'secondary',
-                            'partially_returned': 'secondary'
-                        }[e.status] || 'secondary';
-
-                        const statusIcon = {
-                            'pending': 'fa-clock',
-                            'confirmed': 'fa-circle-check',
-                            'preparing': 'fa-box',
-                            'shipping': 'fa-truck',
-                            'completed': 'fa-circle-check',
-                            'cancelled': 'fa-ban',
-                            'returned': 'fa-undo',
-                            'partially_returned': 'fa-undo'
-                        }[e.status] || 'fa-circle';
-
-                        statusBadge.className = `status-badge status-${statusClass}`;
-                        statusBadge.innerHTML = `<i class="fas ${statusIcon}"></i> ${e.status_text}`;
+            channel.listen('.OrderStatusUpdated', (event) => {
+                try {
+                    const row = document.querySelector(`tr[data-order-id="${orderId}"]`);
+                    if (!row) {
+                        throw new Error(`Không tìm thấy row cho đơn hàng #${orderId}`);
                     }
 
-                    // Cập nhật nút thao tác
-                    const actionsContainer = document.getElementById(`order-actions-${orderId}`);
-                    if (actionsContainer) {
-                        let actionsHtml = '';
+                    if (!event || !event.status) {
+                        throw new Error('Dữ liệu event không hợp lệ');
+                    }
 
-                        // Nút xem chi tiết luôn hiển thị
+                    row.setAttribute('data-status', event.status);
+
+                    const statusBadge = row.querySelector('.status-badge');
+                    if (!statusBadge) {
+                        throw new Error('Không tìm thấy status badge');
+                    }
+
+                    const statusClass = {
+                        'pending': 'warning',
+                        'confirmed': 'info',
+                        'preparing': 'primary',
+                        'shipping': 'info',
+                        'completed': 'success',
+                        'cancelled': 'danger',
+                        'returned': 'secondary',
+                        'partially_returned': 'secondary'
+                    }[event.status] || 'secondary';
+
+                    const statusIcon = {
+                        'pending': 'fa-clock',
+                        'confirmed': 'fa-circle-check',
+                        'preparing': 'fa-box',
+                        'shipping': 'fa-truck',
+                        'completed': 'fa-circle-check',
+                        'cancelled': 'fa-ban',
+                        'returned': 'fa-undo',
+                        'partially_returned': 'fa-undo'
+                    }[event.status] || 'fa-circle';
+
+                    statusBadge.className = `status-badge status-${statusClass}`;
+                    statusBadge.innerHTML = `<i class="fas ${statusIcon}"></i> ${event.status_text}`;
+
+                    const actionsContainer = document.getElementById(`order-actions-${orderId}`);
+                    if (!actionsContainer) {
+                        throw new Error('Không tìm thấy actions container');
+                    }
+
+                    let actionsHtml = '';
+
+                    if (['returned', 'partially_returned'].includes(event.status)) {
+                        if (event.return_id) {
+                            actionsHtml += `
+                                <button type="button" 
+                                   onclick="window.location.href='{{ route('order.returns.show', [':order', ':return']) }}'.replace(':order', ${orderId}).replace(':return', ${event.return_id})"
+                                   class="btn btn-action btn-soft-info" 
+                                   data-bs-toggle="tooltip" 
+                                   title="Xem chi tiết hoàn đơn">
+                                    <i class="fas fa-eye"></i>
+                                </button>`;
+                        }
+                    } else {
                         actionsHtml += `
                             <button type="button"
-                                onclick="window.location.href='/order/tracking/${orderId}'"
+                                onclick="window.location.href='{{ route('order.tracking', ':id') }}'.replace(':id', ${orderId})"
                                 class="btn btn-action btn-soft-primary" 
                                 data-bs-toggle="tooltip" 
                                 title="Xem chi tiết đơn hàng">
                                 <i class="fas fa-eye"></i>
                             </button>`;
+                    }
 
-                        // Nút hủy đơn cho trạng thái pending và confirmed
-                        if (['pending', 'confirmed'].includes(e.status)) {
-                            actionsHtml += `
-                                <button type="button" 
-                                    class="btn btn-action btn-soft-danger btn-cancel-order" 
-                                    data-bs-toggle="tooltip" 
-                                    title="Hủy đơn hàng" 
-                                    data-order-id="${orderId}">
-                                    <i class="fas fa-times"></i>
-                                </button>`;
-                        }
+                    if (['pending', 'confirmed'].includes(event.status)) {
+                        actionsHtml += `
+                            <button type="button" 
+                                class="btn btn-action btn-soft-danger btn-cancel-order" 
+                                data-bs-toggle="tooltip" 
+                                title="Hủy đơn hàng" 
+                                data-order-id="${orderId}">
+                                <i class="fas fa-times"></i>
+                            </button>`;
+                    }
 
-                        // Nút hoàn đơn và đánh giá cho đơn đã giao
-                        if (e.status === 'completed') {
-                            // Lấy thông tin đơn hàng từ row
-                            const orderDate = new Date(row.getAttribute('data-created-at'));
-                            const now = new Date();
-                            const daysDiff = Math.floor((now - orderDate) / (1000 * 60 * 60 * 24));
+                    if (event.status === 'completed') {
+                        const orderDate = new Date(row.getAttribute('data-created-at'));
+                        const now = new Date();
+                        const daysDiff = Math.floor((now - orderDate) / (1000 * 60 * 60 * 24));
 
-                            // Chỉ hiển thị nút hoàn đơn trong 7 ngày
-                            if (daysDiff <= 7) {
-                                actionsHtml += `
-                                    <button type="button"
-                                        onclick="window.location.href='${route('order.returns.create', orderId)}'"
-                                        class="btn btn-action btn-soft-warning"
-                                        data-bs-toggle="tooltip" 
-                                        title="Yêu cầu hoàn hàng">
-                                        <i class="fas fa-history"></i>
-                                    </button>`;
-                            }
-
-                            // Nút đánh giá
+                        if (daysDiff <= 7) {
                             actionsHtml += `
                                 <button type="button"
-                                    onclick="window.location.href='${route('order.review', orderId)}'"
-                                    class="btn btn-action btn-soft-success"
+                                    onclick="window.location.href='{{ route('order.returns.create', ':id') }}'.replace(':id', ${orderId})"
+                                    class="btn btn-action btn-soft-warning"
                                     data-bs-toggle="tooltip" 
-                                    title="Đánh giá">
-                                    <i class="fas fa-star"></i>
+                                    title="Yêu cầu hoàn hàng">
+                                    <i class="fas fa-history"></i>
                                 </button>`;
                         }
 
-                        actionsContainer.innerHTML = actionsHtml;
-
-                        // Khởi tạo lại tooltips
-                        const tooltipTriggerList = [].slice.call(actionsContainer.querySelectorAll('[data-bs-toggle="tooltip"]'));
-                        tooltipTriggerList.map(function (tooltipTriggerEl) {
-                            return new bootstrap.Tooltip(tooltipTriggerEl);
-                        });
-
-                        // Gắn lại event cho nút hủy đơn
-                        const newCancelButton = actionsContainer.querySelector('.btn-cancel-order');
-                        if (newCancelButton) {
-                            newCancelButton.addEventListener('click', handleCancelButtonClick);
-                        }
+                        actionsHtml += `
+                            <button type="button"
+                                onclick="window.location.href='{{ route('order.review', ':id') }}'.replace(':id', ${orderId})"
+                                class="btn btn-action btn-soft-success"
+                                data-bs-toggle="tooltip" 
+                                title="Đánh giá">
+                                <i class="fas fa-star"></i>
+                            </button>`;
                     }
+
+                    actionsContainer.innerHTML = actionsHtml;
+
+                    // Khởi tạo lại tooltips
+                    const tooltips = [].slice.call(actionsContainer.querySelectorAll('[data-bs-toggle="tooltip"]'));
+                    tooltips.map(function (tooltipTriggerEl) {
+                        return new bootstrap.Tooltip(tooltipTriggerEl);
+                    });
+
+                    // Gắn lại event listener cho nút hủy đơn
+                    const newCancelButton = actionsContainer.querySelector('.btn-cancel-order');
+                    if (newCancelButton) {
+                        newCancelButton.addEventListener('click', handleCancelButtonClick);
+                    }
+
+                } catch (error) {
+                    console.error('Lỗi khi cập nhật trạng thái đơn hàng:', error);
                 }
             });
-    });
-
-    // Khôi phục trạng thái từ localStorage khi tải trang
-    document.addEventListener('DOMContentLoaded', function() {
-        orderIds.forEach(orderId => {
-            const savedStatus = localStorage.getItem(`order_${orderId}_status`);
-            const savedStatusText = localStorage.getItem(`order_${orderId}_status_text`);
-            
-            if (savedStatus && savedStatusText) {
-                const row = document.querySelector(`[data-order-id="${orderId}"]`);
-                if (row) {
-                    // Cập nhật trạng thái
-                    row.setAttribute('data-status', savedStatus);
-
-                    // Cập nhật badge
-                    const statusBadge = row.querySelector('.status-badge');
-                    if (statusBadge) {
-                        const statusClass = {
-                            'pending': 'warning',
-                            'confirmed': 'info',
-                            'preparing': 'primary',
-                            'shipping': 'info',
-                            'completed': 'success',
-                            'cancelled': 'danger',
-                            'returned': 'secondary',
-                            'partially_returned': 'secondary'
-                        }[savedStatus] || 'secondary';
-
-                        const statusIcon = {
-                            'pending': 'fa-clock',
-                            'confirmed': 'fa-circle-check',
-                            'preparing': 'fa-box',
-                            'shipping': 'fa-truck',
-                            'completed': 'fa-circle-check',
-                            'cancelled': 'fa-ban',
-                            'returned': 'fa-undo',
-                            'partially_returned': 'fa-undo'
-                        }[savedStatus] || 'fa-circle';
-
-                        statusBadge.className = `status-badge status-${statusClass}`;
-                        statusBadge.innerHTML = `<i class="fas ${statusIcon}"></i> ${savedStatusText}`;
-                    }
-
-                    // Cập nhật nút thao tác
-                    const actionsContainer = document.getElementById(`order-actions-${orderId}`);
-                    if (actionsContainer) {
-                        let actionsHtml = '';
-
-                        // Nút xem chi tiết luôn hiển thị
-                        actionsHtml += `
-                            <button type="button"
-                                onclick="window.location.href='/order/tracking/${orderId}'"
-                                class="btn btn-action btn-soft-primary" 
-                                data-bs-toggle="tooltip" 
-                                title="Xem chi tiết đơn hàng">
-                                <i class="fas fa-eye"></i>
-                            </button>`;
-
-                        // Nút hủy đơn cho trạng thái pending và confirmed
-                        if (['pending', 'confirmed'].includes(savedStatus)) {
-                            actionsHtml += `
-                                <button type="button" 
-                                    class="btn btn-action btn-soft-danger btn-cancel-order" 
-                                    data-bs-toggle="tooltip" 
-                                    title="Hủy đơn hàng" 
-                                    data-order-id="${orderId}">
-                                    <i class="fas fa-times"></i>
-                                </button>`;
-                        }
-
-                        // Nút hoàn đơn và đánh giá cho đơn đã giao
-                        if (savedStatus === 'completed') {
-                            // Lấy thông tin đơn hàng từ row
-                            const orderDate = new Date(row.getAttribute('data-created-at'));
-                            const now = new Date();
-                            const daysDiff = Math.floor((now - orderDate) / (1000 * 60 * 60 * 24));
-
-                            // Chỉ hiển thị nút hoàn đơn trong 7 ngày
-                            if (daysDiff <= 7) {
-                                actionsHtml += `
-                                    <button type="button"
-                                        onclick="window.location.href='${route('order.returns.create', orderId)}'"
-                                        class="btn btn-action btn-soft-warning"
-                                        data-bs-toggle="tooltip" 
-                                        title="Yêu cầu hoàn hàng">
-                                        <i class="fas fa-history"></i>
-                                    </button>`;
-                            }
-
-                            // Nút đánh giá
-                            actionsHtml += `
-                                <button type="button"
-                                    onclick="window.location.href='${route('order.review', orderId)}'"
-                                    class="btn btn-action btn-soft-success"
-                                    data-bs-toggle="tooltip" 
-                                    title="Đánh giá">
-                                    <i class="fas fa-star"></i>
-                                </button>`;
-                        }
-
-                        actionsContainer.innerHTML = actionsHtml;
-
-                        // Khởi tạo lại tooltips
-                        const tooltipTriggerList = [].slice.call(actionsContainer.querySelectorAll('[data-bs-toggle="tooltip"]'));
-                        tooltipTriggerList.map(function (tooltipTriggerEl) {
-                            return new bootstrap.Tooltip(tooltipTriggerEl);
-                        });
-
-                        // Gắn lại event cho nút hủy đơn
-                        const newCancelButton = actionsContainer.querySelector('.btn-cancel-order');
-                        if (newCancelButton) {
-                            newCancelButton.addEventListener('click', handleCancelButtonClick);
-                        }
-                    }
-                }
-            }
         });
-    });
-
-    // Hàm xử lý sự kiện click nút hủy đơn
-    function handleCancelButtonClick(event) {
-        event.preventDefault();
-        const orderId = this.getAttribute('data-order-id');
-        const modalId = `cancelModal${orderId}`;
-        let modal = document.getElementById(modalId);
-        if (!modal) {
-            // Tạo modal nếu chưa tồn tại
-            const modalHtml = `
-                <div class="modal fade" id="${modalId}" tabindex="-1" aria-labelledby="cancelModalLabel${orderId}" aria-hidden="true">
-                    <div class="modal-dialog modal-dialog-centered">
-                        <div class="modal-content">
-                            <form action="/order/cancel/${orderId}" method="POST">
-                                @csrf
-                                <div class="modal-header">
-                                    <h5 class="modal-title" id="cancelModalLabel${orderId}">
-                                        <i class="fas fa-times text-danger me-2"></i>Hủy đơn hàng #${orderId}
-                                    </h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                </div>
-                                <div class="modal-body">
-                                    <div class="mb-3">
-                                        <label for="cancellation_reason_${orderId}" class="form-label">Lý do hủy đơn</label>
-                                        <input type="text" class="form-control" name="cancellation_reason" 
-                                            id="cancellation_reason_${orderId}" required 
-                                            placeholder="Vui lòng nhập lý do hủy đơn...">
-                                    </div>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
-                                    <button type="submit" class="btn btn-danger text-black">
-                                        <i class="fas fa-times me-2" style="color: red !important;"></i><span style="color: black !important;">Xác nhận hủy</span>
-                                    </button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>`;
-            document.body.insertAdjacentHTML('beforeend', modalHtml);
-            modal = document.getElementById(modalId);
-        }
-        const bsModal = new bootstrap.Modal(modal);
-        bsModal.show();
     }
 });
+// hàm giúp tải lại trang khi người dùng quay lại từ nút back khi đang realtime
+window.addEventListener('pageshow', function(event) {
+    if (event.persisted || (window.performance && window.performance.navigation.type === 2)) {
+        window.location.reload(); // Tải lại trang nếu quay lại từ nút back
+    }
+});
+
+
 </script>
+<style>
+/* Custom styles cho SweetAlert2 */
+.swal2-popup.small-popup {
+    width: 360px !important;
+    font-size: 0.8rem !important;
+}
+
+.swal2-popup.small-popup .swal2-title {
+    font-size: 1.2rem !important;
+}
+
+.swal2-popup.small-popup .swal2-content {
+    font-size: 0.9rem !important;
+}
+
+.swal2-popup.small-popup .swal2-input {
+    height: 2.5em !important;
+    font-size: 0.9rem !important;
+}
+
+.swal2-popup.small-popup .swal2-actions button {
+    font-size: 0.8rem !important;
+    padding: 0.5em 1.5em !important;
+}
+
+.swal2-toast {
+    max-width: 300px !important;
+    font-size: 0.875rem !important;
+}
+
+.swal2-toast .swal2-title {
+    font-size: 1rem !important;
+    margin: 0.5em 1em !important;
+}
+
+.swal2-toast .swal2-content {
+    font-size: 0.875rem !important;
+}
+
+.swal2-toast .swal2-icon {
+    width: 2em !important;
+    height: 2em !important;
+    margin: 0.5em !important;
+}
+
+.swal2-toast .swal2-icon .swal2-icon-content {
+    font-size: 1.5em !important;
+}
+
+.swal2-toast .swal2-success-ring {
+    width: 2em !important;
+    height: 2em !important;
+}
+</style>
 @endsection

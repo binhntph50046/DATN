@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\OrderItem;
 use App\Models\OrderReturn;
+use App\Models\OrderAddress;
 
 class Order extends Model
 {
@@ -63,6 +64,11 @@ class Order extends Model
     public function returns()
     {
         return $this->hasMany(OrderReturn::class);
+    }
+
+    public function orderAddress()
+    {
+        return $this->hasOne(OrderAddress::class);
     }
 
     // Scopes

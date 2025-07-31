@@ -1,5 +1,5 @@
 @extends('client.layouts.app')
-
+@section('title', 'Tra cứu đơn hàng - Apple Store')
 @section('content')
     <style>
         .guest-tracking-wrapper {

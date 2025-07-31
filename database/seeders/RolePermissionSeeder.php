@@ -35,7 +35,7 @@ class RolePermissionSeeder extends Seeder
             // Product Specifications
             'view specifications', 'trash specifications', 'restore specifications', 'delete specifications',
             // Vouchers
-            'view vouchers', 
+            'view vouchers', 'create vouchers', 'edit vouchers', 'delete vouchers',
             // Roles
             'addrole',
         ];
@@ -52,10 +52,14 @@ class RolePermissionSeeder extends Seeder
         // Gán quyền cho admin (toàn quyền)
         $adminRole->givePermissionTo($permissions);
 
-        // Gán quyền cho staff (chỉ xem + tạo users)
+        // Gán quyền cho staff (theo yêu cầu quản lý)
         $staffRole->givePermissionTo([
-            'view categories', 'view banners', 'view products', 'view orders',
-            'view users', 'create users', 'view blogs', 'view attributes', 'view dashboard','create blogs','edit blogs', 'delete blogs'
+            'view categories', 'view banners', 'view products', 'create products', 'edit products', 'delete products',
+            'view orders', 'edit orders', 'delete orders',
+            'view users', 'create users', 'edit users',
+            'view blogs', 'create blogs', 'edit blogs', 'delete blogs',
+            'view attributes', 'view dashboard',
+            'view vouchers', 'create vouchers', 'edit vouchers'
         ]);
 
         // Tạo người dùng mẫu và gán vai trò

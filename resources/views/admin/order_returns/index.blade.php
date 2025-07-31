@@ -1,5 +1,5 @@
 @extends('admin.layouts.app')
-
+@section('title', 'Yêu cầu hoàn hàng')
 @section('content')
 <div class="pc-container">
     <div class="pc-content">
@@ -54,14 +54,8 @@
                                             <td>
                                                 <a href="{{ route('admin.order-returns.show', $return->id) }}" class="btn btn-primary btn-sm">Xem</a>
                                                 @if($return->status == 'pending')
-                                                    <form action="{{ route('admin.order-returns.approve', $return->id) }}" method="POST" class="d-inline">
-                                                        @csrf
-                                                        <button type="submit" class="btn btn-success btn-sm">Duyệt</button>
-                                                    </form>
-                                                    <form action="{{ route('admin.order-returns.reject', $return->id) }}" method="POST" class="d-inline">
-                                                        @csrf
-                                                        <button type="submit" class="btn btn-danger btn-sm">Từ chối</button>
-                                                    </form>
+                                                   
+                                                   
                                                 @endif
                                             </td>
                                         </tr>

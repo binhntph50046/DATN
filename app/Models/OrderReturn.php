@@ -18,6 +18,7 @@ class OrderReturn extends Model
         'refund_note', // Ghi chú hoàn tiền từ admin
         'refund_amount', // Số tiền hoàn lại
         'refund_method', // Phương thức hoàn tiền
+        'bank_info', // Thông tin tài khoản ngân hàng
         'admin_id', 
         'processed_at'
     ];

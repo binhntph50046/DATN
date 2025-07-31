@@ -20,15 +20,25 @@ class PaymentController
             DB::beginTransaction();
 
             // Validate dữ liệu đầu vào
-            $request->validate([
+            $validationRules = [
                 'variant_id' => 'required|exists:product_variants,id',
                 'quantity' => 'required|integer|min:1',
                 'c_fname' => 'required|string|max:255',
-                // 'c_lname' => 'required|string|max:255',
                 'c_email_address' => 'required|email|max:255',
                 'c_phone' => 'required|string|max:20',
                 'c_address' => 'required|string|max:255',
-            ]);
+                'ship_to_different' => 'nullable|in:1',
+            ];
+
+            // Thêm validation rules cho thông tin người nhận nếu đặt hàng hộ
+            if ($request->ship_to_different == '1') {
+                $validationRules['shipping_name'] = 'required|string|max:255';
+                $validationRules['shipping_address'] = 'required|string';
+                $validationRules['shipping_phone'] = 'required|string|max:20';
+                $validationRules['shipping_email'] = 'nullable|email|max:255';
+            }
+
+            $request->validate($validationRules);
 
             // Lấy thông tin biến thể
             $variant = ProductVariant::with('product')->findOrFail($request->variant_id);
@@ -72,10 +82,10 @@ class PaymentController
                 'discount' => $discount,
                 'shipping_fee' => $shipping_fee,
                 'total_price' => $total_price,
-                'shipping_address' => $request->c_address,
-                'shipping_name' => $request->c_fname . ' ' . $request->c_lname,
-                'shipping_phone' => $request->c_phone,
-                'shipping_email' => $request->c_email_address,
+                'shipping_name' => $request->ship_to_different == '1' ? $request->shipping_name : $request->c_fname,
+                'shipping_email' => $request->ship_to_different == '1' ? ($request->shipping_email ?: $request->c_email_address) : $request->c_email_address,
+                'shipping_phone' => $request->ship_to_different == '1' ? $request->shipping_phone : $request->c_phone,
+                'shipping_address' => $request->ship_to_different == '1' ? $request->shipping_address : $request->c_address,
                 'payment_method' => 'vnpay',
                 'payment_status' => 'pending',
                 'shipping_method_id' => null,
@@ -85,6 +95,17 @@ class PaymentController
                 'voucher_code' => $request->voucher_code,
                 'voucher_id' => $voucher->id ?? null,
             ]);
+
+            // Nếu đặt hàng hộ, lưu thông tin người đặt vào bảng order_address
+            if ($request->ship_to_different == '1') {
+                \App\Models\OrderAddress::create([
+                    'order_id' => $order->id,
+                    'full_name' => $request->c_fname,
+                    'phone_number' => $request->c_phone,
+                    'address' => $request->c_address,
+                    'note' => "Đơn hàng được đặt hộ cho {$request->shipping_name} - {$request->shipping_phone}"
+                ]);
+            }
 
             // Tạo chi tiết đơn hàng
             OrderItem::create([

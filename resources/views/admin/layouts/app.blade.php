@@ -54,6 +54,11 @@
     @include('admin.partials.sidebar')
     <!-- [ Sidebar Menu ] end -->
 
+    {{-- Livechat --}}
+    @include('admin.partials.icon-chat')
+    @include('admin.partials.notify')
+    {{-- Livechat end --}}
+    
     <!-- [ Header Topbar ] start -->
     @include('admin.partials.header')
     <!-- [ Header ] end -->

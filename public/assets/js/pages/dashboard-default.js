@@ -69,8 +69,7 @@ function floatchart() {
 
 
   (function () {
-    // tuần
-    const chartEl = document.querySelector('#income-chart-week');
+    const chartEl = document.querySelector('#income-overview-chart');
     if (!chartEl) return;
 
     const weeklyIncome = JSON.parse(chartEl.dataset.weeklyIncome || '[]');
@@ -82,7 +81,7 @@ function floatchart() {
     var options = {
       chart: {
         type: 'bar',
-        height: 380,
+        height: 365,
         toolbar: {
           show: false
         }
@@ -128,51 +127,6 @@ function floatchart() {
     };
     var chart = new ApexCharts(chartEl, options);
     chart.render();
-
-    // tháng
-    const monthEl = document.querySelector('#income-chart-month');
-    if (!monthEl) return;
-
-    const monthlyIncome = JSON.parse(monthEl.dataset.monthlyIncome || '[]');
-    const monthLabels = ['Tháng 1', 'Tháng 2', 'Tháng 3', 'Tháng 4', 'Tháng 5', 'Tháng 6', 'Tháng 7', 'Tháng 8', 'Tháng 9', 'Tháng 10', 'Tháng 11', 'Tháng 12'];
-
-    const monthOptions = {
-      chart: {
-        type: 'bar',
-        height: 380,
-        toolbar: { show: false }
-      },
-      colors: ['#722ed1'],
-      plotOptions: {
-        bar: {
-          columnWidth: '45%',
-          borderRadius: 4
-        }
-      },
-      dataLabels: { enabled: false },
-      series: [{
-        name: "Doanh thu",
-        data: monthlyIncome
-      }],
-      stroke: {
-        curve: 'smooth',
-        width: 2
-      },
-      xaxis: {
-        categories: monthLabels,
-        axisBorder: { show: false },
-        axisTicks: { show: false },
-      },
-      yaxis: { show: false },
-      tooltip: {
-        y: {
-          formatter: (val) => new Intl.NumberFormat('vi-VN').format(val) + ' đ'
-        }
-      },
-      grid: { show: false }
-    };
-
-    new ApexCharts(monthEl, monthOptions).render();
   })();
 
   (function () {
@@ -183,7 +137,7 @@ function floatchart() {
     const options = {
       chart: {
         type: 'bar',
-        height: 375,
+        height: 340,
         toolbar: { show: false }
       },
       colors: ['#faad14'],
@@ -191,7 +145,7 @@ function floatchart() {
         bar: {
           borderRadius: 4,
           horizontal: false,
-          columnWidth: '40px',
+          columnWidth: '30%',
         }
       },
       dataLabels: {

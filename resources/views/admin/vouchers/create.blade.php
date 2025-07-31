@@ -14,7 +14,8 @@
                             </div>
                             <ul class="breadcrumb">
                                 <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Trang chủ</a></li>
-                                <li class="breadcrumb-item"><a href="{{ route('admin.vouchers.index') }}">Mã giảm giá</a></li>
+                                <li class="breadcrumb-item"><a href="{{ route('admin.vouchers.index') }}">Mã giảm giá</a>
+                                </li>
                                 <li class="breadcrumb-item" aria-current="page">Tạo mới</li>
                             </ul>
                         </div>
@@ -46,8 +47,10 @@
                                     <label for="type" class="form-label">Loại</label>
                                     <select name="type" id="type"
                                         class="form-select @error('type') is-invalid @enderror" required>
-                                        <option value="fixed" {{ old('type') == 'fixed' ? 'selected' : '' }}>Số tiền cố định (VND)</option>
-                                        <option value="percentage" {{ old('type') == 'percentage' ? 'selected' : '' }}>Phần trăm (%)</option>
+                                        <option value="fixed" {{ old('type') == 'fixed' ? 'selected' : '' }}>Số tiền cố
+                                            định (VND)</option>
+                                        <option value="percentage" {{ old('type') == 'percentage' ? 'selected' : '' }}>Phần
+                                            trăm (%)</option>
                                     </select>
                                     @error('type')
                                         <div class="invalid-feedback">{{ $message }}</div>
@@ -58,8 +61,12 @@
                                     <label for="purpose" class="form-label">Mục đích</label>
                                     <select name="purpose" id="purpose"
                                         class="form-control @error('purpose') is-invalid @enderror" required>
-                                        <option value="product_discount" {{ old('purpose') == 'product_discount' ? 'selected' : '' }}>Giảm giá sản phẩm</option>
-                                        <option value="free_shipping" {{ old('purpose') == 'free_shipping' ? 'selected' : '' }}>Miễn phí vận chuyển</option>
+                                        <option value="product_discount"
+                                            {{ old('purpose') == 'product_discount' ? 'selected' : '' }}>Giảm giá sản phẩm
+                                        </option>
+                                        <option value="free_shipping"
+                                            {{ old('purpose') == 'free_shipping' ? 'selected' : '' }}>Miễn phí vận chuyển
+                                        </option>
                                     </select>
                                     @error('purpose')
                                         <div class="invalid-feedback">{{ $message }}</div>
@@ -87,7 +94,8 @@
 
                                 <div class="mb-3">
                                     <label for="min_order_amount" class="form-label">Giá trị đơn hàng tối thiểu</label>
-                                    <input type="number" step="1" min="0" name="min_order_amount" id="min_order_amount"
+                                    <input type="number" step="1" min="0" name="min_order_amount"
+                                        id="min_order_amount"
                                         class="form-control @error('min_order_amount') is-invalid @enderror"
                                         value="{{ old('min_order_amount') }}">
                                     @error('min_order_amount')

@@ -1,5 +1,5 @@
 @extends('admin.layouts.app')
-@section('title', 'Edit Attribute Type')
+@section('title', 'Sửa loại thuộc tính')
 
 <style>
     .custom-shadow {
@@ -102,12 +102,12 @@
                 <div class="row align-items-center">
                     <div class="col-md-12">
                         <div class="page-header-title">
-                            <h5 class="m-b-10">Edit Attribute Type</h5>
+                            <h5 class="m-b-10">Sửa loại thuộc tính</h5>
                         </div>
                         <ul class="breadcrumb">
-                            <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Home</a></li>
-                            <li class="breadcrumb-item"><a href="{{ route('admin.attributes.index') }}">Attribute Types</a></li>
-                            <li class="breadcrumb-item" aria-current="page">Edit</li>
+                            <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Trang chủ</a></li>
+                            <li class="breadcrumb-item"><a href="{{ route('admin.attributes.index') }}">Loại thuộc tính</a></li>
+                            <li class="breadcrumb-item" aria-current="page">Sửa</li>
                         </ul>
                     </div>
                 </div>
@@ -121,7 +121,7 @@
                 <!-- Attribute Type Form -->
                 <div class="card custom-shadow">
                     <div class="card-header">
-                        <h5>Edit Attribute Type</h5>
+                        <h5>Sửa loại thuộc tính</h5>
                     </div>
                     <div class="card-body">
                         <form action="{{ route('admin.attributes.update', $attributeType) }}" method="POST" id="editAttributeForm">
@@ -130,7 +130,7 @@
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="mb-3">
-                                        <label for="name" class="form-label">Name</label>
+                                        <label for="name" class="form-label">Tên</label>
                                         <input type="text" class="form-control @error('name') is-invalid @enderror" id="name" name="name" value="{{ old('name', $attributeType->name) }}">
                                         @error('name')
                                             <div class="invalid-feedback">{{ $message }}</div>
@@ -139,7 +139,7 @@
                                 </div>
                                 <div class="col-md-6">
                                     <div class="mb-3">
-                                        <label for="category_ids" class="form-label">Categories</label>
+                                        <label for="category_ids" class="form-label">Danh mục</label>
                                         <select class="form-select select2" id="category_ids" name="category_ids[]" multiple required>
                                             @foreach($categories as $category)
                                                 <option value="{{ $category->id }}" {{ in_array($category->id, old('category_ids', $attributeType->category_ids ?? [])) ? 'selected' : '' }}>
@@ -156,10 +156,10 @@
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="mb-3">
-                                        <label for="status" class="form-label">Status</label>
+                                        <label for="status" class="form-label">Trạng thái</label>
                                         <select class="form-select @error('status') is-invalid @enderror" id="status" name="status">
-                                            <option value="active" {{ old('status', $attributeType->status) == 'active' ? 'selected' : '' }}>Active</option>
-                                            <option value="inactive" {{ old('status', $attributeType->status) == 'inactive' ? 'selected' : '' }}>Inactive</option>
+                                            <option value="active" {{ old('status', $attributeType->status) == 'active' ? 'selected' : '' }}>Hoạt động</option>
+                                            <option value="inactive" {{ old('status', $attributeType->status) == 'inactive' ? 'selected' : '' }}>Không hoạt động</option>
                                         </select>
                                         @error('status')
                                             <div class="invalid-feedback">{{ $message }}</div>
@@ -170,7 +170,7 @@
 
                             <!-- Attribute Values Section -->
                             <div class="mt-4">
-                                <h5 class="mb-3">Attribute Values</h5>
+                                <h5 class="mb-3">Giá trị thuộc tính</h5>
                                 <div id="valuesContainer">
                                     @foreach($attributeValues as $index => $value)
                                     <div class="value-row" data-value-id="{{ $value->id }}">
@@ -178,22 +178,22 @@
                                         <div class="row">
                                             <div class="col-md-5">
                                                 <div class="mb-3">
-                                                    <label class="form-label">Value</label>
+                                                    <label class="form-label">Giá trị</label>
                                                     <input type="text" class="form-control value-input" name="values[{{ $index }}][value]" required 
                                                            value="{{ is_array($value->value) ? implode(',', $value->value) : $value->value }}"
-                                                           placeholder="Enter attribute value">
+                                                           placeholder="Nhập giá trị thuộc tính">
                                                 </div>
                                             </div>
                                             <div class="col-md-5">
                                                 <div class="mb-3">
-                                                    <label class="color-section-label">Color Selection</label>
+                                                    <label class="color-section-label">Lựa chọn màu sắc</label>
                                                     <div class="color-section">
                                                         <div class="color-toggle">
                                                             <div class="form-check">
                                                                 <input type="checkbox" class="form-check-input has-hex-color" 
                                                                        id="hasColor_{{ $index }}"
                                                                        {{ !empty($value->hex) && $value->hex[0] !== '' ? 'checked' : '' }}>
-                                                                <label class="form-check-label" for="hasColor_{{ $index }}">Has Color</label>
+                                                                <label class="form-check-label" for="hasColor_{{ $index }}">Có màu sắc</label>
                                                             </div>
                                                         </div>
                                                         <div class="color-picker-container" style="{{ !empty($value->hex) && $value->hex[0] !== '' ? '' : 'display: none;' }}">
@@ -211,7 +211,7 @@
                                                 <div class="mb-3">
                                                     <label class="form-label">&nbsp;</label>
                                                     <button type="button" class="btn btn-danger remove-value">
-                                                        <i class="fas fa-trash-alt"></i> Remove
+                                                        <i class="fas fa-trash-alt"></i> Xóa
                                                     </button>
                                                 </div>
                                             </div>
@@ -222,7 +222,7 @@
 
                                 <div class="mb-3">
                                     <button type="button" class="btn btn-info" id="addValue">
-                                        <i class="fas fa-plus"></i> Add Another Value
+                                        <i class="fas fa-plus"></i> Thêm giá trị khác
                                     </button>
                                 </div>
                             </div>
@@ -230,8 +230,8 @@
                             <input type="hidden" name="deleted_values" id="deletedValues">
 
                             <div class="mb-3">
-                                <button type="submit" class="btn btn-primary">Update Attribute Type</button>
-                                <a href="{{ route('admin.attributes.index') }}" class="btn btn-secondary">Back</a>
+                                <button type="submit" class="btn btn-primary">Cập nhật loại thuộc tính</button>
+                                <a href="{{ route('admin.attributes.index') }}" class="btn btn-secondary">Quay lại</a>
                             </div>
                         </form>
                     </div>
@@ -250,7 +250,7 @@
     $(document).ready(function() {
         $('#category_ids').select2({
             width: '100%',
-            placeholder: "Select categories"
+            placeholder: "Chọn danh mục"
         });
 
         // Add existing values to the form when page loads
@@ -318,18 +318,18 @@
                     <div class="row">
                         <div class="col-md-5">
                             <div class="mb-3">
-                                <label class="form-label">Value</label>
-                                <input type="text" class="form-control value-input" name="values[${index}][value]" required placeholder="Enter attribute value">
+                                <label class="form-label">Giá trị</label>
+                                <input type="text" class="form-control value-input" name="values[${index}][value]" required placeholder="Nhập giá trị thuộc tính">
                             </div>
                         </div>
                         <div class="col-md-5">
                             <div class="mb-3">
-                                <label class="color-section-label">Color Selection</label>
+                                <label class="color-section-label">Lựa chọn màu sắc</label>
                                 <div class="color-section">
                                     <div class="color-toggle">
                                         <div class="form-check">
                                             <input type="checkbox" class="form-check-input has-hex-color" id="hasColor_${index}">
-                                            <label class="form-check-label" for="hasColor_${index}">Has Color</label>
+                                            <label class="form-check-label" for="hasColor_${index}">Có màu sắc</label>
                                         </div>
                                     </div>
                                     <div class="color-picker-container" style="display: none;">
@@ -344,7 +344,7 @@
                             <div class="mb-3">
                                 <label class="form-label">&nbsp;</label>
                                 <button type="button" class="btn btn-danger remove-value">
-                                    <i class="fas fa-trash-alt"></i> Remove
+                                    <i class="fas fa-trash-alt"></i> Xóa
                                 </button>
                             </div>
                         </div>

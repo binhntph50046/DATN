@@ -23,7 +23,7 @@
                                 <h5 class="m-b-10">Bài viết</h5>
                             </div>
                             <ul class="breadcrumb">
-                                <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Trang chủ</a></li>
+                                <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Trang Chủ</a></li>
                                 <li class="breadcrumb-item" aria-current="page">Bài viết</li>
                             </ul>
                         </div>
@@ -122,7 +122,8 @@
                                                         <img src="{{ $url }}" alt="{{ $blog->title }}"
                                                             style="width:80px;height:50px;object-fit:cover;">
                                                     @else
-                                                        <span>Không có</span>
+                                                        <img src="{{ asset('uploads/default/default.jpg') }}" alt="No image"
+                                                            style="width:80px;height:50px;object-fit:cover;">
                                                     @endif
                                                 </td>
                                                 <td>{{ $blog->category->name ?? 'Chưa có' }}</td>
@@ -130,7 +131,7 @@
                                                 <td>
                                                     <span
                                                         class="badge {{ $blog->status == 'inactive' ? 'bg-danger' : 'bg-success' }}">
-                                                        {{ $blog->status ?? 'Lỗi trạng thái' }}
+                                                        {{ $blog->status == 'inactive' ? 'Không hoạt động' : 'Hoạt động' }}
                                                     </span>
                                                 </td>
                                                 <td class="text-center">
@@ -144,7 +145,7 @@
                                                     </a>
                                                     <form action="{{ route('admin.blogs.destroy', $blog->id) }}"
                                                         method="POST" class="d-inline"
-                                                        onsubmit="return confirm('Are you sure?')">
+                                                        onsubmit="return confirm('Bạn có chắc chắn muốn xóa bài viết này?')">
                                                         @csrf
                                                         @method('DELETE')
                                                         <button type="submit" class="btn btn-danger btn-sm rounded-3">

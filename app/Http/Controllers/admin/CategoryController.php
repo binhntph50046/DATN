@@ -263,7 +263,7 @@ class CategoryController
             }
         }
 
-        return back()->with('success', 'Category order updated successfully!');
+        return back()->with('success', 'Thứ tự danh mục đã được cập nhật thành công!');
     }
 
     public function getSpecifications(Category $category)

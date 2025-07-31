@@ -65,7 +65,8 @@
                                             <option value="">Tất cả loại</option>
                                             <option value="percentage"
                                                 {{ request('type') == 'percentage' ? 'selected' : '' }}>Phần trăm</option>
-                                            <option value="fixed" {{ request('type') == 'fixed' ? 'selected' : '' }}>Số tiền
+                                            <option value="fixed" {{ request('type') == 'fixed' ? 'selected' : '' }}>Số
+                                                tiền
                                                 cố định</option>
                                         </select>
                                     </div>
@@ -77,7 +78,8 @@
                                             <option value="active" {{ request('status') == 'active' ? 'selected' : '' }}>
                                                 Kích hoạt</option>
                                             <option value="inactive"
-                                                {{ request('status') == 'inactive' ? 'selected' : '' }}>Không kích hoạt</option>
+                                                {{ request('status') == 'inactive' ? 'selected' : '' }}>Không kích hoạt
+                                            </option>
                                         </select>
                                     </div>
 
@@ -101,8 +103,7 @@
 
                                     <div class="col-md-3 d-flex align-items-end">
                                         <button type="submit" class="btn btn-primary me-2">Lọc</button>
-                                        <a href="{{ route('admin.vouchers.index') }}"
-                                            class="btn btn-secondary">Đặt lại</a>
+                                        <a href="{{ route('admin.vouchers.index') }}" class="btn btn-secondary">Đặt lại</a>
                                     </div>
                                 </form>
                             </div>
@@ -128,7 +129,7 @@
                                                 <td class="text-start">{{ $voucher->code }}</td>
                                                 <td>{{ ucfirst($voucher->type) }}</td>
                                                 <td>
-                                                    {{ $voucher->purpose == 'free_shipping' ? 'Free Shipping' : 'Product Discount' }}
+                                                    {{ $voucher->purpose == 'free_shipping' ? 'Miễn phí vận chuyển' : 'Giảm giá sản phẩm' }}
                                                 </td>
                                                 <td class="text-start">{{ $voucher->description ?? '-' }}</td>
                                                 <td>
@@ -157,7 +158,8 @@
                                                         onsubmit="return confirm('Bạn có chắc chắn muốn xóa cái này không?');">
                                                         @csrf
                                                         @method('DELETE')
-                                                        <button type="submit" class="btn btn-danger btn-sm rounded-3" title="Xóa">
+                                                        <button type="submit" class="btn btn-danger btn-sm rounded-3"
+                                                            title="Xóa">
                                                             <i class="ti ti-trash"></i>
                                                         </button>
                                                     </form>

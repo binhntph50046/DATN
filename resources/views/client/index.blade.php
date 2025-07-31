@@ -506,7 +506,7 @@
                         data-aos-delay="{{ $loop->iteration * 100 }}">
                         <div class="post-entry">
                             <a href="{{ route('blog.show', $blog->slug) }}" class="post-thumbnail">
-                                <img src="{{ asset($blog->image ?? 'images/default-blog.jpg') }}"
+                                <img src="{{ asset($blog->image ?? 'uploads/default/default.jpg') }}"
                                     alt="{{ $blog->title }}" class="img-fluid">
                             </a>
                             <div class="post-content-entry">

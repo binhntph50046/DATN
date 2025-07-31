@@ -54,8 +54,8 @@
                                 <h5 class="m-b-10">Chỉnh sửa bài viết</h5>
                             </div>
                             <ul class="breadcrumb">
-                                <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Home</a></li>
-                                <li class="breadcrumb-item"><a href="{{ route('admin.blogs.index') }}">Blogs</a></li>
+                                <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Trang Chủ</a></li>
+                                <li class="breadcrumb-item"><a href="{{ route('admin.blogs.index') }}">Bài Viết</a></li>
                                 <li class="breadcrumb-item active" aria-current="page">Chỉnh sửa</li>
                             </ul>
                         </div>

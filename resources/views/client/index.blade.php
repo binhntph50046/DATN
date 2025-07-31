@@ -260,7 +260,7 @@
                                         <img src="{{ asset($mainImage) }}" class="img-fluid mx-auto"
                                             alt="{{ $product->name }}" style="max-height: 200px; object-fit: contain;">
                                     </div>
-                                    <h3 class="product-title text-center">{{ $product->name }}</h3>
+                                    <h3 class="product-title text-center" style="height: 33px;line-height: 21px">{{ $product->name }}</h3>
                                     <div class="product-price-and-rating text-center">
                                         @if ($product->variants->isNotEmpty())
                                             @php
@@ -427,7 +427,7 @@
             </div> --}}
 
             <!-- Slider sản phẩm -->
-            <div class="top-rated-slider">
+            <div class="top-rated-slider py-2">
                 @php
                     if (!function_exists('getImagesArray')) {
                         function getImagesArray($images)
@@ -448,8 +448,8 @@
                         $imageUrl = !empty($images[0]) ? $images[0] : 'uploads/default/default.jpg';
                     @endphp
 
-                    <div class="product-card px-3">
-                        <div class="border rounded p-4 h-100 text-center shadow-sm bg-white">
+                    <div class="product-card py-1 px-4">
+                        <div class="border p-4 h-100 text-center bg-white" style="border-radius: 8px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.21);">
                             <img src="{{ asset($imageUrl) }}"
                                  alt="{{ $variant->product->name }}"
                                  class="img-fluid mb-3"
@@ -511,7 +511,7 @@
                                     alt="{{ $blog->title }}" class="img-fluid">
                             </a>
                             <div class="post-content-entry">
-                                <h3><a href="{{ route('blog.show', $blog->slug) }}">{{ $blog->title }}</a></h3>
+                                <h3 style="height: 33px;line-height: 21px"><a href="{{ route('blog.show', $blog->slug) }}">{{ $blog->title }}</a></h3>
                                 <div class="meta">
                                     <span>by <a href="#">{{ $blog->author->name ?? 'Admin' }}</a></span>
                                     <span>on <a href="#">{{ $blog->created_at->format('M d, Y') }}</a></span>

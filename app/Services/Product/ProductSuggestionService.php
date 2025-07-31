@@ -42,13 +42,24 @@ class ProductSuggestionService
         $keyword = SearchHistory::where('user_id', $userId)->latest()->value('keyword');
 
         if (!$keyword) {
-            return collect(); // Không có từ khóa => trả về collection rỗng
+            return collect(); // Không có từ khóa
         }
 
-        return Product::where('name', 'like', "%$keyword%")
+        // Lấy ID các sản phẩm khớp từ khóa
+        $matchedProductIds = Product::where('name', 'like', "%$keyword%")
             ->orWhere('description', 'like', "%$keyword%")
-            ->limit(6)->get();
+            ->pluck('id');
+
+        // Lấy category của các sản phẩm đã tìm
+        $categoryIds = Product::whereIn('id', $matchedProductIds)->pluck('category_id');
+
+        // Trả về sản phẩm cùng danh mục, nhưng không trùng với sản phẩm tìm
+        return Product::whereIn('category_id', $categoryIds)
+            ->whereNotIn('id', $matchedProductIds)
+            ->limit(6)
+            ->get();
     }
+
 
     public function suggestTrendingThisWeek()
     {
@@ -89,7 +100,7 @@ class ProductSuggestionService
             $this->suggestTrendingThisWeek(),
         ])->flatten();
 
-        return $all->unique('id')->values(); // Loại trùng theo id
+        return $all->unique('id')->values()->take(6); // Loại trùng theo id
     }
 }
 // This service class provides methods to suggest products based on various criteria such as price, view history, search history, and trending products.

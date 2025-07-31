@@ -128,12 +128,32 @@
                                                     class="product-price">{{ number_format($variant->selling_price) }}đ</strong>
                                             @endif
                                         @endif
+                                        @php
+                                            // Lấy các biến thể đã được đánh giá
+                                            $ratedVariants = $product->variants->filter(function($variant) {
+                                                return isset($variant->reviews_count) ? $variant->reviews_count > 0 : ($variant->reviews && $variant->reviews->count() > 0);
+                                            });
+
+                                            // Tính trung bình đánh giá các biến thể đã được đánh giá
+                                            $avgRating = null;
+                                            if ($ratedVariants->count() > 0) {
+                                                $avgRating = $ratedVariants->avg(function($variant) {
+                                                    // Nếu đã eager load avg_rating từ controller thì dùng luôn
+                                                    return isset($variant->avg_rating) ? $variant->avg_rating : ($variant->reviews ? $variant->reviews->avg('rating') : 0);
+                                                });
+                                            }
+                                            $avgRating = $avgRating ? round($avgRating, 1) : 5;
+                                        @endphp
                                         <div class="product-rating d-flex justify-content-center align-items-center">
-                                            <i class="fas fa-star"></i>
-                                            <i class="fas fa-star"></i>
-                                            <i class="fas fa-star"></i>
-                                            <i class="fas fa-star"></i>
-                                            <i class="fas fa-star"></i>
+                                            @for ($i = 1; $i <= 5; $i++)
+                                                @if ($i <= floor($avgRating))
+                                                    <i class="fas fa-star text-warning"></i>
+                                                @elseif ($i - $avgRating < 1)
+                                                    <i class="fas fa-star-half-alt text-warning"></i>
+                                                @else
+                                                    <i class="far fa-star text-warning"></i>
+                                                @endif
+                                            @endfor
                                             <span>({{ number_format($product->views) }} views)</span>
                                         </div>
                                     </div>
@@ -256,12 +276,32 @@
                                                     class="product-price">{{ number_format($variant->selling_price) }}đ</strong>
                                             @endif
                                         @endif
+                                        @php
+                                            // Lấy các biến thể đã được đánh giá
+                                            $ratedVariants = $product->variants->filter(function($variant) {
+                                                return isset($variant->reviews_count) ? $variant->reviews_count > 0 : ($variant->reviews && $variant->reviews->count() > 0);
+                                            });
+
+                                            // Tính trung bình đánh giá các biến thể đã được đánh giá
+                                            $avgRating = null;
+                                            if ($ratedVariants->count() > 0) {
+                                                $avgRating = $ratedVariants->avg(function($variant) {
+                                                    // Nếu đã eager load avg_rating từ controller thì dùng luôn
+                                                    return isset($variant->avg_rating) ? $variant->avg_rating : ($variant->reviews ? $variant->reviews->avg('rating') : 0);
+                                                });
+                                            }
+                                            $avgRating = $avgRating ? round($avgRating, 1) : 5;
+                                        @endphp
                                         <div class="product-rating d-flex justify-content-center align-items-center">
-                                            <i class="fas fa-star"></i>
-                                            <i class="fas fa-star"></i>
-                                            <i class="fas fa-star"></i>
-                                            <i class="fas fa-star"></i>
-                                            <i class="fas fa-star"></i>
+                                            @for ($i = 1; $i <= 5; $i++)
+                                                @if ($i <= floor($avgRating))
+                                                    <i class="fas fa-star text-warning"></i>
+                                                @elseif ($i - $avgRating < 1)
+                                                    <i class="fas fa-star-half-alt text-warning"></i>
+                                                @else
+                                                    <i class="far fa-star text-warning"></i>
+                                                @endif
+                                            @endfor
                                             <span>({{ number_format($product->views) }} views)</span>
                                         </div>
                                     </div>
@@ -376,7 +416,7 @@
 <section class="top-rated-products py-5" data-aos="fade-up">
     <div class="container">
         <div class="text-center mb-4">
-            <h2 class="section-title">Các Sản Phẩm Được Đánh Giá Tốt Nhất</h2>
+            <h2 class="section-title">Các Đánh Giá Của Sản Phẩm</h2>
         </div>
 
         <div class="position-relative">
@@ -414,8 +454,8 @@
                                  alt="{{ $variant->product->name }}"
                                  class="img-fluid mb-3"
                                  style="height: 220px; object-fit: contain; display: inline-block; margin: 0 auto;">
-                            <h5 class="mb-1">{{ $variant->product->name }}</h5>
-                            <small class="text-muted d-block mb-2">Biến thể: {{ $variant->name }}</small>
+                            {{-- <h5 class="mb-1">{{ $variant->product->name }}</h5> --}}
+                            <small class="text-muted d-block mb-2"> {{ $variant->name }}</small>
 
                             @if ($variant->reviews_count > 0)
                                 <div class="text-warning fw-bold mb-2">
@@ -467,7 +507,7 @@
                         data-aos-delay="{{ $loop->iteration * 100 }}">
                         <div class="post-entry">
                             <a href="{{ route('blog.show', $blog->slug) }}" class="post-thumbnail">
-                                <img src="{{ asset($blog->image ?? 'images/default-blog.jpg') }}"
+                                <img src="{{ asset($blog->image ?? 'uploads/default/default.jpg') }}"
                                     alt="{{ $blog->title }}" class="img-fluid">
                             </a>
                             <div class="post-content-entry">

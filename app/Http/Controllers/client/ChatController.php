@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Events\MessageSent;
-use App\Models\Message;
+use App\Models\ChMessage;
 use Config;
 use Illuminate\Support\Facades\Auth;
 
@@ -33,4 +33,6 @@ class ChatController
 
         return view('client.chat.index', compact('id', 'user', 'messengerColor', 'dark_mode'));
     }
+     
+
 }

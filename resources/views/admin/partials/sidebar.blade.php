@@ -120,7 +120,7 @@
                         <li class="pc-item">
                             <a href="{{ route('admin.flash-sales.index') }}" class="pc-link">
                                 <span class="pc-micon"><i class="ti ti-bolt"></i></span>
-                                <span class="pc-mtext">Flash Sale</span>
+                                <span class="pc-mtext">Khuyến mãi</span>
                             </a>
                         </li>
                     </ul>
@@ -134,6 +134,12 @@
                         <span class="pc-arrow"><i data-feather="chevron-right"></i></span>
                     </a>
                     <ul class="pc-submenu">
+                        <li class="pc-item">
+                            <a href="{{ route('admin.notify.index') }}" class="pc-link">
+                                <span class="pc-micon"><i class="ti ti-bell"></i></span>
+                                <span class="pc-mtext">Thông báo</span>
+                            </a>
+                        </li>
                         <li class="pc-item">
                             <a href="{{ route('admin.livechat.index') }}" class="pc-link">
                                 <span class="pc-micon"><i class="ti ti-message"></i></span>

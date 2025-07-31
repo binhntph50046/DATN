@@ -14,6 +14,8 @@ use Illuminate\Support\Facades\Mail;
 use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\URL;
+use App\Events\UserCreated;
+use App\Notifications\AdminDatabaseNotification;
 
 class AuthController
 {
@@ -73,6 +75,22 @@ class AuthController
 
         // Gửi email xác minh
         Mail::to($user->email)->send(new VerifyEmailCustom($user, $verificationUrl));
+
+        // Gửi event realtime
+            event(new UserCreated($user));
+
+            // Gửi notification vào database cho tất cả admin
+            $admins = User::role('admin')->get(); 
+            foreach ($admins as $admin) {
+                $admin->notify(new AdminDatabaseNotification([
+                    'type' => 'user_created',
+                    'title' => 'Tài khoản mới',
+                    'message' => $user->name . ' vừa đăng ký.',
+                    'user_id' => $user->id,
+                    'url' => route('admin.users.index'), // link đến trang quản lý người dùng
+                    'created_at' => now(),
+                ]));
+            }
 
         return redirect('/login')->with('success', 'Đăng ký thành công. Vui lòng kiểm tra email để xác minh tài khoản!');
     }

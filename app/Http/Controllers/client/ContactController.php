@@ -8,6 +8,10 @@ use App\Models\Subscriber;
 use App\Mail\ThankYouMail;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
+use App\Events\ContactCreated;
+use App\Notifications\AdminDatabaseNotification;
+use App\Models\User;
+
 
 class ContactController 
 {
@@ -39,6 +43,19 @@ class ContactController
                 ['name' => $validated['first_name'] . ' ' . $validated['last_name']]
             );
         }
+        // 🟢 Gửi notification realtime + database cho admin
+        event(new ContactCreated($contact));
+
+        $admins = User::role('admin')->get();
+        foreach ($admins as $admin) {
+            $admin->notify(new AdminDatabaseNotification([
+                'type' => 'contact_submitted',
+                'title' => 'Yêu cầu hỗ trợ mới',
+                'message' => $contact->first_name . ' ' . $contact->last_name . ' đã gửi liên hệ: "' . $contact->message . '"',
+                'url' => route('admin.contacts.show', $contact->id),
+            ]));
+        }
+
 
         // Trả về redirect nếu là form submit thông thường
         return redirect()->back()->with('success', 'Your message has been sent!');

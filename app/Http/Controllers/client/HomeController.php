@@ -66,6 +66,7 @@ class HomeController
             ->withAvg(['reviews as avg_rating' => function ($query) {
                 $query->whereNotNull('order_id')->whereNull('deleted_at');
             }], 'rating')
+            ->having('reviews_count', '>', 0) // CHỈ lấy biến thể có ít nhất 1 đánh giá
             ->orderByDesc('avg_rating')
             ->orderByDesc('reviews_count')
             ->take(9)

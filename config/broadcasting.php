@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'default' => env('BROADCAST_DRIVER', 'pusher'),
+    'default' => env('BROADCAST_DRIVER', 'null'),
 
     'connections' => [
         'pusher' => [
@@ -10,14 +10,22 @@ return [
             'secret' => env('PUSHER_APP_SECRET'),
             'app_id' => env('PUSHER_APP_ID'),
             'options' => [
-                'cluster' => 'ap1',
-                'host' => 'api-ap1.pusher.com',
-                'port' => 443,
-                'scheme' => 'https',
-                'encrypted' => true,
+                'cluster' => env('PUSHER_APP_CLUSTER'),
                 'useTLS' => true,
             ],
         ],
+
+        'redis' => [
+            'driver' => 'redis',
+            'connection' => 'default',
+        ],
+
+        'log' => [
+            'driver' => 'log',
+        ],
+
+        'null' => [
+            'driver' => 'null',
+        ],
     ],
 ];
-?>

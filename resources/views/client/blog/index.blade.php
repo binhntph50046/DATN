@@ -28,7 +28,7 @@
                 @foreach($blogs as $blog)
                     <div class="col-12 col-sm-6 col-md-4 mb-5">
                         <div class="post-entry">
-                            <a href="{{ route('blog.show',$blog->slug) }}" class="post-thumbnail"><img src="{{ asset($blog->image) }}" alt="Image" class="img-fluid"></a>
+                            <a href="{{ route('blog.show',$blog->slug) }}" class="post-thumbnail"><img src="{{ asset($blog->image ?? 'uploads/default/default.jpg') }}" alt="Image" class="img-fluid"></a>
                             <div class="post-content-entry">
                                 <h3><a href="#">{{ $blog->title }}</a></h3>
                                 <div class="meta">
@@ -45,7 +45,7 @@
     <!-- End Blog Section -->
 
     <!-- Start Testimonial Slider -->
-    <div class="testimonial-section before-footer-section">
+    {{-- <div class="testimonial-section before-footer-section">
         <div class="container">
             <div class="row">
                 <div class="col-lg-7 mx-auto text-center">
@@ -141,6 +141,6 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div> --}}
     <!-- End Testimonial Slider -->
 @endsection

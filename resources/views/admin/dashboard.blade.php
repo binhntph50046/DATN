@@ -211,7 +211,7 @@
                     <h5 class="mb-3">Đơn hàng gần đây</h5>
                     <div class="card tbl-card">
                         <div class="card-body">
-                            <div class="table-responsive">
+                            <div class="table-responsive" style="max-height: 390px; overflow-y: auto;">
                                 <table class="table table-hover table-borderless mb-0">
                                     <thead>
                                         <tr>

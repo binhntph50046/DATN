@@ -183,7 +183,7 @@ function floatchart() {
     const options = {
       chart: {
         type: 'bar',
-        height: 533,
+        height: 375,
         toolbar: { show: false }
       },
       colors: ['#faad14'],

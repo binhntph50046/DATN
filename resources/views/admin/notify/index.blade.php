@@ -1,5 +1,5 @@
 @extends('admin.layouts.app')
-@section('title', 'Notification Management')
+@section('title', 'Danh sách thống báo')
 
 <style>
     .custom-shadow {
@@ -26,11 +26,11 @@
                 <div class="row align-items-center">
                     <div class="col-md-12">
                         <div class="page-header-title">
-                            <h5 class="m-b-10">Notifications</h5>
+                            <h5 class="m-b-10">Thông báo</h5>
                         </div>
                         <ul class="breadcrumb">
-                            <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Home</a></li>
-                            <li class="breadcrumb-item" aria-current="page">Notify</li>
+                            <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Trang chủ</a></li>
+                            <li class="breadcrumb-item" aria-current="page">Thông báo</li>
                         </ul>
                     </div>
                 </div>
@@ -42,11 +42,13 @@
         <div class="row">
             <div class="col-12">
                 <div class="card">
-                    <div class="card-header d-flex justify-content-between align-items-center">
-                        <h5>Notify List</h5>
+                    <div class="card-header">
+                        <h5>Danh sách thông báo</h5>
+                        <div class="card-header-right">
                         <a href="{{ route('admin.notify.trash') }}" class="btn btn-danger btn-sm rounded-3">
-                            <i class="ti ti-trash"></i> Trash
+                            <i class="ti ti-trash"></i>Thùng rác
                         </a>
+                        </div>
                     </div>
                     <div class="card-body">
                         @if(session('success'))
@@ -59,11 +61,11 @@
                             <table class="table table-hover table-borderless">
                                 <thead>
                                     <tr>
-                                        <th>Title</th>
-                                        <th>Message</th>
-                                        <th>Status</th>
-                                        <th>Created</th>
-                                        <th class="text-center">Actions</th>
+                                        <th>Tiêu đề</th>
+                                        <th>Tin nhắn</th>
+                                        <th>Trạng thái</th>
+                                        <th>Ngày tạo</th>
+                                        <th class="text-center">Hành động</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -105,7 +107,7 @@
                                                     @method('DELETE')
                                                     <button type="submit" class="btn btn-danger btn-sm rounded-3"
                                                         onclick="return confirm('Bạn có chắc muốn xóa thông báo này?')">
-                                                        <i class="ti ti-trash"></i> Delete
+                                                        <i class="ti ti-trash"></i>
                                                     </button>
                                                 </form>
                                             </td>

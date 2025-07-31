@@ -59,7 +59,7 @@
                                                         }
                                                     @endphp
                                                     @if ($firstImage)
-                                                        <img src="{{ asset($firstImage) }}" alt="Variant Image"
+                                                        <img src="{{ asset($firstImage) }}" alt="Ảnh biến thể"
                                                             style="width:80px;height:80px;object-fit:cover;border-radius:8px;">
                                                     @else
                                                         <img src="{{ asset('uploads/default/default.jpg') }}"

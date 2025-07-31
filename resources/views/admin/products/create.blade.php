@@ -1,5 +1,5 @@
 @extends('admin.layouts.app')
-@section('title', 'Create Product')
+@section('title', 'Tạo sản phẩm mới')
 
 <style>
     .custom-shadow {

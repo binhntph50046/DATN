@@ -429,11 +429,6 @@
             padding: 12px 0;
         }
 
-        body {
-            padding-bottom: 80px;
-            /* Để tránh nội dung bị che bởi thanh này */
-        }
-
         @media (max-width: 767px) {
             .cart-summary-fixed .btn {
                 width: 100%;

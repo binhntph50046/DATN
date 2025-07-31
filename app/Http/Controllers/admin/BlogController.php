@@ -161,7 +161,7 @@ class BlogController
         $blog->update($data);
 
         return redirect()->route('admin.blogs.index')
-            ->with('success', 'Cập nhật bài viết thành công!');
+            ->with('success', 'Bài viết đã được cập nhật thành công!');
     }
 
     public function destroy(Blog $blog)

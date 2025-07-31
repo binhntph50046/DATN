@@ -1,5 +1,5 @@
 @extends('admin.layouts.app')
-@section('title', 'User Management')
+@section('title', 'Quản lý người dùng')
 
 <style>
     .custom-shadow {

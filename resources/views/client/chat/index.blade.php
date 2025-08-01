@@ -298,6 +298,7 @@
         <script>
             const userId = {{ auth()->id() ?? 'null' }};
             const adminId = {{ $user->id }};
+
             function loadLivechat() {
                 fetch('/livechat/messages')
                     .then(res => res.json())
@@ -319,16 +320,17 @@
                             appendLivechatMessage('user', defaultMsg);
 
                             fetch('/livechat/send', {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                                },
-                                body: JSON.stringify({
-                                    message: defaultMsg,
-                                    to_user_id: adminId
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute(
+                                            'content')
+                                    },
+                                    body: JSON.stringify({
+                                        message: defaultMsg,
+                                        to_user_id: adminId
+                                    })
                                 })
-                            })
                                 .then(res => res.json())
                                 .then(data => console.log('Đã tự động gửi chào:', data))
                                 .catch(err => console.error('Tự động gửi lỗi:', err));
@@ -339,7 +341,7 @@
                     .catch(err => console.error('Lỗi tải tin nhắn:', err));
             }
         </script>
-        
+    </div>
 
 
 @endsection

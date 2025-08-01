@@ -4,6 +4,7 @@ namespace App\Http\Controllers\admin;
 
 use App\Models\Voucher;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 class VoucherController
 {

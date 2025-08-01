@@ -790,10 +790,11 @@ a.more {
 }
 
 .blog-section .post-entry .post-content-entry h3 {
-  font-size: 16px;
+  font-size: 15px;
   margin-bottom: 10px;
   font-weight: 600;
   line-height: 1.4;
+  height: 40px;
 }
 
 .blog-section .post-entry .post-content-entry h3 a {

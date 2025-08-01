@@ -511,10 +511,10 @@
                                     alt="{{ $blog->title }}" class="img-fluid">
                             </a>
                             <div class="post-content-entry">
-                                <h3 style="height: 33px;line-height: 21px"><a href="{{ route('blog.show', $blog->slug) }}">{{ $blog->title }}</a></h3>
+                                <h3 style="height: 33px;line-height: 21px"><a href="{{ route('blog.show', $blog->slug) }}">{{ Str::limit($blog->title, 90) }}</a></h3>
                                 <div class="meta">
-                                    <span>by <a href="#">{{ $blog->author->name ?? 'Admin' }}</a></span>
-                                    <span>on <a href="#">{{ $blog->created_at->format('M d, Y') }}</a></span>
+                                    <span>{{ $blog->created_at->diffForHumans() }}</span> 
+                                    {{-- <span>on <a href="#">{{ $blog->created_at->format('M d, Y') }}</a></span> --}}
                                 </div>
                             </div>
                         </div>

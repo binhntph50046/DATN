@@ -52,7 +52,9 @@ class FlashSaleController
 
 public function store(FlashSaleRequest $request)
 {
-    $variantIds = array_column($request->items, 'product_variant_id');
+    // dd($request->all());
+    $items = array_values($request->input('items', []));
+    $variantIds = array_column($items, 'product_variant_id');
 
     // Kiểm tra trùng biến thể
     if (count($variantIds) !== count(array_unique($variantIds))) {
@@ -65,7 +67,7 @@ public function store(FlashSaleRequest $request)
         DB::beginTransaction();
 
         // Kiểm tra tồn kho trước khi tạo
-        foreach ($request->items as $item) {
+        foreach ($items as $item) {
             $variant = ProductVariant::findOrFail($item['product_variant_id']);
             if ($variant->stock < $item['count']) {
                 throw new \Exception("Biến thể [{$variant->name}] không đủ hàng trong kho.");
@@ -80,7 +82,7 @@ public function store(FlashSaleRequest $request)
             'status' => 0, // chưa kích hoạt
         ]);
 
-        foreach ($request->items as $item) {
+        foreach ($items as $item) {
             FlashSaleItem::create([
                 'flash_sale_id' => $flashSale->id,
                 'product_variant_id' => $item['product_variant_id'],

@@ -112,7 +112,7 @@ class VoucherController
         ]);
 
         Voucher::create($data);
-        return redirect()->route('admin.vouchers.index')->with('success', 'Tạo mới thành công');
+        return redirect()->route('admin.vouchers.index')->with('success', 'Voucher đã được tạo thành công.');
     }
 
     /**
@@ -136,33 +136,33 @@ class VoucherController
      */
     public function update(Request $request, Voucher $voucher)
     {
-    $data = $request->validate([
-        'min_order_amount' => 'nullable|numeric|min:0',
-        'expires_at' => 'required|date|after_or_equal:today',
-        'usage_limit' => 'integer|min:0',
-        'per_user_limit' => 'integer|min:0',
-        'is_active' => 'boolean',
-        'description' => 'nullable|string|max:255',
-    ], [
-        'min_order_amount.numeric' => 'Giá trị đơn hàng tối thiểu phải là số.',
-        'min_order_amount.min' => 'Giá trị đơn hàng tối thiểu không được nhỏ hơn 0.',
+        $data = $request->validate([
+            'min_order_amount' => 'nullable|numeric|min:0',
+            'expires_at' => 'required|date|after_or_equal:today',
+            'usage_limit' => 'integer|min:0',
+            'per_user_limit' => 'integer|min:0',
+            'is_active' => 'boolean',
+            'description' => 'nullable|string|max:255',
+        ], [
+            'min_order_amount.numeric' => 'Giá trị đơn hàng tối thiểu phải là số.',
+            'min_order_amount.min' => 'Giá trị đơn hàng tối thiểu không được nhỏ hơn 0.',
 
-        'expires_at.required' => 'Vui lòng nhập ngày hết hạn.',
-        'expires_at.date' => 'Ngày hết hạn không hợp lệ.',
-        'expires_at.after_or_equal' => 'Ngày hết hạn phải từ hôm nay trở đi.',
+            'expires_at.required' => 'Vui lòng nhập ngày hết hạn.',
+            'expires_at.date' => 'Ngày hết hạn không hợp lệ.',
+            'expires_at.after_or_equal' => 'Ngày hết hạn phải từ hôm nay trở đi.',
 
-        'usage_limit.integer' => 'Giới hạn sử dụng phải là số nguyên.',
-        'usage_limit.min' => 'Giới hạn sử dụng không được nhỏ hơn 0.',
+            'usage_limit.integer' => 'Giới hạn sử dụng phải là số nguyên.',
+            'usage_limit.min' => 'Giới hạn sử dụng không được nhỏ hơn 0.',
 
-        'per_user_limit.integer' => 'Giới hạn mỗi người dùng phải là số nguyên.',
-        'per_user_limit.min' => 'Giới hạn mỗi người dùng không được nhỏ hơn 0.',
+            'per_user_limit.integer' => 'Giới hạn mỗi người dùng phải là số nguyên.',
+            'per_user_limit.min' => 'Giới hạn mỗi người dùng không được nhỏ hơn 0.',
 
-        'is_active.boolean' => 'Trạng thái hoạt động không hợp lệ.',
+            'is_active.boolean' => 'Trạng thái hoạt động không hợp lệ.',
 
-        'description.max' => 'Mô tả không được vượt quá 255 ký tự.',
-    ]);
+            'description.max' => 'Mô tả không được vượt quá 255 ký tự.',
+        ]);
         $voucher->update($data);
-        return redirect()->route('admin.vouchers.index')->with('success', 'Cập nhật thành công');
+        return redirect()->route('admin.vouchers.index')->with('success', 'Voucher đã được cập nhật thành công.');
     }
 
     /**
@@ -171,6 +171,6 @@ class VoucherController
     public function destroy(Voucher $voucher)
     {
         $voucher->delete();
-        return redirect()->route('admin.vouchers.index')->with('success', 'Xóa thành công');
+        return redirect()->route('admin.vouchers.index')->with('success', 'Voucher đã được xóa thành công.');
     }
 }

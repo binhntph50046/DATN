@@ -26,12 +26,12 @@
                 <div class="row align-items-center">
                     <div class="col-md-12">
                         <div class="page-header-title">
-                            <h5 class="m-b-10">Deleted Notifications</h5>
+                            <h5 class="m-b-10">Xóa Thông Báo</h5>
                         </div>
                         <ul class="breadcrumb">
-                            <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Home</a></li>
-                            <li class="breadcrumb-item"><a href="{{ route('admin.notify.index') }}">Notifications</a></li>
-                            <li class="breadcrumb-item" aria-current="page">Trash</li>
+                            <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Trang chủ</a></li>
+                            <li class="breadcrumb-item"><a href="{{ route('admin.notify.index') }}">Thông báo</a></li>
+                            <li class="breadcrumb-item" aria-current="page">Thùng rác</li>
                         </ul>
                     </div>
                 </div>
@@ -44,7 +44,7 @@
             <div class="col-12">
                 <div class="card">
                     <div class="card-header">
-                        <h5>Deleted Notifications List</h5>
+                        <h5>Danh sách thông báo đã xóa</h5>
                     </div>
                     <div class="card-body">
                         @if(session('success'))
@@ -56,10 +56,10 @@
                             <table class="table table-hover table-borderless">
                                 <thead>
                                     <tr>
-                                        <th>Title</th>
-                                        <th>Message</th>
-                                        <th>Deleted At</th>
-                                        <th class="text-center">Actions</th>
+                                        <th>Tiêu đề</th>
+                                        <th>Nội dung</th>
+                                        <th>Thời gian xóa</th>
+                                        <th class="text-center">Hành động</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -75,7 +75,7 @@
                                                     @csrf
                                                     <button type="submit" class="btn btn-success btn-sm rounded-3 me-2"
                                                         onclick="return confirm('Khôi phục thông báo này?')">
-                                                        <i class="ti ti-restore"></i> Restore
+                                                        <i class="ti ti-restore"></i> Khôi phục
                                                     </button>
                                                 </form>
                                                 <form action="{{ route('admin.notify.forceDelete', $noti->id) }}" method="POST" class="d-inline">
@@ -83,7 +83,7 @@
                                                     @method('DELETE')
                                                     <button type="submit" class="btn btn-danger btn-sm rounded-3"
                                                         onclick="return confirm('Xóa vĩnh viễn thông báo này?')">
-                                                        <i class="ti ti-trash"></i> Force Delete
+                                                        <i class="ti ti-trash"></i> Xóa vv
                                                     </button>
                                                 </form>
                                             </td>
@@ -98,7 +98,7 @@
                             {{ $notifications->links() }}
                         </div>
                         <div class="mt-3">
-                            <a href="{{ route('admin.notify.index') }}" class="btn btn-secondary">Back to Notifications</a>
+                            <a href="{{ route('admin.notify.index') }}" class="btn btn-secondary">Quay lại thông báo</a>
                         </div>
                     </div>
                 </div>

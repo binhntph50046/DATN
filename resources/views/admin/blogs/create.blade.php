@@ -62,7 +62,7 @@
                                 <h5 class="m-b-10">Tạo Bài Viết Mới</h5>
                             </div>
                             <ul class="breadcrumb">
-                                <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Home</a></li>
+                                <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Trang Chủ</a></li>
                                 <li class="breadcrumb-item"><a href="{{ route('admin.blogs.index') }}">Bài Viết</a></li>
                                 <li class="breadcrumb-item" aria-current="page">Tạo Mới</li>
                             </ul>

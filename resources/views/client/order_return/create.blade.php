@@ -151,6 +151,11 @@ input[type="checkbox"] {
             <input type="file" name="proof_video" id="proof_video" class="form-control" accept="video/mp4,video/mov,video/avi">
             <div class="upload-info">Chấp nhận các định dạng: MP4, MOV, AVI. Kích thước tối đa: 20MB</div>
         </div>
+        <div class="mb-4">
+            <label for="bank_info" class="form-label">Thông tin tài khoản ngân hàng <span class="text-danger">*</span></label>
+            <textarea name="bank_info" id="bank_info" class="form-control" rows="2" required placeholder="VD: Ngân hàng Vietcombank - STK: 1234567890 - Chủ TK: Nguyễn Văn A">{{ old('bank_info') }}</textarea>
+            <div class="upload-info">Vui lòng nhập đầy đủ thông tin: Tên ngân hàng - Số tài khoản - Tên chủ tài khoản</div>
+        </div>
         <div class="d-flex justify-content-center gap-3 mt-5">
             <button type="submit" class="btn btn-danger">
                 <i class="fas fa-undo me-2"></i>Gửi yêu cầu hoàn hàng

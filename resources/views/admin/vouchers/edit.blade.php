@@ -14,7 +14,8 @@
                             </div>
                             <ul class="breadcrumb">
                                 <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Trang chủ</a></li>
-                                <li class="breadcrumb-item"><a href="{{ route('admin.vouchers.index') }}">Mã giảm giá</a></li>
+                                <li class="breadcrumb-item"><a href="{{ route('admin.vouchers.index') }}">Mã giảm giá</a>
+                                </li>
                                 <li class="breadcrumb-item" aria-current="page">Chỉnh sửa</li>
                             </ul>
                         </div>
@@ -56,9 +57,9 @@
                                     <label for="purpose" class="form-label">Purpose</label>
                                     <select name="purpose" id="purpose"
                                         class="form-control @error('purpose') is-invalid @enderror" required>
-                                        <option value="product_discount"
-                                            {{ old('purpose', $voucher->purpose) == 'product_discount' ? 'selected' : '' }}>
-                                            Product Discount</option>
+                                        <option value="product_discount" {{ old('purpose', $voucher->purpose) == 'product_discount' ? 'selected' : '' }}>
+                                            Giảm giá sản phẩm
+                                        </option>
                                         <option value="free_shipping"
                                             {{ old('purpose', $voucher->purpose) == 'free_shipping' ? 'selected' : '' }}>
                                             Free Shipping</option>
@@ -115,7 +116,8 @@
 
                                 <div class="mb-3">
                                     <button type="submit" class="btn btn-primary">Cập nhật</button>
-                                    <a href="{{ route('admin.vouchers.index') }}" class="btn btn-secondary">Quay lại danh sách</a>
+                                    <a href="{{ route('admin.vouchers.index') }}" class="btn btn-secondary">Quay lại danh
+                                        sách</a>
                                 </div>
                             </form>
                         </div>

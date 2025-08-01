@@ -28,7 +28,7 @@
             <div class="col-12">
                 <div class="card">
                     <div class="card-header">
-                        <h5>Thêm danh mục miws</h5>
+                        <h5>Thêm danh mục mới</h5>
                     </div>
                     <div class="card-body">
                         <form action="{{ route('admin.categories.store') }}" method="POST" enctype="multipart/form-data">

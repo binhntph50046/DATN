@@ -36,7 +36,7 @@ class HomeController
             ->with(['variants' => function ($query) {
                 $query->orderByDesc('is_default');
             }])
-            ->whereMonth('created_at', Carbon::now()->month)
+            // ->whereMonth('created_at', Carbon::now()->month)
             ->whereYear('created_at', Carbon::now()->year)
             ->orderBy('created_at', 'desc')
             ->take(9)

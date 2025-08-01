@@ -2,6 +2,7 @@
 
 @section('title', 'Trang chủ - Apple Store')
 
+
 @section('banner')
     <!-- Start Hero Section -->
     <div id="heroCarousel" class="carousel slide" data-bs-ride="carousel">
@@ -259,7 +260,7 @@
                                         <img src="{{ asset($mainImage) }}" class="img-fluid mx-auto"
                                             alt="{{ $product->name }}" style="max-height: 200px; object-fit: contain;">
                                     </div>
-                                    <h3 class="product-title text-center">{{ $product->name }}</h3>
+                                    <h3 class="product-title text-center" style="height: 33px;line-height: 21px">{{ $product->name }}</h3>
                                     <div class="product-price-and-rating text-center">
                                         @if ($product->variants->isNotEmpty())
                                             @php
@@ -426,7 +427,7 @@
             </div> --}}
 
             <!-- Slider sản phẩm -->
-            <div class="top-rated-slider">
+            <div class="top-rated-slider py-2">
                 @php
                     if (!function_exists('getImagesArray')) {
                         function getImagesArray($images)
@@ -447,8 +448,8 @@
                         $imageUrl = !empty($images[0]) ? $images[0] : 'uploads/default/default.jpg';
                     @endphp
 
-                    <div class="product-card px-3">
-                        <div class="border rounded p-4 h-100 text-center shadow-sm bg-white">
+                    <div class="product-card py-1 px-4">
+                        <div class="border p-4 h-100 text-center bg-white" style="border-radius: 8px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.21);">
                             <img src="{{ asset($imageUrl) }}"
                                  alt="{{ $variant->product->name }}"
                                  class="img-fluid mb-3"
@@ -506,14 +507,14 @@
                         data-aos-delay="{{ $loop->iteration * 100 }}">
                         <div class="post-entry">
                             <a href="{{ route('blog.show', $blog->slug) }}" class="post-thumbnail">
-                                <img src="{{ asset($blog->image ?? 'images/default-blog.jpg') }}"
+                                <img src="{{ asset($blog->image ?? 'uploads/default/default.jpg') }}"
                                     alt="{{ $blog->title }}" class="img-fluid">
                             </a>
                             <div class="post-content-entry">
-                                <h3><a href="{{ route('blog.show', $blog->slug) }}">{{ $blog->title }}</a></h3>
+                                <h3 style="height: 33px;line-height: 21px"><a href="{{ route('blog.show', $blog->slug) }}">{{ Str::limit($blog->title, 90) }}</a></h3>
                                 <div class="meta">
-                                    <span>by <a href="#">{{ $blog->author->name ?? 'Admin' }}</a></span>
-                                    <span>on <a href="#">{{ $blog->created_at->format('M d, Y') }}</a></span>
+                                    <span>{{ $blog->created_at->diffForHumans() }}</span> 
+                                    {{-- <span>on <a href="#">{{ $blog->created_at->format('M d, Y') }}</a></span> --}}
                                 </div>
                             </div>
                         </div>
@@ -553,30 +554,29 @@
 
     <!-- JavaScript for Wishlist and Quick View -->
     <script>
-        function showCustomAlert(message, type = 'success') {
-            const alertId = 'custom-alert-' + Date.now();
-            const icon = type === 'success' ? 'fa-check-circle' : 'fa-times-circle';
-            const alertDiv = document.createElement('div');
-            alertDiv.className = `custom-alert ${type}`;
-            alertDiv.id = alertId;
-            alertDiv.innerHTML = `
-                <div class="icon"><i class="fas ${icon}"></i></div>
-                <div class="content">
-                    <strong>${type.toUpperCase()}</strong>
-                    <p>${message}</p>
-                </div>
-                <div class="close" onclick="this.parentElement.style.display='none';">×</div>
-            `;
-            document.body.appendChild(alertDiv);
-            setTimeout(() => {
-                alertDiv.style.display = 'none';
-            }, 3000);
+        function showToast(message, type = 'success') {
+            const Toast = Swal.mixin({
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true,
+                didOpen: (toast) => {
+                    toast.addEventListener('mouseenter', Swal.stopTimer)
+                    toast.addEventListener('mouseleave', Swal.resumeTimer)
+                }
+            });
+
+            Toast.fire({
+                icon: type,
+                title: message
+            });
         }
 
         async function toggleWishlist(productId, url, iconElement) {
             const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
             if (!csrfToken) {
-                showCustomAlert('Lỗi hệ thống, vui lòng thử lại!', 'error');
+                showToast('Lỗi hệ thống, vui lòng thử lại!', 'error');
                 return;
             }
             try {
@@ -593,7 +593,7 @@
                 });
                 const data = await response.json();
                 if (data.status) {
-                    showCustomAlert(data.message, data.type);
+                    showToast(data.message, data.type);
                     if (data.type === 'success') {
                         const allHeartIcons = document.querySelectorAll(
                             `.icon-heart[onclick*="toggleWishlist('${productId}'"]`);
@@ -608,18 +608,101 @@
                         });
                     }
                 } else {
-                    showCustomAlert(data.message || 'Đã xảy ra lỗi, vui lòng thử lại!', 'error');
+                    showToast(data.message || 'Đã xảy ra lỗi, vui lòng thử lại!', 'error');
                 }
             } catch (error) {
-                showCustomAlert('Đã xảy ra lỗi: ' + (error.message || 'Unknown error'), 'error');
+                showToast('Đã xảy ra lỗi: ' + (error.message || 'Unknown error'), 'error');
             }
         }
 
         function showLoginPrompt() {
-            showCustomAlert('Vui lòng đăng nhập để thêm sản phẩm vào danh sách yêu thích.', 'error');
+            showToast('Vui lòng đăng nhập để thêm sản phẩm vào danh sách yêu thích.', 'error');
         }
 
-        // ... (các hàm quick view, buy now, add to cart, increment view giữ nguyên như trước)
+        let compareSelected = [];
+        let compareNames = [];
+        let compareCategory = null;
+
+        function addToCompare(productId, productName, categoryId) {
+            const isAlreadySelected = compareSelected.includes(productId);
+
+            if (isAlreadySelected) {
+                // Remove product
+                const index = compareSelected.indexOf(productId);
+                compareSelected.splice(index, 1);
+                compareNames.splice(index, 1);
+                showToast('Đã bỏ chọn ' + productName + ' khỏi so sánh', 'info');
+
+                // If the list becomes empty, reset the category
+                if (compareSelected.length === 0) {
+                    compareCategory = null;
+                }
+            } else {
+                // Add product
+                if (compareSelected.length >= 4) {
+                    showToast('Chỉ được chọn tối đa 4 sản phẩm để so sánh!', 'error');
+                    return;
+                }
+
+                // Check category
+                if (compareSelected.length > 0 && compareCategory != categoryId) {
+                    showToast('Vui lòng chỉ chọn các sản phẩm trong cùng một danh mục!', 'error');
+                    return;
+                }
+
+                compareSelected.push(productId);
+                compareNames.push(productName);
+
+                // Set category if it's the first product being added
+                if (compareSelected.length === 1) {
+                    compareCategory = categoryId;
+                }
+                showToast('Đã thêm ' + productName + ' vào so sánh', 'success');
+            }
+
+            // Cập nhật hiển thị nút so sánh
+            updateCompareButton();
+        }
+
+        function updateCompareButton() {
+            const button = document.getElementById('compareButton');
+            const count = document.getElementById('compareCount');
+            const text = document.getElementById('compareButtonText');
+
+            if (compareSelected.length > 0) {
+                button.style.display = 'block';
+                count.textContent = compareSelected.length;
+                if (compareSelected.length >= 2) {
+                    text.textContent = 'So sánh ngay';
+                    button.style.background = '#28a745';
+                } else {
+                    text.textContent = 'Chọn thêm sản phẩm';
+                    button.style.background = '#007bff';
+                }
+            } else {
+                button.style.display = 'none';
+            }
+        }
+
+        function goToCompare() {
+            if (compareSelected.length >= 2 && compareSelected.length <= 4) {
+                // Tạo form ẩn và submit
+                const form = document.createElement('form');
+                form.method = 'GET';
+                form.action = '{{ route('compare.index') }}';
+
+                const productsInput = document.createElement('input');
+                productsInput.type = 'hidden';
+                productsInput.name = 'products';
+                productsInput.value = compareSelected.join(',');
+                form.appendChild(productsInput);
+
+                document.body.appendChild(form);
+                form.submit();
+            } else {
+                showToast('Vui lòng chọn từ 2 đến 4 sản phẩm để so sánh!', 'error');
+            }
+        }
     </script>
 
     <!-- CSRF Meta Tag -->
@@ -640,6 +723,8 @@
     </script>
 
 @section('scripts')
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         $(document).ready(function() {
             $('.product-slider, .latest-products-slider, .top-rated-slider').slick({
@@ -668,8 +753,69 @@
                 ]
             });
         });
-    </script>
 
+        // Hàm hiển thị toast message
+        function showToast(message, type = 'success') {
+            const Toast = Swal.mixin({
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true,
+                didOpen: (toast) => {
+                    toast.addEventListener('mouseenter', Swal.stopTimer)
+                    toast.addEventListener('mouseleave', Swal.resumeTimer)
+                }
+            });
+
+            Toast.fire({
+                icon: type,
+                title: message
+            });
+        }
+
+        // Hàm xử lý thêm/xóa yêu thích
+        async function toggleWishlist(productId, url, iconElement) {
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                const data = await response.json();
+                
+                if (response.ok) {
+                    // Hiển thị thông báo
+                    showToast(data.message, data.type || 'success');
+                    
+                    // Cập nhật trạng thái icon
+                    const allHeartIcons = document.querySelectorAll(`.icon-heart[onclick*="toggleWishlist('${productId}'"]`);
+                    allHeartIcons.forEach(icon => {
+                        if (data.in_wishlist) {
+                            icon.classList.add('in-wishlist');
+                            icon.title = 'Xóa khỏi yêu thích';
+                        } else {
+                            icon.classList.remove('in-wishlist');
+                            icon.title = 'Thêm vào yêu thích';
+                        }
+                    });
+                } else {
+                    showToast(data.message || 'Có lỗi xảy ra', 'error');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showToast('Có lỗi xảy ra khi xử lý yêu cầu', 'error');
+            }
+        }
+
+        function showLoginPrompt() {
+            showToast('Vui lòng đăng nhập để thêm sản phẩm vào danh sách yêu thích', 'warning');
+        }
+    </script>
 @endsection
 
 <style>
@@ -949,6 +1095,36 @@
     .author-pic img {
         border-radius: 8px;
     }
+
+    /* Custom styles cho Toast notifications */
+    .swal2-toast {
+        max-width: 300px !important;
+        font-size: 0.875rem !important;
+    }
+
+    .swal2-toast .swal2-title {
+        font-size: 1rem !important;
+        margin: 0.5em 1em !important;
+    }
+
+    .swal2-toast .swal2-content {
+        font-size: 0.875rem !important;
+    }
+
+    .swal2-toast .swal2-icon {
+        width: 2em !important;
+        height: 2em !important;
+        margin: 0.5em !important;
+    }
+
+    .swal2-toast .swal2-icon .swal2-icon-content {
+        font-size: 1.5em !important;
+    }
+
+    .swal2-toast .swal2-success-ring {
+        width: 2em !important;
+        height: 2em !important;
+    }
 </style>
 
 @php
@@ -978,7 +1154,7 @@
             const index = compareSelected.indexOf(productId);
             compareSelected.splice(index, 1);
             compareNames.splice(index, 1);
-            showCustomAlert('Đã bỏ chọn ' + productName + ' khỏi so sánh', 'info');
+            showToast('Đã bỏ chọn ' + productName + ' khỏi so sánh', 'info');
 
             // If the list becomes empty, reset the category
             if (compareSelected.length === 0) {
@@ -987,13 +1163,13 @@
         } else {
             // Add product
             if (compareSelected.length >= 4) {
-                showCustomAlert('Chỉ được chọn tối đa 4 sản phẩm để so sánh!', 'error');
+                showToast('Chỉ được chọn tối đa 4 sản phẩm để so sánh!', 'error');
                 return;
             }
 
             // Check category
             if (compareSelected.length > 0 && compareCategory != categoryId) {
-                showCustomAlert('Vui lòng chỉ chọn các sản phẩm trong cùng một danh mục!', 'error');
+                showToast('Vui lòng chỉ chọn các sản phẩm trong cùng một danh mục!', 'error');
                 return;
             }
 
@@ -1004,7 +1180,7 @@
             if (compareSelected.length === 1) {
                 compareCategory = categoryId;
             }
-            showCustomAlert('Đã thêm ' + productName + ' vào so sánh', 'success');
+            showToast('Đã thêm ' + productName + ' vào so sánh', 'success');
         }
 
         // Cập nhật hiển thị nút so sánh
@@ -1047,7 +1223,7 @@
             document.body.appendChild(form);
             form.submit();
         } else {
-            showCustomAlert('Vui lòng chọn từ 2 đến 4 sản phẩm để so sánh!', 'error');
+            showToast('Vui lòng chọn từ 2 đến 4 sản phẩm để so sánh!', 'error');
         }
     }
 

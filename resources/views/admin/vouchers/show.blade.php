@@ -14,7 +14,8 @@
                             </div>
                             <ul class="breadcrumb">
                                 <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Trang chủ</a></li>
-                                <li class="breadcrumb-item"><a href="{{ route('admin.vouchers.index') }}">Mã giảm giá</a></li>
+                                <li class="breadcrumb-item"><a href="{{ route('admin.vouchers.index') }}">Mã giảm giá</a>
+                                </li>
                                 <li class="breadcrumb-item" aria-current="page">Chi tiết</li>
                             </ul>
                         </div>
@@ -67,7 +68,8 @@
                                 <dd class="col-sm-9">{{ $voucher->min_order_amount ?? 'Không có' }}</dd>
 
                                 <dt class="col-sm-3">Ngày hết hạn</dt>
-                                <dd class="col-sm-9">{{ $voucher->expires_at ? $voucher->expires_at->format('d/m/Y H:i') : 'Không có' }}</dd>
+                                <dd class="col-sm-9">
+                                    {{ $voucher->expires_at ? $voucher->expires_at->format('d/m/Y H:i') : 'Không có' }}</dd>
 
                                 <dt class="col-sm-3">Giới hạn sử dụng</dt>
                                 <dd class="col-sm-9">{{ $voucher->usage_limit ?? 'Không giới hạn' }}</dd>

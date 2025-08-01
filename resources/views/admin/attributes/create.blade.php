@@ -1,5 +1,5 @@
 @extends('admin.layouts.app')
-@section('title', 'Create Attribute Type')
+@section('title', 'Tạo loại thuộc tính')
 
 <style>
     .custom-shadow {
@@ -106,12 +106,12 @@
                 <div class="row align-items-center">
                     <div class="col-md-12">
                         <div class="page-header-title">
-                            <h5 class="m-b-10">Create Attribute Type</h5>
+                            <h5 class="m-b-10">Tạo loại thuộc tính</h5>
                         </div>
                         <ul class="breadcrumb">
-                            <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Home</a></li>
-                            <li class="breadcrumb-item"><a href="{{ route('admin.attributes.index') }}">Attribute Types</a></li>
-                            <li class="breadcrumb-item" aria-current="page">Create</li>
+                            <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Trang chủ</a></li>
+                            <li class="breadcrumb-item"><a href="{{ route('admin.attributes.index') }}">Loại thuộc tính</a></li>
+                            <li class="breadcrumb-item" aria-current="page">Tạo mới</li>
                         </ul>
                     </div>
                 </div>
@@ -125,7 +125,7 @@
                 <!-- Attribute Type Form -->
                 <div class="card custom-shadow" id="attributeTypeForm">
                     <div class="card-header">
-                        <h5>Create New Attribute Type</h5>
+                        <h5>Tạo loại thuộc tính mới</h5>
                     </div>
                     <div class="card-body">
                         <form id="createAttributeTypeForm">
@@ -133,7 +133,7 @@
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="mb-3">
-                                        <label for="name" class="form-label">Name</label>
+                                        <label for="name" class="form-label">Tên</label>
                                         <input type="text" class="form-control @error('name') is-invalid @enderror" id="name" name="name" value="{{ old('name') }}">
                                         @error('name')
                                             <div class="invalid-feedback">{{ $message }}</div>
@@ -142,7 +142,7 @@
                                 </div>
                                 <div class="col-md-6">
                                     <div class="mb-3">
-                                        <label for="category_ids" class="form-label">Categories</label>
+                                        <label for="category_ids" class="form-label">Danh mục</label>
                                         <select class="form-select select2" id="category_ids" name="category_ids[]" multiple required>
                                             @foreach($categories as $category)
                                                 <option value="{{ $category->id }}" {{ in_array($category->id, old('category_ids', [])) ? 'selected' : '' }}>
@@ -159,10 +159,10 @@
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="mb-3">
-                                        <label for="status" class="form-label">Status</label>
+                                        <label for="status" class="form-label">Trạng thái</label>
                                         <select class="form-select @error('status') is-invalid @enderror" id="status" name="status">
-                                            <option value="active" selected>Active</option>
-                                            <option value="inactive">Inactive</option>
+                                            <option value="active" selected>Hoạt động</option>
+                                            <option value="inactive">Không hoạt động</option>
                                         </select>
                                         @error('status')
                                             <div class="invalid-feedback">{{ $message }}</div>
@@ -172,8 +172,8 @@
                             </div>
 
                             <div class="mb-3">
-                                <button type="submit" class="btn btn-primary">Create Attribute Type</button>
-                                <a href="{{ route('admin.attributes.index') }}" class="btn btn-secondary">Back</a>
+                                <button type="submit" class="btn btn-primary">Tạo loại thuộc tính</button>
+                                <a href="{{ route('admin.attributes.index') }}" class="btn btn-secondary">Quay lại</a>
                             </div>
                         </form>
                     </div>
@@ -182,7 +182,7 @@
                 <!-- Attribute Values Form -->
                 <div class="card custom-shadow mt-4" id="attributeValuesForm">
                     <div class="card-header">
-                        <h5>Add Attribute Values</h5>
+                        <h5>Thêm giá trị thuộc tính</h5>
                     </div>
                     <div class="card-body">
                         <form id="createAttributeValuesForm">
@@ -194,12 +194,12 @@
                             </div>
 
                             <div class="mb-3">
-                                <button type="button" class="btn btn-info" id="addValue">Add Another Value</button>
+                                <button type="button" class="btn btn-info" id="addValue">Thêm giá trị khác</button>
                             </div>
 
                             <div class="mb-3">
-                                <button type="submit" class="btn btn-primary">Save Values</button>
-                                <a href="{{ route('admin.attributes.index') }}" class="btn btn-secondary">Skip & Finish</a>
+                                <button type="submit" class="btn btn-primary">Lưu giá trị</button>
+                                <a href="{{ route('admin.attributes.index') }}" class="btn btn-secondary">Bỏ qua & Hoàn thành</a>
                             </div>
                         </form>
                     </div>
@@ -218,7 +218,7 @@
     $(document).ready(function() {
         $('#category_ids').select2({
             width: '100%',
-            placeholder: "Select categories"
+            placeholder: "Chọn danh mục"
         });
 
         // Handle Attribute Type Form Submission
@@ -249,7 +249,7 @@
                             input.after(`<div class="invalid-feedback">${errors[key][0]}</div>`);
                         });
                     } else {
-                        alert('An error occurred. Please try again.');
+                        alert('Đã xảy ra lỗi. Vui lòng thử lại.');
                     }
                 }
             });
@@ -324,7 +324,7 @@
                     } else {
                         $('#valuesContainer').before(`
                             <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                                An error occurred. Please try again.
+                                Đã xảy ra lỗi. Vui lòng thử lại.
                                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                             </div>
                         `);
@@ -360,18 +360,18 @@
                     <div class="row">
                         <div class="col-md-5">
                             <div class="mb-3">
-                                <label class="form-label">Value</label>
-                                <input type="text" class="form-control value-input" placeholder="Enter attribute value">
+                                <label class="form-label">Giá trị</label>
+                                <input type="text" class="form-control value-input" placeholder="Nhập giá trị thuộc tính">
                             </div>
                         </div>
                         <div class="col-md-5">
                             <div class="mb-3">
-                                <label class="color-section-label">Color Selection</label>
+                                <label class="color-section-label">Lựa chọn màu sắc</label>
                                 <div class="color-section">
                                     <div class="color-toggle">
                                         <div class="form-check">
                                             <input type="checkbox" class="form-check-input has-hex-color" id="hasColor_${Date.now()}">
-                                            <label class="form-check-label" for="hasColor_${Date.now()}">Has Color</label>
+                                            <label class="form-check-label" for="hasColor_${Date.now()}">Có màu sắc</label>
                                         </div>
                                     </div>
                                     <div class="color-picker-container">
@@ -386,7 +386,7 @@
                             <div class="mb-3">
                                 <label class="form-label">&nbsp;</label>
                                 <button type="button" class="btn btn-danger remove-value">
-                                    <i class="fas fa-trash-alt"></i> Remove
+                                    <i class="fas fa-trash-alt"></i> Xóa
                                 </button>
                             </div>
                         </div>
@@ -401,7 +401,7 @@
             if ($('.value-row').length > 1) {
                 $(this).closest('.value-row').remove();
             } else {
-                alert('At least one value is required.');
+                alert('Cần ít nhất một giá trị.');
             }
         });
     });

@@ -7,7 +7,7 @@
             position: fixed;
             top: 0;
             width: 100%;
-            z-index: 100;
+            z-index: 9999;
         }
 
         .brand-text {
@@ -326,7 +326,7 @@
                             </li>
                         @endif
                         <li><a class="dropdown-item text-white" href="{{ route('profile.index') }}">Trang cá nhân</a></li>
-                        <li><a class="dropdown-item text-white" href="{{ route('order.index') }}">Lịch sử đơn hàng</a></li>
+                        <li><a class="dropdown-item text-white" href="{{ route('order.index') }}">Đơn hàng của tôi</a></li>
                         <li>
                             <form action="{{ route('logout') }}" method="POST" class="m-0">
                                 @csrf

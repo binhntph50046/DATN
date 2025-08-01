@@ -1,5 +1,5 @@
 @extends('admin.layouts.app')
-@section('title', 'Subscribers')
+@section('title', 'Người đăng ký')
 
 @section('content')
 <div class="pc-container">
@@ -9,11 +9,11 @@
                 <div class="row align-items-center">
                     <div class="col-md-12">
                         <div class="page-header-title">
-                            <h5 class="m-b-10">Subcriber</h5>
+                            <h5 class="m-b-10">Người đăng ký</h5>
                         </div>
                         <ul class="breadcrumb">
                             <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Home</a></li>
-                            <li class="breadcrumb-item" aria-current="page">Subcriber</li>
+                            <li class="breadcrumb-item" aria-current="page">Người đăng ký</li>
                         </ul>
                     </div>
                 </div>
@@ -22,10 +22,10 @@
 
         <div class="card shadow-sm">
             <div class="card-header d-flex justify-content-between align-items-center">
-                <h5 class="mb-0">Subscriber List</h5>
+                <h5 class="mb-0">Danh sách</h5>
                 <div>
                     <a href="{{ route('admin.subscribers.trash') }}" class="btn btn-danger btn-sm rounded-3">
-                        <i class="ti ti-trash"></i> Trash
+                        <i class="ti ti-trash"></i> Thùng rác
                     </a>
                 </div>
             </div>
@@ -39,20 +39,20 @@
                     <div class="card-body">
                                 <form method="GET" action="{{ route('admin.contacts.index') }}" class="row g-3 mb-3">
                                     <div class="col-md-4">
-                                        <input type="text" name="name" class="form-control" placeholder="Search by name..." value="{{ request('name') }}">
+                                        <input type="text" name="name" class="form-control" placeholder="Tìm kiếm theo tên..." value="{{ request('name') }}">
                                     </div>
                                 
                                     <div class="col-md-4">
-                                        <input type="email" name="email" class="form-control" placeholder="Search by email..." value="{{ request('email') }}">
+                                        <input type="email" name="email" class="form-control" placeholder="Tìm kiếm theo email..." value="{{ request('email') }}">
                                     </div>
 
                                     <div class="col-md-4">
-                                        <input type="text" name="phone" class="form-control" placeholder="Search by phone..." value="{{ request('phone') }}">
+                                        <input type="text" name="phone" class="form-control" placeholder="Tìm kiếm theo số điện thoại..." value="{{ request('phone') }}">
                                     </div>
                 
                                     <div class="col-12 mt-3">
-                                        <button type="submit" class="btn btn-primary btn-sm">Filter</button>
-                                        <a href="{{ route('admin.contacts.index') }}" class="btn btn-secondary btn-sm">Reset</a>
+                                        <button type="submit" class="btn btn-primary btn-sm">Lọc</button>
+                                        <a href="{{ route('admin.contacts.index') }}" class="btn btn-secondary btn-sm">Đặt lại</a>
                                     </div>
                                 </form>
                             </div>
@@ -61,11 +61,11 @@
                     <table class="table table-hover">
                         <thead>
                             <tr>
-                                <th>ID</th>
-                                <th>Name</th>
+                                <th>STT</th>
+                                <th>Tên</th>
                                 <th>Email</th>
-                                <th>Subscribed At</th>
-                                <th class="text-center">Actions</th>
+                                <th>Thời gian đăng ký</th>
+                                <th class="text-center">Hành động</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -79,8 +79,8 @@
                                             <form action="{{ route('admin.subscribers.delete', $subscriber->id) }}" method="POST" class="d-inline">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" class="btn btn-danger btn-sm round    -3" onclick="return confirm('Are you sure you want to delete this subscribe?')">
-                                                    <i class="ti ti-trash"></i> Delete
+                                                <button type="submit" class="btn btn-danger btn-sm round-3" onclick="return confirm('Bạn có chắc chắn muốn xóa đăng ký này không??')">
+                                                    <i class="ti ti-trash"></i> Xóa
                                                 </button>
                                             </form>
                                         </td>

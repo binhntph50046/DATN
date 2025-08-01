@@ -71,7 +71,26 @@ class DashboardController
         // Tổng thu nhập của cả tuần
         $weeklyTotalIncome = array_sum($weeklyIncome);
 
-        // Weekly: 7 ngày gần nhất
+        // Tạo mảng chứa tổng thu nhập từng ngày trong tháng
+        $monthlyIncome = [];
+        $currentYear = Carbon::now()->year;
+
+        for ($month = 1; $month <= 12; $month++) {
+            $startOfMonth = Carbon::create($currentYear, $month, 1)->startOfMonth();
+            $endOfMonth = $startOfMonth->copy()->endOfMonth();
+
+            $income = Order::whereBetween('created_at', [$startOfMonth, $endOfMonth])
+                ->where('status', 'completed')
+                ->where('payment_status', 'paid')
+                ->sum('total_price');
+
+            $monthlyIncome[] = round($income);
+        }
+
+        // Tổng thu nhập cả tháng
+        $monthlyTotalIncome = array_sum($monthlyIncome);
+
+        // Weekly: 7 ngày gần nhất khách truy cập
         $startOfWeek = Carbon::now()->startOfWeek();
         $weeklyVisitors = [
             'pageViews' => [],
@@ -100,7 +119,7 @@ class DashboardController
             $weeklyVisitors['users'][] = $users;
         }
 
-        // Monthly: 12 tháng
+        // Monthly: 12 tháng khách truy cập
         $monthlyVisitors = [
             'pageViews' => [],
             'sessions' => [],
@@ -185,7 +204,9 @@ class DashboardController
             'lastYearSales',
             'recentOrders',
             'weeklyIncome',
+            'monthlyIncome',
             'weeklyTotalIncome',
+            'monthlyTotalIncome',
             'weeklyVisitors',
             'monthlyVisitors',
             'topVariants',

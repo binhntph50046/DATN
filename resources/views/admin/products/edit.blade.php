@@ -1,5 +1,5 @@
 @extends('admin.layouts.app')
-@section('title', 'Chỉnh Sửa Sản Phẩm')
+@section('title', 'Sửa sản phẩm')
 
 <style>
     .custom-shadow {
@@ -1245,43 +1245,4 @@
                         });
 
                     // Load attribute types
-                    fetch(`/admin/categories/${categoryId}/attributes`)
-                        .then(response => response.json())
-                        .then(data => {
-                            const attributeTypes = document.querySelectorAll('.attribute-type');
-                            attributeTypes.forEach((select, index) => {
-                                // Store current values before clearing
-                                const currentTypeId = select.value;
-                                const currentValues = $(`#values_${index}`).val();
-
-                                select.options.length = 1; // Keep only the first option (placeholder)
-                                data.forEach(attr => {
-                                    const option = new Option(attr.name, attr.id);
-                                    select.add(option);
-                                });
-
-                                // Restore previous selection if it exists in new options
-                                if (currentTypeId && Array.from(select.options).some(opt => opt
-                                        .value === currentTypeId)) {
-                                    select.value = currentTypeId;
-                                    // Trigger change event to load values
-                                    $(select).trigger('change');
-                                    // Store values to be restored after loading
-                                    if (currentValues && currentValues.length) {
-                                        setTimeout(() => {
-                                            $(`#values_${index}`).val(currentValues).trigger(
-                                                'change');
-                                        }, 500); // Wait for values to load
-                                    }
-                                }
-                            });
-                        });
-                }
-            }
-        });
-    </script>
-@endsection
-
-@push('scripts')
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-@endpush
+                    fetch(`

@@ -1,5 +1,5 @@
 @extends('admin.layouts.app')
-@section('title', 'Notification Management')
+@section('title', 'Danh sách thống báo')
 
 <style>
     .custom-shadow {
@@ -26,11 +26,11 @@
                 <div class="row align-items-center">
                     <div class="col-md-12">
                         <div class="page-header-title">
-                            <h5 class="m-b-10">Notifications</h5>
+                            <h5 class="m-b-10">Thông báo</h5>
                         </div>
                         <ul class="breadcrumb">
-                            <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Home</a></li>
-                            <li class="breadcrumb-item" aria-current="page">Notify</li>
+                            <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Trang chủ</a></li>
+                            <li class="breadcrumb-item" aria-current="page">Thông báo</li>
                         </ul>
                     </div>
                 </div>
@@ -42,11 +42,13 @@
         <div class="row">
             <div class="col-12">
                 <div class="card">
-                    <div class="card-header d-flex justify-content-between align-items-center">
-                        <h5>Notify List</h5>
+                    <div class="card-header">
+                        <h5>Danh sách thông báo</h5>
+                        <div class="card-header-right">
                         <a href="{{ route('admin.notify.trash') }}" class="btn btn-danger btn-sm rounded-3">
-                            <i class="ti ti-trash"></i> Trash
+                            <i class="ti ti-trash"></i>Thùng rác
                         </a>
+                        </div>
                     </div>
                     <div class="card-body">
                         @if(session('success'))
@@ -59,11 +61,11 @@
                             <table class="table table-hover table-borderless">
                                 <thead>
                                     <tr>
-                                        <th>Title</th>
-                                        <th>Message</th>
-                                        <th>Status</th>
-                                        <th>Created</th>
-                                        <th class="text-center">Actions</th>
+                                        <th>Tiêu đề</th>
+                                        <th>Tin nhắn</th>
+                                        <th>Trạng thái</th>
+                                        <th>Ngày tạo</th>
+                                        <th class="text-center">Hành động</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -75,40 +77,48 @@
                                             </td>
                                             <td>
                                                 @if($noti->read_at)
-                                                    <span class="badge bg-success">Read</span>
+                                                    <span class="badge bg-success">Đã Đọc</span>
                                                 @else
-                                                    <span class="badge bg-warning text-dark">New</span>
+                                                    <span class="badge bg-warning text-dark">Mới</span>
                                                 @endif
                                             </td>
                                             <td>{{ $noti->created_at->format('d/m/Y H:i') }}</td>
                                             <td class="text-center">
-                                                <!-- @if(isset($noti->data['url']))
-                                                    <a href="{{ $noti->data['url'] }}"
-                                                        class="btn btn-info btn-sm rounded-3 me-2">
-                                                        <i class="ti ti-eye"></i> View
-                                                    </a>
-                                                @endif -->
+    @if(isset($noti->data['url']))
+        <a href="{{ $noti->data['url'] }}" 
+           class="btn btn-success btn-sm rounded-3 me-2" 
+           title="Xem thông báo">
+            <i class="ti ti-eye"></i>
+        </a>
+    @endif
 
-                                                @if(!$noti->read_at)
-                                                    <form action="{{ route('admin.notify.markAsRead', $noti->id) }}"
-                                                        method="POST" class="d-inline">
-                                                        @csrf
-                                                        <button type="submit" class="btn btn-primary btn-sm rounded-3 me-2">
-                                                            <i class="ti ti-check"></i> Mark as Read
-                                                        </button>
-                                                    </form>
-                                                @endif
+    @if(!$noti->read_at)
+        <form action="{{ route('admin.notify.markAsRead', $noti->id) }}" 
+              method="POST" 
+              class="d-inline me-2">
+            @csrf
+            <button type="submit" 
+                    class="btn btn-primary btn-sm rounded-3" 
+                    title="Đánh dấu đã đọc">
+                <i class="ti ti-check"></i>
+            </button>
+        </form>
+    @endif
 
-                                                <form action="{{ route('admin.notify.destroy', $noti->id) }}"
-                                                    method="POST" class="d-inline">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit" class="btn btn-danger btn-sm rounded-3"
-                                                        onclick="return confirm('Bạn có chắc muốn xóa thông báo này?')">
-                                                        <i class="ti ti-trash"></i> Delete
-                                                    </button>
-                                                </form>
-                                            </td>
+    <form action="{{ route('admin.notify.destroy', $noti->id) }}" 
+          method="POST" 
+          class="d-inline">
+        @csrf
+        @method('DELETE')
+        <button type="submit" 
+                class="btn btn-danger btn-sm rounded-3" 
+                onclick="return confirm('Bạn có chắc muốn xóa thông báo này?')" 
+                title="Xóa thông báo">
+            <i class="ti ti-trash"></i>
+        </button>
+    </form>
+</td>
+
                                         </tr>
                                     @empty
                                         <tr>

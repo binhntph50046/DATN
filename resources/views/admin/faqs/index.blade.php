@@ -1,6 +1,6 @@
 <!-- resources/views/admin/faqs/index.blade.php -->
 @extends('admin.layouts.app')
-@section('title', 'FAQ Management')
+@section('title', 'Quản lý FAQ')
 
 <style>
     .custom-shadow {
@@ -27,11 +27,11 @@
                 <div class="row align-items-center">
                     <div class="col-md-12">
                         <div class="page-header-title">
-                            <h5 class="m-b-10">FAQs</h5>
+                            <h5 class="m-b-10">Câu hỏi thường gặp</h5>
                         </div>
                         <ul class="breadcrumb">
-                            <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Home</a></li>
-                            <li class="breadcrumb-item" aria-current="page">FAQs</li>
+                            <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Trang chủ</a></li>
+                            <li class="breadcrumb-item" aria-current="page">Câu hỏi thường gặp</li>
                         </ul>
                     </div>
                 </div>
@@ -43,14 +43,14 @@
         <div class="row">
             <div class="col-12">
                 <div class="card">
-                    <div class="card-header d-flex justify-content-between align-items-center">
+                    <div class="card-header">
                         <h5>FAQs List</h5>
-                        <div>
+                        <div class="card-header-right">
                             <a href="{{ route('admin.faqs.create') }}" class="btn btn-primary btn-sm rounded-3 me-2">
-                                <i class="ti ti-plus"></i> Add FAQ
+                                <i class="ti ti-plus"></i> Thêm câu hỏi
                             </a>
                             <a href="{{ route('admin.faqs.trash') }}" class="btn btn-danger btn-sm rounded-3">
-                                <i class="ti ti-trash"></i> Trash
+                                <i class="ti ti-trash"></i> Thùng rác
                             </a>
                         </div>
                     </div>
@@ -63,19 +63,19 @@
                         <div class="card shadow-sm mb-4">
                             <div class="card-body">
                                 <form method="GET" action="{{ route('admin.faqs.index') }}" class="row g-3 mb-3">
-                                    <div class="col-md-6">
-                                        <input type="text" name="question" class="form-control" placeholder="Search by question..." value="{{ request('question') }}">
+                                    <div class="col-md-5">
+                                        <input type="text" name="question" class="form-control" placeholder="Tìm kiếm câu trả lời..." value="{{ request('question') }}">
                                     </div>
-                                    <div class="col-md-6">
+                                    <div class="col-md-5">
                                         <select name="status" class="form-control">
-                                            <option value="">All Statuses</option>
-                                            <option value="active" {{ request('status') == 'active' ? 'selected' : '' }}>Active</option>
-                                            <option value="inactive" {{ request('status') == 'inactive' ? 'selected' : '' }}>Inactive</option>
+                                            <option value="">Tất cả trạng thái</option>
+                                            <option value="active" {{ request('status') == 'active' ? 'selected' : '' }}>Hiển thị</option>
+                                            <option value="inactive" {{ request('status') == 'inactive' ? 'selected' : '' }}>Ẩn</option>
                                         </select>
                                     </div>
-                                    <div class="col-12 mt-3">
-                                        <button type="submit" class="btn btn-primary btn-sm">Filter</button>
-                                        <a href="{{ route('admin.faqs.index') }}" class="btn btn-secondary btn-sm">Reset</a>
+                                    <div class="col-md-2 mt-3">
+                                        <button type="submit" class="btn btn-primary">Lọc</button>
+                                        <a href="{{ route('admin.faqs.index') }}" class="btn btn-secondary">Đặt lại</a>
                                     </div>
                                 </form>
                             </div>
@@ -85,11 +85,11 @@
                                 <thead>
                                     <tr>
                                         <th>ID</th>
-                                        <th>Question</th>
-                                        <th>Answer</th>
-                                        <th>Status</th>
-                                        <th>Date</th>
-                                        <th class="text-center">Actions</th>
+                                        <th>Câu hỏi</th>
+                                        <th>Trả lời</th>
+                                        <th>Trạng thái</th>
+                                        <th>Ngày tạo</th>
+                                        <th class="text-center">Hành động</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -100,20 +100,20 @@
                                         <td class="answer-preview" title="{{ $faq->answer }}">
                                             {{ Str::limit($faq->answer, 50) }}
                                         </td>
-                                        <td>{{ ucfirst($faq->status) }}</td>
+                                        <td>{{ $faq->status == 'active' ? 'Hiển thị' : 'Ẩn' }}</td>
                                         <td>{{ $faq->created_at->format('d/m/Y H:i') }}</td>
                                         <td class="text-center">
                                             <a href="{{ route('admin.faqs.show', $faq->id) }}" class="btn btn-info btn-sm rounded-3 me-2">
-                                                <i class="ti ti-eye"></i> View
+                                                <i class="ti ti-eye"></i> Xem
                                             </a>
                                             <a href="{{ route('admin.faqs.edit', $faq->id) }}" class="btn btn-warning btn-sm rounded-3 me-2">
-                                                <i class="ti ti-pencil"></i> Edit
+                                                <i class="ti ti-pencil"></i> Sửa
                                             </a>
                                             <form action="{{ route('admin.faqs.destroy', $faq->id) }}" method="POST" class="d-inline">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" class="btn btn-danger btn-sm rounded-3" onclick="return confirm('Are you sure you want to delete this FAQ?')">
-                                                    <i class="ti ti-trash"></i> Delete
+                                                <button type="submit" class="btn btn-danger btn-sm rounded-3" onclick="return confirm('Bạn có chắc muốn xóa FAQ này không?')">
+                                                    <i class="ti ti-trash"></i> Xóa
                                                 </button>
                                             </form>
                                         </td>

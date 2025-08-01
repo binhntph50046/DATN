@@ -190,7 +190,7 @@ public function update(Request $request, $id)
         $flashSale = FlashSale::findOrFail($id);
         $flashSale->delete();
 
-        return redirect()->route('admin.flash-sales.index')->with('success', 'Flash sale deleted successfully.');
+        return redirect()->route('admin.flash-sales.index')->with('success', 'Flash sale đã được xóa thành công.');
     }
 
     // (Tuỳ chọn) Xem chi tiết flash sale

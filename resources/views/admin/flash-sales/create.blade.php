@@ -258,7 +258,7 @@
             // Thêm dòng mới
             $('#add-item').click(function() {
                 const newItem = `
-                <div class="flash-sale-item row align-items-end g-2 mb-2">
+                <div class="flash-sale-item row align-items-top g-2 mb-3">
                     <div class="col-md-3">
                         <label class="form-label">Sản phẩm</label>
                         <select name="items[${itemIndex}][product_id]" class="form-select product-select" required>

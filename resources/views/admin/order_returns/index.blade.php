@@ -52,7 +52,10 @@
                                             </td>
                                             <td>{{ $return->created_at->format('d/m/Y H:i') }}</td>
                                             <td>
-                                                <a href="{{ route('admin.order-returns.show', $return->id) }}" class="btn btn-primary btn-sm">Xem</a>
+                                                <a href="{{ route('admin.order-returns.show', $return->id) }}"
+                                                class="btn btn-sm btn-outline-primary rounded-3 me-1" title="Xem chi tiết">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
                                                 @if($return->status == 'pending')
                                                    
                                                    

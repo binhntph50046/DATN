@@ -125,7 +125,7 @@ class OrderReturnController
                 'type' => 'return_created',
                 'title' => 'Yêu cầu hoàn hàng',
                 'message' => 'Khách hàng ' . $orderReturn->user->name . ' gửi yêu cầu hoàn hàng cho đơn ' . ($orderReturn->order->order_code ?? 'ĐH' . $orderReturn->order->id),
-                'url' => route('admin.order_returns.show', $orderReturn->id),
+                'url' => route('admin.order-returns.show', $orderReturn->id),
             ]));
         }
 

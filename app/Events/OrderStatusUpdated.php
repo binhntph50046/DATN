@@ -53,6 +53,15 @@ class OrderStatusUpdated implements ShouldBroadcastNow
             'status' => $this->status,
             'status_text' => $this->status_text
         ];
+        
+        // Thêm return_id nếu đơn hàng đã hoàn
+        if (in_array($this->status, ['returned', 'partially_returned'])) {
+            $latestReturn = $this->order->returns()->where('status', 'approved')->latest()->first();
+            if ($latestReturn) {
+                $data['return_id'] = $latestReturn->id;
+            }
+        }
+        
         Log::info('Event data being broadcast', $data);
         return $data;
     }

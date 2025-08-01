@@ -68,8 +68,6 @@ class OrderReturnController extends Controller
             'refund_amount' => $refundAmount, // Thêm số tiền hoàn trả
         ]);
 
-        event(new OrderStatusUpdated($return->order));
-
         // Cập nhật số tiền đã hoàn vào đơn hàng
         $order = $return->order;
         $order->refunded_amount = ($order->refunded_amount ?? 0) + $refundAmount;
@@ -92,6 +90,9 @@ class OrderReturnController extends Controller
             $order->status = 'partially_returned';
         }
         $order->save();
+
+        // Gửi sự kiện sau khi đã cập nhật trạng thái đơn hàng
+        event(new OrderStatusUpdated($order));
 
         return redirect()->route('admin.order-returns.index')
             ->with('success', 'Đã duyệt yêu cầu hoàn hàng và lưu chứng từ hoàn tiền. Đã hoàn lại ' . number_format($refundAmount) . ' VNĐ cho khách.');

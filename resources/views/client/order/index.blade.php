@@ -967,6 +967,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
             channel.listen('.OrderStatusUpdated', (event) => {
                 try {
+                    console.log('Nhận được sự kiện OrderStatusUpdated:', event);
+                    
                     const row = document.querySelector(`tr[data-order-id="${orderId}"]`);
                     if (!row) {
                         throw new Error(`Không tìm thấy row cho đơn hàng #${orderId}`);

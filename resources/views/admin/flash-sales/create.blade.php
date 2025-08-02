@@ -151,7 +151,7 @@
                                             <div class="col-md-1">
                                                 <label class="form-label">Số lượng</label>
                                                 <input type="number" name="items[{{ $index }}][count]"
-                                                    class="form-control @error("items.$index.count") is-invalid @enderror"
+                                                    class="form-control @error("items.$index.count") is-invalid @enderror" min="1"
                                                     value="{{ $item['count'] }}" placeholder="Qty">
                                                 @error("items.$index.count")
                                                     <div class="invalid-feedback">{{ $message }}</div>
@@ -160,7 +160,7 @@
                                             <div class="col-md-1">
                                                 <label class="form-label">Giới hạn</label>
                                                 <input type="number" name="items[{{ $index }}][buy_limit]"
-                                                    class="form-control @error("items.$index.buy_limit") is-invalid @enderror"
+                                                    class="form-control @error("items.$index.buy_limit") is-invalid @enderror" min="1"
                                                     value="{{ $item['buy_limit'] }}" placeholder="Limit">
                                                 @error("items.$index.buy_limit")
                                                     <div class="invalid-feedback">{{ $message }}</div>
@@ -268,12 +268,12 @@
 
                     <div class="col-md-1">
                         <label class="form-label">Số lượng</label>
-                        <input type="number" name="items[${itemIndex}][count]" class="form-control" value="1" placeholder="Qty">
+                        <input type="number" name="items[${itemIndex}][count]" class="form-control" value="1" placeholder="Qty" min="1">
                     </div>
 
                     <div class="col-md-1">
                         <label class="form-label">Giới hạn</label>
-                        <input type="number" name="items[${itemIndex}][buy_limit]" class="form-control" value="1" placeholder="Limit">
+                        <input type="number" name="items[${itemIndex}][buy_limit]" class="form-control" value="1" placeholder="Limit" min="1">
                     </div>
 
                     <div class="col-md-1 d-flex align-items-center pt-4">

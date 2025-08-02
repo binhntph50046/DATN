@@ -93,12 +93,14 @@
 
                                 <div id="flash-sale-items-container">
                                     <h6>Biến thể khuyến mãi</h6>
-                                    @foreach ($oldItems as $index => $item)
+                                    @foreach (array_values($oldItems) as $index => $item)
                                         <div class="flash-sale-item row g-2 mb-2" data-index="{{ $index }}">
                                             <div class="col-md-3">
                                                 <label class="form-label">Sản phẩm</label>
                                                 <select name="items[{{ $index }}][product_id]"
-                                                    class="form-select product-select @error("items.$index.product_id") is-invalid @enderror" required>
+                                                    class="form-select product-select @error("items.$index.product_id") is-invalid @enderror"
+                                                    {{-- required --}}
+                                                    >
                                                     <option value="">-- Chọn sản phẩm --</option>
                                                     @foreach ($products as $product)
                                                         <option value="{{ $product->id }}"
@@ -164,9 +166,9 @@
                                                     <div class="invalid-feedback">{{ $message }}</div>
                                                 @enderror
                                             </div>
-                                            <div class="col-md-1 d-flex align-items-end">
+                                            <div class="col-md-1 d-flex align-items-center pt-4">
                                                 <button type="button"
-                                                    class="btn btn-danger btn-sm remove-item">X</button>
+                                                    class="btn btn-danger btn-sm remove-item h-95">X</button>
                                             </div>
                                         </div>
                                     @endforeach
@@ -189,79 +191,54 @@
             <!-- [ Main Content ] end -->
         </div>
     </div>
+    <script>
+        const productVariantsData = @json($products->keyBy('id')->map->variants);
+    </script>
+@endsection
+@push('scripts')
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    <script>
+        let itemIndex = {{ count($oldItems) }};
 
-    @push('styles')
-        <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-        <style>
-            /* Ép tất cả input, select, select2 có cùng chiều cao */
-            .flash-sale-item .form-control,
-            .flash-sale-item .form-select,
-            .flash-sale-item .select2-container .select2-selection--single {
-                height: 38px !important;
-                padding: 6px 12px;
-                font-size: 14px;
-                line-height: 1.5;
-            }
-
-            /* Fix alignment cho select2 */
-            .select2-container--default .select2-selection--single {
-                border: 1px solid #ced4da;
-                border-radius: 4px;
-            }
-
-            /* Đảm bảo select2 rộng 100% */
-            .select2-container {
-                width: 100% !important;
-            }
-
-            .invalid-feedback {
-                display: block;
-                height: 10px;
-                /* hoặc 1.5em */
-                font-size: 13px;
-            }
-
-            .invalid-feedback:empty::after {
-                content: " ";
-                visibility: hidden;
-                display: block;
-            }
-        </style>
-    @endpush
-
-    @push('scripts')
-        <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-        <script>
-            let itemIndex = {{ count($oldItems) }};
-
-            $(document).ready(function() {
-                $('.product-select').select2({
-                    placeholder: "-- Chọn biến thể --",
-                    allowClear: true,
-                    width: '100%'
-                });
+        $(document).ready(function() {
+            $('.product-select').select2({
+                placeholder: "-- Chọn biến thể --",
+                allowClear: true,
+                width: '100%'
             });
+        });
 
-            // Load variant khi chọn product
-            $(document).on('change', '.product-select', function() {
-                const productId = $(this).val();
-                const variantSelect = $(this).closest('.flash-sale-item').find('.variant-select');
+        // Load variant khi chọn product
+        function populateVariants(productSelect) {
+            const productId = $(productSelect).val();
+            const variantSelect = $(productSelect).closest('.flash-sale-item').find('.variant-select');
+            const selectedVariantId = variantSelect.data('selected'); // nếu có
 
-                $.get('/admin/ajax/product-variants/' + productId, function(variants) {
-                    variantSelect.html('<option value="">-- Choose Variant --</option>');
-                    variants.forEach(v => {
-                        variantSelect.append(`<option value="${v.id}">${v.name} (${v.sku})</option>`);
-                    });
+            variantSelect.html('<option value="">-- Chọn biến thể --</option>');
+
+            if (productVariantsData[productId]) {
+                productVariantsData[productId].forEach(v => {
+                    const isSelected = selectedVariantId == v.id ? 'selected' : '';
+                    variantSelect.append(`<option value="${v.id}" ${isSelected}>${v.name} (${v.sku})</option>`);
                 });
-            });
+            }
 
-            // Thêm dòng mới
-            $('#add-item').click(function() {
-                const newItem = `
+            // Sau khi load xong thì bỏ data-selected
+            variantSelect.removeAttr('data-selected');
+        }
+
+        $(document).on('change', '.product-select', function() {
+            populateVariants(this);
+        });
+
+
+        // Thêm dòng mới
+        $('#add-item').click(function() {
+            const newItem = `
                 <div class="flash-sale-item row align-items-top g-2 mb-3">
                     <div class="col-md-3">
                         <label class="form-label">Sản phẩm</label>
-                        <select name="items[${itemIndex}][product_id]" class="form-select product-select" required>
+                        <select name="items[${itemIndex}][product_id]" class="form-select product-select">
                             <option value="">-- Chọn sản phẩm --</option>
                             @foreach ($products as $product)
                                 <option value="{{ $product->id }}">{{ $product->name }}</option>
@@ -271,7 +248,7 @@
 
                     <div class="col-md-3">
                         <label class="form-label">Biến thể</label>
-                        <select name="items[${itemIndex}][product_variant_id]" class="form-select variant-select">
+                        <select name="items[${itemIndex}][product_variant_id]" class="form-select variant-select" data-selected="">
                             <option value="">-- Chọn biến thể --</option>
                         </select>
                     </div>
@@ -299,49 +276,73 @@
                         <input type="number" name="items[${itemIndex}][buy_limit]" class="form-control" value="1" placeholder="Limit">
                     </div>
 
-                    <div class="col-md-1 d-flex align-items-end">
-                        <button type="button" class="btn btn-danger btn-sm remove-item">X</button>
+                    <div class="col-md-1 d-flex align-items-center pt-4">
+                        <button type="button" class="btn btn-danger btn-sm remove-item h-95">X</button>
                     </div>
                 </div>
                 `;
 
 
-                $('#flash-sale-items-container').append(newItem);
+            $('#flash-sale-items-container').append(newItem);
 
-                $('#flash-sale-items-container').find('.product-select').last().select2({
-                    placeholder: "-- Choose Product --",
-                    allowClear: true,
-                    width: '100%'
-                });
-
-                itemIndex++;
+            $('#flash-sale-items-container').find('.product-select').last().select2({
+                placeholder: "-- Choose Product --",
+                allowClear: true,
+                width: '100%'
             });
 
-            // Xoá dòng
-            $(document).on('click', '.remove-item', function() {
-                $(this).closest('.flash-sale-item').remove();
-            });
+            itemIndex++;
+        });
 
-            // Khôi phục lại danh sách biến thể nếu có old()
-            $('#flash-sale-items-container .flash-sale-item').each(function() {
-                const $row = $(this);
-                const productSelect = $row.find('.product-select');
-                const variantSelect = $row.find('.variant-select');
-                const selectedVariant = variantSelect.attr('data-selected');
-                const productId = productSelect.val();
+        // Xoá dòng
+        $(document).on('click', '.remove-item', function() {
+            $(this).closest('.flash-sale-item').remove();
+        });
 
-                if (productId) {
-                    $.get('/admin/ajax/product-variants/' + productId, function(variants) {
-                        variantSelect.html('<option value="">-- Chọn biến thể --</option>');
-                        variants.forEach(v => {
-                            const isSelected = selectedVariant == v.id ? 'selected' : '';
-                            variantSelect.append(
-                                `<option value="${v.id}" ${isSelected}>${v.name} (${v.sku})</option>`
-                                );
-                        });
-                    });
-                }
-            });
-        </script>
-    @endpush
-@endsection
+        // Khôi phục lại danh sách biến thể nếu có old()
+        $('#flash-sale-items-container .flash-sale-item').each(function() {
+            const productSelect = $(this).find('.product-select');
+            if (productSelect.val()) {
+                populateVariants(productSelect);
+            }
+        });
+    </script>
+@endpush
+@push('styles')
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <style>
+        /* Ép tất cả input, select, select2 có cùng chiều cao */
+        .flash-sale-item .form-control,
+        .flash-sale-item .form-select,
+        .flash-sale-item .select2-container .select2-selection--single {
+            height: 38px !important;
+            padding: 6px 12px;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        /* Fix alignment cho select2 */
+        .select2-container--default .select2-selection--single {
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+        }
+
+        /* Đảm bảo select2 rộng 100% */
+        .select2-container {
+            width: 100% !important;
+        }
+
+        .invalid-feedback {
+            display: block;
+            height: 10px;
+            /* hoặc 1.5em */
+            font-size: 13px;
+        }
+
+        .invalid-feedback:empty::after {
+            content: " ";
+            visibility: hidden;
+            display: block;
+        }
+    </style>
+@endpush

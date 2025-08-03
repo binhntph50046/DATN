@@ -339,7 +339,7 @@
                     .catch(err => console.error('Lỗi tải tin nhắn:', err));
             }
         </script>
-        
+    </div>  
 
 
 @endsection

@@ -81,8 +81,8 @@
 <div class="admin-order-details">
     <div class="container">
         <!-- Header Section -->
-        <div class="mb-4">
-            <h1 class="h4 mb-3">Chi tiết đơn hàng #{{ $order->id }}</h1>
+        <div class="mb-4 mt-4">
+          
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb bg-light rounded-3 p-2 mb-0">
                     <li class="breadcrumb-item">
@@ -93,7 +93,7 @@
                     <li class="breadcrumb-item">
                         <a href="{{ route('admin.orders.index') }}" class="text-decoration-none">Đơn hàng</a>
                     </li>
-                    <li class="breadcrumb-item active" aria-current="page">Đơn hàng #{{ $order->id }}</li>
+                    <li class="breadcrumb-item active" aria-current="page">Chi tiết đơn hàng #{{ $order->id }}</li>
                 </ol>
             </nav>
         </div>

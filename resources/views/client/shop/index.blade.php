@@ -250,14 +250,19 @@
                                                 <h3 class="product-title">{{ $product->name }}</h3>
                                                 <div class="product-price-and-rating">
                                                     <div class="price-wrapper">
-                                                        @if ($product->discount_price)
-                                                            <strong
-                                                                class="product-price">{{ number_format($product->discount_price) }}đ</strong>
-                                                            <span
-                                                                class="old-price"><del>{{ number_format($product->price) }}đ</del></span>
-                                                        @else
-                                                            <strong
-                                                                class="product-price">{{ number_format($product->price) }}đ</strong>
+                                                        @if ($product->variants->isNotEmpty())
+                                                            @php
+                                                                $variant = $product->variants->first();
+                                                            @endphp
+                                                            @if ($variant->discount_price)
+                                                                <strong
+                                                                    class="product-price">{{ number_format($variant->discount_price) }}đ</strong>
+                                                                <span
+                                                                    class="old-price"><del>{{ number_format($variant->selling_price) }}đ</del></span>
+                                                            @else
+                                                                <strong
+                                                                    class="product-price">{{ number_format($variant->selling_price) }}đ</strong>
+                                                            @endif
                                                         @endif
                                                     </div>
                                                     <div class="product-rating">
@@ -279,15 +284,33 @@
                                                     </div>
                                                 </div>
                                                 <div class="product-icons">
-                                                    <span class="icon-add-to-cart" data-product-id="{{ $product->id }}">
-                                                        <i class="fas fa-cart-plus"></i>
+                                                    <span class="icon-compare"
+                                                        onclick="event.preventDefault(); addToCompare('{{ $product->id }}', '{{ $product->name }}', '{{ $product->category_id }}')"
+                                                        title="Thêm vào so sánh">
+                                                        <i class="fa-solid fa-code-compare"></i>
                                                     </span>
-                                                    <span class="icon-heart" data-product-id="{{ $product->id }}">
-                                                        <i class="fas fa-heart"></i>
-                                                    </span>
-                                                    <span class="icon-quick-view" data-product-id="{{ $product->id }}">
-                                                        <i class="fas fa-eye"></i>
-                                                    </span>
+                                                    @auth
+                                                        <form action="{{ route('wishlist.toggle', $product) }}" method="POST"
+                                                            style="display: none;" id="wishlist-form-{{ $product->id }}">
+                                                            @csrf
+                                                            <input type="hidden" name="product_name" value="{{ $product->name }}">
+                                                        </form>
+                                                        <span
+                                                            class="icon-heart icon-add-to-wishlist {{ in_array($product->id, $wishlistProductIds ?? []) ? 'in-wishlist' : '' }}"
+                                                            onclick="event.preventDefault(); toggleWishlist('{{ $product->id }}', '{{ route('wishlist.toggle', $product) }}', this)"
+                                                            title="{{ in_array($product->id, $wishlistProductIds ?? []) ? 'Xóa khỏi yêu thích' : 'Thêm vào yêu thích' }}">
+                                                            <i class="fas fa-heart"></i>
+                                                        </span>
+                                                    @else
+                                                        <span class="icon-heart icon-add-to-wishlist"
+                                                            onclick="event.preventDefault(); showLoginPrompt()"
+                                                            title="Đăng nhập để thêm vào yêu thích">
+                                                            <i class="fas fa-heart"></i>
+                                                        </span>
+                                                    @endauth
+                                                    <span class="icon-quick-view"
+                                                        onclick="event.preventDefault(); showQuickView({{ $product->id }}, '{{ $product->slug }}')"><i
+                                                            class="fas fa-eye"></i></span>
                                                 </div>
                                             </a>
                                         </div>
@@ -350,14 +373,19 @@
                                                     <h3 class="product-title">{{ $product->name }}</h3>
                                                     <div class="product-price-and-rating">
                                                         <div class="price-wrapper">
-                                                            @if ($product->discount_price)
-                                                                <strong
-                                                                    class="product-price">{{ number_format($product->discount_price) }}đ</strong>
-                                                                <span
-                                                                    class="old-price"><del>{{ number_format($product->price) }}đ</del></span>
-                                                            @else
-                                                                <strong
-                                                                    class="product-price">{{ number_format($product->price) }}đ</strong>
+                                                            @if ($product->variants->isNotEmpty())
+                                                                @php
+                                                                    $variant = $product->variants->first();
+                                                                @endphp
+                                                                @if ($variant->discount_price)
+                                                                    <strong
+                                                                        class="product-price">{{ number_format($variant->discount_price) }}đ</strong>
+                                                                    <span
+                                                                        class="old-price"><del>{{ number_format($variant->selling_price) }}đ</del></span>
+                                                                @else
+                                                                    <strong
+                                                                        class="product-price">{{ number_format($variant->selling_price) }}đ</strong>
+                                                                @endif
                                                             @endif
                                                         </div>
                                                         <div class="product-rating">
@@ -379,17 +407,33 @@
                                                         </div>
                                                     </div>
                                                     <div class="product-icons">
-                                                        <span class="icon-add-to-cart"
-                                                            data-product-id="{{ $product->id }}">
-                                                            <i class="fas fa-cart-plus"></i>
+                                                        <span class="icon-compare"
+                                                            onclick="event.preventDefault(); addToCompare('{{ $product->id }}', '{{ $product->name }}', '{{ $product->category_id }}')"
+                                                            title="Thêm vào so sánh">
+                                                            <i class="fa-solid fa-code-compare"></i>
                                                         </span>
-                                                        <span class="icon-heart" data-product-id="{{ $product->id }}">
-                                                            <i class="fas fa-heart"></i>
-                                                        </span>
+                                                        @auth
+                                                            <form action="{{ route('wishlist.toggle', $product) }}" method="POST"
+                                                                style="display: none;" id="wishlist-form-{{ $product->id }}">
+                                                                @csrf
+                                                                <input type="hidden" name="product_name" value="{{ $product->name }}">
+                                                            </form>
+                                                            <span
+                                                                class="icon-heart icon-add-to-wishlist {{ in_array($product->id, $wishlistProductIds ?? []) ? 'in-wishlist' : '' }}"
+                                                                onclick="event.preventDefault(); toggleWishlist('{{ $product->id }}', '{{ route('wishlist.toggle', $product) }}', this)"
+                                                                title="{{ in_array($product->id, $wishlistProductIds ?? []) ? 'Xóa khỏi yêu thích' : 'Thêm vào yêu thích' }}">
+                                                                <i class="fas fa-heart"></i>
+                                                            </span>
+                                                        @else
+                                                            <span class="icon-heart icon-add-to-wishlist"
+                                                                onclick="event.preventDefault(); showLoginPrompt()"
+                                                                title="Đăng nhập để thêm vào yêu thích">
+                                                                <i class="fas fa-heart"></i>
+                                                            </span>
+                                                        @endauth
                                                         <span class="icon-quick-view"
-                                                            data-product-id="{{ $product->id }}">
-                                                            <i class="fas fa-eye"></i>
-                                                        </span>
+                                                            onclick="event.preventDefault(); showQuickView({{ $product->id }}, '{{ $product->slug }}')"><i
+                                                                class="fas fa-eye"></i></span>
                                                     </div>
                                                 </a>
                                             </div>
@@ -1362,4 +1406,175 @@
             font-weight: normal;
         }
     </style>
+
+    <!-- CSRF Meta Tag -->
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+
+    <!-- JavaScript for Wishlist and Quick View -->
+    <script>
+        function showToast(message, type = 'success') {
+            const Toast = Swal.mixin({
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true,
+                didOpen: (toast) => {
+                    toast.addEventListener('mouseenter', Swal.stopTimer)
+                    toast.addEventListener('mouseleave', Swal.resumeTimer)
+                }
+            });
+
+            Toast.fire({
+                icon: type,
+                title: message
+            });
+        }
+
+        async function toggleWishlist(productId, url, iconElement) {
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+            if (!csrfToken) {
+                showToast('Lỗi hệ thống, vui lòng thử lại!', 'error');
+                return;
+            }
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': csrfToken,
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        product_id: productId
+                    })
+                });
+                const data = await response.json();
+                if (data.status) {
+                    showToast(data.message, data.type);
+                    if (data.type === 'success') {
+                        const allHeartIcons = document.querySelectorAll(
+                            `.icon-heart[onclick*="toggleWishlist('${productId}'"]`);
+                        allHeartIcons.forEach(icon => {
+                            if (data.in_wishlist) {
+                                icon.classList.add('in-wishlist');
+                                icon.title = 'Xóa khỏi yêu thích';
+                            } else {
+                                icon.classList.remove('in-wishlist');
+                                icon.title = 'Thêm vào yêu thích';
+                            }
+                        });
+                    }
+                } else {
+                    showToast(data.message || 'Đã xảy ra lỗi, vui lòng thử lại!', 'error');
+                }
+            } catch (error) {
+                showToast('Đã xảy ra lỗi: ' + (error.message || 'Unknown error'), 'error');
+            }
+        }
+
+        function showLoginPrompt() {
+            showToast('Vui lòng đăng nhập để thêm sản phẩm vào danh sách yêu thích.', 'error');
+        }
+
+        let compareSelected = [];
+        let compareNames = [];
+        let compareCategory = null;
+
+        function addToCompare(productId, productName, categoryId) {
+            const isAlreadySelected = compareSelected.includes(productId);
+
+            if (isAlreadySelected) {
+                // Remove product
+                const index = compareSelected.indexOf(productId);
+                compareSelected.splice(index, 1);
+                compareNames.splice(index, 1);
+                showToast('Đã bỏ chọn ' + productName + ' khỏi so sánh', 'info');
+
+                // If the list becomes empty, reset the category
+                if (compareSelected.length === 0) {
+                    compareCategory = null;
+                }
+            } else {
+                // Add product
+                if (compareSelected.length >= 4) {
+                    showToast('Chỉ được chọn tối đa 4 sản phẩm để so sánh!', 'error');
+                    return;
+                }
+
+                // Check category
+                if (compareSelected.length > 0 && compareCategory != categoryId) {
+                    showToast('Vui lòng chỉ chọn các sản phẩm trong cùng một danh mục!', 'error');
+                    return;
+                }
+
+                compareSelected.push(productId);
+                compareNames.push(productName);
+
+                // Set category if it's the first product being added
+                if (compareSelected.length === 1) {
+                    compareCategory = categoryId;
+                }
+                showToast('Đã thêm ' + productName + ' vào so sánh', 'success');
+            }
+
+            // Cập nhật hiển thị nút so sánh
+            updateCompareButton();
+        }
+
+        function updateCompareButton() {
+            const button = document.getElementById('compareButton');
+            const count = document.getElementById('compareCount');
+            const text = document.getElementById('compareButtonText');
+
+            if (compareSelected.length > 0) {
+                button.style.display = 'block';
+                count.textContent = compareSelected.length;
+                if (compareSelected.length >= 2) {
+                    text.textContent = 'So sánh ngay';
+                    button.style.background = '#28a745';
+                } else {
+                    text.textContent = 'Chọn thêm sản phẩm';
+                    button.style.background = '#007bff';
+                }
+            } else {
+                button.style.display = 'none';
+            }
+        }
+
+        function goToCompare() {
+            if (compareSelected.length >= 2 && compareSelected.length <= 4) {
+                // Tạo form ẩn và submit
+                const form = document.createElement('form');
+                form.method = 'GET';
+                form.action = '{{ route('compare.index') }}';
+
+                const productsInput = document.createElement('input');
+                productsInput.type = 'hidden';
+                productsInput.name = 'products';
+                productsInput.value = compareSelected.join(',');
+                form.appendChild(productsInput);
+
+                document.body.appendChild(form);
+                form.submit();
+            } else {
+                showToast('Vui lòng chọn từ 2 đến 4 sản phẩm để so sánh!', 'error');
+            }
+        }
+
+        function showQuickView(productId, productSlug) {
+            // Redirect to product detail page using slug
+            window.location.href = `/product/${productSlug}`;
+        }
+    </script>
+
+    <!-- Nút So sánh nổi -->
+    <div id="compareButton"
+        style="display:none; position:fixed; bottom:80px; right:30px; z-index:9999; background:#007bff; color:white; padding:15px 25px; border-radius:25px; box-shadow:0 4px 12px rgba(0,123,255,0.3); cursor:pointer; transition:all 0.3s ease;"
+        onclick="goToCompare()">
+        <i class="fa-solid fa-code-compare me-2"></i>
+        <span id="compareButtonText">So sánh ngay</span>
+        <span id="compareCount" class="badge bg-light text-dark ms-2">0</span>
+    </div>
+
 @endsection

@@ -12,6 +12,7 @@ use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
 use Illuminate\Support\Facades\View;
 use App\View\Composers\CartComposer;
+use Carbon\Carbon;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -28,6 +29,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        Carbon::setLocale('vi');
         Paginator::useBootstrapFive();
         // Share categories for menu - kiểm tra bảng tồn tại trước khi truy vấn
         if (\Illuminate\Support\Facades\Schema::hasTable('categories')) {

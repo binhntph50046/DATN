@@ -31,31 +31,6 @@
             </div>
             <!-- [ breadcrumb ] end -->
 
-            <!-- [ Main Content ] start -->
-            <div class="row">
-                <div class="col-12">
-                    <div class="card">
-                        <div class="card-header">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <h5>Danh sách thông số kỹ thuật</h5>
-                                <div>
-                                    <a href="{{ route('admin.specifications.trash') }}" class="btn btn-warning me-2">
-                                        <i class="ti ti-trash"></i> Thùng rác
-                                    </a>
-                                    <a href="{{ route('admin.specifications.create') }}" class="btn btn-primary">
-                                        <i class="ti ti-plus"></i> Thêm mới
-                                    </a>
-                                </div>
-                                <ul class="breadcrumb">
-                                    <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Home</a></li>
-                                    <li class="breadcrumb-item" aria-current="page">Thông số kỹ thuật</li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <!-- [ breadcrumb ] end -->
-
                 <!-- [ Main Content ] start -->
                 <div class="row">
                     <div class="col-12">

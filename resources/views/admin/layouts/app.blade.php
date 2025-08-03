@@ -63,6 +63,10 @@
     <!-- [ Main Content ] end -->
 
 
+    {{-- Livechat --}}
+    @include('admin.partials.icon-chat')
+    @include('admin.partials.notify')
+    {{-- Livechat end --}}
 
     <!-- [ Footer Content ] start -->
     @include('admin.partials.footer')

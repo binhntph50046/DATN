@@ -194,7 +194,7 @@
 
                 <div class="col-lg-4">
                     <div class="popular-content" data-aos="fade-left" data-aos-delay="400">
-                        <h2 class="section-title">Sản Phẩm Bán Chạy Nhất</h2>
+                        <h2 class="section-title">Sản Phẩm Thịnh Hành</h2>
                         <p class="mb-4">Khám phá những thiết bị Apple được ưa chuộng nhất hiện nay – nơi hội tụ đỉnh cao
                             công nghệ và thiết kế tinh tế. Đáp ứng mọi nhu cầu từ giải trí đến công việc.</p>
 
@@ -260,7 +260,7 @@
                                         <img src="{{ asset($mainImage) }}" class="img-fluid mx-auto"
                                             alt="{{ $product->name }}" style="max-height: 200px; object-fit: contain;">
                                     </div>
-                                    <h3 class="product-title text-center">{{ $product->name }}</h3>
+                                    <h3 class="product-title text-center" style="height: 33px;line-height: 21px">{{ $product->name }}</h3>
                                     <div class="product-price-and-rating text-center">
                                         @if ($product->variants->isNotEmpty())
                                             @php
@@ -427,7 +427,7 @@
             </div> --}}
 
             <!-- Slider sản phẩm -->
-            <div class="top-rated-slider">
+            <div class="top-rated-slider py-2">
                 @php
                     if (!function_exists('getImagesArray')) {
                         function getImagesArray($images)
@@ -448,8 +448,8 @@
                         $imageUrl = !empty($images[0]) ? $images[0] : 'uploads/default/default.jpg';
                     @endphp
 
-                    <div class="product-card px-3">
-                        <div class="border rounded p-4 h-100 text-center shadow-sm bg-white">
+                    <div class="product-card py-1 px-4">
+                        <div class="border p-4 h-100 text-center bg-white" style="border-radius: 8px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.21);">
                             <img src="{{ asset($imageUrl) }}"
                                  alt="{{ $variant->product->name }}"
                                  class="img-fluid mb-3"
@@ -511,10 +511,10 @@
                                     alt="{{ $blog->title }}" class="img-fluid">
                             </a>
                             <div class="post-content-entry">
-                                <h3><a href="{{ route('blog.show', $blog->slug) }}">{{ $blog->title }}</a></h3>
+                                <h3 style="height: 33px;line-height: 21px"><a href="{{ route('blog.show', $blog->slug) }}">{{ Str::limit($blog->title, 90) }}</a></h3>
                                 <div class="meta">
-                                    <span>by <a href="#">{{ $blog->author->name ?? 'Admin' }}</a></span>
-                                    <span>on <a href="#">{{ $blog->created_at->format('M d, Y') }}</a></span>
+                                    <span>{{ $blog->created_at->diffForHumans() }}</span> 
+                                    {{-- <span>on <a href="#">{{ $blog->created_at->format('M d, Y') }}</a></span> --}}
                                 </div>
                             </div>
                         </div>
@@ -733,7 +733,7 @@
                 speed: 300,
                 slidesToShow: 3,
                 slidesToScroll: 1,
-                autoplay: false,
+                autoplay: true,
                 autoplaySpeed: 3000,
                 arrows: true,
                 responsive: [{
@@ -1232,11 +1232,12 @@
 
 <!-- Nút So sánh nổi -->
 <div id="compareButton"
-    style="display:none; position:fixed; bottom:80px; right:30px; z-index:9999; background:#007bff; color:white; padding:15px 25px; border-radius:25px; box-shadow:0 4px 12px rgba(0,123,255,0.3); cursor:pointer; transition:all 0.3s ease;"
+    style="display:none; position:fixed; bottom:20px; left:50%; transform:translateX(-50%); z-index:9999; background:#007bff; color:white; padding:15px 25px; border-radius:25px; box-shadow:0 4px 12px rgba(0,123,255,0.3); cursor:pointer; transition:all 0.3s ease;"
     onclick="goToCompare()">
     <i class="fa-solid fa-code-compare me-2"></i>
     <span id="compareButtonText">So sánh ngay</span>
     <span id="compareCount" class="badge bg-light text-dark ms-2">0</span>
 </div>
+
 
 @endsection

@@ -3,48 +3,59 @@
 @section('content')
     <div class="pc-container">
         <div class="pc-content">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h2 class="fw-bold mb-0">Quản lý đơn hàng</h2>
-                <span class="badge bg-primary fs-6">Tổng: {{ $orders->total() }} đơn</span>
+            <!-- [ breadcrumb ] start -->
+            <div class="page-header">
+                <div class="page-block">
+                    <div class="row align-items-center">
+                        <div class="col-md-12">
+                            <div class="page-header-title">
+                                <h5 class="m-b-10">Đơn hàng</h5>
+                            </div>
+                            <ul class="breadcrumb">
+                                <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Trang chủ</a></li>
+                                <li class="breadcrumb-item" aria-current="page">Đơn hàng</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
             </div>
+            <!-- [ breadcrumb ] end -->
+
+           
             <div class="card custom-shadow border-0" style="border-radius:0;">
-                <div class="card-body"></div>
-                    <form method="GET" action="{{ route('admin.orders.index') }}" class="row g-2 mb-4">
-                        <div class="col-md-3">
-                            <input type="text" name="search" class="form-control"
-                                placeholder="Tìm kiếm tên, email, ID..." value="{{ request('search') }}">
+                <div class="card-body">
+                    <div class="card shadow-sm mb-4">
+                        <div class="card-body">
+                            <form method="GET" action="{{ route('admin.orders.index') }}" class="row g-3 mb-3">
+                                <div class="col-md-3">
+                                    <input type="text" name="search" class="form-control"
+                                        placeholder="Tìm kiếm tên, email, ID..." value="{{ request('search') }}">
+                                </div>
+                                <div class="col-md-3">
+                                    <select name="status" class="form-select">
+                                        <option value="">-- Tất cả trạng thái --</option>
+                                        <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Chờ xử lý</option>
+                                        <option value="confirmed" {{ request('status') == 'confirmed' ? 'selected' : '' }}>Đã xác nhận</option>
+                                        <option value="preparing" {{ request('status') == 'preparing' ? 'selected' : '' }}>Đang chuẩn bị</option>
+                                        <option value="shipping" {{ request('status') == 'shipping' ? 'selected' : '' }}>Đang giao hàng</option>
+                                        <option value="completed" {{ request('status') == 'completed' ? 'selected' : '' }}>Hoàn thành</option>
+                                        <option value="cancelled" {{ request('status') == 'cancelled' ? 'selected' : '' }}>Đã hủy</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-3">
+                                    <select name="payment_status" class="form-select">
+                                        <option value="">-- Tất cả thanh toán --</option>
+                                        <option value="paid" {{ request('payment_status') == 'paid' ? 'selected' : '' }}>Đã thanh toán</option>
+                                        <option value="unpaid" {{ request('payment_status') == 'unpaid' ? 'selected' : '' }}>Chưa thanh toán</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-3 d-flex gap-2">
+                                    <button type="submit" class="btn btn-primary d-flex align-items-center justify-content-center">Tìm kiếm</button>
+                                    <a href="{{ route('admin.orders.index') }}" class="btn btn-secondary d-flex align-items-center justify-content-center">Đặt lại</a>
+                                </div>
+                            </form>
                         </div>
-                        <div class="col-md-2">
-                            <select name="status" class="form-select">
-                                <option value="">-- Tất cả trạng thái --</option>
-                                <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Chờ xử lý
-                                </option>
-                                <option value="confirmed" {{ request('status') == 'confirmed' ? 'selected' : '' }}>Đã xác
-                                    nhận</option>
-                                <option value="preparing" {{ request('status') == 'preparing' ? 'selected' : '' }}>Đang
-                                    chuẩn bị</option>
-                                <option value="shipping" {{ request('status') == 'shipping' ? 'selected' : '' }}>Đang giao
-                                    hàng</option>
-                                <option value="completed" {{ request('status') == 'completed' ? 'selected' : '' }}>Hoàn
-                                    thành</option>
-                                <option value="cancelled" {{ request('status') == 'cancelled' ? 'selected' : '' }}>Đã hủy
-                                </option>
-                            </select>
-                        </div>
-                        <div class="col-md-2">
-                            <select name="payment_status" class="form-select">
-                                <option value="">-- Tất cả thanh toán --</option>
-                                <option value="paid" {{ request('payment_status') == 'paid' ? 'selected' : '' }}>Đã thanh
-                                    toán</option>
-                                <option value="unpaid" {{ request('payment_status') == 'unpaid' ? 'selected' : '' }}>Chưa
-                                    thanh toán</option>
-                            </select>
-                        </div>
-                        <div class="col-md-2 d-flex gap-2">
-                            <button type="submit" class="btn btn-primary w-100">Lọc</button>
-                            <a href="{{ route('admin.orders.index') }}" class="btn d-flex justify-content-center align-items-center btn-outline-secondary w-100">Reset</a>
-                        </div>
-                    </form>
+                    </div>
 
                     @if (session('success'))
                         <div class="alert alert-success">{{ session('success') }}</div>
@@ -58,6 +69,8 @@
                             </ul>
                         </div>
                     @endif
+                    
+                
 
                     <div class="table-responsive">
                         <table class="table table-hover align-middle table-modern" style="border-radius:0;">
@@ -89,7 +102,7 @@
                                             <div class="text-muted small">{{ $order->shipping_address }}</div>
                                         </td>
                                         <td>
-                                            @if($order->items && count($order->items) > 0)
+                                            @if($order->items && count($order->items) > 0 )
                                                 <div class="d-flex gap-2 flex-wrap">
                                                     @foreach($order->items as $item)
                                                         @if($item->product)

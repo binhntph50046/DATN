@@ -55,7 +55,7 @@
                             @endif
 
                             <!-- Bộ lọc tìm kiếm -->
-                            <div class="card custom-shadow mb-4">
+                            <div class="card shadow-sm mb-4">
                                 <div class="card-body">
                                     <form action="{{ route('admin.blogs.index') }}" method="GET" class="row g-3">
                                         <div class="col-md-4">

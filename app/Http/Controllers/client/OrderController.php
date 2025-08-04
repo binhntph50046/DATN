@@ -36,28 +36,57 @@ class OrderController
 
     public function cancel(Request $request, $id)
     {
-        $request->validate([
-            'cancellation_reason' => 'required|string|max:255'
-        ]);
+        try {
+            $request->validate([
+                'cancellation_reason' => 'required|string|max:255'
+            ]);
 
-        $order = Order::where('user_id', Auth::id())->findOrFail($id);
+            $order = Order::where('user_id', Auth::id())->findOrFail($id);
 
-        // Chỉ cho phép hủy đơn hàng ở trạng thái pending hoặc confirmed
-        if (!in_array($order->status, ['pending', 'confirmed'])) {
-            return redirect()->back()->with('error', 'Không thể hủy đơn hàng ở trạng thái này!');
+            // Chỉ cho phép hủy đơn hàng ở trạng thái pending hoặc confirmed
+            if (!in_array($order->status, ['pending', 'confirmed'])) {
+                if ($request->ajax()) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Không thể hủy đơn hàng ở trạng thái này!'
+                    ], 400);
+                }
+                return redirect()->back()->with('error', 'Không thể hủy đơn hàng ở trạng thái này!');
+            }
+
+            // Nếu đơn hàng đã thanh toán qua VNPay
+            if ($order->payment_method === 'vnpay' && $order->is_paid) {
+                if ($request->ajax()) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Đơn hàng đã được thanh toán qua VNPay. Vui lòng liên hệ với chúng tôi qua hotline hoặc email để được hỗ trợ hoàn tiền.'
+                    ], 400);
+                }
+                return redirect()->back()->with('warning', 'Đơn hàng đã được thanh toán qua VNPay. Vui lòng liên hệ với chúng tôi qua hotline hoặc email để được hỗ trợ hoàn tiền.');
+            }
+
+            $order->update([
+                'status' => 'cancelled',
+                'cancel_reason' => $request->cancellation_reason
+            ]);
+
+            if ($request->ajax()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Đã hủy đơn hàng thành công!'
+                ]);
+            }
+            return redirect()->back()->with('success', 'Đã hủy đơn hàng thành công!');
+            
+        } catch (\Exception $e) {
+            if ($request->ajax()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Có lỗi xảy ra khi hủy đơn hàng'
+                ], 500);
+            }
+            return redirect()->back()->with('error', 'Có lỗi xảy ra khi hủy đơn hàng');
         }
-
-        // Nếu đơn hàng đã thanh toán qua VNPay
-        if ($order->payment_method === 'vnpay' && $order->is_paid) {
-            return redirect()->back()->with('warning', 'Đơn hàng đã được thanh toán qua VNPay. Vui lòng liên hệ với chúng tôi qua hotline hoặc email để được hỗ trợ hoàn tiền.');
-        }
-
-        $order->update([
-            'status' => 'cancelled',
-            'cancel_reason' => $request->cancellation_reason
-        ]);
-
-        return redirect()->back()->with('success', 'Đã hủy đơn hàng thành công!');
     }
 
     public function guestTracking(Request $request)

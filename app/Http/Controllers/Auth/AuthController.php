@@ -119,15 +119,15 @@ class AuthController
 
             $user = Auth::user();
 
-            $user->last_login = now();
-            $user->save();
+            // Cập nhật last_login
+            $user->update(['last_login' => now()]);
 
-            $hasAccess = $user->roles()->whereIn('name', ['admin', 'staff'])->exists();
+            $hasAccess = $user->hasRole(['admin', 'staff']);
 
             if ($hasAccess) {
                 return redirect()->intended('/admin');
             } else {
-                return redirect()->intended('/');
+                return redirect()->intended('/')->with('success', 'Đăng nhập thành công!');
             }
         }
 

@@ -83,7 +83,7 @@
                      cao cấp. Cam kết mang
                      đến trải nghiệm tốt nhất cho khách hàng với dịch vụ tận tâm và chuyên nghiệp.</p>
 
-                 <div class="custom-social">
+                 <div class="custom-social d-flex align-items-center">
                      <img src="https://cdn2.fptshop.com.vn/svg/facebook_icon_a64b579fe2.svg?w=32&q=100" alt="Facebook">
                      <img src="https://cdn2.fptshop.com.vn/svg/zalo_icon_8cbef61812.svg?w=32&q=100" alt="Zalo">
                      <img src="https://cdn2.fptshop.com.vn/svg/youtube_icon_b492d61ba5.svg?w=32&q=100" alt="Youtube">

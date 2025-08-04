@@ -23,7 +23,7 @@
                         </div>
                         <ul class="breadcrumb">
                             <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Trang chủ</a></li>
-                            <li class="breadcrumb-item" aria-current="page">Thùng rác</li>
+                            <li class="breadcrumb-item" aria-current="page">Danh sách thùng rác</li>
                         </ul>
                     </div>
                 </div>
@@ -36,7 +36,7 @@
             <div class="col-12">
                 <div class="card">
                     <div class="card-header">
-                        <h5>Danh mục thùng rác</h5>
+                        <h5>Danh sách thùng rác</h5>
                         <div class="card-header-right">
                             <a href="{{ route('admin.categories.index') }}" class="btn btn-primary btn-sm rounded-3">
                                 <i class="ti ti-arrow-left"></i> Quay lại danh mục

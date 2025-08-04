@@ -330,23 +330,40 @@ Route::prefix('admin')
         });
 
         // Banner Management
-        Route::prefix('banners')->name('banners.')->group(function () {
+        Route::prefix('banners')->name('banners.')->middleware('permission:view banners')->group(function () {
             Route::get('/', [BannerController::class, 'index'])->name('index');
-            Route::get('/create', [BannerController::class, 'create'])->name('create');
-            Route::post('/', [BannerController::class, 'store'])->name('store');
+            Route::get('/create', [BannerController::class, 'create'])->middleware('permission:create banners')->name('create');
+            Route::post('/', [BannerController::class, 'store'])->middleware('permission:create banners')->name('store');
             Route::get('/{banner}', [BannerController::class, 'show'])->name('show');
-            Route::get('/{banner}/edit', [BannerController::class, 'edit'])->name('edit');
-            Route::put('/{banner}', [BannerController::class, 'update'])->name('update');
-            Route::delete('/{banner}', [BannerController::class, 'destroy'])->name('destroy');
-            Route::post('/{banner}/move-up', [BannerController::class, 'moveUp'])->name('moveUp');
-            Route::post('/{banner}/move-down', [BannerController::class, 'moveDown'])->name('moveDown');
+            Route::get('/{banner}/edit', [BannerController::class, 'edit'])->middleware('permission:edit banners')->name('edit');
+            Route::put('/{banner}', [BannerController::class, 'update'])->middleware('permission:edit banners')->name('update');
+            Route::delete('/{banner}', [BannerController::class, 'destroy'])->middleware('permission:delete banners')->name('destroy');
+            Route::post('/{banner}/move-up', [BannerController::class, 'moveUp'])->middleware('permission:edit banners')->name('moveUp');
+            Route::post('/{banner}/move-down', [BannerController::class, 'moveDown'])->middleware('permission:edit banners')->name('moveDown');
         });
 
-        // Flash Sale Management
-        Route::resource('flash-sales', FlashSaleController::class);
+        // Flash Sale Management - Staff chỉ có quyền xem
+        Route::prefix('flash-sales')->name('flash-sales.')->middleware('permission:view orders')->group(function () {
+            Route::get('/', [FlashSaleController::class, 'index'])->name('index');
+            Route::get('/create', [FlashSaleController::class, 'create'])->middleware('permission:create orders')->name('create');
+            Route::post('/', [FlashSaleController::class, 'store'])->middleware('permission:create orders')->name('store');
+            Route::get('/{flash_sale}', [FlashSaleController::class, 'show'])->name('show');
+            Route::get('/{flash_sale}/edit', [FlashSaleController::class, 'edit'])->middleware('permission:edit orders')->name('edit');
+            Route::put('/{flash_sale}', [FlashSaleController::class, 'update'])->middleware('permission:edit orders')->name('update');
+            Route::delete('/{flash_sale}', [FlashSaleController::class, 'destroy'])->middleware('permission:delete orders')->name('destroy');
+        });
         Route::get('ajax/product-variants/{id}', [FlashSaleController::class, 'getVariantsByProduct']);
-        Route::post('flash-sales/{id}/return-stock', [FlashSaleController::class, 'returnStock'])->name('flash-sales.return-stock');
-        Route::resource('flash-sale-items', FlashSaleItemController::class);
+        Route::post('flash-sales/{id}/return-stock', [FlashSaleController::class, 'returnStock'])->middleware('permission:edit orders')->name('flash-sales.return-stock');
+        
+        Route::prefix('flash-sale-items')->name('flash-sale-items.')->middleware('permission:view orders')->group(function () {
+            Route::get('/', [FlashSaleItemController::class, 'index'])->name('index');
+            Route::get('/create', [FlashSaleItemController::class, 'create'])->middleware('permission:create orders')->name('create');
+            Route::post('/', [FlashSaleItemController::class, 'store'])->middleware('permission:create orders')->name('store');
+            Route::get('/{flash_sale_item}', [FlashSaleItemController::class, 'show'])->name('show');
+            Route::get('/{flash_sale_item}/edit', [FlashSaleItemController::class, 'edit'])->middleware('permission:edit orders')->name('edit');
+            Route::put('/{flash_sale_item}', [FlashSaleItemController::class, 'update'])->middleware('permission:edit orders')->name('update');
+            Route::delete('/{flash_sale_item}', [FlashSaleItemController::class, 'destroy'])->middleware('permission:delete orders')->name('destroy');
+        });
 
         // Blog Management
         Route::prefix('blogs')->name('blogs.')->middleware('permission:view blogs')->group(function () {
@@ -381,16 +398,16 @@ Route::prefix('admin')
         });
 
         // Product Management
-        Route::prefix('products')->name('products.')->group(function () {
+        Route::prefix('products')->name('products.')->middleware('permission:view products')->group(function () {
             Route::get('/', [ProductController::class, 'index'])->name('index');
-            Route::get('/create', [ProductController::class, 'create'])->name('create');
-            Route::post('/', [ProductController::class, 'store'])->name('store');
+            Route::get('/create', [ProductController::class, 'create'])->middleware('permission:create products')->name('create');
+            Route::post('/', [ProductController::class, 'store'])->middleware('permission:create products')->name('store');
             Route::get('/trash', [ProductController::class, 'trash'])->name('trash');
-            Route::post('/{product}/restore', [ProductController::class, 'restore'])->name('restore');
+            Route::post('/{product}/restore', [ProductController::class, 'restore'])->middleware('permission:edit products')->name('restore');
             Route::get('/{product}', [ProductController::class, 'show'])->name('show');
-            Route::get('/{product}/edit', [ProductController::class, 'edit'])->name('edit');
-            Route::put('/{product}', [ProductController::class, 'update'])->name('update');
-            Route::delete('/{product}', [ProductController::class, 'destroy'])->name('destroy');
+            Route::get('/{product}/edit', [ProductController::class, 'edit'])->middleware('permission:edit products')->name('edit');
+            Route::put('/{product}', [ProductController::class, 'update'])->middleware('permission:edit products')->name('update');
+            Route::delete('/{product}', [ProductController::class, 'destroy'])->middleware('permission:delete products')->name('destroy');
             Route::post('/check-duplicate-variants', [ProductController::class, 'checkDuplicateVariants'])->name('checkDuplicateVariants');
         });
         Route::get('attributes/{id}/values', [ProductController::class, 'getAttributeValues']);
@@ -426,66 +443,76 @@ Route::prefix('admin')
         // Voucher Management
         Route::resource('vouchers', VoucherController::class)->middleware('permission:view vouchers');
 
-        // Contact Management
-        Route::prefix('contacts')->name('contacts.')->group(function () {
+        // Contact Management - Staff chỉ có quyền xem
+        Route::prefix('contacts')->name('contacts.')->middleware('permission:view orders')->group(function () {
             Route::get('/', [AdminContactController::class, 'index'])->name('index');
             Route::get('/trash', [AdminContactController::class, 'trash'])->name('trash');
             Route::get('/{contact}', [AdminContactController::class, 'show'])->name('show');
-            Route::delete('/{contact}', [AdminContactController::class, 'destroy'])->name('delete');
-            Route::patch('/restore/{id}', [AdminContactController::class, 'restore'])->name('restore');
-            Route::delete('/force-delete/{id}', [AdminContactController::class, 'forceDelete'])->name('forceDelete');
+            Route::delete('/{contact}', [AdminContactController::class, 'destroy'])->middleware('permission:delete orders')->name('delete');
+            Route::patch('/restore/{id}', [AdminContactController::class, 'restore'])->middleware('permission:edit orders')->name('restore');
+            Route::delete('/force-delete/{id}', [AdminContactController::class, 'forceDelete'])->middleware('permission:delete orders')->name('forceDelete');
         });
 
-        // Subscriber Management
-        Route::prefix('subscribers')->name('subscribers.')->group(function () {
+        // Subscriber Management - Staff chỉ có quyền xem
+        Route::prefix('subscribers')->name('subscribers.')->middleware('permission:view orders')->group(function () {
             Route::get('/', [SubcriberController::class, 'index'])->name('index');
             Route::get('/trash', [SubcriberController::class, 'trash'])->name('trash');
-            Route::delete('/{subscribers}', [SubcriberController::class, 'destroy'])->name('delete');
-            Route::patch('/restore/{id}', [SubcriberController::class, 'restore'])->name('restore');
+            Route::delete('/{subscribers}', [SubcriberController::class, 'destroy'])->middleware('permission:delete orders')->name('delete');
+            Route::patch('/restore/{id}', [SubcriberController::class, 'restore'])->middleware('permission:edit orders')->name('restore');
         });
 
-        // Activity Management
-        Route::prefix('activities')->name('activities.')->group(function () {
+        // Activity Management - Staff chỉ có quyền xem
+        Route::prefix('activities')->name('activities.')->middleware('permission:view dashboard')->group(function () {
             Route::get('/', [ActivityController::class, 'index'])->name('index');
             Route::get('/user/{id}', [ActivityController::class, 'show'])->name('show');
         });
 
-        // FAQ Management
-        Route::prefix('faqs')->name('faqs.')->group(function () {
+        // FAQ Management - Staff chỉ có quyền xem
+        Route::prefix('faqs')->name('faqs.')->middleware('permission:view orders')->group(function () {
             Route::get('/', [FaqController::class, 'index'])->name('index');
-            Route::get('/create', [FaqController::class, 'create'])->name('create');
-            Route::post('/', [FaqController::class, 'store'])->name('store');
+            Route::get('/create', [FaqController::class, 'create'])->middleware('permission:create orders')->name('create');
+            Route::post('/', [FaqController::class, 'store'])->middleware('permission:create orders')->name('store');
             Route::get('/trash', [FaqController::class, 'trash'])->name('trash');
             Route::get('/{faq}', [FaqController::class, 'show'])->name('show');
-            Route::get('/{faq}/edit', [FaqController::class, 'edit'])->name('edit');
-            Route::put('/{faq}', [FaqController::class, 'update'])->name('update');
-            Route::delete('/{faq}', [FaqController::class, 'destroy'])->name('destroy');
-            Route::post('/{faq}/restore', [FaqController::class, 'restore'])->name('restore');
-            Route::delete('/{faq}/forceDelete', [FaqController::class, 'forceDelete'])->name('forceDelete');
+            Route::get('/{faq}/edit', [FaqController::class, 'edit'])->middleware('permission:edit orders')->name('edit');
+            Route::put('/{faq}', [FaqController::class, 'update'])->middleware('permission:edit orders')->name('update');
+            Route::delete('/{faq}', [FaqController::class, 'destroy'])->middleware('permission:delete orders')->name('destroy');
+            Route::post('/{faq}/restore', [FaqController::class, 'restore'])->middleware('permission:edit orders')->name('restore');
+            Route::delete('/{faq}/forceDelete', [FaqController::class, 'forceDelete'])->middleware('permission:delete orders')->name('forceDelete');
         });
 
-        // Invoice Routes
-        Route::resource('invoices', InvoiceController::class);
-        Route::get('invoices/{invoice}/pdf', [InvoiceController::class, 'exportPdf'])->name('invoices.export-pdf');
+        // Invoice Routes - Staff chỉ có quyền xem
+        Route::prefix('invoices')->name('invoices.')->middleware('permission:view orders')->group(function () {
+            Route::get('/', [InvoiceController::class, 'index'])->name('index');
+            Route::get('/create', [InvoiceController::class, 'create'])->middleware('permission:create orders')->name('create');
+            Route::post('/', [InvoiceController::class, 'store'])->middleware('permission:create orders')->name('store');
+            Route::get('/{invoice}', [InvoiceController::class, 'show'])->name('show');
+            Route::get('/{invoice}/edit', [InvoiceController::class, 'edit'])->middleware('permission:edit orders')->name('edit');
+            Route::put('/{invoice}', [InvoiceController::class, 'update'])->middleware('permission:edit orders')->name('update');
+            Route::delete('/{invoice}', [InvoiceController::class, 'destroy'])->middleware('permission:delete orders')->name('destroy');
+        });
+        Route::get('invoices/{invoice}/pdf', [InvoiceController::class, 'exportPdf'])->middleware('permission:view orders')->name('invoices.export-pdf');
 
-        // Product Variants
-        Route::get('variants', [ProductVariantController::class, 'index'])->name('variants.index');
-        Route::get('variants/trash', [ProductVariantController::class, 'trash'])->name('variants.trash');
-        Route::post('variants/{id}/restore', [ProductVariantController::class, 'restore'])->name('variants.restore');
-        Route::put('variants/{variant}', [ProductVariantController::class, 'update'])->name('variants.update');
-        Route::delete('variants/{variant}', [ProductVariantController::class, 'destroy'])->name('variants.destroy');
+        // Product Variants - Staff chỉ có quyền xem
+        Route::prefix('variants')->name('variants.')->middleware('permission:view products')->group(function () {
+            Route::get('/', [ProductVariantController::class, 'index'])->name('index');
+            Route::get('/trash', [ProductVariantController::class, 'trash'])->name('trash');
+            Route::post('/{id}/restore', [ProductVariantController::class, 'restore'])->middleware('permission:edit products')->name('restore');
+            Route::put('/{variant}', [ProductVariantController::class, 'update'])->middleware('permission:edit products')->name('update');
+            Route::delete('/{variant}', [ProductVariantController::class, 'destroy'])->middleware('permission:delete products')->name('destroy');
+        });
 
-        // Sitemap Management
-        Route::prefix('sitemap')->name('sitemap.')->group(function () {
+        // Sitemap Management - Staff chỉ có quyền xem
+        Route::prefix('sitemap')->name('sitemap.')->middleware('permission:view dashboard')->group(function () {
             Route::get('/', [SitemapController::class, 'index'])->name('index');
-            Route::post('/generate', [SitemapController::class, 'generate'])->name('generate');
+            Route::post('/generate', [SitemapController::class, 'generate'])->middleware('permission:create orders')->name('generate');
             Route::get('/view', [SitemapController::class, 'view'])->name('view');
         });
 
-        // Robots Management
-        Route::prefix('robots')->name('robots.')->group(function () {
+        // Robots Management - Staff chỉ có quyền xem
+        Route::prefix('robots')->name('robots.')->middleware('permission:view dashboard')->group(function () {
             Route::get('/', [RobotController::class, 'index'])->name('index');
-            Route::post('/update', [RobotController::class, 'update'])->name('update');
+            Route::post('/update', [RobotController::class, 'update'])->middleware('permission:edit orders')->name('update');
         });
 
         // New route for checking variant slug

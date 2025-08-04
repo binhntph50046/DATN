@@ -1,6 +1,6 @@
 <!-- resources/views/admin/faqs/trash.blade.php -->
 @extends('admin.layouts.app')
-@section('title', 'Deleted FAQs')
+@section('title', 'Câu hỏi đã xóa')
 
 <style>
     .custom-shadow {
@@ -27,12 +27,12 @@
                 <div class="row align-items-center">
                     <div class="col-md-12">
                         <div class="page-header-title">
-                            <h5 class="m-b-10">Deleted FAQs</h5>
+                            <h5 class="m-b-10">Câu hỏi đã xóa</h5>
                         </div>
                         <ul class="breadcrumb">
-                            <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Home</a></li>
-                            <li class="breadcrumb-item"><a href="{{ route('admin.faqs.index') }}">FAQs</a></li>
-                            <li class="breadcrumb-item" aria-current="page">Trash</li>
+                            <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Trang chủ</a></li>
+                            <li class="breadcrumb-item"><a href="{{ route('admin.faqs.index') }}">Câu hỏi thường gặp</a></li>
+                            <li class="breadcrumb-item" aria-current="page">Thùng rác</li>
                         </ul>
                     </div>
                 </div>
@@ -45,7 +45,7 @@
             <div class="col-12">
                 <div class="card">
                     <div class="card-header">
-                        <h5>Deleted FAQs List</h5>
+                        <h5>Danh sách câu hỏi đã xóa</h5>
                     </div>
                     <div class="card-body">
                         @if(session('success'))
@@ -58,10 +58,10 @@
                                 <thead>
                                     <tr>
                                         <th>ID</th>
-                                        <th>Question</th>
-                                        <th>Answer</th>
-                                        <th>Deleted At</th>
-                                        <th class="text-center">Actions</th>
+                                        <th>Câu hỏi</th>
+                                        <th>Câu trả lời</th>
+                                        <th>Thời điểm xóa</th>
+                                        <th class="text-center">Thao tác</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -76,22 +76,22 @@
                                         <td class="text-center">
                                             <form action="{{ route('admin.faqs.restore', $faq->id) }}" method="POST" class="d-inline">
                                                 @csrf
-                                                <button type="submit" class="btn btn-success btn-sm rounded-3 me-2" onclick="return confirm('Are you sure you want to restore this FAQ?')">
-                                                    <i class="ti ti-restore"></i> Restore
+                                                <button type="submit" class="btn btn-success btn-sm rounded-3 me-2" onclick="return confirm('Bạn có chắc muốn khôi phục FAQ này không?')">
+                                                    <i class="ti ti-restore"></i> Khôi phục
                                                 </button>
                                             </form>
                                             <form action="{{ route('admin.faqs.forceDelete', $faq->id) }}" method="POST" class="d-inline">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" class="btn btn-danger btn-sm rounded-3" onclick="return confirm('Are you sure you want to permanently delete this FAQ?')">
-                                                    <i class="ti ti-trash"></i> Force Delete
+                                                <button type="submit" class="btn btn-danger btn-sm rounded-3" onclick="return confirm('Bạn có chắc muốn xóa vĩnh viễn FAQ này không?')">
+                                                    <i class="ti ti-trash"></i> Xóa vĩnh viễn
                                                 </button>
                                             </form>
                                         </td>
                                     </tr>
                                     @empty
                                     <tr>
-                                        <td colspan="5" class="text-center">No deleted FAQs found.</td>
+                                        <td colspan="5" class="text-center">Không tìm thấy câu hỏi đã xóa nào.</td>
                                     </tr>
                                     @endforelse
                                 </tbody>
@@ -99,7 +99,7 @@
                             {{ $faqs->links() }}
                         </div>
                         <div class="mt-3">
-                            <a href="{{ route('admin.faqs.index') }}" class="btn btn-secondary">Back to FAQs</a>
+                            <a href="{{ route('admin.faqs.index') }}" class="btn btn-secondary">Quay lại danh sách câu hỏi</a>
                         </div>
                     </div>
                 </div>

@@ -1,5 +1,5 @@
 @extends('admin.layouts.app')
-@section('title', 'Contact Details')
+@section('title', 'Chi tiết liên hệ')
 
 @section('content')
 <div class="pc-container">
@@ -9,9 +9,9 @@
                 <div class="row align-items-center">
                     <div class="col-md-12">
                         <ul class="breadcrumb">
-                            <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Home</a></li>
-                            <li class="breadcrumb-item"><a href="{{ route('admin.contacts.index') }}">Contacts</a></li>
-                            <li class="breadcrumb-item">Details</li>
+                            <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Trang chủ</a></li>
+                            <li class="breadcrumb-item"><a href="{{ route('admin.contacts.index') }}">Liên hệ</a></li>
+                            <li class="breadcrumb-item">Chi tiết</li>
                         </ul>
                     </div>
                 </div>
@@ -22,9 +22,9 @@
             <div class="col-12">
                 <div class="card">
                     <div class="card-header d-flex justify-content-between align-items-center">
-                        <h5>Contact Details</h5>
+                        <h5>Chi tiết liên hệ</h5>
                         <a href="{{ route('admin.contacts.index') }}" class="btn btn-secondary btn-sm rounded-3">
-                            <i class="ti ti-arrow-left"></i> Back to List
+                            <i class="ti ti-arrow-left"></i> Quay lại danh sách
                         </a>
                     </div>
                     <div class="card-body">
@@ -33,16 +33,16 @@
                         @endif
 
                         <div class="mb-4">
-                            <h6>Basic Information</h6>
+                            <h6>Thông tin cơ bản</h6>
                             <hr>
-                            <p><strong>Name:</strong> {{ $contact->first_name }} {{ $contact->last_name }}</p>
+                            <p><strong>Họ tên:</strong> {{ $contact->first_name }} {{ $contact->last_name }}</p>
                             <p><strong>Email:</strong> <a href="mailto:{{ $contact->email }}">{{ $contact->email }}</a></p>
-                            <p><strong>Phone:</strong> {{ $contact->phone ?? 'N/A' }}</p>
-                            <p><strong>Date:</strong> {{ $contact->created_at->format('d/m/Y H:i') }}</p>
+                            <p><strong>Điện thoại:</strong> {{ $contact->phone ?? 'Không có' }}</p>
+                            <p><strong>Ngày gửi:</strong> {{ $contact->created_at->format('d/m/Y H:i') }}</p>
                         </div>
 
                         <div class="mb-4">
-                            <h6>Message</h6>
+                            <h6>Nội dung tin nhắn</h6>
                             <hr>
                             <div class="p-3 bg-light rounded">
                                 {!! nl2br(e($contact->message)) !!}
@@ -53,8 +53,8 @@
                             <form action="{{ route('admin.contacts.delete', $contact->id) }}" method="POST" class="d-inline">
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this contact?')">
-                                    <i class="ti ti-trash"></i> Delete Contact
+                                <button type="submit" class="btn btn-danger" onclick="return confirm('Bạn có chắc muốn xóa liên hệ này không?')">
+                                    <i class="ti ti-trash"></i> Xóa liên hệ
                                 </button>
                             </form>
                         </div>

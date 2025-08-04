@@ -77,40 +77,48 @@
                                             </td>
                                             <td>
                                                 @if($noti->read_at)
-                                                    <span class="badge bg-success">Read</span>
+                                                    <span class="badge bg-success">Đã Đọc</span>
                                                 @else
-                                                    <span class="badge bg-warning text-dark">New</span>
+                                                    <span class="badge bg-warning text-dark">Mới</span>
                                                 @endif
                                             </td>
                                             <td>{{ $noti->created_at->format('d/m/Y H:i') }}</td>
                                             <td class="text-center">
-                                                <!-- @if(isset($noti->data['url']))
-                                                    <a href="{{ $noti->data['url'] }}"
-                                                        class="btn btn-info btn-sm rounded-3 me-2">
-                                                        <i class="ti ti-eye"></i> View
-                                                    </a>
-                                                @endif -->
+    @if(isset($noti->data['url']))
+        <a href="{{ $noti->data['url'] }}" 
+           class="btn btn-success btn-sm rounded-3 me-2" 
+           title="Xem thông báo">
+            <i class="ti ti-eye"></i>
+        </a>
+    @endif
 
-                                                @if(!$noti->read_at)
-                                                    <form action="{{ route('admin.notify.markAsRead', $noti->id) }}"
-                                                        method="POST" class="d-inline">
-                                                        @csrf
-                                                        <button type="submit" class="btn btn-primary btn-sm rounded-3 me-2">
-                                                            <i class="ti ti-check"></i> Mark as Read
-                                                        </button>
-                                                    </form>
-                                                @endif
+    @if(!$noti->read_at)
+        <form action="{{ route('admin.notify.markAsRead', $noti->id) }}" 
+              method="POST" 
+              class="d-inline me-2">
+            @csrf
+            <button type="submit" 
+                    class="btn btn-primary btn-sm rounded-3" 
+                    title="Đánh dấu đã đọc">
+                <i class="ti ti-check"></i>
+            </button>
+        </form>
+    @endif
 
-                                                <form action="{{ route('admin.notify.destroy', $noti->id) }}"
-                                                    method="POST" class="d-inline">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit" class="btn btn-danger btn-sm rounded-3"
-                                                        onclick="return confirm('Bạn có chắc muốn xóa thông báo này?')">
-                                                        <i class="ti ti-trash"></i>
-                                                    </button>
-                                                </form>
-                                            </td>
+    <form action="{{ route('admin.notify.destroy', $noti->id) }}" 
+          method="POST" 
+          class="d-inline">
+        @csrf
+        @method('DELETE')
+        <button type="submit" 
+                class="btn btn-danger btn-sm rounded-3" 
+                onclick="return confirm('Bạn có chắc muốn xóa thông báo này?')" 
+                title="Xóa thông báo">
+            <i class="ti ti-trash"></i>
+        </button>
+    </form>
+</td>
+
                                         </tr>
                                     @empty
                                         <tr>

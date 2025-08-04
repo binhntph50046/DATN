@@ -15,6 +15,7 @@
         content="Mantis, Dashboard UI Kit, Bootstrap 5, Admin Template, Admin Dashboard, CRM, CMS, Bootstrap Admin Template">
     <meta name="author" content="CodedThemes">
 
+    @stack('styles')
     <!-- [Favicon] icon -->
     <link rel="icon" href="{{ asset('/images/iphone.png') }}" type="image/x-icon">
     <!-- [Google Font] Family -->
@@ -63,6 +64,10 @@
     <!-- [ Main Content ] end -->
 
 
+    {{-- Livechat --}}
+    @include('admin.partials.icon-chat')
+    @include('admin.partials.notify')
+    {{-- Livechat end --}}
 
     <!-- [ Footer Content ] start -->
     @include('admin.partials.footer')

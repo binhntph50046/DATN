@@ -2,103 +2,601 @@
 @section('title', 'Thanh toán - Apple Store')
 
 @section('content')
-
-<head>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <style>
-        .checkout-container {
-            margin-top: 40px;
-        }
-         @media (max-width: 768px) {
-            .checkout-container {
-                margin-top: 70px;
-            }
-        }
-        .payment-methods {
+.checkout-wrapper {
+    padding: 120px 0 60px; /* Tăng padding-top để tránh bị header che */
+    background-color: #f8f9fa;
+    min-height: 100vh;
+}
+
+.checkout-title {
+    font-size: 2.2rem;
+    font-weight: 600;
+    color: #1a1a1a;
+}
+
+.checkout-header {
+    text-align: center;
+    margin-bottom: 40px;
+}
+
+.checkout-header h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin-bottom: 20px;
+}
+
+/* Checkout Steps */
+.checkout-steps {
             display: flex;
-            flex-direction: column;
-            gap: 24px;
-            margin-bottom: 24px;
+    align-items: center;
+    justify-content: center;
+    margin: 30px 0;
+}
+
+.step {
+            display: flex;
+    flex-direction: column;
+            align-items: center;
+            position: relative;
         }
 
-        .payment-option {
+.step-number {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    background: #e2e8f0;
+    color: #64748b;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+.step.active .step-number {
+    background: #3b82f6;
+    color: white;
+}
+
+.step-text {
+    font-size: 0.9rem;
+    color: #64748b;
+    font-weight: 500;
+}
+
+.step.active .step-text {
+    color: #3b82f6;
+}
+
+.step-line {
+    width: 100px;
+    height: 2px;
+    background: #e2e8f0;
+    margin: 0 15px;
+}
+
+.step-line.active {
+    background: #3b82f6;
+}
+
+/* Alert Styles */
+.alert-container {
+    margin-bottom: 30px;
+}
+
+        .custom-alert {
             display: flex;
             align-items: center;
-            background: #fff;
-            border: 2px solid #e0e0e0;
-            border-radius: 12px;
-            padding: 18px 24px;
-            cursor: pointer;
-            transition: border-color 0.2s, box-shadow 0.2s;
-            position: relative;
+    padding: 15px;
+    border-radius: 10px;
+    background: #fff;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    margin-bottom: 10px;
+}
+
+.custom-alert.error {
+    border-left: 4px solid #ef4444;
         }
 
-        .payment-option:hover, .payment-option input:checked ~ .custom-radio {
-            border-color: #007bff;
+        .custom-alert .icon {
+    color: #ef4444;
+            font-size: 20px;
+    margin-right: 15px;
         }
 
-        .payment-option input[type="radio"] {
-            display: none;
-        }
+        .custom-alert .content {
+    flex: 1;
+    color: #1f2937;
+}
 
-        .custom-radio {
-            width: 22px;
-            height: 22px;
-            border: 2px solid #bbb;
-            border-radius: 50%;
-            margin-right: 18px;
-            position: relative;
-            background: #fff;
-            transition: border-color 0.2s;
-        }
+.custom-alert .close {
+    background: none;
+    border: none;
+    color: #9ca3af;
+    cursor: pointer;
+    padding: 0;
+    font-size: 18px;
+}
 
-        .payment-option input[type="radio"]:checked ~ .custom-radio {
-            border-color: #007bff;
-            background: #007bff;
-        }
+/* Checkout Sections */
+.checkout-section {
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    padding: 25px;
+    margin-bottom: 25px;
+}
 
-        .payment-option input[type="radio"]:checked ~ .custom-radio::after {
-            content: '';
+.section-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.section-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    background: #3b82f6;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    margin-right: 15px;
+}
+
+.section-header h2 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #1f2937;
+    margin: 0;
+}
+
+/* Form Styles */
+.form-floating > .form-control {
+    padding: 1rem 0.75rem;
+}
+
+.form-floating > .form-control:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+}
+
+.form-floating > label {
+    padding: 1rem 0.75rem;
+}
+
+/* Custom Checkbox */
+.custom-checkbox-container {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    user-select: none;
+    padding: 10px 0;
+}
+
+.custom-checkbox-container input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+}
+
+.checkmark {
+    position: relative;
+    height: 24px;
+    width: 24px;
+    background-color: #fff;
+    border: 2px solid #e2e8f0;
+    border-radius: 6px;
+    margin-right: 10px;
+}
+
+.custom-checkbox-container:hover .checkmark {
+    border-color: #3b82f6;
+}
+
+.custom-checkbox-container input:checked ~ .checkmark {
+    background-color: #3b82f6;
+    border-color: #3b82f6;
+}
+
+.checkmark:after {
+    content: "";
+    position: absolute;
+    display: none;
+}
+
+.custom-checkbox-container input:checked ~ .checkmark:after {
             display: block;
-            width: 10px;
-            height: 10px;
-            background: #fff;
-            border-radius: 50%;
-            position: absolute;
-            top: 5px;
-            left: 5px;
-        }
+}
 
-        .payment-icon {
-            width: 48px;
-            height: 48px;
-            object-fit: contain;
-            margin-right: 18px;
-        }
+.custom-checkbox-container .checkmark:after {
+    left: 8px;
+    top: 4px;
+    width: 5px;
+    height: 10px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+}
 
-        .payment-label {
-            font-size: 1.1rem;
-            font-weight: 500;
-            color: #222;
+.label-text {
+    font-weight: 500;
+    color: #1f2937;
+}
+
+/* Payment Methods */
+.payment-methods {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.payment-method-option {
+    cursor: pointer;
+            margin: 0;
+}
+
+.payment-method-option input[type="radio"] {
+    display: none;
+}
+
+.payment-method-content {
+    display: flex;
+    align-items: center;
+    padding: 15px;
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+}
+
+.payment-method-option input[type="radio"]:checked + .payment-method-content {
+    border-color: #3b82f6;
+    background: #f0f9ff;
+}
+
+.payment-method-content img {
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
+    margin-right: 15px;
+}
+
+.payment-method-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.payment-method-name {
+    font-weight: 600;
+    color: #1f2937;
+}
+
+.payment-method-desc {
+    font-size: 0.9rem;
+    color: #6b7280;
+}
+
+/* Order Summary */
+.order-summary-sticky {
+    /* Xóa position: sticky và top */
+    position: relative;
+}
+
+/* Thêm style cho order summary để đảm bảo layout vẫn đẹp */
+.order-summary {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.05);
+    height: 100%;
+}
+
+.order-items {
+    margin-bottom: 20px;
+}
+
+.order-item {
+    display: flex;
+    padding: 15px;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    margin-bottom: 15px;
+    background: #fff;
+}
+
+.order-item:last-child {
+    margin-bottom: 0;
+}
+
+.item-image {
+    width: 100px; /* Tăng kích thước ảnh */
+    height: 100px;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-right: 15px;
+    border: 1px solid #e2e8f0;
+    background: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.item-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain; /* Đổi thành contain để hiển thị đầy đủ ảnh */
+}
+
+.item-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.item-info h4 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #1f2937;
+    margin: 0 0 8px 0;
+    line-height: 1.4;
+}
+
+.item-variants {
+    margin-bottom: 5px;
+}
+
+.variant-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    background: #f3f4f6;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    color: #4b5563;
+    margin-right: 5px;
+    margin-bottom: 5px;
+}
+
+.item-price {
+    margin-top: auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.price {
+    font-weight: 600;
+    color: #1f2937;
+    font-size: 1.1rem;
+}
+
+.quantity {
+    color: #6b7280;
+    font-size: 0.9rem;
+    background: #f3f4f6;
+    padding: 4px 12px;
+    border-radius: 20px;
+}
+
+/* Voucher Section */
+.voucher-section {
+    padding: 20px 0;
+    border-top: 1px solid #e5e7eb;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.voucher-input {
+    display: flex;
+    gap: 10px;
+}
+
+.voucher-input .form-control {
+    border-radius: 8px;
+}
+
+.btn-apply {
+    padding: 0 20px;
+    background: #3b82f6;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.btn-apply:hover {
+    background: #2563eb;
+}
+
+.voucher-notice {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 10px;
+    color: #ef4444;
+    font-size: 0.9rem;
+}
+
+.voucher-message {
+    margin-top: 10px;
+    font-size: 0.9rem;
+}
+
+/* Order Total */
+.order-total {
+    padding: 20px 0;
+}
+
+.total-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    color: #4b5563;
+}
+
+.total-row.grand-total {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #1f2937;
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 2px solid #e5e7eb;
+}
+
+.discount {
+    color: #10b981;
+}
+
+/* Place Order Button */
+.btn-place-order {
+    width: 100%;
+    padding: 15px;
+    background: #3b82f6;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: all 0.3s ease;
+    margin-top: 20px;
+}
+
+.btn-place-order:hover {
+    background: #2563eb;
+    transform: translateY(-2px);
+}
+
+/* Responsive */
+@media (max-width: 991px) {
+    .order-summary-sticky {
+        margin-top: 2rem;
+    }
+    
+    .step-line {
+        width: 60px;
+    }
+}
+
+@media (max-width: 768px) {
+    .checkout-wrapper {
+        padding: 20px 0;
+    }
+    
+    .checkout-section {
+        padding: 20px;
+    }
+    
+    .step-text {
+        font-size: 0.8rem;
+    }
+    
+    .step-line {
+        width: 40px;
+    }
+}
+
+/* Cập nhật style cho checkbox */
+.ship-to-different-toggle {
+    margin: 2rem 0;
+}
+
+.custom-checkbox-container {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    user-select: none;
+    color: #2d3748;
+    font-weight: 500;
+}
+
+.custom-checkbox-container input {
+    position: absolute;
+                opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+}
+
+.checkmark {
+    position: relative;
+    height: 20px;
+    width: 20px;
+    background-color: #fff;
+    border: 2px solid #e2e8f0;
+    border-radius: 4px;
+    margin-right: 8px;
+    transition: all 0.2s ease;
+}
+
+.custom-checkbox-container:hover .checkmark {
+    border-color: #3b82f6;
+}
+
+.custom-checkbox-container input:checked ~ .checkmark {
+    background-color: #3b82f6;
+    border-color: #3b82f6;
+}
+
+.checkmark:after {
+    content: "";
+    position: absolute;
+    display: none;
+    left: 6px;
+    top: 2px;
+    width: 5px;
+    height: 10px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+}
+
+.custom-checkbox-container input:checked ~ .checkmark:after {
+    display: block;
+}
+
+/* Style cho textarea ghi chú */
+textarea.form-control {
+    min-height: 80px;
+    resize: vertical;
+}
+
+.form-floating > textarea.form-control {
+    padding-top: 1.625rem;
         }
     </style>
-</head>
-    <div class="untree_co-section">
-        <div class="container checkout-container">
-            <div class="row">
-                <div class="col-md-6 mb-5 mb-md-0">
-                    <h2 class="h3 mb-3 text-black">Thông tin đơn hàng của bạn</h2>
-                    <div class="p-3 p-lg-5 border bg-white">
+
+<div class="checkout-wrapper">
+    <div class="container">
+        <div class="text-center" style="margin:40px;">
+            <h1 class="checkout-title">Thanh toán đơn hàng</h1>
+        </div>
+
                         @if($errors->any())
-                            <div class="alert alert-danger">
-                                <ul>
-                                    @foreach ($errors->all() as $error)
-                                        <li>{{ $error }}</li>
-                                    @endforeach
-                                </ul>
-                            </div>
+            <div class="alert-container mb-5">
+                            @foreach ($errors->all() as $error)
+                                <div class="custom-alert error" id="error-alert">
+                        <div class="icon"><i class="fas fa-exclamation-circle"></i></div>
+                        <div class="content">{{ $error }}</div>
+                        <button class="close" onclick="this.parentElement.style.display='none';">
+                            <i class="fas fa-times"></i>
+                        </button>
+                                </div>
+                            @endforeach
+            </div>
                         @endif
-                        <form action="{{ isset($variant) ? route('checkout.store') : route('cart.checkout.store') }}" method="POST" id="checkoutForm">
+
+        <div class="checkout-content">
+            <div class="row g-5">
+                <div class="col-lg-8">
+                    <form id="checkoutForm" action="{{ isset($variant) ? route('checkout.store') : route('cart.checkout.store') }}" method="POST">
                             @csrf
                             @if(isset($variant))
                                 <input type="hidden" name="variant_id" value="{{ $variant->id }}">
@@ -110,206 +608,240 @@
                             <input type="hidden" name="voucher_code" id="voucher_code_input">
                             <input type="hidden" name="voucher_id" id="voucher_id_input">
                             <input type="hidden" name="discount_amount" id="discount_amount_input">
-                            <div id="address-fields">
-                                <div class="form-group row">
-                                    <div class="col-md-12">
-                                        <label for="c_fname" class="text-black">Họ và tên <span
-                                                class="text-danger">*</span></label>
-                                        <input type="text" class="form-control" id="c_fname" name="c_fname" required
-                                            value="{{ old('c_fname', Auth::check() ? Auth::user()->name : '') }}">
-                                    </div>
-                                </div>
-                                <div class="form-group row">
-                                    <div class="col-md-12">
-                                        <label for="c_address" class="text-black">Địa chỉ <span class="text-danger">*</span></label>
-                                        <input type="text" class="form-control" id="c_address" name="c_address" required
-                                            value="{{ old('c_address', Auth::check() ? Auth::user()->address : '') }}">
-                                    </div>
-                                </div>
-                                <div class="form-group row mb-5">
-                                    <div class="col-md-6">
-                                        <label for="c_email_address" class="text-black">Email <span
-                                                class="text-danger">*</span></label>
-                                        <input type="text" class="form-control" id="c_email_address" name="c_email_address" required
-                                            value="{{ old('c_email_address', Auth::check() ? Auth::user()->email : '') }}">
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label for="c_phone" class="text-black">Số điện thoại <span class="text-danger">*</span></label>
-                                        <input type="text" class="form-control" id="c_phone" name="c_phone" required
-                                            value="{{ old('c_phone', Auth::check() ? Auth::user()->phone : '') }}">
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label for="c_order_notes" class="text-black">Ghi chú đơn hàng</label>
-                                <textarea name="c_order_notes" id="c_order_notes" cols="30" rows="5" class="form-control"
-                                    placeholder="Write your notes here..."></textarea>
-                            </div>
 
-                            <div class="form-group mt-4">
-                                <label class="text-black fw-bold mb-2">Phương thức thanh toán <span class="text-danger">*</span></label>
-                                    <div class="payment-methods">
-                                        <label class="payment-option">
-                                        <input type="radio" name="payment_method" id="pm_cod" value="cod" required checked>
-                                            <span class="custom-radio"></span>
-                                            <img src="{{ asset('/images/logo/cod.png') }}" alt="COD" class="payment-icon">
-                                            <span class="payment-label">Thanh toán khi nhận hàng (COD)</span>
-                                        </label>
-                                        <label class="payment-option">
-                                            <input type="radio" name="payment_method" id="pm_vnpay" value="vnpay" required>
-                                            <span class="custom-radio"></span>
-                                            <img src="{{ asset('/images/logo-primary.svg') }}" alt="VNPay" class="payment-icon">
-                                            <span class="payment-label">Thanh toán qua VNPay</span>
-                                        </label>
-                                    </div>
-                            </div>
-                            <div class="form-group mt-4">
-                                <button class="btn btn-black btn-lg py-3 btn-block w-100" type="submit" id="checkout-button">
-                                    Đặt hàng
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="row mb-5">
-                        <div class="col-md-12">
-                            <h2 class="h3 mb-3 text-black">Mã giảm giá</h2>
-                            <div class="p-3 p-lg-5 border bg-white">
-                                <label for="c_code" class="text-black mb-3">Nhập mã giảm giá nếu bạn có</label>
-                                <div class="input-group w-75 couponcode-wrap">
-                                    <input type="text" class="form-control" id="c_code"
-                                        placeholder="Mã giảm giá" aria-label="Mã giảm giá">
+                        <!-- Thông tin người đặt -->
+                        <div class="checkout-section mb-4">
+                            <div class="section-header mb-4">
+                                <div class="section-icon">
+                                    <i class="fas fa-user-circle"></i>
                                 </div>
-                                <div id="voucher-message" style="display: none;"></div>
+                                <h2>Thông tin người đặt</h2>
+                            </div>
+                            <div class="section-content">
+                                <div class="form-floating mb-3">
+                                        <input type="text" class="form-control" id="c_fname" name="c_fname" required
+                                        value="{{ old('c_fname', Auth::check() ? Auth::user()->name : '') }}"
+                                        placeholder="Nhập họ và tên">
+                                    <label for="c_fname">Họ và tên <span class="text-danger">*</span></label>
+                                </div>
+                                <div class="form-floating mb-3">
+                                        <input type="text" class="form-control" id="c_address" name="c_address" required
+                                        value="{{ old('c_address', Auth::check() ? Auth::user()->address : '') }}"
+                                        placeholder="Nhập địa chỉ">
+                                    <label for="c_address">Địa chỉ <span class="text-danger">*</span></label>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-floating mb-3">
+                                            <input type="email" class="form-control" id="c_email_address" name="c_email_address" required
+                                                value="{{ old('c_email_address', Auth::check() ? Auth::user()->email : '') }}"
+                                                placeholder="Nhập email">
+                                            <label for="c_email_address">Email <span class="text-danger">*</span></label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-floating mb-3">
+                                        <input type="text" class="form-control" id="c_phone" name="c_phone" required
+                                                value="{{ old('c_phone', Auth::check() ? Auth::user()->phone : '') }}"
+                                                placeholder="Nhập số điện thoại">
+                                            <label for="c_phone">Số điện thoại <span class="text-danger">*</span></label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Giao hàng đến địa chỉ khác -->
+                                <div class="ship-to-different-toggle mb-3">
+                                    <label class="custom-checkbox-container">
+                                        <input type="checkbox" id="ship_to_different" name="ship_to_different" value="1">
+                                        <span class="checkmark"></span>
+                                        <span class="label-text">Giao hàng đến địa chỉ khác</span>
+                                    </label>
+                                </div>
+
+                                <!-- Thông tin người nhận -->
+                                <div class="recipient-info mb-4" style="display: none;">
+                                    <div class="form-floating mb-3">
+                                        <input type="text" class="form-control" id="shipping_name" name="shipping_name"
+                                            placeholder="Nhập họ và tên người nhận">
+                                        <label for="shipping_name">Họ và tên người nhận <span class="text-danger recipient-required" style="display: none;">*</span></label>
+                                    </div>
+                                    <div class="form-floating mb-3">
+                                        <input type="text" class="form-control" id="shipping_address" name="shipping_address"
+                                            placeholder="Nhập địa chỉ giao hàng">
+                                        <label for="shipping_address">Địa chỉ giao hàng <span class="text-danger recipient-required" style="display: none;">*</span></label>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-floating mb-3">
+                                                <input type="email" class="form-control" id="shipping_email" name="shipping_email"
+                                                    placeholder="Nhập email người nhận">
+                                                <label for="shipping_email">Email người nhận</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-floating mb-3">
+                                                <input type="text" class="form-control" id="shipping_phone" name="shipping_phone"
+                                                    placeholder="Nhập số điện thoại người nhận">
+                                                <label for="shipping_phone">Số điện thoại người nhận <span class="text-danger recipient-required" style="display: none;">*</span></label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Ghi chú -->
+                                <div class="form-floating mb-4">
+                                    <textarea class="form-control" id="c_order_notes" name="c_order_notes" 
+                                        style="height: 100px" placeholder="Nhập ghi chú"></textarea>
+                                    <label for="c_order_notes">Ghi chú đơn hàng</label>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="row mb-5">
-                        <div class="col-md-12">
-                            <h2 class="h3 mb-3 text-black">Đơn hàng của bạn</h2>
-                            <div class="p-3 p-lg-5 border bg-white">
-                                <table class="table site-block-order-table mb-5">
-                                    <thead>
-                                        <th>Sản phẩm</th>
-                                        <th>Tổng</th>
-                                    </thead>
-                                    <tbody>
-                                        @php
-                                            // Helper function to safely handle both JSON strings and arrays
-                                            function getImagesArray($images) {
-                                                if (is_array($images)) {
-                                                    return $images;
-                                                }
-                                                if (is_string($images)) {
-                                                    $decoded = json_decode($images, true);
-                                                    return is_array($decoded) ? $decoded : [];
-                                                }
-                                                return [];
-                                            }
-                                        @endphp
-                                        @if(isset($variant))
-                                            <tr>
-                                                <td style="vertical-align:middle;">
-                                                    <div class="d-flex align-items-center gap-3">
-                                                        @php
-                                                            $variantImages = getImagesArray($variant->images);
-                                                            if (empty($variantImages) || !$variantImages[0]) {
-                                                                // Lấy ảnh sản phẩm cha nếu biến thể không có ảnh
-                                                                $productImages = getImagesArray($variant->product->images ?? []);
-                                                                $variantImage = $productImages[0] ?? 'uploads/default/default.jpg';
-                                                            } else {
-                                                                $variantImage = $variantImages[0];
-                                                            }
-                                                        @endphp
-                                                        <img src="{{ asset($variantImage) }}" alt="Ảnh sản phẩm" style="width:64px;height:64px;object-fit:cover;border-radius:8px;border:1px solid #eee;">
-                                                        <div>
-                                                            <div class="fw-bold">{{ $variant->product->name }}</div>
-                                                            <div class="small text-muted">Biến thể:
+
+                        <!-- Phương thức thanh toán -->
+                        <div class="checkout-section mb-4">
+                            <div class="section-header mb-4">
+                                <div class="section-icon">
+                                    <i class="fas fa-credit-card"></i>
+                                </div>
+                                <h2>Phương thức thanh toán</h2>
+                            </div>
+                            <div class="section-content">
+                                    <div class="payment-methods">
+                                    <label class="payment-method-option">
+                                        <input type="radio" name="payment_method" value="cod" checked>
+                                        <span class="payment-method-content">
+                                            <img src="{{ asset('/images/logo/cod.png') }}" alt="COD">
+                                            <div class="payment-method-info">
+                                                <span class="payment-method-name">Thanh toán khi nhận hàng (COD)</span>
+                                                <span class="payment-method-desc">Thanh toán bằng tiền mặt khi nhận hàng</span>
+                                            </div>
+                                        </span>
+                                        </label>
+                                    <label class="payment-method-option">
+                                        <input type="radio" name="payment_method" value="vnpay">
+                                        <span class="payment-method-content">
+                                            <img src="{{ asset('/images/logo-primary.svg') }}" alt="VNPay">
+                                            <div class="payment-method-info">
+                                                <span class="payment-method-name">Thanh toán qua VNPay</span>
+                                                <span class="payment-method-desc">Thanh toán an toàn với VNPay</span>
+                                            </div>
+                                        </span>
+                                        </label>
+                                    </div>
+                            </div>
+                            </div>
+                        </form>
+                </div>
+
+                <div class="col-lg-4">
+                    <div class="order-summary-sticky">
+                        <!-- Thông tin đơn hàng -->
+                        <div class="checkout-section">
+                            <div class="section-header mb-4">
+                                <div class="section-icon">
+                                    <i class="fas fa-shopping-cart"></i>
+                                </div>
+                                <h2>Đơn hàng của bạn</h2>
+                            </div>
+                            <div class="section-content">
+                                <div class="order-items">
+                                    @if(isset($variant))
+                                        <div class="order-item">
+                                            <div class="item-image">
+                                                <img src="{{ asset($variant->product->default_variant_image ?? 'images/no-image.png') }}" 
+                                                    alt="{{ $variant->product->name }}">
+                        </div>
+                                            <div class="item-info">
+                                                <h4>{{ $variant->product->name }}</h4>
+                                                <div class="item-variants">
                                                                 @foreach($attributes as $type => $value)
-                                                                    <span class="badge bg-light text-dark border me-1">{{ $type }}: {{ $value }}</span>
+                                                        <span class="variant-badge">{{ $type }}: {{ $value }}</span>
                                                                 @endforeach
+                                                            </div>
+                                                <div class="item-price">
+                                                    <span class="price">{{ number_format($variant->selling_price, 0, ',', '.') }} VNĐ</span>
+                                                    <span class="quantity">x {{ $quantity }}</span>
                                                             </div>
                                                         </div>
                                                     </div>
-                                                </td>
-                                                <td style="vertical-align:middle;">
-                                                    <span class="fw-bold">{{ number_format($variant->selling_price, 0, ',', '.') }} VNĐ</span><br>
-                                                    <span class="text-muted small">x {{ $quantity }}</span>
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td class="text-black font-weight-bold"><strong>Tạm tính</strong></td>
-                                                <td class="text-black">{{ number_format($variant->selling_price * $quantity, 0, ',', '.') }} VNĐ</td>
-                                            </tr>
-                                            <tr id="voucher-discount-row" style="display: none;">
-                                                <td class="text-black font-weight-bold"><strong>Giảm giá</strong></td>
-                                                <td class="text-black text-success">-<span id="voucher-discount-amount">0</span> VNĐ</td>
-                                            </tr>
-                                            <tr>
-                                                <td class="text-black font-weight-bold"><strong>Tổng cộng</strong></td>
-                                                <td class="text-black font-weight-bold">
-                                                    <strong id="final-total">{{ number_format($variant->selling_price * $quantity, 0, ',', '.') }} VNĐ</strong>
-                                                </td>
-                                            </tr>
                                         @else
                                             @foreach($cartItems as $item)
-                                                <tr>
-                                                    <td style="vertical-align:middle;">
-                                                        <div class="d-flex align-items-center gap-3">
-                                                            @php
-                                                                $imageUrl = 'assets/images/default-product.png';
-                                                                if (!empty($item->variant) && !empty($item->variant->images)) {
-                                                                    $variantImages = getImagesArray($item->variant->images);
-                                                                    if (is_array($variantImages) && !empty($variantImages[0])) {
-                                                                        $imageUrl = $variantImages[0];
-                                                                    }
-                                                                } elseif (!empty($item->product) && !empty($item->product->images)) {
-                                                                    $productImages = getImagesArray($item->product->images);
-                                                                    if (is_array($productImages) && !empty($productImages[0])) {
-                                                                        $imageUrl = $productImages[0];
-                                                                    }
-                                                                }
-                                                            @endphp
-                                                            <img src="{{ asset($imageUrl) }}" alt="Ảnh sản phẩm" style="width:64px;height:64px;object-fit:cover;border-radius:8px;border:1px solid #eee;">
-                                                            <div>
-                                                                <div class="fw-bold">{{ $item->product->name }}</div>
+                                            <div class="order-item">
+                                                <div class="item-image">
+                                                    @if($item->variant && $item->variant->image)
+                                                        <img src="{{ asset($item->variant->image) }}" 
+                                                            alt="{{ $item->product->name }}">
+                                                    @elseif($item->product && $item->product->default_variant_image)
+                                                        <img src="{{ asset($item->product->default_variant_image) }}" 
+                                                            alt="{{ $item->product->name }}">
+                                                    @else
+                                                        <img src="{{ asset('images/no-image.png') }}" 
+                                                            alt="{{ $item->product->name }}">
+                                                    @endif
+                                                </div>
+                                                <div class="item-info">
+                                                    <h4>{{ $item->product->name }}</h4>
                                                                 @if($item->variant)
-                                                                    <div class="small text-muted">
+                                                        <div class="item-variants">
                                                                         @foreach($item->variant->combinations as $comb)
-                                                                            <span class="badge bg-light text-dark border me-1">
+                                                                <span class="variant-badge">
                                                                                 {{ $comb->attributeValue->attributeType->name }}: 
                                                                                 {{ is_array($comb->attributeValue->value) ? $comb->attributeValue->value[0] : $comb->attributeValue->value }}
                                                                             </span>
                                                                         @endforeach
                                                                     </div>
                                                                 @endif
+                                                    <div class="item-price">
+                                                        <span class="price">
+                                                            {{ number_format($item->variant ? $item->variant->selling_price : $item->product->selling_price, 0, ',', '.') }} VNĐ
+                                                        </span>
+                                                        <span class="quantity">x {{ $item->quantity }}</span>
+                                                    </div>
                                                             </div>
                                                         </div>
-                                                    </td>
-                                                    <td style="vertical-align:middle;">
-                                                        <span class="fw-bold">{{ number_format($item->variant ? $item->variant->selling_price : $item->product->selling_price, 0, ',', '.') }} VNĐ</span><br>
-                                                        <span class="text-muted small">x {{ $item->quantity }}</span>
-                                                    </td>
-                                                </tr>
                                             @endforeach
-                                            <tr>
-                                                <td class="text-black font-weight-bold"><strong>Tạm tính</strong></td>
-                                                <td class="text-black">{{ number_format($subtotal, 0, ',', '.') }} VNĐ</td>
-                                            </tr>
-                                            <tr id="voucher-discount-row" style="display: none;">
-                                                <td class="text-black font-weight-bold"><strong>Giảm giá</strong></td>
-                                                <td class="text-black text-success">-<span id="voucher-discount-amount">0</span> VNĐ</td>
-                                            </tr>
-                                            <tr>
-                                                <td class="text-black font-weight-bold"><strong>Tổng cộng</strong></td>
-                                                <td class="text-black font-weight-bold">
-                                                    <strong id="final-total">{{ number_format($subtotal, 0, ',', '.') }} VNĐ</strong>
-                                                </td>
-                                            </tr>
+                                    @endif
+                                </div>
+
+                                <!-- Mã giảm giá -->
+                                <div class="voucher-section my-4">
+                                    <div class="voucher-input">
+                                        <input type="text" class="form-control" id="c_code" 
+                                            placeholder="Nhập mã giảm giá"
+                                            {{ isset($hasDiscountedProducts) && $hasDiscountedProducts ? 'disabled' : '' }}>
+                                        <button type="button" class="btn-apply" onclick="checkVoucher()">
+                                            <i class="fas fa-check"></i>
+                                        </button>
+                                    </div>
+                                    @if(isset($hasDiscountedProducts) && $hasDiscountedProducts)
+                                        <div class="voucher-notice">
+                                            <i class="fas fa-info-circle"></i>
+                                            <span>Không thể áp dụng mã giảm giá cho sản phẩm đang khuyến mãi</span>
+                                        </div>
                                         @endif
-                                    </tbody>
-                                </table>
+                                    <div id="voucher-message" class="voucher-message"></div>
+                                </div>
+
+                                <!-- Tổng tiền -->
+                                <div class="order-total mt-4">
+                                    <div class="total-row">
+                                        <span>Tạm tính</span>
+                                        <span>{{ number_format(isset($variant) ? $variant->selling_price * $quantity : $subtotal, 0, ',', '.') }} VNĐ</span>
+                                    </div>
+                                    <div class="total-row" id="voucher-discount-row" style="display: none;">
+                                        <span>Giảm giá</span>
+                                        <span class="discount">-<span id="voucher-discount-amount">0</span> VNĐ</span>
+                                    </div>
+                                    <div class="total-row grand-total">
+                                        <span>Tổng cộng</span>
+                                        <span id="final-total">{{ number_format(isset($variant) ? $variant->selling_price * $quantity : $subtotal, 0, ',', '.') }} VNĐ</span>
+                                    </div>
+                                </div>
+
+                                <button type="submit" class="btn-place-order mt-4" form="checkoutForm">
+                                    <i class="fas fa-lock"></i>
+                                    <span>Đặt hàng</span>
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -317,13 +849,12 @@
             </div>
         </div>
     </div>
-    {{-- <script>
-        localStorage.removeItem('checkout_product');
-    </script> --}}
+</div>
+
     <script>
     document.addEventListener('DOMContentLoaded', function() {
         const checkoutForm = document.getElementById('checkoutForm');
-        const checkoutButton = document.getElementById('checkout-button');
+        const checkoutButton = document.querySelector('.btn-place-order');
         
         checkoutForm.addEventListener('submit', function(e) {
             const paymentMethod = document.querySelector('input[name="payment_method"]:checked')?.value;
@@ -437,4 +968,50 @@
         });
     });
     </script>
+    <script>
+document.addEventListener('DOMContentLoaded', function() {
+    function hideAlert(alertId) {
+        const alert = document.getElementById(alertId);
+        if (alert) {
+            setTimeout(() => {
+                alert.style.display = 'none';
+            }, 3000);
+        }
+    }
+
+    // Tự động ẩn tất cả các thông báo lỗi
+    document.querySelectorAll('.custom-alert').forEach((alert, index) => {
+        alert.id = `error-alert-${index}`;
+        hideAlert(`error-alert-${index}`);
+    });
+});
+</script>
 @endsection
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const shipToDifferentCheckbox = document.getElementById('ship_to_different');
+    const recipientInfo = document.querySelector('.recipient-info');
+    const recipientInputs = document.querySelectorAll('input[name^="shipping_"]');
+    const requiredMarks = document.querySelectorAll('.recipient-required');
+    
+    function toggleRecipientFields(isChecked) {
+        recipientInfo.style.display = isChecked ? 'block' : 'none';
+        recipientInputs.forEach(input => {
+            if (input.id !== 'shipping_email') { // Email không bắt buộc
+                input.required = isChecked;
+            }
+        });
+        requiredMarks.forEach(mark => {
+            mark.style.display = isChecked ? 'inline' : 'none';
+        });
+    }
+    
+    shipToDifferentCheckbox.addEventListener('change', function() {
+        toggleRecipientFields(this.checked);
+    });
+    
+    // Initialize on page load
+    toggleRecipientFields(shipToDifferentCheckbox.checked);
+});
+</script>

@@ -285,7 +285,7 @@
                 class="rounded-circle d-flex align-items-center justify-content-center icon-circle-btn">
                 <i class="fas fa-heart text-white"></i>
             </a>
-            
+
             <!-- Giỏ hàng -->
             <a class="rounded-circle d-flex align-items-center justify-content-center icon-circle-btn position-relative"
                 href="{{ route('cart') }}">
@@ -305,19 +305,19 @@
                     href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                     {{-- Nếu muốn dùng avatar thật --}}
                     @auth
-                        <img src="{{ Auth::user()->avatar ?? asset('uploads/default/avatar_default.png') }}" alt="Avatar"
-                            class="rounded-circle" width="46" height="46">
+                        <img src="{{ Auth::user()->avatar ? asset(Auth::user()->avatar) : asset('uploads/default/avatar_default.png') }}"
+                            alt="Avatar" class="rounded-circle" width="46" height="46">
                     @else
                         {{-- Nếu chưa đăng nhập thì dùng icon --}}
                         <i class="fas fa-user text-white"></i>
                     @endauth
                 </a>
-
-              <ul class="dropdown-menu dropdown-menu-bg" aria-labelledby="userDropdown">
+                <ul class="dropdown-menu dropdown-menu-bg" aria-labelledby="userDropdown">
                     {{-- Hiển thị "Tra cứu đơn hàng" nếu chưa đăng nhập hoặc là người dùng bình thường --}}
                     @guest
                         <li>
-                            <a class="dropdown-item text-white" href="{{ route('order.guest.tracking') }}">Tra cứu đơn hàng</a>
+                            <a class="dropdown-item text-white" href="{{ route('order.guest.tracking') }}">Tra cứu đơn
+                                hàng</a>
                         </li>
                     @else
                         @unless (Auth::user()->hasRole(['admin', 'staff']))
@@ -353,6 +353,7 @@
                         </li>
                     @endguest
                 </ul>
+
             </div>
 
         </div>

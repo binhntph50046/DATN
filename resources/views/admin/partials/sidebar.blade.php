@@ -164,6 +164,12 @@
                                 <span class="pc-mtext">FAQ</span>
                             </a>
                         </li>
+                        <li class="pc-item">
+                            <a href="{{ route('admin.reviews.index') }}" class="pc-link">
+                                <span class="pc-micon"><i class="ti ti-star"></i></span>
+                                <span class="pc-mtext">Đánh giá sản phẩm</span>
+                            </a>
+                        </li>
                     </ul>
                 </li>
 

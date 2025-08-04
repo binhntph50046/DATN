@@ -131,7 +131,7 @@
                                                 <td>
                                                     {{ $voucher->purpose == 'free_shipping' ? 'Miễn phí vận chuyển' : 'Giảm giá sản phẩm' }}
                                                 </td>
-                                                <td class="text-start">{{ $voucher->description ?? '-' }}</td>
+                                                <td class="text-start">{{ Str::limit($voucher->description ?? '-', 30) }}</td>
                                                 <td>
                                                     {{ $voucher->type === 'percentage' ? $voucher->value . '%' : number_format($voucher->value, 0, ',', '.') . ' VND' }}
                                                 </td>

@@ -41,7 +41,7 @@ class ProfileController
 
             $avatar = $request->file('avatar');
             $avatarName = time() . '.' . $avatar->getClientOriginalExtension();
-            
+
             // Create directory if it doesn't exist
             $uploadPath = 'uploads/avatar';
             if (!file_exists(public_path($uploadPath))) {
@@ -70,17 +70,33 @@ class ProfileController
 
     public function updatePassword(Request $request)
     {
-        $request->validate([
-            'current_password' => ['required', 'current_password'],
+        $user = auth()->user();
+
+        // Kiểm tra xem user hiện tại có mật khẩu chưa
+        $hasPassword = !is_null($user->password);
+
+        // Validation tùy theo việc user có password hay không
+        $rules = [
             'password' => ['required', 'string', 'min:8', 'confirmed'],
+        ];
+
+        if ($hasPassword) {
+            $rules['current_password'] = ['required', 'current_password'];
+        }
+
+        $request->validate($rules, [
+            'password.confirmed' => 'Xác nhận mật khẩu không khớp.',
+            'current_password.required' => 'Vui lòng nhập mật khẩu hiện tại.',
+            'current_password.current_password' => 'Mật khẩu hiện tại không đúng.',
         ]);
 
-        auth()->user()->update([
-            'password' => Hash::make($request->password)
+        $user->update([
+            'password' => Hash::make($request->password),
         ]);
 
         return back()->with('success', 'Mật khẩu đã được cập nhật thành công.');
     }
+
 
 
     public function orders()
@@ -90,5 +106,4 @@ class ProfileController
             ->paginate(10);
         return view('client.profile.orders', compact('orders'));
     }
-
 }

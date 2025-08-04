@@ -24,7 +24,7 @@ class GoogleController
                 ['email' => $googleUser->getEmail()],
                 [
                     'name' => $googleUser->getName(),
-                    'password' => bcrypt(Str::random(16)),
+                    'password' => null,
                     'provider' => 'google',
                     'provider_id' => $googleUser->getId(),
                     'email_verified_at' => now(),

@@ -26,7 +26,7 @@ class FacebookController
                 ['email' => $fbUser->getEmail()],
                 [
                     'name' => $fbUser->getName(),
-                    'password' => bcrypt(Str::random(16)),
+                    'password' => null,
                     'provider' => 'facebook',
                     'provider_id' => $fbUser->getId(),
                     'email_verified_at' => now(),

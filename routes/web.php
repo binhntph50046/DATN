@@ -35,7 +35,7 @@ use App\Http\Controllers\Admin\AdminProfileController;
 use App\Http\Controllers\Admin\SitemapController;
 use App\Http\Controllers\Admin\RobotController;
 use App\Http\Controllers\Admin\NotifyController;
-
+use App\Http\Controllers\admin\ProductReviewController as AdminProductReviewController;
 // Client Controllers
 use App\Http\Controllers\client\HomeController;
 use App\Http\Controllers\client\ShopController;
@@ -379,8 +379,9 @@ Route::prefix('admin')
             Route::delete('/{id}/force-delete', [BlogController::class, 'forceDelete'])->middleware('permission:delete blogs')->name('forceDelete');
             
         });
-
         
+        Route::get('reviews', [AdminProductReviewController::class, 'index'])->name('reviews.index');
+        Route::get('reviews/{id}', [AdminProductReviewController::class, 'show'])->name('reviews.show');
 
         // Attribute Management
         Route::prefix('attributes')->name('attributes.')->group(function () {

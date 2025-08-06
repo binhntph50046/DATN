@@ -194,7 +194,7 @@
 
                 <div class="col-lg-4">
                     <div class="popular-content" data-aos="fade-left" data-aos-delay="400">
-                        <h2 class="section-title">Sản Phẩm Bán Chạy Nhất</h2>
+                        <h2 class="section-title">Sản Phẩm Thịnh Hành</h2>
                         <p class="mb-4">Khám phá những thiết bị Apple được ưa chuộng nhất hiện nay – nơi hội tụ đỉnh cao
                             công nghệ và thiết kế tinh tế. Đáp ứng mọi nhu cầu từ giải trí đến công việc.</p>
 
@@ -733,7 +733,7 @@
                 speed: 300,
                 slidesToShow: 3,
                 slidesToScroll: 1,
-                autoplay: false,
+                autoplay: true,
                 autoplaySpeed: 3000,
                 arrows: true,
                 responsive: [{
@@ -1232,11 +1232,12 @@
 
 <!-- Nút So sánh nổi -->
 <div id="compareButton"
-    style="display:none; position:fixed; bottom:80px; right:30px; z-index:9999; background:#007bff; color:white; padding:15px 25px; border-radius:25px; box-shadow:0 4px 12px rgba(0,123,255,0.3); cursor:pointer; transition:all 0.3s ease;"
+    style="display:none; position:fixed; bottom:20px; left:50%; transform:translateX(-50%); z-index:9999; background:#007bff; color:white; padding:15px 25px; border-radius:25px; box-shadow:0 4px 12px rgba(0,123,255,0.3); cursor:pointer; transition:all 0.3s ease;"
     onclick="goToCompare()">
     <i class="fa-solid fa-code-compare me-2"></i>
     <span id="compareButtonText">So sánh ngay</span>
     <span id="compareCount" class="badge bg-light text-dark ms-2">0</span>
 </div>
+
 
 @endsection

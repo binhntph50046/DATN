@@ -45,7 +45,10 @@
                                     
                                         <td>{{ $invoice->issued_at ? $invoice->issued_at->format('d/m/Y H:i') : '' }}</td>
                                         <td>
-                                            <a href="{{ route('admin.invoices.show', $invoice->id) }}" class="btn btn-primary btn-sm">Xem</a>
+                                             <a href="{{ route('admin.invoices.show', $invoice->id) }}"
+                                                class="btn btn-sm btn-outline-primary rounded-3 me-1" title="Xem chi tiết">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
                                            
                                         </td>
                                     </tr>

@@ -66,7 +66,7 @@ class AuthController
         // Tạo link xác minh thủ công
         $verificationUrl = URL::temporarySignedRoute(
             'verification.verify',
-            Carbon::now()->addMinutes(60), 
+            Carbon::now()->addMinutes(60),
             [
                 'id' => $user->id,
                 'hash' => sha1($user->email),
@@ -77,20 +77,20 @@ class AuthController
         Mail::to($user->email)->send(new VerifyEmailCustom($user, $verificationUrl));
 
         // Gửi event realtime
-            event(new UserCreated($user));
+        event(new UserCreated($user));
 
-            // Gửi notification vào database cho tất cả admin
-            $admins = User::role('admin')->get(); 
-            foreach ($admins as $admin) {
-                $admin->notify(new AdminDatabaseNotification([
-                    'type' => 'user_created',
-                    'title' => 'Tài khoản mới',
-                    'message' => $user->name . ' vừa đăng ký.',
-                    'user_id' => $user->id,
-                    'url' => route('admin.users.index'), // link đến trang quản lý người dùng
-                    'created_at' => now(),
-                ]));
-            }
+        // Gửi notification vào database cho tất cả admin
+        $admins = User::role('admin')->get();
+        foreach ($admins as $admin) {
+            $admin->notify(new AdminDatabaseNotification([
+                'type' => 'user_created',
+                'title' => 'Tài khoản mới',
+                'message' => $user->name . ' vừa đăng ký.',
+                'user_id' => $user->id,
+                'url' => route('admin.users.index'), // link đến trang quản lý người dùng
+                'created_at' => now(),
+            ]));
+        }
 
         return redirect('/login')->with('success', 'Đăng ký thành công. Vui lòng kiểm tra email để xác minh tài khoản!');
     }
@@ -132,8 +132,7 @@ class AuthController
         }
 
         return back()->withErrors([
-            'email' => 'Thông tin đăng nhập không chính xác.',
-            'password' => 'Mật khẩu không đúng.',
+            'email' => 'Email hoặc mật khẩu không đúng.',
         ])->withInput();
     }
 

@@ -52,7 +52,7 @@ class FacebookController
             if ($hasAccess) {
                 return redirect('/admin');
             } else {
-                return redirect('/');
+                return redirect('/')->with('success', 'Đăng nhập Facebook thành công!');
             }            
 
         } catch (\Exception $e) {

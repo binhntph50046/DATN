@@ -1,5 +1,5 @@
 @extends('admin.layouts.app')
-@section('title', 'Thùng rác - Quản lý người dùng')
+@section('title', 'Lý do khóa tài khoản')
 
 <style>
     .custom-shadow {
@@ -19,11 +19,12 @@
                 <div class="row align-items-center">
                     <div class="col-md-12">
                         <div class="page-header-title">
-                            <h5 class="m-b-10">Thùng rác</h5>
+                            <h5 class="m-b-10">Lý do khóa tài khoản</h5>
                         </div>
                         <ul class="breadcrumb">
                             <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Trang chủ</a></li>
-                            <li class="breadcrumb-item active" aria-current="page">Thùng rác</li>
+                            <li class="breadcrumb-item"><a href="{{ route('admin.users.index') }}">Người dùng</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">Lý do khóa</li>
                         </ul>
                     </div>
                 </div>
@@ -35,7 +36,7 @@
             <div class="col-12">
                 <div class="card">
                     <div class="card-header d-flex justify-content-between align-items-center">
-                        <h5>Người dùng đã xóa</h5>
+                        <h5>Tài khoản bị khóa</h5>
                         <div>
                             <a href="{{ route('admin.users.index') }}" class="btn btn-primary btn-sm">
                                 <i class="ti ti-arrow-left"></i> Quay lại
@@ -58,12 +59,13 @@
                                         <th>Tên</th>
                                         <th>Email</th>
                                         <th>Vai trò</th>
-                                        <th>Trạng thái</th>
+                                        <th>Lý do khóa</th>
+                                        <th>Ngày khóa</th>
                                         <th class="text-center">Hành động</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @forelse ($users as $user)
+                                    @forelse ($bannedUsers as $user)
                                         <tr>
                                             <td>{{ $user->id }}</td>
                                             <td>
@@ -78,36 +80,37 @@
                                             <td>{{ $user->email }}</td>
                                             <td>{{ ucfirst($user->getRoleNames()->first() ?? 'Không có vai trò') }}</td>
                                             <td>
-                                                <span class="badge {{ $user->status === 'active' ? 'bg-success' : 'bg-danger' }}">
-                                                    {{ ucfirst($user->status) }}
+                                                <div class="text-danger fw-semibold" 
+                                                     data-bs-toggle="tooltip" 
+                                                     data-bs-placement="top" 
+                                                     title="{{ $user->ban_reason }}">
+                                                    {{ Str::limit($user->ban_reason, 40) }}
+                                                    @if(strlen($user->ban_reason) > 40)
+                                                        <i class="ti ti-dots text-muted"></i>
+                                                    @endif
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <span class="text-muted">
+                                                    {{ $user->updated_at ? $user->updated_at->format('d/m/Y H:i') : 'N/A' }}
                                                 </span>
                                             </td>
                                             <td class="text-center">
-                                                <form action="{{ route('admin.users.restore', $user->id) }}" method="POST" class="d-inline">
-                                                    @csrf
-                                                    <button type="submit" class="btn btn-success btn-sm me-1" title="Khôi phục">
-                                                        <i class="ti ti-restore"></i> Khôi phục
-                                                    </button>
-                                                </form>
-                                                <form action="{{ route('admin.users.forceDelete', $user->id) }}" method="POST" class="d-inline">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Bạn có chắc chắn muốn xóa vĩnh viễn?')" title="Xóa vĩnh viễn">
-                                                        <i class="ti ti-trash"></i> Xóa vĩnh viễn
-                                                    </button>
-                                                </form>
+                                                <a href="{{ route('admin.users.edit', $user->id) }}" class="btn btn-warning btn-sm me-1" title="Sửa">
+                                                    <i class="ti ti-edit"></i> Sửa
+                                                </a>
                                             </td>
                                         </tr>
                                     @empty
                                         <tr>
-                                            <td colspan="7" class="text-center">Không tìm thấy người dùng nào đã xóa.</td>
+                                            <td colspan="8" class="text-center">Không tìm thấy tài khoản nào bị khóa.</td>
                                         </tr>
                                     @endforelse
                                 </tbody>
                             </table>
 
                             <!-- Pagination -->
-                            {{ $users->links() }}
+                            {{ $bannedUsers->links() }}
                         </div>
                     </div>
                 </div>
@@ -117,3 +120,13 @@
 </div>
 
 @endsection
+
+@push('scripts')
+<script>
+    // Initialize tooltips
+    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl)
+    })
+</script>
+@endpush 

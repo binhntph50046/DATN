@@ -302,6 +302,7 @@ Route::prefix('admin')
             Route::get('/create', [UserController::class, 'create'])->middleware('permission:create users')->name('create');
             Route::post('/', [UserController::class, 'store'])->middleware('permission:create users')->name('store');
             Route::get('/trash', [UserController::class, 'trash'])->name('trash');
+            Route::get('/ban-reasons', [UserController::class, 'banReasons'])->name('ban-reasons');
             Route::get('/{user}', [UserController::class, 'show'])->name('show');
             Route::get('/{user}/edit', [UserController::class, 'edit'])->middleware('permission:edit users')->name('edit');
             Route::put('/{user}', [UserController::class, 'update'])->middleware('permission:edit users')->name('update');

@@ -142,13 +142,13 @@ input[type="checkbox"] {
             <div class="upload-info">Vui lòng mô tả chi tiết lý do hoàn hàng</div>
         </div>
         <div class="mb-4">
-            <label for="image" class="form-label">Hình ảnh minh chứng</label>
-            <input type="file" name="image" id="image" class="form-control" accept="image/*">
+            <label for="image" class="form-label">Hình ảnh minh chứng <span class="text-danger">*</span></label>
+            <input type="file" name="image" id="image" class="form-control" accept="image/*" required>
             <div class="upload-info">Chấp nhận các định dạng: JPG, PNG, JPEG. Kích thước tối đa: 2MB</div>
         </div>
         <div class="mb-4">
-            <label for="proof_video" class="form-label">Video minh chứng</label>
-            <input type="file" name="proof_video" id="proof_video" class="form-control" accept="video/mp4,video/mov,video/avi">
+            <label for="proof_video" class="form-label">Video minh chứng <span class="text-danger">*</span></label>
+            <input type="file" name="proof_video" id="proof_video" class="form-control" accept="video/mp4,video/mov,video/avi" required>
             <div class="upload-info">Chấp nhận các định dạng: MP4, MOV, AVI. Kích thước tối đa: 20MB</div>
         </div>
         <div class="mb-4">

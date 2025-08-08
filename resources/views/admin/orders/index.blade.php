@@ -38,7 +38,8 @@
                                         <option value="confirmed" {{ request('status') == 'confirmed' ? 'selected' : '' }}>Đã xác nhận</option>
                                         <option value="preparing" {{ request('status') == 'preparing' ? 'selected' : '' }}>Đang chuẩn bị</option>
                                         <option value="shipping" {{ request('status') == 'shipping' ? 'selected' : '' }}>Đang giao hàng</option>
-                                        <option value="completed" {{ request('status') == 'completed' ? 'selected' : '' }}>Hoàn thành</option>
+                                        <option value="delivered" {{ request('status') == 'delivered' ? 'selected' : '' }}>Đã giao</option>
+                                        <option value="completed" {{ request('status') == 'completed' ? 'selected' : '' }}>Đã hoàn thành</option>
                                         <option value="cancelled" {{ request('status') == 'cancelled' ? 'selected' : '' }}>Đã hủy</option>
                                     </select>
                                 </div>
@@ -159,6 +160,7 @@
                                                         'confirmed' => 'bg-info',
                                                         'preparing' => 'bg-primary',
                                                         'shipping' => 'bg-warning text-dark',
+                                                        'delivered' => 'bg-success',
                                                         'completed' => 'bg-success',
                                                         'cancelled' => 'bg-danger',
                                                         'returned' => 'bg-secondary',
@@ -170,7 +172,8 @@
                                                         'confirmed' => 'Đã xác nhận',
                                                         'preparing' => 'Đang chuẩn bị',
                                                         'shipping' => 'Đang giao hàng',
-                                                        'completed' => 'Hoàn thành',
+                                                        'delivered' => 'Đã giao',
+                                                        'completed' => 'Đã hoàn thành',
                                                         'cancelled' => 'Đã hủy',
                                                         'returned' => 'Đã hoàn đơn',
                                                         'partially_returned' => 'Hoàn một phần',

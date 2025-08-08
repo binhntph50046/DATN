@@ -25,9 +25,9 @@ class OrderReturnController
             abort(403);
         }
 
-        // Kiểm tra xem đơn hàng đã hoàn thành chưa
-        if ($order->status !== 'completed') {
-            return redirect()->route('order.index')->with('error', 'Chỉ có thể yêu cầu hoàn hàng cho đơn hàng đã hoàn thành.');
+        // Kiểm tra xem đơn hàng đã được giao chưa
+        if ($order->status !== 'delivered') {
+            return redirect()->route('order.index')->with('error', 'Chỉ có thể yêu cầu hoàn hàng cho đơn hàng đã được giao.');
         }
 
         // Kiểm tra xem đã có yêu cầu hoàn hàng nào chưa
@@ -51,8 +51,8 @@ class OrderReturnController
         // Validate dữ liệu
         $request->validate([
             'reason' => 'required|string|min:10',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
-            'proof_video' => 'nullable|mimes:mp4,mov,avi|max:20480', // Max 20MB cho video
+            'image' => 'required|image|mimes:jpeg,png,jpg|max:2048',
+            'proof_video' => 'required|mimes:mp4,mov,avi|max:20480', // Max 20MB cho video
             'bank_info' => 'required|string|min:10'
         ]);
 
@@ -68,31 +68,25 @@ class OrderReturnController
             return back()->with('error', 'Bạn phải chọn ít nhất 1 sản phẩm để hoàn hàng.');
         }
 
-        // Xử lý upload ảnh nếu có
-        $imagePath = null;
-        if ($request->hasFile('image')) {
-            $image = $request->file('image');
-            $imageName = time() . '_' . $image->getClientOriginalName();
-            $uploadPath = public_path('uploads/returns');
-            if (!file_exists($uploadPath)) {
-                mkdir($uploadPath, 0755, true);
-            }
-            $image->move($uploadPath, $imageName);
-            $imagePath = 'uploads/returns/' . $imageName;
+        // Xử lý upload ảnh (bắt buộc)
+        $image = $request->file('image');
+        $imageName = time() . '_' . $image->getClientOriginalName();
+        $uploadPath = public_path('uploads/returns');
+        if (!file_exists($uploadPath)) {
+            mkdir($uploadPath, 0755, true);
         }
+        $image->move($uploadPath, $imageName);
+        $imagePath = 'uploads/returns/' . $imageName;
 
-        // Xử lý upload video nếu có
-        $videoPath = null;
-        if ($request->hasFile('proof_video')) {
-            $video = $request->file('proof_video');
-            $videoName = time() . '_' . $video->getClientOriginalName();
-            $uploadPath = public_path('uploads/returns/videos');
-            if (!file_exists($uploadPath)) {
-                mkdir($uploadPath, 0755, true);
-            }
-            $video->move($uploadPath, $videoName);
-            $videoPath = 'uploads/returns/videos/' . $videoName;
+        // Xử lý upload video (bắt buộc)
+        $video = $request->file('proof_video');
+        $videoName = time() . '_' . $video->getClientOriginalName();
+        $uploadPath = public_path('uploads/returns/videos');
+        if (!file_exists($uploadPath)) {
+            mkdir($uploadPath, 0755, true);
         }
+        $video->move($uploadPath, $videoName);
+        $videoPath = 'uploads/returns/videos/' . $videoName;
 
         // Tạo yêu cầu hoàn hàng mới
         $orderReturn = OrderReturn::create([

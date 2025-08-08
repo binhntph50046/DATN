@@ -158,7 +158,7 @@ class CheckoutController
                 'c_email_address' => 'required|email|max:255',
                 'c_phone' => 'required|regex:/^([0-9\s\-\+\(\)]*)$/|min:10|max:11',
                 'c_address' => 'required|string|max:255',
-                'payment_method' => 'required|in:cod,vnpay',
+                'payment_method' => 'required|in:cod,bank_transfer,credit_card,vnpay',
                 'ship_to_different' => 'nullable|in:1',
             ];
 
@@ -256,7 +256,7 @@ class CheckoutController
                     'price' => $variant->selling_price,
                     'total' => $subtotal,
                 ]);
-                $variant->decrement('stock', $request->quantity);
+              
             } else {
                 if (!Auth::check()) {
                     throw new \Exception('Vui lòng đăng nhập để mua hàng!');
@@ -291,9 +291,7 @@ class CheckoutController
                         'price' => $price,
                         'total' => $total,
                     ]);
-                    if ($item->variant) {
-                        $variant->decrement('stock', $item->quantity);
-                    }
+                    // Bỏ trừ stock ở đây - sẽ trừ khi admin xác nhận
                 }
                 $cartItems->each->delete();
             }
@@ -417,7 +415,61 @@ class CheckoutController
             $subtotal += $price * $item->quantity;
         }
 
-        return view('client.checkout.index', compact('cartItems', 'subtotal'));
+        // Kiểm tra có sản phẩm khuyến mãi không
+        $hasDiscountedProducts = false;
+        foreach ($cartItems as $item) {
+            if ($item->product->is_discount) {
+                $hasDiscountedProducts = true;
+                break;
+            }
+        }
+
+        // Lấy danh sách voucher phù hợp
+        $availableVouchers = collect();
+        if (!$hasDiscountedProducts && $subtotal > 0) {
+            $availableVouchers = Voucher::where('is_active', 1)
+                ->where('expires_at', '>', now())
+                ->where(function($query) {
+                    $query->whereNull('usage_limit')
+                          ->orWhereRaw('used_count < usage_limit');
+                })
+                ->get()
+                ->filter(function($voucher) use ($subtotal) {
+                    // Kiểm tra giới hạn sử dụng cho từng user
+                    if ($voucher->per_user_limit) {
+                        $userUsedCount = 0;
+                        if (Auth::check()) {
+                            $userUsedCount = Order::where('user_id', Auth::id())
+                                ->where('voucher_id', $voucher->id)
+                                ->whereNotIn('status', ['cancelled']) // Không tính đơn hàng đã hủy
+                                ->count();
+                        }
+                        return $userUsedCount < $voucher->per_user_limit;
+                    }
+                    return true;
+                })
+                ->map(function($voucher) use ($subtotal) {
+                    // Tính toán số tiền giảm giá cho mỗi voucher
+                    $discountAmount = 0;
+                    switch ($voucher->type) {
+                        case 'percentage':
+                            $discountAmount = round(($subtotal * $voucher->value) / 100);
+                            break;
+                        case 'fixed':
+                            $discountAmount = min($voucher->value, $subtotal);
+                            break;
+                        case 'free_shipping':
+                            $discountAmount = 0;
+                            break;
+                    }
+                    
+                    // Thêm discount_amount vào voucher object
+                    $voucher->discount_amount = $discountAmount;
+                    return $voucher;
+                });
+        }
+
+        return view('client.checkout.index', compact('cartItems', 'subtotal', 'availableVouchers', 'hasDiscountedProducts'));
     }
 
     /**
@@ -492,6 +544,23 @@ class CheckoutController
                 ]);
             }
 
+            event(new OrderCreated($order));
+
+            // Lấy tất cả admin
+            $admins = User::role('admin')->get();
+
+            foreach ($admins as $admin) {
+                $admin->notify(new AdminDatabaseNotification([
+                    'type' => 'order_created',
+                    'title' => 'Đơn hàng mới',
+                    'message' => 'Khách hàng: ' . ($order->user ? $order->user->name : 'Khách vãng lai') . ', Đơn hàng #' . $order->id,
+                    'order_id' => $order->id,
+                    'user_id' => $order->user_id,
+                    'url' => route('admin.orders.show', $order->id),
+                    'created_at' => now(),
+                ]));
+            }
+
             // Cập nhật mã đơn hàng
             $order->update([
                 'order_code' => 'DH' . $order->id
@@ -515,27 +584,28 @@ class CheckoutController
                         'price' => $price,
                         'total' => $total,
                     ]);
-                    if ($item->variant) {
-                        $item->variant->decrement('stock', $item->quantity);
-                    }
+                    // Bỏ trừ stock ở đây - sẽ trừ khi admin xác nhận
                 }
                 $cartItems->each->delete();
             }
 
             // Gửi email hóa đơn
-            if ($order->shipping_email) {
-                $invoice = \App\Models\Invoice::create([
-                    'order_id' => $order->id,
-                    'invoice_code' => 'INV' . str_pad($order->id, 6, '0', STR_PAD_LEFT),
-                    'total' => $order->total_price,
-                    'issued_by' => null,
-                    'issued_at' => now(),
-                ]);
-                $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('admin.invoices.pdf', ['invoice' => $invoice]);
-                $pdfContent = $pdf->output();
-                // Mail::to($order->shipping_email)->send(new \App\Mail\InvoicePdfMail($invoice, $pdfContent));
+            try {
+                $toAddresses = config('mail.to.addresses');
+                Log::info('Danh sách email nhận:', ['emails' => $toAddresses]);
+
+                foreach ($toAddresses as $email) {
+                    try {
+                        Mail::to($email)->send(new OrderInvoice($order));
+                        Log::info('Gửi email thành công đến: ' . $email);
+                    } catch (\Exception $e) {
+                        Log::error('Lỗi gửi email đến ' . $email . ': ' . $e->getMessage());
+                    }
+                }
+            } catch (\Exception $e) {
+                // Log lỗi gửi email nhưng không ảnh hưởng đến flow chính
+                Log::error('Lỗi gửi email hóa đơn: ' . $e->getMessage());
             }
-            
 
             DB::commit();
 
@@ -608,7 +678,18 @@ class CheckoutController
                     if (Auth::check()) {
                         $cart = \App\Models\Cart::where('user_id', Auth::id())->first();
                         if ($cart) {
-                            foreach ($cart->cartItems()->with('product') as $item) {
+                            // Nếu có selected_items (từ giỏ hàng), chỉ kiểm tra các sản phẩm được chọn
+                            if ($request->has('selected_items') && is_array($request->selected_items)) {
+                                $cartItems = $cart->cartItems()
+                                    ->whereIn('id', $request->selected_items)
+                                    ->with('product')
+                                    ->get();
+                            } else {
+                                // Nếu không có selected_items (mua ngay), kiểm tra tất cả sản phẩm trong giỏ hàng
+                                $cartItems = $cart->cartItems()->with('product')->get();
+                            }
+                            
+                            foreach ($cartItems as $item) {
                                 if ($item->product->is_discount) {
                                     throw new \Exception('⚠️ Không thể áp dụng mã giảm giá cho đơn hàng có sản phẩm đang khuyến mãi!');
                                 }
@@ -667,7 +748,18 @@ class CheckoutController
             }
 
             $subtotal = 0;
-            $cartItems = $cart->cartItems()->with(['product', 'variant'])->get();
+            
+            // Nếu có selected_items (từ giỏ hàng), chỉ tính tổng tiền của các sản phẩm được chọn
+            if ($request->has('selected_items') && is_array($request->selected_items)) {
+                $cartItems = $cart->cartItems()
+                    ->whereIn('id', $request->selected_items)
+                    ->with(['product', 'variant'])
+                    ->get();
+            } else {
+                // Nếu không có selected_items (mua ngay), tính tất cả sản phẩm trong giỏ hàng
+                $cartItems = $cart->cartItems()->with(['product', 'variant'])->get();
+            }
+            
             foreach ($cartItems as $item) {
                 $price = $item->variant ? $item->variant->selling_price : $item->product->selling_price;
                 $subtotal += $price * $item->quantity;
@@ -679,16 +771,26 @@ class CheckoutController
     private function redirectToVNPay($order)
     {
         // Chuyển hướng đến trang thanh toán VNPay với các thông tin cần thiết
-        return redirect()->route('vnpay.payment', [
-            'variant_id' => request('variant_id'),
-            'quantity' => request('quantity'),
+        $params = [
             'c_fname' => request('c_fname'),
             'c_email_address' => request('c_email_address'),
             'c_phone' => request('c_phone'),
             'c_address' => request('c_address'),
             'c_order_notes' => request('c_order_notes'),
             'voucher_code' => request('voucher_code')
-        ]);
+        ];
+
+        // Thêm thông tin tùy theo loại đặt hàng
+        if (request('variant_id')) {
+            // Trường hợp mua ngay
+            $params['variant_id'] = request('variant_id');
+            $params['quantity'] = request('quantity');
+            return redirect()->route('vnpay.payment', $params);
+        } else {
+            // Trường hợp từ giỏ hàng
+            $params['selected_items'] = request('selected_items');
+            return redirect()->route('cart.checkout.vnpay', $params);
+        }
     }
 
     private function redirectAfterOrder($order)

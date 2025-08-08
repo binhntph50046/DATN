@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use Illuminate\Routing\Controller;
 use App\Models\Order;
 use App\Models\OrderItem;
+use App\Models\ProductVariant;
 use Illuminate\Http\Request;
 use App\Events\OrderStatusUpdated;
 use Illuminate\Support\Facades\Mail;
@@ -96,12 +97,22 @@ class OrderController extends Controller
         if (isset($status[$order->status]) && in_array($new_status, $status[$order->status])) {
             $old_status = $order->status;
             
-            // Nếu chuyển sang trạng thái cancelled, giảm total_sold
+            // Nếu chuyển sang trạng thái cancelled, hoàn trả stock và giảm total_sold
             if ($new_status === 'cancelled' && in_array($old_status, ['confirmed', 'preparing', 'shipping', 'delivered'])) {
                 foreach ($order->items as $item) {
                     $product = $item->product;
                     if ($product) {
                         $product->decrement('total_sold', $item->quantity);
+                    }
+                    
+                    // Hoàn trả stock nếu đơn hàng đã được xác nhận trước đó
+                    if (in_array($old_status, ['confirmed', 'preparing', 'shipping', 'delivered'])) {
+                        if ($item->product_variant_id) {
+                            $variant = ProductVariant::find($item->product_variant_id);
+                            if ($variant) {
+                                $variant->increment('stock', $item->quantity);
+                            }
+                        }
                     }
                 }
             }
@@ -117,9 +128,26 @@ class OrderController extends Controller
                 $order->update(['status' => $new_status]);
             }
 
-            // Gửi email hóa đơn kèm PDF khi chuyển sang 'confirmed'
+            // Trừ stock khi chuyển sang trạng thái 'confirmed'
             if ($old_status !== 'confirmed' && $new_status === 'confirmed') {
                 try {
+                    // Trừ stock cho từng sản phẩm trong đơn hàng
+                    foreach ($order->items as $item) {
+                        if ($item->product_variant_id) {
+                            // Nếu có variant, trừ stock của variant
+                            $variant = ProductVariant::lockForUpdate()->find($item->product_variant_id);
+                            if ($variant) {
+                                if ($variant->stock < $item->quantity) {
+                                    throw new \Exception("Sản phẩm {$item->product->name} không đủ số lượng tồn kho!");
+                                }
+                                
+                                $oldStock = $variant->stock;
+                                $variant->decrement('stock', $item->quantity);
+                            }
+                        }
+                    }
+                    
+                    // Gửi email hóa đơn kèm PDF
                     if ($order->shipping_email) {
                         // Tạo hoặc lấy hóa đơn
                         $invoice = Invoice::where('order_id', $order->id)->first();
@@ -139,10 +167,19 @@ class OrderController extends Controller
                         Mail::to($order->shipping_email)->send(new InvoicePdfMail($invoice, $pdfContent));
                     }
                 } catch (\Exception $e) {
-                    Log::error('Failed to send invoice email', [
+                    Log::error('Failed to process confirmed order', [
                         'order_id' => $order->id,
                         'error' => $e->getMessage()
                     ]);
+                    
+                    if ($request->ajax() || $request->wantsJson()) {
+                        return response()->json([
+                            'success' => false,
+                            'message' => 'Lỗi khi xác nhận đơn hàng: ' . $e->getMessage()
+                        ]);
+                    }
+                    return redirect()->route('admin.orders.show', $order->id)
+                        ->with('error', 'Lỗi khi xác nhận đơn hàng: ' . $e->getMessage());
                 }
             }
             try {

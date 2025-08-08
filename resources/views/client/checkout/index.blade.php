@@ -660,6 +660,18 @@ textarea.form-control {
     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
 }
 
+/* Style cho readonly fields */
+.readonly-field {
+    background-color: #f8f9fa !important;
+    cursor: not-allowed !important;
+    opacity: 0.8;
+}
+
+.readonly-field:focus {
+    box-shadow: none !important;
+    border-color: #e2e8f0 !important;
+}
+
 .modal-header {
     border-bottom: 1px solid #e5e7eb;
     padding: 1rem 1.25rem;
@@ -941,7 +953,7 @@ textarea.form-control {
                                     </div>
                                 </div>
 
-                                <button type="submit" class="btn-place-order mt-4" form="checkoutForm">
+                                <button type="button" class="btn-place-order mt-4" id="placeOrderBtn">
                                     <i class="fas fa-lock"></i>
                                     <span>Đặt hàng</span>
                                 </button>
@@ -949,6 +961,123 @@ textarea.form-control {
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Order Confirmation Modal -->
+<div class="modal fade" id="orderConfirmationModal" tabindex="-1" aria-labelledby="orderConfirmationModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="orderConfirmationModalLabel">
+                    <i class="fas fa-check-circle text-success me-2"></i>
+                    Xác nhận đặt hàng
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <strong>Vui lòng kiểm tra thông tin đơn hàng trước khi xác nhận:</strong>
+                        </div>
+                        
+                        <!-- Thông tin người đặt -->
+                        <div class="mb-4">
+                            <h6 class="fw-bold text-primary">
+                                <i class="fas fa-user me-2"></i>
+                                Thông tin người đặt
+                            </h6>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p><strong>Họ tên:</strong> <span id="confirm-c-fname"></span></p>
+                                    <p><strong>Email:</strong> <span id="confirm-c-email"></span></p>
+                                </div>
+                                <div class="col-md-6">
+                                    <p><strong>Số điện thoại:</strong> <span id="confirm-c-phone"></span></p>
+                                    <p><strong>Địa chỉ:</strong> <span id="confirm-c-address"></span></p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Thông tin người nhận (nếu có) -->
+                        <div class="mb-4" id="confirm-recipient-info" style="display: none;">
+                            <h6 class="fw-bold text-success">
+                                <i class="fas fa-shipping-fast me-2"></i>
+                                Thông tin người nhận
+                            </h6>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p><strong>Họ tên:</strong> <span id="confirm-shipping-name"></span></p>
+                                    <p><strong>Email:</strong> <span id="confirm-shipping-email"></span></p>
+                                </div>
+                                <div class="col-md-6">
+                                    <p><strong>Số điện thoại:</strong> <span id="confirm-shipping-phone"></span></p>
+                                    <p><strong>Địa chỉ:</strong> <span id="confirm-shipping-address"></span></p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Sản phẩm đặt hàng -->
+                        <div class="mb-4">
+                            <h6 class="fw-bold text-info">
+                                <i class="fas fa-shopping-cart me-2"></i>
+                                Sản phẩm đặt hàng
+                            </h6>
+                            <div id="confirm-order-items">
+                                <!-- Sẽ được điền bằng JavaScript -->
+                            </div>
+                        </div>
+
+                        <!-- Tổng tiền -->
+                        <div class="mb-4">
+                            <h6 class="fw-bold text-warning">
+                                <i class="fas fa-money-bill-wave me-2"></i>
+                                Tổng tiền
+                            </h6>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p><strong>Tạm tính:</strong> <span id="confirm-subtotal"></span></p>
+                                    <p id="confirm-discount" style="display: none;"><strong>Giảm giá:</strong> <span id="confirm-discount-amount"></span></p>
+                                </div>
+                                <div class="col-md-6">
+                                    <p class="fw-bold fs-5 text-success"><strong>Tổng cộng:</strong> <span id="confirm-final-total"></span></p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Phương thức thanh toán -->
+                        <div class="mb-4">
+                            <h6 class="fw-bold text-secondary">
+                                <i class="fas fa-credit-card me-2"></i>
+                                Phương thức thanh toán
+                            </h6>
+                            <p><strong>Phương thức:</strong> <span id="confirm-payment-method"></span></p>
+                        </div>
+
+                        <!-- Ghi chú -->
+                        <div class="mb-4" id="confirm-notes" style="display: none;">
+                            <h6 class="fw-bold text-muted">
+                                <i class="fas fa-sticky-note me-2"></i>
+                                Ghi chú
+                            </h6>
+                            <p id="confirm-order-notes"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <i class="fas fa-times me-2"></i>
+                    Hủy
+                </button>
+                <button type="button" class="btn btn-success" id="confirmOrderBtn">
+                    <i class="fas fa-check me-2"></i>
+                    Xác nhận đặt hàng
+                </button>
             </div>
         </div>
     </div>
@@ -1025,9 +1154,200 @@ textarea.form-control {
     <script>
     document.addEventListener('DOMContentLoaded', function() {
         const checkoutForm = document.getElementById('checkoutForm');
-        const checkoutButton = document.querySelector('.btn-place-order');
+        const placeOrderBtn = document.getElementById('placeOrderBtn');
+        const orderConfirmationModal = document.getElementById('orderConfirmationModal');
+        const confirmOrderBtn = document.getElementById('confirmOrderBtn');
         
-        checkoutForm.addEventListener('submit', function(e) {
+        // Xử lý khi click nút đặt hàng
+        placeOrderBtn.addEventListener('click', function() {
+            // Kiểm tra validation trước
+            if (!validateForm()) {
+                return;
+            }
+            
+            const paymentMethod = document.querySelector('input[name="payment_method"]:checked')?.value;
+            
+            if (paymentMethod === 'cod') {
+                // Hiển thị modal xác nhận cho COD
+                showOrderConfirmationModal();
+            } else {
+                // Xử lý trực tiếp cho VNPay
+                processOrder();
+            }
+        });
+        
+        // Xử lý khi xác nhận đặt hàng
+        confirmOrderBtn.addEventListener('click', function() {
+            // Disable button để tránh double click
+            this.disabled = true;
+            this.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Đang xử lý...';
+            
+            // Xử lý đặt hàng
+            processOrder();
+        });
+        
+        // Reset button khi modal đóng
+        orderConfirmationModal.addEventListener('hidden.bs.modal', function() {
+            const confirmBtn = document.getElementById('confirmOrderBtn');
+            confirmBtn.disabled = false;
+            confirmBtn.innerHTML = '<i class="fas fa-check me-2"></i>Xác nhận đặt hàng';
+        });
+        
+        function validateForm() {
+            let isValid = true;
+            
+            // Kiểm tra các trường bắt buộc
+            const requiredFields = [
+                { id: 'c_fname', name: 'Họ và tên' },
+                { id: 'c_address', name: 'Địa chỉ' },
+                { id: 'c_email_address', name: 'Email' },
+                { id: 'c_phone', name: 'Số điện thoại' }
+            ];
+            
+            requiredFields.forEach(field => {
+                const element = document.getElementById(field.id);
+                if (!element.value.trim()) {
+                    showFieldError(element, `${field.name} là bắt buộc`);
+                    isValid = false;
+                } else {
+                    clearFieldError(element);
+                }
+            });
+            
+            // Kiểm tra email
+            const emailField = document.getElementById('c_email_address');
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (emailField.value.trim() && !emailRegex.test(emailField.value.trim())) {
+                showFieldError(emailField, 'Email không hợp lệ');
+                isValid = false;
+            }
+            
+            // Kiểm tra thông tin người nhận nếu có chọn
+            const shipToDifferent = document.getElementById('ship_to_different').checked;
+            if (shipToDifferent) {
+                const recipientFields = [
+                    { id: 'shipping_name', name: 'Họ và tên người nhận' },
+                    { id: 'shipping_address', name: 'Địa chỉ giao hàng' },
+                    { id: 'shipping_phone', name: 'Số điện thoại người nhận' }
+                ];
+                
+                recipientFields.forEach(field => {
+                    const element = document.getElementById(field.id);
+                    if (!element.value.trim()) {
+                        showFieldError(element, `${field.name} là bắt buộc`);
+                        isValid = false;
+                    } else {
+                        clearFieldError(element);
+                    }
+                });
+            }
+            
+            return isValid;
+        }
+        
+        function showFieldError(element, message) {
+            element.classList.add('is-invalid');
+            let errorDiv = element.parentNode.querySelector('.invalid-feedback');
+            if (!errorDiv) {
+                errorDiv = document.createElement('div');
+                errorDiv.className = 'invalid-feedback d-block';
+                element.parentNode.appendChild(errorDiv);
+            }
+            errorDiv.textContent = message;
+        }
+        
+        function clearFieldError(element) {
+            element.classList.remove('is-invalid');
+            const errorDiv = element.parentNode.querySelector('.invalid-feedback');
+            if (errorDiv) {
+                errorDiv.remove();
+            }
+        }
+        
+        function showOrderConfirmationModal() {
+            // Lấy thông tin từ form
+            const cFname = document.getElementById('c_fname').value;
+            const cEmail = document.getElementById('c_email_address').value;
+            const cPhone = document.getElementById('c_phone').value;
+            const cAddress = document.getElementById('c_address').value;
+            const shipToDifferent = document.getElementById('ship_to_different').checked;
+            const shippingName = document.getElementById('shipping_name').value;
+            const shippingEmail = document.getElementById('shipping_email').value;
+            const shippingPhone = document.getElementById('shipping_phone').value;
+            const shippingAddress = document.getElementById('shipping_address').value;
+            const orderNotes = document.getElementById('c_order_notes').value;
+            const subtotal = document.querySelector('.total-row:first-child span:last-child').innerText;
+            const finalTotal = document.getElementById('final-total').innerText;
+            const discountAmount = document.getElementById('voucher-discount-amount').innerText;
+            const hasDiscount = document.getElementById('voucher-discount-row').style.display !== 'none';
+            
+            // Điền thông tin vào modal
+            document.getElementById('confirm-c-fname').textContent = cFname;
+            document.getElementById('confirm-c-email').textContent = cEmail;
+            document.getElementById('confirm-c-phone').textContent = cPhone;
+            document.getElementById('confirm-c-address').textContent = cAddress;
+            
+            // Thông tin người nhận
+            if (shipToDifferent) {
+                document.getElementById('confirm-recipient-info').style.display = 'block';
+                document.getElementById('confirm-shipping-name').textContent = shippingName;
+                document.getElementById('confirm-shipping-email').textContent = shippingEmail || 'Không có';
+                document.getElementById('confirm-shipping-phone').textContent = shippingPhone;
+                document.getElementById('confirm-shipping-address').textContent = shippingAddress;
+            } else {
+                document.getElementById('confirm-recipient-info').style.display = 'none';
+            }
+            
+            // Sản phẩm đặt hàng
+            const orderItemsContainer = document.getElementById('confirm-order-items');
+            const orderItems = document.querySelectorAll('.order-item');
+            let itemsHtml = '';
+            
+            orderItems.forEach(item => {
+                const itemName = item.querySelector('h4').textContent;
+                const itemQuantity = item.querySelector('.quantity').textContent;
+                
+                itemsHtml += `
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <div>
+                            <strong>${itemName}</strong>
+                            <br><small class="text-muted">${itemQuantity}</small>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            orderItemsContainer.innerHTML = itemsHtml;
+            
+            // Tổng tiền
+            document.getElementById('confirm-subtotal').textContent = subtotal;
+            document.getElementById('confirm-final-total').textContent = finalTotal;
+            
+            if (hasDiscount) {
+                document.getElementById('confirm-discount').style.display = 'block';
+                document.getElementById('confirm-discount-amount').textContent = `-${discountAmount} VNĐ`;
+            } else {
+                document.getElementById('confirm-discount').style.display = 'none';
+            }
+            
+            // Phương thức thanh toán
+            const paymentMethodText = 'Thanh toán khi nhận hàng (COD)';
+            document.getElementById('confirm-payment-method').textContent = paymentMethodText;
+            
+            // Ghi chú
+            if (orderNotes.trim()) {
+                document.getElementById('confirm-notes').style.display = 'block';
+                document.getElementById('confirm-order-notes').textContent = orderNotes;
+            } else {
+                document.getElementById('confirm-notes').style.display = 'none';
+            }
+            
+            // Hiển thị modal
+            const modal = new bootstrap.Modal(orderConfirmationModal);
+            modal.show();
+        }
+        
+        function processOrder() {
             const paymentMethod = document.querySelector('input[name="payment_method"]:checked')?.value;
             
             // Thêm input ẩn để truyền thông tin voucher và giá đã giảm
@@ -1046,7 +1366,10 @@ textarea.form-control {
             } else {
                 checkoutForm.setAttribute('action', "{{ isset($variant) ? route('checkout.store') : route('cart.checkout.store') }}");
             }
-        });
+            
+            // Submit form
+            checkoutForm.submit();
+        }
     });
     </script>
     <script>
@@ -1190,8 +1513,13 @@ document.addEventListener('DOMContentLoaded', function() {
     const recipientInputs = document.querySelectorAll('input[name^="shipping_"]');
     const requiredMarks = document.querySelectorAll('.recipient-required');
     
+    // Lấy các trường thông tin người đặt (từ tài khoản)
+    const senderFields = document.querySelectorAll('input[name^="c_"]');
+    
     function toggleRecipientFields(isChecked) {
         recipientInfo.style.display = isChecked ? 'block' : 'none';
+        
+        // Xử lý các trường thông tin người nhận
         recipientInputs.forEach(input => {
             if (input.id !== 'shipping_email') { // Email không bắt buộc
                 input.required = isChecked;
@@ -1199,6 +1527,36 @@ document.addEventListener('DOMContentLoaded', function() {
         });
         requiredMarks.forEach(mark => {
             mark.style.display = isChecked ? 'inline' : 'none';
+        });
+        
+        // Xử lý các trường thông tin người đặt (từ tài khoản)
+        senderFields.forEach(field => {
+            if (isChecked) {
+                // Khi chọn địa chỉ khác - làm cho các trường thông tin người đặt chỉ đọc
+                field.readOnly = true;
+                field.style.backgroundColor = '#f8f9fa';
+                field.style.cursor = 'not-allowed';
+                field.classList.add('readonly-field');
+                
+                // Thêm ghi chú nhỏ
+                const note = document.createElement('small');
+                note.className = 'text-muted d-block mt-1';
+                note.textContent = 'Thông tin từ tài khoản - không thể chỉnh sửa khi đặt hàng hộ';
+                note.id = 'sender-note-' + field.id;
+                field.parentNode.appendChild(note);
+            } else {
+                // Khi không chọn địa chỉ khác - cho phép chỉnh sửa
+                field.readOnly = false;
+                field.style.backgroundColor = '';
+                field.style.cursor = '';
+                field.classList.remove('readonly-field');
+                
+                // Xóa ghi chú
+                const note = document.getElementById('sender-note-' + field.id);
+                if (note) {
+                    note.remove();
+                }
+            }
         });
     }
     

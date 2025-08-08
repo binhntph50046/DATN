@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Log;
 class OrderStatusUpdated implements ShouldBroadcastNow
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
-
+    // biến để lưu thông tin đơn hàng và trạng thái
     public $order;
     public $status;
     public $status_text;
@@ -38,7 +38,7 @@ class OrderStatusUpdated implements ShouldBroadcastNow
             'event' => 'OrderStatusUpdated',
             'data' => $this->broadcastWith()
         ]);
-        return new Channel($channelName); // Giữ nguyên là public channel
+        return new Channel($channelName);
     }
 
     public function broadcastAs()
@@ -53,6 +53,15 @@ class OrderStatusUpdated implements ShouldBroadcastNow
             'status' => $this->status,
             'status_text' => $this->status_text
         ];
+        
+        // Thêm return_id nếu đơn hàng đã hoàn
+        if (in_array($this->status, ['returned', 'partially_returned'])) {
+            $latestReturn = $this->order->returns()->where('status', 'approved')->latest()->first();
+            if ($latestReturn) {
+                $data['return_id'] = $latestReturn->id;
+            }
+        }
+        
         Log::info('Event data being broadcast', $data);
         return $data;
     }

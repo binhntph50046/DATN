@@ -58,10 +58,16 @@
                         <span>Đang giao</span>
                         <div class="tab-indicator"></div>
                     </a>
+                    <a class="status-tab {{ request('status') == 'delivered' ? 'active' : '' }}" 
+                       href="{{ route('order.index', ['status' => 'delivered']) }}">
+                        <i class="fas fa-circle-check text-success"></i>
+                        <span>Đã giao</span>
+                        <div class="tab-indicator"></div>
+                    </a>
                     <a class="status-tab {{ request('status') == 'completed' ? 'active' : '' }}" 
                        href="{{ route('order.index', ['status' => 'completed']) }}">
                         <i class="fas fa-circle-check text-success"></i>
-                        <span>Đã giao</span>
+                        <span>Đã hoàn thành</span>
                         <div class="tab-indicator"></div>
                     </a>
                     <a class="status-tab {{ request('status') == 'returned' ? 'active' : '' }}" 
@@ -263,6 +269,7 @@
                                         'confirmed' => 'info',
                                         'preparing' => 'primary',
                                         'shipping' => 'info',
+                                        'delivered' => 'delivered',
                                         'completed' => 'success',
                                         'cancelled' => 'danger',
                                         'returned' => 'secondary',
@@ -315,7 +322,17 @@
                                         </button>
                                     @endif
 
-                                    @if($order->status == 'completed')
+                                    @if($order->status == 'delivered')
+                                        <button type="button" 
+                                                class="btn btn-action btn-soft-success btn-confirm-received" 
+                                                data-bs-toggle="tooltip" 
+                                                title="Xác nhận đã nhận hàng" 
+                                                data-order-id="{{ $order->id }}">
+                                            <i class="fas fa-check"></i>
+                                        </button>
+                                    @endif
+
+                                    @if($order->status == 'delivered')
                                         @php
                                             $orderDate = \Carbon\Carbon::parse($order->created_at);
                                             $now = \Carbon\Carbon::now();
@@ -330,7 +347,9 @@
                                                 <i class="fas fa-history"></i>
                                             </button>
                                         @endif
+                                    @endif
 
+                                    @if($order->status == 'completed')
                                         <button type="button"
                                             onclick="window.location.href='{{ route('order.review', $order->id) }}'"
                                             class="btn btn-action btn-soft-success"
@@ -356,10 +375,11 @@
                                                 'confirmed' => 'Đã xác nhận',
                                                 'preparing' => 'Đang chuẩn bị',
                                                 'shipping' => 'Đang giao',
-                                                'completed' => 'Đã giao',
+                                                'delivered' => 'Đã giao',
+                                                'completed' => 'Đã hoàn thành',
                                                 'cancelled' => 'Đã hủy',
                                                 'returned' => 'Đã hoàn đơn',
-                                                '' => 'Hoàn một phần',
+                                                'partially_returned' => 'Hoàn một phần',
                                                 default => 'Tất cả trạng thái'
                                             };
                                         @endphp
@@ -560,6 +580,7 @@
 .status-info { background: #d1ecf1; color: #0c5460; }
 .status-primary { background: #d1ecf1; color: #155724; }
 .status-success { background: #d4edda; color: #155724; }
+.status-delivered { background: #d4edda; color: #155724; }
 .status-danger { background: #f8d7da; color: #721c24; }
 .status-secondary { background: #e2e3e5; color: #383d41; }
 
@@ -958,6 +979,104 @@ document.addEventListener('DOMContentLoaded', function() {
         button.addEventListener('click', handleCancelButtonClick);
     });
 
+    // Xử lý sự kiện cho nút xác nhận đã nhận hàng
+    function handleConfirmReceivedButtonClick(event) {
+        event.preventDefault();
+        const button = event.currentTarget;
+        const orderId = button.getAttribute('data-order-id');
+
+        Swal.fire({
+            title: 'Xác nhận đã nhận hàng?',
+            text: 'Bạn có chắc chắn đã nhận được hàng và muốn xác nhận?',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#28a745',
+            cancelButtonColor: '#6c757d',
+            confirmButtonText: 'Xác nhận',
+            cancelButtonText: 'Hủy',
+            customClass: {
+                popup: 'small-popup'
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                // Hiển thị loading
+                Swal.fire({
+                    title: 'Đang xử lý...',
+                    text: 'Vui lòng chờ trong giây lát',
+                    allowOutsideClick: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
+
+                // Gửi request
+                const formData = new FormData();
+                formData.append('_token', document.querySelector('meta[name="csrf-token"]').getAttribute('content'));
+                
+                fetch(`/order/confirm-received/${orderId}`, {
+                    method: 'POST',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: formData,
+                    credentials: 'same-origin'
+                })
+                .then(async response => {
+                    const data = await response.json();
+                    
+                    if (!response.ok) {
+                        if (response.status === 419) {
+                            throw new Error('Phiên làm việc đã hết hạn, vui lòng tải lại trang');
+                        }
+                        throw new Error(data.message || 'Có lỗi xảy ra khi xác nhận nhận hàng');
+                    }
+                    
+                    return data;
+                })
+                .then(data => {
+                    if (data.success) {
+                        Toast.fire({
+                            icon: 'success',
+                            title: 'Thành công!',
+                            text: data.message || 'Đã xác nhận nhận hàng thành công'
+                        }).then(() => {
+                            window.location.reload();
+                        });
+                    } else {
+                        Toast.fire({
+                            icon: 'error',
+                            title: 'Lỗi!',
+                            text: data.message || 'Có lỗi xảy ra khi xác nhận nhận hàng'
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    if (error.message.includes('Phiên làm việc đã hết hạn')) {
+                        Toast.fire({
+                            icon: 'warning',
+                            title: 'Phiên làm việc đã hết hạn',
+                            text: 'Trang sẽ tự động tải lại...'
+                        }).then(() => {
+                            window.location.reload();
+                        });
+                    } else {
+                        Toast.fire({
+                            icon: 'error',
+                            title: 'Lỗi!',
+                            text: error.message || 'Có lỗi xảy ra khi xác nhận nhận hàng'
+                        });
+                    }
+                });
+            }
+        });
+    }
+
+    // Gắn event listener cho nút xác nhận đã nhận hàng
+    document.querySelectorAll('.btn-confirm-received').forEach(button => {
+        button.addEventListener('click', handleConfirmReceivedButtonClick);
+    });
+
     // Lắng nghe sự kiện cập nhật trạng thái realtime
     let orderIds = @json($orders->pluck('id'));
     
@@ -967,6 +1086,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
             channel.listen('.OrderStatusUpdated', (event) => {
                 try {
+                    console.log('Nhận được sự kiện OrderStatusUpdated:', event);
+                    
                     const row = document.querySelector(`tr[data-order-id="${orderId}"]`);
                     if (!row) {
                         throw new Error(`Không tìm thấy row cho đơn hàng #${orderId}`);
@@ -988,6 +1109,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         'confirmed': 'info',
                         'preparing': 'primary',
                         'shipping': 'info',
+                        'delivered': 'delivered',
                         'completed': 'success',
                         'cancelled': 'danger',
                         'returned': 'secondary',
@@ -999,6 +1121,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         'confirmed': 'fa-circle-check',
                         'preparing': 'fa-box',
                         'shipping': 'fa-truck',
+                        'delivered': 'fa-check-circle',
                         'completed': 'fa-circle-check',
                         'cancelled': 'fa-ban',
                         'returned': 'fa-undo',
@@ -1037,6 +1160,43 @@ document.addEventListener('DOMContentLoaded', function() {
                             </button>`;
                     }
 
+                    // Thêm button cho trạng thái delivered
+                    if (event.status === 'delivered') {
+                        console.log('Trạng thái đã giao được cập nhật cho đơn hàng:', orderId);
+                        
+                        actionsHtml += `
+                            <button type="button" 
+                                    class="btn btn-action btn-soft-success btn-confirm-received" 
+                                    data-bs-toggle="tooltip" 
+                                    title="Xác nhận đã nhận hàng" 
+                                    data-order-id="${orderId}">
+                                <i class="fas fa-check"></i>
+                            </button>`;
+                        
+                        // Thêm nút hoàn hàng nếu trong vòng 7 ngày
+                        const orderDate = new Date(row.getAttribute('data-created-at'));
+                        const now = new Date();
+                        const daysDiff = Math.floor((now - orderDate) / (1000 * 60 * 60 * 24));
+                        
+                        console.log('Ngày đặt hàng:', orderDate);
+                        console.log('Ngày hiện tại:', now);
+                        console.log('Số ngày chênh lệch:', daysDiff);
+                        
+                        if (daysDiff <= 7) {
+                            console.log('Thêm nút hoàn hàng cho đơn hàng:', orderId);
+                            actionsHtml += `
+                                <button type="button"
+                                    onclick="window.location.href='{{ route('order.returns.create', ':id') }}'.replace(':id', ${orderId})"
+                                    class="btn btn-action btn-soft-warning"
+                                    data-bs-toggle="tooltip" 
+                                    title="Yêu cầu hoàn hàng">
+                                    <i class="fas fa-history"></i>
+                                </button>`;
+                        } else {
+                            console.log('Đơn hàng quá 7 ngày, không hiển thị nút hoàn hàng');
+                        }
+                    }
+
                     if (['pending', 'confirmed'].includes(event.status)) {
                         actionsHtml += `
                             <button type="button" 
@@ -1049,21 +1209,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
 
                     if (event.status === 'completed') {
-                        const orderDate = new Date(row.getAttribute('data-created-at'));
-                        const now = new Date();
-                        const daysDiff = Math.floor((now - orderDate) / (1000 * 60 * 60 * 24));
-
-                        if (daysDiff <= 7) {
-                            actionsHtml += `
-                                <button type="button"
-                                    onclick="window.location.href='{{ route('order.returns.create', ':id') }}'.replace(':id', ${orderId})"
-                                    class="btn btn-action btn-soft-warning"
-                                    data-bs-toggle="tooltip" 
-                                    title="Yêu cầu hoàn hàng">
-                                    <i class="fas fa-history"></i>
-                                </button>`;
-                        }
-
                         actionsHtml += `
                             <button type="button"
                                 onclick="window.location.href='{{ route('order.review', ':id') }}'.replace(':id', ${orderId})"
@@ -1086,6 +1231,12 @@ document.addEventListener('DOMContentLoaded', function() {
                     const newCancelButton = actionsContainer.querySelector('.btn-cancel-order');
                     if (newCancelButton) {
                         newCancelButton.addEventListener('click', handleCancelButtonClick);
+                    }
+
+                    // Gắn lại event listener cho nút xác nhận đã nhận hàng
+                    const newConfirmReceivedButton = actionsContainer.querySelector('.btn-confirm-received');
+                    if (newConfirmReceivedButton) {
+                        newConfirmReceivedButton.addEventListener('click', handleConfirmReceivedButtonClick);
                     }
 
                 } catch (error) {

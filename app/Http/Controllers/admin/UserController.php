@@ -120,77 +120,67 @@ class UserController
     {
         $user = User::findOrFail($id);
 
-        // Lấy dữ liệu ban đầu từ $user
+        // Chỉ validate status và ban_reason vì form chỉ gửi 2 trường này
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => [
-                'required',
-                'string',
-                'email',
-                'max:255',
-                Rule::unique('users')->ignore($user->id),
-            ],
-            'password' => 'nullable|string|min:8|confirmed',
-            'phone' => 'required|string|max:255',
-            'address' => 'required|string|max:255',
-            'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'dob' => 'nullable|date', // Không bắt buộc, chỉ validate nếu có
-            'gender' => 'nullable|string|max:255|in:male,female,other',
             'status' => 'required|string|max:255|in:active,inactive',
+            'ban_reason' => 'nullable|string|max:1000',
         ], [
-            'name.required' => 'Tên người dùng là bắt buộc.',
-            'name.max' => 'Tên người dùng không được vượt quá 255 ký tự.',
-            'email.required' => 'Email là bắt buộc.',
-            'email.email' => 'Vui lòng nhập địa chỉ email hợp lệ.',
-            'email.unique' => 'Email này đã được sử dụng.',
-            'password.min' => 'Mật khẩu phải có ít nhất 8 ký tự.',
-            'password.confirmed' => 'Xác nhận mật khẩu không khớp.',
             'status.required' => 'Trạng thái tài khoản là bắt buộc.',
             'status.in' => 'Trạng thái tài khoản không hợp lệ.',
-            'avatar.image' => 'Avatar phải là hình ảnh.',
-            'avatar.mimes' => 'Avatar phải là file loại: jpeg, png, jpg, gif.',
-            'avatar.max' => 'Kích thước avatar không được vượt quá 2MB.',
-            'address.required' => 'Địa chỉ là bắt buộc.',
-            'address.max' => 'Địa chỉ không được vượt quá 255 ký tự.',
-            'phone.required' => 'Số điện thoại là bắt buộc.',
-            'dob.date' => 'Vui lòng nhập ngày sinh hợp lệ.',
+            'ban_reason.max' => 'Lý do khóa không được vượt quá 1000 ký tự.',
         ]);
 
-        // Kiểm tra và giữ nguyên giá trị ban đầu nếu không có dữ liệu mới
+        // Kiểm tra nếu status là inactive thì ban_reason phải có
+        if ($validated['status'] === 'inactive' && empty($request->ban_reason)) {
+            return back()->withErrors(['ban_reason' => 'Lý do khóa tài khoản là bắt buộc khi chọn trạng thái Inactive.'])->withInput();
+        }
+
+        // Debug: Log dữ liệu để kiểm tra
+        \Log::info('Update user data:', [
+            'user_id' => $user->id,
+            'status' => $validated['status'],
+            'ban_reason' => $request->ban_reason,
+            'request_data' => $request->all(),
+            'validation_passed' => true
+        ]);
+
+        // Chỉ cập nhật status và ban_reason
         $dataToUpdate = [
-            'name' => $request->filled('name') ? $validated['name'] : $user->name,
-            'email' => $request->filled('email') ? $validated['email'] : $user->email,
-            'phone' => $request->filled('phone') ? $validated['phone'] : $user->phone,
-            'address' => $request->filled('address') ? $validated['address'] : $user->address,
-            'dob' => $request->filled('dob') ? $validated['dob'] : $user->dob,
-            'gender' => $request->filled('gender') ? $validated['gender'] : $user->gender,
-            'status' => $validated['status'], // Luôn yêu cầu status
+            'status' => $validated['status'],
         ];
 
-        // Xử lý password
-        if ($request->filled('password')) {
-            $dataToUpdate['password'] = bcrypt($request->password);
+        // Xử lý ban_reason
+        if ($validated['status'] === 'inactive') {
+            $dataToUpdate['ban_reason'] = $request->ban_reason;
+        } else {
+            // Nếu chuyển về active thì xóa ban_reason
+            $dataToUpdate['ban_reason'] = null;
         }
 
-        // Xử lý avatar
-        if ($request->hasFile('avatar')) {
-            $avatar = $request->file('avatar');
-            $avatarName = time() . '.' . $avatar->getClientOriginalExtension();
-            $destinationPath = public_path('uploads/users');
-            $avatar->move($destinationPath, $avatarName);
-            $dataToUpdate['avatar'] = 'uploads/users/' . $avatarName;
-        } else {
-            $dataToUpdate['avatar'] = $user->avatar; // Giữ nguyên avatar nếu không thay đổi
-        }
+
 
         $user->update($dataToUpdate);
-        return redirect()->route('admin.users.index')->with('success', 'Cập nhật tài khoản thành công');
+        
+        $message = $validated['status'] === 'inactive' 
+            ? 'Đã khóa tài khoản thành công' 
+            : 'Đã kích hoạt tài khoản thành công';
+            
+        return redirect()->route('admin.users.index')->with('success', $message);
     }
 
     public function trash()
     {
         $users = User::onlyTrashed()->paginate(10);
         return view('admin.users.trash', compact('users'));
+    }
+
+    public function banReasons()
+    {
+        $bannedUsers = User::where('status', 'inactive')
+                           ->whereNotNull('ban_reason')
+                           ->orderBy('updated_at', 'desc')
+                           ->paginate(10);
+        return view('admin.users.ban-reasons', compact('bannedUsers'));
     }
 
     public function restore($id)

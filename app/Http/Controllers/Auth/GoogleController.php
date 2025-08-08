@@ -52,7 +52,7 @@ class GoogleController
             if ($hasAccess) {
                 return redirect('/admin');
             } else {
-                return redirect('/');
+                return redirect('/')->with('success', 'Đăng nhập Google thành công!');
             }            
 
         } catch (\Exception $e) {

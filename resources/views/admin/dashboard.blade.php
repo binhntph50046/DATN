@@ -287,7 +287,9 @@
                     </div>
                 </div>
                 <div class="col-md-12 col-xl-5">
-                    <h5 class="mb-3">Sản phẩm đã bán theo danh mục</h5>
+                    <h5 class="mb-3">
+                        Sản phẩm đã bán theo danh mục <small class="text-muted">({{ $monthLabel }})</small>
+                    </h5>
                     <div class="card">
                         <div class="card-body px-2">
                             <div id="analytics-report-chart" data-category-labels='@json($categoryLabels)'
@@ -296,6 +298,7 @@
                         </div>
                     </div>
                 </div>
+
 
                 <div class="col-md-12 col-xl-8">
                     <h5 class="mb-3">Top 5 sản phẩm bán chạy nhất</h5>
@@ -377,7 +380,7 @@
                             {{-- Bộ lọc năm --}}
                             <form id="yearFilterForm" method="GET" class="d-flex align-items-center gap-2">
                                 <label for="yearFilter" class="form-label mb-0">Năm:</label>
-                                <select name="year" id="yearFilter" class="form-select form-select-sm w-auto">
+                                <select style="border-radius: 4px" name="year" id="yearFilter" class="form-select form-select-sm w-auto">
                                     <option value="all" {{ $selectedYear === 'all' ? 'selected' : '' }}>Tất cả</option>
                                     @foreach ($years as $year)
                                         <option value="{{ $year }}"

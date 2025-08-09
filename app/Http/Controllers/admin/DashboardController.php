@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\DB;
 
 class DashboardController
 {
-    public function index( Request $request )
+    public function index(Request $request)
     {
         // Tính tống
         $totalProductViews = Product::sum('views');
@@ -176,18 +176,27 @@ class DashboardController
             ->take(10)
             ->get();
 
-        // Truy vấn số lượng sản phẩm đã bán theo danh mục
+        // Lấy tháng/năm hiện tại
+        $currentMonth = Carbon::now()->month;
+        $currentYear = Carbon::now()->year;
+
+        // Truy vấn số lượng sản phẩm đã bán theo danh mục trong tháng hiện tại
         $categorySales = DB::table('order_items')
             ->join('products', 'order_items.product_id', '=', 'products.id')
             ->join('categories', 'products.category_id', '=', 'categories.id')
+            ->join('orders', 'order_items.order_id', '=', 'orders.id')
             ->select('categories.name as category_name', DB::raw('SUM(order_items.quantity) as total_sold'))
+            ->whereMonth('orders.created_at', $currentMonth)
+            ->whereYear('orders.created_at', $currentYear)
             ->groupBy('categories.name')
             ->orderByDesc('total_sold')
             ->get();
 
-        // Chuyển dữ liệu thành 2 mảng JS-friendly
         $categoryLabels = $categorySales->pluck('category_name')->toArray();
         $categoryData = $categorySales->pluck('total_sold')->toArray();
+
+        // Truyền thêm tháng/năm để hiển thị
+        $monthLabel = Carbon::now()->translatedFormat('F Y'); // Ví dụ: "Tháng Tám 2025"
 
         // So sánh sản phẩm đã bán ra giữa các tháng/năm 
         // Lấy các năm có đơn hàng
@@ -255,12 +264,13 @@ class DashboardController
             'lowStockProducts',
             'categoryLabels',
             'categoryData',
+            'monthLabel',
             'monthlySold',
             'monthlyByYear',
             'yearlySold',
             'years',
             'selectedYear',
-            
+
         ));
     }
 }

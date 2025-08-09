@@ -198,13 +198,6 @@ function floatchart() {
         enabled: true,
         formatter: val => val.toLocaleString('vi-VN')
       },
-      stroke: {
-        curve: 'smooth',
-        width: 2
-      },
-      grid: {
-        strokeDashArray: 4
-      },
       series: [{
         name: 'Sản phẩm đã bán',
         data: data
@@ -212,13 +205,10 @@ function floatchart() {
       xaxis: {
         categories: labels,
         labels: {
-          style: {
-            fontSize: '13px'
-          }
+          style: { fontSize: '13px' }
         }
       },
       yaxis: {
-        show: true,
         labels: {
           formatter: val => val.toLocaleString('vi-VN')
         }
@@ -233,6 +223,7 @@ function floatchart() {
     new ApexCharts(el, options).render();
   })();
 
+
   (function () {
     // === Biểu đồ tháng ===
     var monthlySold = JSON.parse(document.getElementById("sold-chart-month").dataset.monthlySold || "null");
@@ -242,11 +233,12 @@ function floatchart() {
     if (monthlySold) {
       // Chế độ 1 năm
       monthOptions = {
-        chart: { type: "line", height: 350 },
+        chart: { type: "area", height: 350 },
         series: [{ name: "Sản phẩm đã bán", data: monthlySold }],
         xaxis: { categories: ["T1", "T2", "T3", "T4", "T5", "T6", "T7", "T8", "T9", "T10", "T11", "T12"] },
-        stroke: { curve: 'smooth' },
+        stroke: { curve: 'smooth', width: 3 },
         markers: { size: 4 },
+        dataLabels: { enabled: false },
         tooltip: { y: { formatter: val => val + " SP" } }
       };
     } else if (monthlyByYear) {
@@ -256,11 +248,12 @@ function floatchart() {
         seriesData.push({ name: year, data: monthlyByYear[year] });
       }
       monthOptions = {
-        chart: { type: "line", height: 350 },
+        chart: { type: "area", height: 350 },
         series: seriesData,
         xaxis: { categories: ["T1", "T2", "T3", "T4", "T5", "T6", "T7", "T8", "T9", "T10", "T11", "T12"] },
-        stroke: { curve: 'smooth' },
+        stroke: { curve: 'smooth', width: 3 },
         markers: { size: 4 },
+        dataLabels: { enabled: false },
         tooltip: { y: { formatter: val => val + " SP" } }
       };
     }

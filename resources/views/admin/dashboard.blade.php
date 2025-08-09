@@ -13,7 +13,7 @@
                                 <h5 class="m-b-10">Thống kê</h5>
                             </div>
                             <ul class="breadcrumb">
-                                <li class="breadcrumb-item"><a href="dashboard/index.html">Trang chủ</a></li>
+                                <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Trang chủ</a></li>
                                 <li class="breadcrumb-item"><a href="javascript: void(0)">Thống kê</a></li>
                             </ul>
                         </div>
@@ -369,6 +369,67 @@
                     </div>
                 </div>
 
+                <div class="col-md-12 col-xl-12">
+                    <div class="d-flex align-items-center justify-content-between mb-3 flex-wrap">
+                        <h5 class="mb-3 mb-md-0">Số lượng sản phẩm đã bán ra</h5>
+
+                        <div class="d-flex align-items-center gap-3">
+                            {{-- Bộ lọc năm --}}
+                            <form id="yearFilterForm" method="GET" class="d-flex align-items-center gap-2">
+                                <label for="yearFilter" class="form-label mb-0">Năm:</label>
+                                <select name="year" id="yearFilter" class="form-select form-select-sm w-auto">
+                                    <option value="all" {{ $selectedYear === 'all' ? 'selected' : '' }}>Tất cả</option>
+                                    @foreach ($years as $year)
+                                        <option value="{{ $year }}"
+                                            {{ $year == $selectedYear ? 'selected' : '' }}>
+                                            {{ $year }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </form>
+
+
+                            {{-- Tab tháng / năm --}}
+                            <ul class="nav nav-pills" id="sold-tab" role="tablist">
+                                <li class="nav-item">
+                                    <button class="nav-link" id="sold-year-tab" data-bs-toggle="pill"
+                                        data-bs-target="#sold-year">
+                                        Theo năm
+                                    </button>
+                                </li>
+                                <li class="nav-item">
+                                    <button class="nav-link active" id="sold-month-tab" data-bs-toggle="pill"
+                                        data-bs-target="#sold-month">
+                                        Theo tháng
+                                    </button>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="tab-content" id="sold-tab-content">
+                                {{-- Biểu đồ tháng --}}
+                                <div class="tab-pane fade show active" id="sold-month">
+                                    <h6 class="mb-2 text-muted">
+                                        {{ $selectedYear === 'all' ? 'So sánh các năm' : 'Thống kê năm ' . $selectedYear }}
+                                    </h6>
+                                    <div id="sold-chart-month" data-monthly-sold='@json($selectedYear === 'all' ? null : array_values($monthlySold))'
+                                        data-monthly-by-year='@json($selectedYear === 'all' ? $monthlyByYear : null)'>
+                                    </div>
+                                </div>
+
+                                {{-- Biểu đồ năm --}}
+                                <div class="tab-pane fade" id="sold-year">
+                                    <h6 class="mb-2 text-muted">Thống kê theo năm</h6>
+                                    <div id="sold-chart-year" data-yearly-sold='@json($yearlySold)'>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
             </div>
         </div>

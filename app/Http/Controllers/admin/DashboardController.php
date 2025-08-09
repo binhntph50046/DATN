@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\DB;
 
 class DashboardController
 {
-    public function index()
+    public function index( Request $request )
     {
         // Tính tống
         $totalProductViews = Product::sum('views');
@@ -189,6 +189,48 @@ class DashboardController
         $categoryLabels = $categorySales->pluck('category_name')->toArray();
         $categoryData = $categorySales->pluck('total_sold')->toArray();
 
+        // So sánh sản phẩm đã bán ra giữa các tháng/năm 
+        // Lấy các năm có đơn hàng
+        $years = OrderItem::join('orders', 'order_items.order_id', '=', 'orders.id')
+            ->selectRaw('YEAR(orders.created_at) as year')
+            ->distinct()
+            ->orderBy('year', 'desc')
+            ->pluck('year');
+
+        // Lấy năm được chọn hoặc mặc định
+        $selectedYear = $request->input('year', now()->year);
+
+        // Dữ liệu tháng
+        if ($selectedYear !== 'all') {
+            $monthlySold = OrderItem::join('orders', 'order_items.order_id', '=', 'orders.id')
+                ->selectRaw('MONTH(orders.created_at) as month, SUM(order_items.quantity) as total')
+                ->whereYear('orders.created_at', $selectedYear)
+                ->groupBy('month')
+                ->pluck('total', 'month')
+                ->toArray();
+            $monthlySold = array_replace(array_fill(1, 12, 0), $monthlySold);
+            $monthlyByYear = null;
+        } else {
+            $monthlyByYear = [];
+            foreach ($years as $year) {
+                $data = OrderItem::join('orders', 'order_items.order_id', '=', 'orders.id')
+                    ->selectRaw('MONTH(orders.created_at) as month, SUM(order_items.quantity) as total')
+                    ->whereYear('orders.created_at', $year)
+                    ->groupBy('month')
+                    ->pluck('total', 'month')
+                    ->toArray();
+                $monthlyByYear[$year] = array_values(array_replace(array_fill(1, 12, 0), $data));
+            }
+            $monthlySold = null;
+        }
+
+        // Dữ liệu năm
+        $yearlySold = OrderItem::join('orders', 'order_items.order_id', '=', 'orders.id')
+            ->selectRaw('YEAR(orders.created_at) as year, SUM(order_items.quantity) as total')
+            ->groupBy('year')
+            ->pluck('total', 'year')
+            ->toArray();
+
         return view('admin.dashboard', compact(
             'totalProductViews',
             'totalUsers',
@@ -212,7 +254,13 @@ class DashboardController
             'topVariants',
             'lowStockProducts',
             'categoryLabels',
-            'categoryData'
+            'categoryData',
+            'monthlySold',
+            'monthlyByYear',
+            'yearlySold',
+            'years',
+            'selectedYear',
+            
         ));
     }
 }

@@ -118,7 +118,7 @@
                 <div class="card h-100">
                     <div class="card-header">
                         <i class="fas fa-user me-2"></i>
-                        Thông tin khách hàng
+                        Thông tin người nhận 
                     </div>
                     <div class="card-body">
                         <table class="table table-borderless mb-0">
@@ -208,7 +208,7 @@
                 <div class="card h-100">
                     <div class="card-header">
                         <i class="fas fa-user-friends me-2"></i>
-                        Thông tin người nhận khác
+                        Thông tin khách hàng 
                     </div>
                     <div class="card-body">
                         <div class="row">

@@ -127,7 +127,9 @@ class VoucherController
         $request->validate([
             'voucher_code' => 'required|string',
             'subtotal' => 'required|numeric|min:0',
-            'email' => 'nullable|email'
+            'email' => 'nullable|email',
+            'selected_items' => 'nullable|array',
+            'selected_items.*' => 'nullable|integer'
         ]);
 
         $voucher = Voucher::where('code', $request->voucher_code)
@@ -203,7 +205,17 @@ class VoucherController
             // Trường hợp mua từ giỏ hàng
             $cart = \App\Models\Cart::where('user_id', Auth::id())->first();
             if ($cart) {
-                $cartItems = $cart->cartItems()->with(['product', 'variant'])->get();
+                // Nếu có selected_items, chỉ kiểm tra các sản phẩm được chọn
+                if ($request->has('selected_items') && is_array($request->selected_items)) {
+                    $cartItems = $cart->cartItems()
+                        ->whereIn('id', $request->selected_items)
+                        ->with(['product', 'variant'])
+                        ->get();
+                } else {
+                    // Nếu không có selected_items, kiểm tra tất cả sản phẩm trong giỏ hàng
+                    $cartItems = $cart->cartItems()->with(['product', 'variant'])->get();
+                }
+                
                 foreach ($cartItems as $item) {
                     if ($item->product->is_discount) {
                         $hasDiscountedProducts = true;

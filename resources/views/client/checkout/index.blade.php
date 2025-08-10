@@ -733,13 +733,13 @@ textarea.form-control {
                             </div>
                             <div class="section-content">
                                 <div class="form-floating mb-3">
-                                        <input type="text" class="form-control" id="c_fname" name="c_fname" required
+                                        <input type="text" class="form-control" id="c_fname" name="c_fname"
                                         value="{{ old('c_fname', Auth::check() && Auth::user() ? Auth::user()->name : '') }}"
                                         placeholder="Nhập họ và tên">
                                     <label for="c_fname">Họ và tên <span class="text-danger">*</span></label>
                                 </div>
                                 <div class="form-floating mb-3">
-                                        <input type="text" class="form-control" id="c_address" name="c_address" required
+                                        <input type="text" class="form-control" id="c_address" name="c_address"
                                         value="{{ old('c_address', Auth::check() && Auth::user() ? Auth::user()->address : '') }}"
                                         placeholder="Nhập địa chỉ">
                                     <label for="c_address">Địa chỉ <span class="text-danger">*</span></label>
@@ -747,7 +747,7 @@ textarea.form-control {
                                 <div class="row">
                                     <div class="col-md-6">
                                         <div class="form-floating mb-3">
-                                            <input type="email" class="form-control" id="c_email_address" name="c_email_address" required
+                                            <input type="email" class="form-control" id="c_email_address" name="c_email_address"
                                                 value="{{ old('c_email_address', Auth::check() && Auth::user() ? Auth::user()->email : '') }}"
                                                 placeholder="Nhập email">
                                             <label for="c_email_address">Email <span class="text-danger">*</span></label>
@@ -755,7 +755,7 @@ textarea.form-control {
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-floating mb-3">
-                                        <input type="text" class="form-control" id="c_phone" name="c_phone" required
+                                        <input type="text" class="form-control" id="c_phone" name="c_phone"
                                                 value="{{ old('c_phone', Auth::check() && Auth::user() ? Auth::user()->phone : '') }}"
                                                 placeholder="Nhập số điện thoại">
                                             <label for="c_phone">Số điện thoại <span class="text-danger">*</span></label>
@@ -947,9 +947,13 @@ textarea.form-control {
                                         <span>Giảm giá</span>
                                         <span class="discount">-<span id="voucher-discount-amount">0</span> VNĐ</span>
                                     </div>
+                                    <div class="total-row">
+                                        <span>Phí vận chuyển</span>
+                                        <span>30.000 VNĐ</span>
+                                    </div>
                                     <div class="total-row grand-total">
                                         <span>Tổng cộng</span>
-                                        <span id="final-total">{{ number_format(isset($variant) ? $variant->selling_price * $quantity : $subtotal, 0, ',', '.') }} VNĐ</span>
+                                        <span id="final-total">{{ number_format((isset($variant) ? $variant->selling_price * $quantity : $subtotal) + 30000, 0, ',', '.') }} VNĐ</span>
                                     </div>
                                 </div>
 
@@ -966,122 +970,7 @@ textarea.form-control {
     </div>
 </div>
 
-<!-- Order Confirmation Modal -->
-<div class="modal fade" id="orderConfirmationModal" tabindex="-1" aria-labelledby="orderConfirmationModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="orderConfirmationModalLabel">
-                    <i class="fas fa-check-circle text-success me-2"></i>
-                    Xác nhận đặt hàng
-                </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div class="row">
-                    <div class="col-12">
-                        <div class="alert alert-info">
-                            <i class="fas fa-info-circle me-2"></i>
-                            <strong>Vui lòng kiểm tra thông tin đơn hàng trước khi xác nhận:</strong>
-                        </div>
-                        
-                        <!-- Thông tin người đặt -->
-                        <div class="mb-4">
-                            <h6 class="fw-bold text-primary">
-                                <i class="fas fa-user me-2"></i>
-                                Thông tin người đặt
-                            </h6>
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <p><strong>Họ tên:</strong> <span id="confirm-c-fname"></span></p>
-                                    <p><strong>Email:</strong> <span id="confirm-c-email"></span></p>
-                                </div>
-                                <div class="col-md-6">
-                                    <p><strong>Số điện thoại:</strong> <span id="confirm-c-phone"></span></p>
-                                    <p><strong>Địa chỉ:</strong> <span id="confirm-c-address"></span></p>
-                                </div>
-                            </div>
-                        </div>
 
-                        <!-- Thông tin người nhận (nếu có) -->
-                        <div class="mb-4" id="confirm-recipient-info" style="display: none;">
-                            <h6 class="fw-bold text-success">
-                                <i class="fas fa-shipping-fast me-2"></i>
-                                Thông tin người nhận
-                            </h6>
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <p><strong>Họ tên:</strong> <span id="confirm-shipping-name"></span></p>
-                                    <p><strong>Email:</strong> <span id="confirm-shipping-email"></span></p>
-                                </div>
-                                <div class="col-md-6">
-                                    <p><strong>Số điện thoại:</strong> <span id="confirm-shipping-phone"></span></p>
-                                    <p><strong>Địa chỉ:</strong> <span id="confirm-shipping-address"></span></p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Sản phẩm đặt hàng -->
-                        <div class="mb-4">
-                            <h6 class="fw-bold text-info">
-                                <i class="fas fa-shopping-cart me-2"></i>
-                                Sản phẩm đặt hàng
-                            </h6>
-                            <div id="confirm-order-items">
-                                <!-- Sẽ được điền bằng JavaScript -->
-                            </div>
-                        </div>
-
-                        <!-- Tổng tiền -->
-                        <div class="mb-4">
-                            <h6 class="fw-bold text-warning">
-                                <i class="fas fa-money-bill-wave me-2"></i>
-                                Tổng tiền
-                            </h6>
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <p><strong>Tạm tính:</strong> <span id="confirm-subtotal"></span></p>
-                                    <p id="confirm-discount" style="display: none;"><strong>Giảm giá:</strong> <span id="confirm-discount-amount"></span></p>
-                                </div>
-                                <div class="col-md-6">
-                                    <p class="fw-bold fs-5 text-success"><strong>Tổng cộng:</strong> <span id="confirm-final-total"></span></p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Phương thức thanh toán -->
-                        <div class="mb-4">
-                            <h6 class="fw-bold text-secondary">
-                                <i class="fas fa-credit-card me-2"></i>
-                                Phương thức thanh toán
-                            </h6>
-                            <p><strong>Phương thức:</strong> <span id="confirm-payment-method"></span></p>
-                        </div>
-
-                        <!-- Ghi chú -->
-                        <div class="mb-4" id="confirm-notes" style="display: none;">
-                            <h6 class="fw-bold text-muted">
-                                <i class="fas fa-sticky-note me-2"></i>
-                                Ghi chú
-                            </h6>
-                            <p id="confirm-order-notes"></p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                    <i class="fas fa-times me-2"></i>
-                    Hủy
-                </button>
-                <button type="button" class="btn btn-success" id="confirmOrderBtn">
-                    <i class="fas fa-check me-2"></i>
-                    Xác nhận đặt hàng
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
 
 <!-- Voucher Modal -->
 <div class="modal fade" id="voucherModal" tabindex="-1" aria-labelledby="voucherModalLabel" aria-hidden="true">
@@ -1155,8 +1044,6 @@ textarea.form-control {
     document.addEventListener('DOMContentLoaded', function() {
         const checkoutForm = document.getElementById('checkoutForm');
         const placeOrderBtn = document.getElementById('placeOrderBtn');
-        const orderConfirmationModal = document.getElementById('orderConfirmationModal');
-        const confirmOrderBtn = document.getElementById('confirmOrderBtn');
         
         // Xử lý khi click nút đặt hàng
         placeOrderBtn.addEventListener('click', function() {
@@ -1165,33 +1052,11 @@ textarea.form-control {
                 return;
             }
             
-            const paymentMethod = document.querySelector('input[name="payment_method"]:checked')?.value;
-            
-            if (paymentMethod === 'cod') {
-                // Hiển thị modal xác nhận cho COD
-                showOrderConfirmationModal();
-            } else {
-                // Xử lý trực tiếp cho VNPay
-                processOrder();
-            }
-        });
-        
-        // Xử lý khi xác nhận đặt hàng
-        confirmOrderBtn.addEventListener('click', function() {
-            // Disable button để tránh double click
-            this.disabled = true;
-            this.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Đang xử lý...';
-            
-            // Xử lý đặt hàng
+            // Xử lý đặt hàng trực tiếp
             processOrder();
         });
         
-        // Reset button khi modal đóng
-        orderConfirmationModal.addEventListener('hidden.bs.modal', function() {
-            const confirmBtn = document.getElementById('confirmOrderBtn');
-            confirmBtn.disabled = false;
-            confirmBtn.innerHTML = '<i class="fas fa-check me-2"></i>Xác nhận đặt hàng';
-        });
+
         
         function validateForm() {
             let isValid = true;
@@ -1208,6 +1073,9 @@ textarea.form-control {
                 const element = document.getElementById(field.id);
                 if (!element.value.trim()) {
                     showFieldError(element, `${field.name} là bắt buộc`);
+                    isValid = false;
+                } else if (element.value.includes('  ')) {
+                    showFieldError(element, `${field.name} không được chứa khoảng trắng liên tiếp`);
                     isValid = false;
                 } else {
                     clearFieldError(element);
@@ -1235,6 +1103,9 @@ textarea.form-control {
                     const element = document.getElementById(field.id);
                     if (!element.value.trim()) {
                         showFieldError(element, `${field.name} là bắt buộc`);
+                        isValid = false;
+                    } else if (element.value.includes('  ')) {
+                        showFieldError(element, `${field.name} không được chứa khoảng trắng liên tiếp`);
                         isValid = false;
                     } else {
                         clearFieldError(element);
@@ -1264,88 +1135,7 @@ textarea.form-control {
             }
         }
         
-        function showOrderConfirmationModal() {
-            // Lấy thông tin từ form
-            const cFname = document.getElementById('c_fname').value;
-            const cEmail = document.getElementById('c_email_address').value;
-            const cPhone = document.getElementById('c_phone').value;
-            const cAddress = document.getElementById('c_address').value;
-            const shipToDifferent = document.getElementById('ship_to_different').checked;
-            const shippingName = document.getElementById('shipping_name').value;
-            const shippingEmail = document.getElementById('shipping_email').value;
-            const shippingPhone = document.getElementById('shipping_phone').value;
-            const shippingAddress = document.getElementById('shipping_address').value;
-            const orderNotes = document.getElementById('c_order_notes').value;
-            const subtotal = document.querySelector('.total-row:first-child span:last-child').innerText;
-            const finalTotal = document.getElementById('final-total').innerText;
-            const discountAmount = document.getElementById('voucher-discount-amount').innerText;
-            const hasDiscount = document.getElementById('voucher-discount-row').style.display !== 'none';
-            
-            // Điền thông tin vào modal
-            document.getElementById('confirm-c-fname').textContent = cFname;
-            document.getElementById('confirm-c-email').textContent = cEmail;
-            document.getElementById('confirm-c-phone').textContent = cPhone;
-            document.getElementById('confirm-c-address').textContent = cAddress;
-            
-            // Thông tin người nhận
-            if (shipToDifferent) {
-                document.getElementById('confirm-recipient-info').style.display = 'block';
-                document.getElementById('confirm-shipping-name').textContent = shippingName;
-                document.getElementById('confirm-shipping-email').textContent = shippingEmail || 'Không có';
-                document.getElementById('confirm-shipping-phone').textContent = shippingPhone;
-                document.getElementById('confirm-shipping-address').textContent = shippingAddress;
-            } else {
-                document.getElementById('confirm-recipient-info').style.display = 'none';
-            }
-            
-            // Sản phẩm đặt hàng
-            const orderItemsContainer = document.getElementById('confirm-order-items');
-            const orderItems = document.querySelectorAll('.order-item');
-            let itemsHtml = '';
-            
-            orderItems.forEach(item => {
-                const itemName = item.querySelector('h4').textContent;
-                const itemQuantity = item.querySelector('.quantity').textContent;
-                
-                itemsHtml += `
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <div>
-                            <strong>${itemName}</strong>
-                            <br><small class="text-muted">${itemQuantity}</small>
-                        </div>
-                    </div>
-                `;
-            });
-            
-            orderItemsContainer.innerHTML = itemsHtml;
-            
-            // Tổng tiền
-            document.getElementById('confirm-subtotal').textContent = subtotal;
-            document.getElementById('confirm-final-total').textContent = finalTotal;
-            
-            if (hasDiscount) {
-                document.getElementById('confirm-discount').style.display = 'block';
-                document.getElementById('confirm-discount-amount').textContent = `-${discountAmount} VNĐ`;
-            } else {
-                document.getElementById('confirm-discount').style.display = 'none';
-            }
-            
-            // Phương thức thanh toán
-            const paymentMethodText = 'Thanh toán khi nhận hàng (COD)';
-            document.getElementById('confirm-payment-method').textContent = paymentMethodText;
-            
-            // Ghi chú
-            if (orderNotes.trim()) {
-                document.getElementById('confirm-notes').style.display = 'block';
-                document.getElementById('confirm-order-notes').textContent = orderNotes;
-            } else {
-                document.getElementById('confirm-notes').style.display = 'none';
-            }
-            
-            // Hiển thị modal
-            const modal = new bootstrap.Modal(orderConfirmationModal);
-            modal.show();
-        }
+
         
         function processOrder() {
             const paymentMethod = document.querySelector('input[name="payment_method"]:checked')?.value;
@@ -1386,6 +1176,7 @@ textarea.form-control {
 
         // Lấy tạm tính (subtotal) từ view
         let subtotal = {{ (isset($variant) ? $variant->selling_price * ($quantity ?? 1) : (isset($subtotal) ? $subtotal : 0)) }};
+        const shippingFee = 30000; // Phí vận chuyển cố định
 
         // Mở modal khi click button
         voucherSelectBtn.addEventListener('click', function() {
@@ -1405,8 +1196,8 @@ textarea.form-control {
                     voucherMsg.style.display = 'block';
                     voucherMsg.className = 'alert alert-warning mt-2';
                     voucherMsg.innerText = 'Chỉ có thể áp dụng 1 mã giảm giá cho mỗi đơn hàng!';
-                    voucherDiscountRow.style.display = 'none';
-                    finalTotal.innerText = subtotal.toLocaleString('vi-VN') + ' VNĐ';
+                                            voucherDiscountRow.style.display = 'none';
+                        finalTotal.innerText = (subtotal + shippingFee).toLocaleString('vi-VN') + ' VNĐ';
                     voucherCodeInput.value = '';
                     voucherIdInput.value = '';
                     discountAmountInput.value = '';
@@ -1454,7 +1245,7 @@ textarea.form-control {
                         voucherMsg.className = 'alert alert-danger mt-2';
                         voucherMsg.innerText = data.message;
                         voucherDiscountRow.style.display = 'none';
-                        finalTotal.innerText = subtotal.toLocaleString('vi-VN') + ' VNĐ';
+                        finalTotal.innerText = (subtotal + shippingFee).toLocaleString('vi-VN') + ' VNĐ';
                         
                         // Reset các input hidden
                         voucherCodeInput.value = '';

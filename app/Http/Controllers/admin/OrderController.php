@@ -98,20 +98,18 @@ class OrderController extends Controller
             $old_status = $order->status;
             
             // Nếu chuyển sang trạng thái cancelled, hoàn trả stock và giảm total_sold
-            if ($new_status === 'cancelled' && in_array($old_status, ['confirmed', 'preparing', 'shipping', 'delivered'])) {
+            if ($new_status === 'cancelled') {
                 foreach ($order->items as $item) {
                     $product = $item->product;
                     if ($product) {
                         $product->decrement('total_sold', $item->quantity);
                     }
                     
-                    // Hoàn trả stock nếu đơn hàng đã được xác nhận trước đó
-                    if (in_array($old_status, ['confirmed', 'preparing', 'shipping', 'delivered'])) {
-                        if ($item->product_variant_id) {
-                            $variant = ProductVariant::find($item->product_variant_id);
-                            if ($variant) {
-                                $variant->increment('stock', $item->quantity);
-                            }
+                    // Hoàn trả stock cho tất cả đơn hàng bị hủy (vì stock đã được trừ khi đặt hàng)
+                    if ($item->product_variant_id) {
+                        $variant = ProductVariant::find($item->product_variant_id);
+                        if ($variant) {
+                            $variant->increment('stock', $item->quantity);
                         }
                     }
                 }
@@ -123,30 +121,13 @@ class OrderController extends Controller
                     'payment_status' => 'paid'
                 ]);
                 
-                // Không tăng total_sold ở đây vì sẽ tăng khi client xác nhận nhận hàng
             } else {
                 $order->update(['status' => $new_status]);
             }
 
-            // Trừ stock khi chuyển sang trạng thái 'confirmed'
+            // Gửi email hóa đơn kèm PDF khi chuyển sang trạng thái 'confirmed'
             if ($old_status !== 'confirmed' && $new_status === 'confirmed') {
                 try {
-                    // Trừ stock cho từng sản phẩm trong đơn hàng
-                    foreach ($order->items as $item) {
-                        if ($item->product_variant_id) {
-                            // Nếu có variant, trừ stock của variant
-                            $variant = ProductVariant::lockForUpdate()->find($item->product_variant_id);
-                            if ($variant) {
-                                if ($variant->stock < $item->quantity) {
-                                    throw new \Exception("Sản phẩm {$item->product->name} không đủ số lượng tồn kho!");
-                                }
-                                
-                                $oldStock = $variant->stock;
-                                $variant->decrement('stock', $item->quantity);
-                            }
-                        }
-                    }
-                    
                     // Gửi email hóa đơn kèm PDF
                     if ($order->shipping_email) {
                         // Tạo hoặc lấy hóa đơn
@@ -167,19 +148,10 @@ class OrderController extends Controller
                         Mail::to($order->shipping_email)->send(new InvoicePdfMail($invoice, $pdfContent));
                     }
                 } catch (\Exception $e) {
-                    Log::error('Failed to process confirmed order', [
+                    Log::error('Failed to send invoice email', [
                         'order_id' => $order->id,
                         'error' => $e->getMessage()
                     ]);
-                    
-                    if ($request->ajax() || $request->wantsJson()) {
-                        return response()->json([
-                            'success' => false,
-                            'message' => 'Lỗi khi xác nhận đơn hàng: ' . $e->getMessage()
-                        ]);
-                    }
-                    return redirect()->route('admin.orders.show', $order->id)
-                        ->with('error', 'Lỗi khi xác nhận đơn hàng: ' . $e->getMessage());
                 }
             }
             try {

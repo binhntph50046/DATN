@@ -256,6 +256,9 @@ class CheckoutController
                     'price' => $variant->selling_price,
                     'total' => $subtotal,
                 ]);
+                
+                // Trừ stock ngay khi đặt hàng
+                $variant->decrement('stock', $request->quantity);
               
             } else {
                 if (!Auth::check()) {
@@ -291,7 +294,11 @@ class CheckoutController
                         'price' => $price,
                         'total' => $total,
                     ]);
-                    // Bỏ trừ stock ở đây - sẽ trừ khi admin xác nhận
+                    
+                    // Trừ stock ngay khi đặt hàng
+                    if ($item->variant) {
+                        $item->variant->decrement('stock', $item->quantity);
+                    }
                 }
                 $cartItems->each->delete();
             }
@@ -584,7 +591,11 @@ class CheckoutController
                         'price' => $price,
                         'total' => $total,
                     ]);
-                    // Bỏ trừ stock ở đây - sẽ trừ khi admin xác nhận
+                    
+                    // Trừ stock ngay khi đặt hàng
+                    if ($item->variant) {
+                        $item->variant->decrement('stock', $item->quantity);
+                    }
                 }
                 $cartItems->each->delete();
             }
@@ -622,7 +633,7 @@ class CheckoutController
     {
         $voucher = null;
         $voucherDiscount = 0;
-        $shipping_fee = 0;
+        $shipping_fee = 30000; 
 
         // Kiểm tra chỉ cho phép 1 voucher cho mỗi đơn hàng
         if ($request->filled('voucher_code')) {

@@ -198,13 +198,6 @@ function floatchart() {
         enabled: true,
         formatter: val => val.toLocaleString('vi-VN')
       },
-      stroke: {
-        curve: 'smooth',
-        width: 2
-      },
-      grid: {
-        strokeDashArray: 4
-      },
       series: [{
         name: 'Sản phẩm đã bán',
         data: data
@@ -212,13 +205,10 @@ function floatchart() {
       xaxis: {
         categories: labels,
         labels: {
-          style: {
-            fontSize: '13px'
-          }
+          style: { fontSize: '13px' }
         }
       },
       yaxis: {
-        show: true,
         labels: {
           formatter: val => val.toLocaleString('vi-VN')
         }
@@ -234,62 +224,72 @@ function floatchart() {
   })();
 
 
+  (function () {
+    // === Biểu đồ tháng ===
+    var monthlySold = JSON.parse(document.getElementById("sold-chart-month").dataset.monthlySold || "null");
+    var monthlyByYear = JSON.parse(document.getElementById("sold-chart-month").dataset.monthlyByYear || "null");
 
-  // (function () {
-  //   var options = {
-  //     chart: {
-  //       type: 'line',
-  //       height: 340,
-  //       toolbar: {
-  //         show: false
-  //       }
-  //     },
-  //     colors: ['#faad14'],
-  //     plotOptions: {
-  //       bar: {
-  //         columnWidth: '45%',
-  //         borderRadius: 4
-  //       }
-  //     },
-  //     stroke: {
-  //       curve: 'smooth',
-  //       width: 1.5
-  //     },
-  //     grid: {
-  //       strokeDashArray: 4
-  //     },
-  //     series: [{
-  //       data: [58, 90, 38, 83, 63, 75, 35, 55]
-  //     }],
-  //     xaxis: {
-  //       type: 'datetime',
-  //       categories: [
-  //         '2018-05-19T00:00:00.000Z',
-  //         '2018-06-19T00:00:00.000Z',
-  //         '2018-07-19T01:30:00.000Z',
-  //         '2018-08-19T02:30:00.000Z',
-  //         '2018-09-19T03:30:00.000Z',
-  //         '2018-10-19T04:30:00.000Z',
-  //         '2018-11-19T05:30:00.000Z',
-  //         '2018-12-19T06:30:00.000Z'
-  //       ],
-  //       labels: {
-  //         format: 'MMM'
-  //       },
-  //       axisBorder: {
-  //         show: false
-  //       },
-  //       axisTicks: {
-  //         show: false
-  //       }
-  //     },
-  //     yaxis: {
-  //       show: false
-  //     },
-  //   };
-  //   var chart = new ApexCharts(document.querySelector('#analytics-report-chart'), options);
-  //   chart.render();
-  // })();
+    var monthOptions;
+    if (monthlySold) {
+      // Chế độ 1 năm
+      monthOptions = {
+        chart: { type: "area", height: 350 },
+        series: [{ name: "Sản phẩm đã bán", data: monthlySold }],
+        xaxis: { categories: ["T1", "T2", "T3", "T4", "T5", "T6", "T7", "T8", "T9", "T10", "T11", "T12"] },
+        stroke: { curve: 'smooth', width: 3 },
+        markers: { size: 4 },
+        dataLabels: { enabled: false },
+        tooltip: { y: { formatter: val => val + " SP" } }
+      };
+    } else if (monthlyByYear) {
+      // Chế độ tất cả các năm
+      var seriesData = [];
+      for (var year in monthlyByYear) {
+        seriesData.push({ name: year, data: monthlyByYear[year] });
+      }
+      monthOptions = {
+        chart: { type: "area", height: 350 },
+        series: seriesData,
+        xaxis: { categories: ["T1", "T2", "T3", "T4", "T5", "T6", "T7", "T8", "T9", "T10", "T11", "T12"] },
+        stroke: { curve: 'smooth', width: 3 },
+        markers: { size: 4 },
+        dataLabels: { enabled: false },
+        tooltip: { y: { formatter: val => val + " SP" } }
+      };
+    }
+
+    if (monthOptions) {
+      new ApexCharts(document.querySelector('#sold-chart-month'), monthOptions).render();
+    }
+
+    // === Biểu đồ năm ===
+    var yearlySoldData = JSON.parse(document.getElementById("sold-chart-year").dataset.yearlySold || "{}");
+    var years = Object.keys(yearlySoldData);
+    var totals = Object.values(yearlySoldData);
+
+    var yearOptions = {
+      chart: { type: "bar", height: 350 },
+      plotOptions: {
+        bar: {
+          columnWidth: '40%',
+          borderRadius: 4
+        }
+      },
+
+      series: [{ name: "Sản phẩm đã bán", data: totals }],
+      xaxis: { categories: years },
+      tooltip: { y: { formatter: val => val + " SP" } }
+    };
+
+    new ApexCharts(document.querySelector('#sold-chart-year'), yearOptions).render();
+
+    // === Sự kiện đổi năm ===
+    document.getElementById("yearFilter").addEventListener("change", function () {
+      document.getElementById("yearFilterForm").submit();
+    });
+
+  })();
+
   (function () {
     var options = {
       chart: {

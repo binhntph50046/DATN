@@ -56,7 +56,7 @@
                                             alt="{{ $product->name }}" style="max-height: 200px; object-fit: contain;">
                                     </div>
 
-                                    <h6 class="product-title text-center text-dark">{{ $product->name }}</h6>
+                                    <h6 class="product-title text-center text-dark" style="height: 37px;line-height: 22px">{{ $product->name }}</h6>
 
                                     <div class="product-price-and-rating text-center">
                                         @if ($variant)

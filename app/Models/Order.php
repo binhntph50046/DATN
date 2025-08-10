@@ -96,6 +96,7 @@ class Order extends Model
             'confirmed' => 'Đã xác nhận',
             'preparing' => 'Đang chuẩn bị',
             'shipping' => 'Đang giao hàng',
+            'delivered' => 'Đã giao',
             'completed' => 'Đã hoàn thành',
             'cancelled' => 'Đã hủy',
             'returned' => 'Đã hoàn đơn',

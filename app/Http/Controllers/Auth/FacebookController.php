@@ -26,7 +26,7 @@ class FacebookController
                 ['email' => $fbUser->getEmail()],
                 [
                     'name' => $fbUser->getName(),
-                    'password' => bcrypt(Str::random(16)),
+                    'password' => null,
                     'provider' => 'facebook',
                     'provider_id' => $fbUser->getId(),
                     'email_verified_at' => now(),
@@ -52,7 +52,7 @@ class FacebookController
             if ($hasAccess) {
                 return redirect('/admin');
             } else {
-                return redirect('/');
+                return redirect('/')->with('success', 'Đăng nhập Facebook thành công!');
             }            
 
         } catch (\Exception $e) {

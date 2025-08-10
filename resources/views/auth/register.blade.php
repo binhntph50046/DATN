@@ -9,8 +9,8 @@
         </a>
     </div>
     <div class="container active" id="container">
-        <div class="form-container sign-up">
-            <form action="{{ route('register') }}" method="POST" enctype="multipart/form-data">
+        <div class="form-container sign-up" style="height: 100%; overflow-y: auto">
+            <form style="height: auto;padding: 18px 40px" action="{{ route('register') }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 <h1>Tạo tài khoản</h1>
                 <div class="social-icons">
@@ -45,7 +45,7 @@
                     <div class="invalid-feedback">{{ $message }}</div>
                 @enderror
 
-                <div class="row-inputs">
+                {{-- <div class="row-inputs"> --}}
                     <div class="gender-container w-100">
                         <select name="gender" id="gender" class="form-control @error('gender') is-invalid @enderror">
                             <option value="">Chọn giới tính</option>
@@ -63,7 +63,7 @@
                     @error('dob')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
-                </div>
+                {{-- </div> --}}
 
                 <input type="password" name="password" class="form-control @error('password') is-invalid @enderror"
                     placeholder="Mật khẩu">
@@ -72,7 +72,6 @@
                 @enderror
                 <button type="submit">Đăng kí</button>
             </form>
-
         </div>
         <div class="toggle-container">
             <div class="toggle">

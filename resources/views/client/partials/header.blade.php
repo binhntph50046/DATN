@@ -285,7 +285,7 @@
                 class="rounded-circle d-flex align-items-center justify-content-center icon-circle-btn">
                 <i class="fas fa-heart text-white"></i>
             </a>
-            
+
             <!-- Giỏ hàng -->
             <a class="rounded-circle d-flex align-items-center justify-content-center icon-circle-btn position-relative"
                 href="{{ route('cart') }}">
@@ -305,38 +305,55 @@
                     href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                     {{-- Nếu muốn dùng avatar thật --}}
                     @auth
-                        <img src="{{ Auth::user()->avatar ?? asset('uploads/default/avatar_default.png') }}" alt="Avatar"
-                            class="rounded-circle" width="46" height="46">
+                        <img src="{{ Auth::user()->avatar ? asset(Auth::user()->avatar) : asset('uploads/default/avatar_default.png') }}"
+                            alt="Avatar" class="rounded-circle" width="46" height="46">
                     @else
                         {{-- Nếu chưa đăng nhập thì dùng icon --}}
                         <i class="fas fa-user text-white"></i>
                     @endauth
                 </a>
-
                 <ul class="dropdown-menu dropdown-menu-bg" aria-labelledby="userDropdown">
-                    <li><a class="dropdown-item text-white" href="{{ route('order.guest.tracking') }}">Tra cứu đơn hàng</a></li>
+                    {{-- Hiển thị "Tra cứu đơn hàng" nếu chưa đăng nhập hoặc là người dùng bình thường --}}
+                    @guest
+                        <li>
+                            <a class="dropdown-item text-white" href="{{ route('order.guest.tracking') }}">Tra cứu đơn
+                                hàng</a>
+                        </li>
+                    @else
+                        @unless (Auth::user()->hasRole(['admin', 'staff']))
+                            <li>
+                                <a class="dropdown-item text-white" href="{{ route('order.guest.tracking') }}">Tra cứu đơn hàng</a>
+                            </li>
+                        @endunless
+                    @endguest
+
                     @guest
                         <li><a class="dropdown-item text-white" href="{{ route('register') }}">Đăng kí</a></li>
                         <li><a class="dropdown-item text-white" href="{{ route('login') }}">Đăng nhập</a></li>
                     @else
                         @if (Auth::user()->hasRole(['admin', 'staff']))
                             <li>
-                                <a class="dropdown-item text-white" href="{{ route('admin.dashboard') }}">Trang quản
-                                    trị</a>
+                                <a class="dropdown-item text-white" href="{{ route('admin.dashboard') }}">Trang quản trị</a>
                             </li>
                         @endif
+
                         <li><a class="dropdown-item text-white" href="{{ route('profile.index') }}">Trang cá nhân</a></li>
-                        <li><a class="dropdown-item text-white" href="{{ route('order.index') }}">Đơn hàng của tôi</a></li>
+
+                        {{-- Hiển thị "Đơn hàng của tôi" nếu không phải admin/staff --}}
+                        @unless (Auth::user()->hasRole(['admin', 'staff']))
+                            <li><a class="dropdown-item text-white" href="{{ route('order.index') }}">Đơn hàng của tôi</a></li>
+                        @endunless
+
                         <li>
                             <form action="{{ route('logout') }}" method="POST" class="m-0">
                                 @csrf
                                 <button type="submit"
-                                    class="dropdown-item text-white w-100 text-start border-0 bg-transparent">Đăng
-                                    xuất</button>
+                                    class="dropdown-item text-white w-100 text-start border-0 bg-transparent">Đăng xuất</button>
                             </form>
                         </li>
                     @endguest
                 </ul>
+
             </div>
 
         </div>

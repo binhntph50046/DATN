@@ -24,7 +24,7 @@ class GoogleController
                 ['email' => $googleUser->getEmail()],
                 [
                     'name' => $googleUser->getName(),
-                    'password' => bcrypt(Str::random(16)),
+                    'password' => null,
                     'provider' => 'google',
                     'provider_id' => $googleUser->getId(),
                     'email_verified_at' => now(),
@@ -52,7 +52,7 @@ class GoogleController
             if ($hasAccess) {
                 return redirect('/admin');
             } else {
-                return redirect('/');
+                return redirect('/')->with('success', 'Đăng nhập Google thành công!');
             }            
 
         } catch (\Exception $e) {

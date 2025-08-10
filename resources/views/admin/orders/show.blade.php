@@ -81,8 +81,8 @@
 <div class="admin-order-details">
     <div class="container">
         <!-- Header Section -->
-        <div class="mb-4">
-            <h1 class="h4 mb-3">Chi tiết đơn hàng #{{ $order->id }}</h1>
+        <div class="mb-4 mt-4">
+          
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb bg-light rounded-3 p-2 mb-0">
                     <li class="breadcrumb-item">
@@ -93,7 +93,7 @@
                     <li class="breadcrumb-item">
                         <a href="{{ route('admin.orders.index') }}" class="text-decoration-none">Đơn hàng</a>
                     </li>
-                    <li class="breadcrumb-item active" aria-current="page">Đơn hàng #{{ $order->id }}</li>
+                    <li class="breadcrumb-item active" aria-current="page">Chi tiết đơn hàng #{{ $order->id }}</li>
                 </ol>
             </nav>
         </div>
@@ -155,19 +155,20 @@
                             <tr>
                                 <th class="text-muted" style="width: 35%;">Trạng thái:</th>
                                 <td>
-                                    <form method="POST" action="{{ route('admin.orders.updateStatus', $order->id) }}" class="d-flex gap-2">
+                                    <form method="POST" action="{{ route('admin.orders.updateStatus', $order->id) }}" class="d-flex gap-2 align-items-center">
                                         @csrf
                                         @method('PUT')
-                                        <select name="status" class="form-select" style="max-width: 200px;">
+                                        <select name="status" class="form-select" style="max-width: 150px; height: 38px;">
                                             <option value="pending" {{ $order->status == 'pending' ? 'selected' : '' }}>Chờ xử lý</option>
                                             <option value="confirmed" {{ $order->status == 'confirmed' ? 'selected' : '' }}>Đã xác nhận</option>
                                             <option value="preparing" {{ $order->status == 'preparing' ? 'selected' : '' }}>Đang chuẩn bị</option>
                                             <option value="shipping" {{ $order->status == 'shipping' ? 'selected' : '' }}>Đang giao hàng</option>
-                                            <option value="completed" {{ $order->status == 'completed' ? 'selected' : '' }}>Hoàn thành</option>
+                                            <option value="delivered" {{ $order->status == 'delivered' ? 'selected' : '' }}>Đã giao</option>
+                                            <option value="completed" {{ $order->status == 'completed' ? 'selected' : '' }} disabled>Đã hoàn thành (Chỉ client xác nhận)</option>
                                             <option value="cancelled" {{ $order->status == 'cancelled' ? 'selected' : '' }}>Đã hủy</option>
                                         </select>
-                                        <button type="submit" class="btn btn-primary">
-                                            <i class="fas fa-sync-alt me-2"></i> Cập nhật
+                                        <button type="submit" class="btn btn-primary" style="height: 38px; padding: 0.375rem 0.75rem;">
+                                            <i class="fas fa-sync-alt me-1"></i> Cập nhật
                                         </button>
                                     </form>
                                 </td>
@@ -204,7 +205,7 @@
             @if($order->orderAddress)
             <!-- Recipient Information -->
             <div class="col-12">
-                <div class="card">
+                <div class="card h-100">
                     <div class="card-header">
                         <i class="fas fa-user-friends me-2"></i>
                         Thông tin người nhận khác
@@ -318,7 +319,7 @@
 
         @if($order->notes)
         <!-- Notes Section -->
-        <div class="card notes-card mt-4">
+        <div class="card notes-card h-100 mt-4">
             <div class="card-body">
                 <h5 class="card-title d-flex align-items-center gap-2 mb-3">
                     <i class="fas fa-sticky-note"></i>
@@ -346,6 +347,17 @@
                 alert.classList.add('fade');
                 setTimeout(() => alert.remove(), 500);
             }, 3000);
+        }
+
+        // Ngăn admin chọn trạng thái completed
+        const statusSelect = document.querySelector('select[name="status"]');
+        if (statusSelect) {
+            statusSelect.addEventListener('change', function() {
+                if (this.value === 'completed') {
+                    alert('Admin không thể chuyển trạng thái sang "Đã hoàn thành". Chỉ client mới có thể xác nhận nhận hàng.');
+                    this.value = '{{ $order->status }}'; // Khôi phục giá trị cũ
+                }
+            });
         }
     });
 </script>

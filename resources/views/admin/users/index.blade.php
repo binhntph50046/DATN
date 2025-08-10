@@ -46,8 +46,11 @@
                                     </a>
                                 @endcan
                                 @can('view users')
-                                    <a href="{{ route('admin.users.trash') }}" class="btn btn-danger btn-sm rounded-3">
+                                    <a href="{{ route('admin.users.trash') }}" class="btn btn-danger btn-sm rounded-3 me-2">
                                         <i class="ti ti-trash"></i> Thùng rác
+                                    </a>
+                                    <a href="{{ route('admin.users.ban-reasons') }}" class="btn btn-warning btn-sm rounded-3">
+                                        <i class="ti ti-alert-triangle"></i> Danh sách tài khoản bị khóa
                                     </a>
                                 @endcan
                             </div>
@@ -131,7 +134,7 @@
                                                     @can('edit users')
                                                         <a href="{{ route('admin.users.edit', $user->id) }}"
                                                             class="btn btn-info btn-sm rounded-3 me-2" title="Sửa">
-                                                            <i class="ti ti-edit"></i> Sửa
+                                                            <i class="ti ti-edit"></i> 
                                                         </a>
                                                     @endcan
 
@@ -139,7 +142,7 @@
                                                         @can('addrole')
                                                             <a href="{{ route('admin.roles.edit', $user->id) }}"
                                                                 class="btn btn-warning btn-sm rounded-3 me-2" title="Gán vai trò">
-                                                                <i class="ti ti-user-check"></i> Gán vai trò
+                                                                <i class="ti ti-user-check"></i> 
                                                             </a>
                                                         @endcan
                                                     @endif
@@ -151,7 +154,7 @@
                                                             @method('DELETE')
                                                             <button type="submit" class="btn btn-danger btn-sm rounded-3"
                                                                 onclick="return confirm('Bạn có chắc chắn muốn xóa người dùng này không?')" title="Xóa">
-                                                                <i class="ti ti-trash"></i> Xóa
+                                                                <i class="ti ti-trash"></i> 
                                                             </button>
                                                         </form>
                                                     @endcan
@@ -175,6 +178,8 @@
             <!-- [ Main Content ] end -->
         </div>
     </div>
+
+
 @endsection
 
 @push('styles')

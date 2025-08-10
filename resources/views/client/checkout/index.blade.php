@@ -399,6 +399,23 @@
     border-radius: 8px;
 }
 
+.voucher-input select.form-control {
+    padding: 0.75rem;
+    font-size: 0.9rem;
+    border: 2px solid #e2e8f0;
+    transition: all 0.3s ease;
+}
+
+.voucher-input select.form-control:focus {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+}
+
+.voucher-input select.form-control option {
+    padding: 8px;
+    font-size: 0.9rem;
+}
+
 .btn-apply {
     padding: 0 20px;
     background: #3b82f6;
@@ -570,7 +587,92 @@ textarea.form-control {
 
 .form-floating > textarea.form-control {
     padding-top: 1.625rem;
-        }
+}
+
+/* Voucher Modal Styles */
+.voucher-list {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.voucher-item {
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 12px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: #fff;
+}
+
+.voucher-item:hover {
+    border-color: #3b82f6;
+    background: #f0f9ff;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+}
+
+.voucher-item.selected {
+    border-color: #10b981;
+    background: #f0fdf4;
+}
+
+.voucher-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.voucher-code {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #1f2937;
+}
+
+.voucher-type .badge {
+    font-size: 0.75rem;
+    padding: 4px 8px;
+}
+
+.voucher-details {
+    font-size: 0.85rem;
+    color: #6b7280;
+}
+
+.voucher-condition,
+.voucher-savings {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 3px;
+}
+
+.voucher-savings {
+    color: #10b981;
+    font-weight: 500;
+}
+
+/* Modal custom styles */
+.modal-content {
+    border-radius: 12px;
+    border: none;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.modal-header {
+    border-bottom: 1px solid #e5e7eb;
+    padding: 1rem 1.25rem;
+}
+
+.modal-body {
+    padding: 1rem 1.25rem;
+}
+
+.modal-footer {
+    border-top: 1px solid #e5e7eb;
+    padding: 0.75rem 1.25rem;
+}
     </style>
 
 <div class="checkout-wrapper">
@@ -620,13 +722,13 @@ textarea.form-control {
                             <div class="section-content">
                                 <div class="form-floating mb-3">
                                         <input type="text" class="form-control" id="c_fname" name="c_fname" required
-                                        value="{{ old('c_fname', Auth::check() ? Auth::user()->name : '') }}"
+                                        value="{{ old('c_fname', Auth::check() && Auth::user() ? Auth::user()->name : '') }}"
                                         placeholder="Nhập họ và tên">
                                     <label for="c_fname">Họ và tên <span class="text-danger">*</span></label>
                                 </div>
                                 <div class="form-floating mb-3">
                                         <input type="text" class="form-control" id="c_address" name="c_address" required
-                                        value="{{ old('c_address', Auth::check() ? Auth::user()->address : '') }}"
+                                        value="{{ old('c_address', Auth::check() && Auth::user() ? Auth::user()->address : '') }}"
                                         placeholder="Nhập địa chỉ">
                                     <label for="c_address">Địa chỉ <span class="text-danger">*</span></label>
                                 </div>
@@ -634,7 +736,7 @@ textarea.form-control {
                                     <div class="col-md-6">
                                         <div class="form-floating mb-3">
                                             <input type="email" class="form-control" id="c_email_address" name="c_email_address" required
-                                                value="{{ old('c_email_address', Auth::check() ? Auth::user()->email : '') }}"
+                                                value="{{ old('c_email_address', Auth::check() && Auth::user() ? Auth::user()->email : '') }}"
                                                 placeholder="Nhập email">
                                             <label for="c_email_address">Email <span class="text-danger">*</span></label>
                                         </div>
@@ -642,7 +744,7 @@ textarea.form-control {
                                     <div class="col-md-6">
                                         <div class="form-floating mb-3">
                                         <input type="text" class="form-control" id="c_phone" name="c_phone" required
-                                                value="{{ old('c_phone', Auth::check() ? Auth::user()->phone : '') }}"
+                                                value="{{ old('c_phone', Auth::check() && Auth::user() ? Auth::user()->phone : '') }}"
                                                 placeholder="Nhập số điện thoại">
                                             <label for="c_phone">Số điện thoại <span class="text-danger">*</span></label>
                                         </div>
@@ -806,11 +908,12 @@ textarea.form-control {
                                 <!-- Mã giảm giá -->
                                 <div class="voucher-section my-4">
                                     <div class="voucher-input">
-                                        <input type="text" class="form-control" id="c_code" 
-                                            placeholder="Nhập mã giảm giá"
+                                        <button type="button" 
+                                            class="btn btn-outline-primary w-100" 
+                                            id="voucher-select-btn"
                                             {{ isset($hasDiscountedProducts) && $hasDiscountedProducts ? 'disabled' : '' }}>
-                                        <button type="button" class="btn-apply" onclick="checkVoucher()">
-                                            <i class="fas fa-check"></i>
+                                            <i class="fas fa-tag me-2"></i>
+                                            Chọn mã giảm giá
                                         </button>
                                     </div>
                                     @if(isset($hasDiscountedProducts) && $hasDiscountedProducts)
@@ -818,7 +921,7 @@ textarea.form-control {
                                             <i class="fas fa-info-circle"></i>
                                             <span>Không thể áp dụng mã giảm giá cho sản phẩm đang khuyến mãi</span>
                                         </div>
-                                        @endif
+                                    @endif
                                     <div id="voucher-message" class="voucher-message"></div>
                                 </div>
 
@@ -846,6 +949,74 @@ textarea.form-control {
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Voucher Modal -->
+<div class="modal fade" id="voucherModal" tabindex="-1" aria-labelledby="voucherModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-md">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="voucherModalLabel">
+                    <i class="fas fa-tag me-2"></i>
+                    Chọn mã giảm giá
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="voucher-list">
+                            @if(isset($availableVouchers) && $availableVouchers->count() > 0)
+                                @foreach($availableVouchers as $voucher)
+                                    <div class="voucher-item" 
+                                         data-voucher-code="{{ $voucher->code }}"
+                                         data-voucher-id="{{ $voucher->id }}"
+                                         data-discount-amount="{{ $voucher->discount_amount }}"
+                                         data-type="{{ $voucher->type }}"
+                                         data-value="{{ $voucher->value }}">
+                                        <div class="voucher-header">
+                                            <div class="voucher-code">{{ $voucher->code }}</div>
+                                            <div class="voucher-type">
+                                                @if($voucher->type === 'percentage')
+                                                    <span class="badge bg-success">Giảm {{ $voucher->value }}%</span>
+                                                @elseif($voucher->type === 'fixed')
+                                                    <span class="badge bg-primary">Giảm {{ number_format($voucher->value, 0, ',', '.') }} VNĐ</span>
+                                                @elseif($voucher->type === 'free_shipping')
+                                                    <span class="badge bg-info">Miễn phí vận chuyển</span>
+                                                @endif
+                                            </div>
+                                        </div>
+                                        <div class="voucher-details">
+                                            @if($voucher->min_order_amount)
+                                                <div class="voucher-condition">
+                                                    <i class="fas fa-info-circle text-muted"></i>
+                                                    Tối thiểu {{ number_format($voucher->min_order_amount, 0, ',', '.') }} VNĐ
+                                                </div>
+                                            @endif
+                                            @if($voucher->discount_amount > 0)
+                                                <div class="voucher-savings">
+                                                    <i class="fas fa-gift text-success"></i>
+                                                    Tiết kiệm {{ number_format($voucher->discount_amount, 0, ',', '.') }} VNĐ
+                                                </div>
+                                            @endif
+                                        </div>
+                                    </div>
+                                @endforeach
+                            @else
+                                <div class="text-center py-4">
+                                    <i class="fas fa-tag text-muted" style="font-size: 3rem;"></i>
+                                    <p class="text-muted mt-3">Không có mã giảm giá khả dụng</p>
+                                </div>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
             </div>
         </div>
     </div>
@@ -880,7 +1051,8 @@ textarea.form-control {
     </script>
     <script>
     document.addEventListener('DOMContentLoaded', function() {
-        const voucherInput = document.getElementById('c_code');
+        const voucherSelectBtn = document.getElementById('voucher-select-btn');
+        const voucherModal = document.getElementById('voucherModal');
         const voucherMsg = document.getElementById('voucher-message');
         const voucherDiscountRow = document.getElementById('voucher-discount-row');
         const voucherDiscountAmount = document.getElementById('voucher-discount-amount');
@@ -888,83 +1060,106 @@ textarea.form-control {
         const voucherCodeInput = document.getElementById('voucher_code_input');
         const voucherIdInput = document.getElementById('voucher_id_input');
         const discountAmountInput = document.getElementById('discount_amount_input');
-        let debounceTimer;
 
         // Lấy tạm tính (subtotal) từ view
         let subtotal = {{ (isset($variant) ? $variant->selling_price * ($quantity ?? 1) : (isset($subtotal) ? $subtotal : 0)) }};
 
-        const checkVoucher = () => {
-            const code = voucherInput.value.trim();
+        // Mở modal khi click button
+        voucherSelectBtn.addEventListener('click', function() {
+            const modal = new bootstrap.Modal(voucherModal);
+            modal.show();
+        });
 
-            // Reset khi không có mã
-            if (!code) {
-                voucherMsg.style.display = 'none';
-                voucherDiscountRow.style.display = 'none';
-                finalTotal.innerText = subtotal.toLocaleString('vi-VN') + ' VNĐ';
-                voucherCodeInput.value = '';
-                voucherIdInput.value = '';
-                discountAmountInput.value = '';
-                return;
-            }
+        // Xử lý khi click vào voucher item
+        document.querySelectorAll('.voucher-item').forEach(item => {
+            item.addEventListener('click', function() {
+                const code = this.dataset.voucherCode;
+                const voucherId = this.dataset.voucherId;
+                const discountAmount = parseInt(this.dataset.discountAmount) || 0;
 
-            // Gọi API kiểm tra mã
-            fetch('{{ route('voucher.check') }}', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                    'Accept': 'application/json'
-                },
-                credentials: 'same-origin',
-                body: JSON.stringify({
-                    voucher_code: code,
-                    subtotal: subtotal,
-                    email: document.getElementById('c_email_address').value
-                })
-            })
-            .then(res => res.json())
-            .then(data => {
-                voucherMsg.style.display = 'block';
-                if (data.success) {
-                    voucherMsg.className = 'alert alert-success mt-2';
-                    voucherMsg.innerText = data.message;
-                    voucherDiscountRow.style.display = 'table-row';
-                    voucherDiscountAmount.innerText = data.voucher.discount_amount.toLocaleString('vi-VN');
-                    finalTotal.innerText = data.voucher.final_total.toLocaleString('vi-VN') + ' VNĐ';
-                    
-                    // Cập nhật các input hidden
-                    voucherCodeInput.value = data.voucher.code;
-                    voucherIdInput.value = data.voucher.id;
-                    discountAmountInput.value = data.voucher.discount_amount;
-                } else {
-                    voucherMsg.className = 'alert alert-danger mt-2';
-                    voucherMsg.innerText = data.message;
+                // Kiểm tra xem đã có voucher nào được áp dụng chưa
+                if (voucherCodeInput.value && voucherCodeInput.value !== code) {
+                    voucherMsg.style.display = 'block';
+                    voucherMsg.className = 'alert alert-warning mt-2';
+                    voucherMsg.innerText = 'Chỉ có thể áp dụng 1 mã giảm giá cho mỗi đơn hàng!';
                     voucherDiscountRow.style.display = 'none';
                     finalTotal.innerText = subtotal.toLocaleString('vi-VN') + ' VNĐ';
-                    
-                    // Reset các input hidden
                     voucherCodeInput.value = '';
                     voucherIdInput.value = '';
                     discountAmountInput.value = '';
+                    return;
                 }
-            })
-            .catch((error) => {
-                console.error('Error:', error);
-                voucherMsg.style.display = 'block';
-                voucherMsg.className = 'alert alert-danger mt-2';
-                voucherMsg.innerText = 'Có lỗi xảy ra, vui lòng thử lại!';
-                
-                // Reset các input hidden trong trường hợp lỗi
-                voucherCodeInput.value = '';
-                voucherIdInput.value = '';
-                discountAmountInput.value = '';
-            });
-        };
 
-        // Tự động kiểm tra khi người dùng nhập
-        voucherInput.addEventListener('input', function() {
-            clearTimeout(debounceTimer);
-            debounceTimer = setTimeout(checkVoucher, 500);
+                // Gọi API kiểm tra voucher
+                fetch('{{ route('voucher.check') }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Accept': 'application/json'
+                    },
+                    credentials: 'same-origin',
+                    body: JSON.stringify({
+                        voucher_code: code,
+                        subtotal: subtotal,
+                        email: document.getElementById('c_email_address').value
+                    })
+                })
+                .then(res => res.json())
+                .then(data => {
+                    voucherMsg.style.display = 'block';
+                    if (data.success) {
+                        voucherMsg.className = 'alert alert-success mt-2';
+                        voucherMsg.innerText = data.message;
+                        voucherDiscountRow.style.display = 'table-row';
+                        voucherDiscountAmount.innerText = data.voucher.discount_amount.toLocaleString('vi-VN');
+                        finalTotal.innerText = data.voucher.final_total.toLocaleString('vi-VN') + ' VNĐ';
+                        
+                        // Cập nhật các input hidden
+                        voucherCodeInput.value = data.voucher.code;
+                        voucherIdInput.value = data.voucher.id;
+                        discountAmountInput.value = data.voucher.discount_amount;
+
+                        // Cập nhật text button
+                        voucherSelectBtn.innerHTML = `<i class="fas fa-check me-2"></i>${data.voucher.code}`;
+                        voucherSelectBtn.className = 'btn btn-success w-100';
+
+                        // Đóng modal
+                        const modal = bootstrap.Modal.getInstance(voucherModal);
+                        modal.hide();
+                    } else {
+                        voucherMsg.className = 'alert alert-danger mt-2';
+                        voucherMsg.innerText = data.message;
+                        voucherDiscountRow.style.display = 'none';
+                        finalTotal.innerText = subtotal.toLocaleString('vi-VN') + ' VNĐ';
+                        
+                        // Reset các input hidden
+                        voucherCodeInput.value = '';
+                        voucherIdInput.value = '';
+                        discountAmountInput.value = '';
+                    }
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
+                    voucherMsg.style.display = 'block';
+                    voucherMsg.className = 'alert alert-danger mt-2';
+                    voucherMsg.innerText = 'Có lỗi xảy ra, vui lòng thử lại!';
+                    
+                    // Reset các input hidden trong trường hợp lỗi
+                    voucherCodeInput.value = '';
+                    voucherIdInput.value = '';
+                    discountAmountInput.value = '';
+                });
+            });
+        });
+
+        // Reset voucher khi modal đóng
+        voucherModal.addEventListener('hidden.bs.modal', function() {
+            // Reset button nếu chưa có voucher được chọn
+            if (!voucherCodeInput.value) {
+                voucherSelectBtn.innerHTML = `<i class="fas fa-tag me-2"></i>Chọn mã giảm giá`;
+                voucherSelectBtn.className = 'btn btn-outline-primary w-100';
+            }
         });
     });
     </script>

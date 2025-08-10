@@ -156,6 +156,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/', [ClientOrderController::class, 'index'])->name('index');
         Route::get('/tracking/{order}', [CheckoutController::class, 'tracking'])->name('tracking');
         Route::post('/cancel/{order}', [ClientOrderController::class, 'cancel'])->name('cancel');
+        Route::post('/confirm-received/{order}', [ClientOrderController::class, 'confirmReceived'])->name('confirm-received');
         Route::get('/invoice/{order}', [CheckoutController::class, 'invoice'])->name('invoice');
         Route::get('/resend-invoice/{order}', [CheckoutController::class, 'resendInvoice'])->name('resend-invoice');
         Route::post('{id}/request-resend-invoice', [ClientOrderController::class, 'requestResendInvoice'])->name('request-resend-invoice');
@@ -302,6 +303,7 @@ Route::prefix('admin')
             Route::get('/create', [UserController::class, 'create'])->middleware('permission:create users')->name('create');
             Route::post('/', [UserController::class, 'store'])->middleware('permission:create users')->name('store');
             Route::get('/trash', [UserController::class, 'trash'])->name('trash');
+            Route::get('/ban-reasons', [UserController::class, 'banReasons'])->name('ban-reasons');
             Route::get('/{user}', [UserController::class, 'show'])->name('show');
             Route::get('/{user}/edit', [UserController::class, 'edit'])->middleware('permission:edit users')->name('edit');
             Route::put('/{user}', [UserController::class, 'update'])->middleware('permission:edit users')->name('update');
@@ -520,6 +522,7 @@ Route::prefix('admin')
     });
 
 Route::post('/voucher/check', [ClientVoucherController::class, 'check'])->name('voucher.check');
+Route::post('/voucher/available', [ClientVoucherController::class, 'getAvailableVouchers'])->name('voucher.available');
 
 // Admin Profile Routes
 Route::prefix('admin/profile')->name('admin.profile.')->middleware(['auth', 'role:admin|staff'])->group(function () {

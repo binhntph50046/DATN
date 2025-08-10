@@ -312,7 +312,6 @@
                         <i class="fas fa-user text-white"></i>
                     @endauth
                 </a>
-
                 <ul class="dropdown-menu dropdown-menu-bg" aria-labelledby="userDropdown">
                     {{-- Hiển thị "Tra cứu đơn hàng" nếu chưa đăng nhập hoặc là người dùng bình thường --}}
                     @guest
@@ -323,8 +322,7 @@
                     @else
                         @unless (Auth::user()->hasRole(['admin', 'staff']))
                             <li>
-                                <a class="dropdown-item text-white" href="{{ route('order.guest.tracking') }}">Tra cứu đơn
-                                    hàng</a>
+                                <a class="dropdown-item text-white" href="{{ route('order.guest.tracking') }}">Tra cứu đơn hàng</a>
                             </li>
                         @endunless
                     @endguest
@@ -335,8 +333,7 @@
                     @else
                         @if (Auth::user()->hasRole(['admin', 'staff']))
                             <li>
-                                <a class="dropdown-item text-white" href="{{ route('admin.dashboard') }}">Trang quản
-                                    trị</a>
+                                <a class="dropdown-item text-white" href="{{ route('admin.dashboard') }}">Trang quản trị</a>
                             </li>
                         @endif
 
@@ -351,8 +348,7 @@
                             <form action="{{ route('logout') }}" method="POST" class="m-0">
                                 @csrf
                                 <button type="submit"
-                                    class="dropdown-item text-white w-100 text-start border-0 bg-transparent">Đăng
-                                    xuất</button>
+                                    class="dropdown-item text-white w-100 text-start border-0 bg-transparent">Đăng xuất</button>
                             </form>
                         </li>
                     @endguest

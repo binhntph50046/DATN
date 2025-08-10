@@ -6,6 +6,7 @@ use Illuminate\Routing\Controller;
 use Illuminate\Http\Request;
 use App\Models\OrderReturn;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use App\Events\OrderStatusUpdated;
 
 class OrderReturnController extends Controller
@@ -60,6 +61,7 @@ class OrderReturnController extends Controller
         }
 
         // Cập nhật trạng thái hoàn hàng
+        $oldStatus = $return->status;
         $return->update([
             'status' => 'approved',
             'admin_id' => Auth::id(),
@@ -68,7 +70,16 @@ class OrderReturnController extends Controller
             'refund_amount' => $refundAmount, // Thêm số tiền hoàn trả
         ]);
 
-        event(new OrderStatusUpdated($return->order));
+        // Giảm total_sold cho các sản phẩm bị hoàn
+        // Chỉ giảm khi chuyển từ trạng thái khác sang approved
+        if ($oldStatus !== 'approved') {
+            foreach ($return->items as $item) {
+                $product = $item->orderItem->product;
+                if ($product) {
+                    $product->decrement('total_sold', $item->quantity);
+                }
+            }
+        }
 
         // Cập nhật số tiền đã hoàn vào đơn hàng
         $order = $return->order;
@@ -93,13 +104,28 @@ class OrderReturnController extends Controller
         }
         $order->save();
 
+        // Gửi sự kiện sau khi đã cập nhật trạng thái đơn hàng
+        event(new OrderStatusUpdated($order));
+
         return redirect()->route('admin.order-returns.index')
             ->with('success', 'Đã duyệt yêu cầu hoàn hàng và lưu chứng từ hoàn tiền. Đã hoàn lại ' . number_format($refundAmount) . ' VNĐ cho khách.');
     }
     // Từ chối yêu cầu hoàn hàng
     public function reject($id)
     {
-        $return = OrderReturn::findOrFail($id);
+        $return = OrderReturn::with('items.orderItem.product')->findOrFail($id);
+        
+        // Nếu đang từ trạng thái approved sang rejected, tăng lại total_sold
+        $oldStatus = $return->status;
+        if ($oldStatus === 'approved') {
+            foreach ($return->items as $item) {
+                $product = $item->orderItem->product;
+                if ($product) {
+                    $product->increment('total_sold', $item->quantity);
+                }
+            }
+        }
+        
         $return->update([
             'status' => 'rejected',
             'admin_id' => Auth::id(),

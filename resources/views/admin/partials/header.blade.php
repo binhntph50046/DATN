@@ -135,7 +135,6 @@
                                         <img src="{{ asset(Auth::user()->avatar) }}" alt="user-image" class="user-avtar">
                                     @else
                                         <img src="/assets/images/user/avatar-2.jpg" alt="user-image" class="user-avtar">
-                                        <img src="/assets/images/user/avatar-2.jpg" alt="user-image" class="user-avtar">
                                     @endif
                                 </div>
                                 <div class="flex-grow-1 ms-3">

@@ -24,9 +24,9 @@
                                     <h1>{{ $banner->title }}</h1>
                                     <p class="mb-4">{{ $banner->description }}</p>
                                     <p class="d-flex align-items-center gap-2">
-                                        <a href="{{ $banner->link ?? '#' }}"
-                                            class="btn btn-secondary text-nowrap me-2 d-inline-block">Shop Now</a>
-                                        <a href="#" class="btn btn-white-outline d-inline-block">Explore</a>
+                                        <a href="{{ route('shop') }}"
+                                            class="btn btn-secondary text-nowrap me-2 d-inline-block">Mua ngay</a>
+                                        <a href="{{ route('blog') }}" class="btn btn-white-outline d-inline-block">Khám phá</a>
                                     </p>
                                 </div>
                             </div>

@@ -306,13 +306,13 @@
                                                     </span>
                                                     @auth
                                                         <span
-                                                            class="tool-btn {{ in_array($product->id, $wishlistProductIds ?? []) ? 'active' : '' }}"
+                                                            class="tool-btn icon-heart icon-add-to-wishlist {{ in_array($product->id, $wishlistProductIds ?? []) ? 'in-wishlist' : '' }}"
                                                             title="{{ in_array($product->id, $wishlistProductIds ?? []) ? 'Xóa khỏi yêu thích' : 'Thêm vào yêu thích' }}"
                                                             onclick="event.preventDefault(); toggleWishlist('{{ $product->id }}', '{{ route('wishlist.toggle', $product) }}', this)">
                                                             <i class="fas fa-heart"></i>
                                                         </span>
                                                     @else
-                                                        <span class="tool-btn" title="Đăng nhập để thêm vào yêu thích"
+                                                        <span class="tool-btn icon-heart icon-add-to-wishlist" title="Đăng nhập để thêm vào yêu thích"
                                                             onclick="event.preventDefault(); showLoginPrompt()">
                                                             <i class="fas fa-heart"></i>
                                                         </span>
@@ -487,7 +487,157 @@
             window.location.href = '{{ route('shop') }}';
         }
 
-        // ... existing code ...
+        // Compare feature (ported from homepage)
+        function showToast(message, type = 'success') {
+            const Toast = Swal.mixin({
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true,
+                didOpen: (toast) => {
+                    toast.addEventListener('mouseenter', Swal.stopTimer)
+                    toast.addEventListener('mouseleave', Swal.resumeTimer)
+                }
+            });
+
+            Toast.fire({
+                icon: type,
+                title: message
+            });
+        }
+
+        // Wishlist toggle (synced with homepage)
+        async function toggleWishlist(productId, url, iconElement) {
+            const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+            if (!csrfToken) {
+                showToast('Lỗi hệ thống, vui lòng thử lại!', 'error');
+                return;
+            }
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': csrfToken,
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        product_id: productId
+                    })
+                });
+                const data = await response.json();
+                if (data.status) {
+                    showToast(data.message, data.type);
+                    if (data.type === 'success') {
+                        const allHeartIcons = document.querySelectorAll(
+                            `.icon-heart[onclick*="toggleWishlist('${productId}'"]`);
+                        allHeartIcons.forEach(icon => {
+                            if (data.in_wishlist) {
+                                icon.classList.add('in-wishlist');
+                                icon.title = 'Xóa khỏi yêu thích';
+                            } else {
+                                icon.classList.remove('in-wishlist');
+                                icon.title = 'Thêm vào yêu thích';
+                            }
+                        });
+                    }
+                } else {
+                    showToast(data.message || 'Đã xảy ra lỗi, vui lòng thử lại!', 'error');
+                }
+            } catch (error) {
+                showToast('Đã xảy ra lỗi: ' + (error.message || 'Unknown error'), 'error');
+            }
+        }
+
+        let compareSelected = [];
+        let compareNames = [];
+        let compareCategory = null;
+
+        function addToCompare(productId, productName, categoryId) {
+            const isAlreadySelected = compareSelected.includes(productId);
+
+            if (isAlreadySelected) {
+                const index = compareSelected.indexOf(productId);
+                compareSelected.splice(index, 1);
+                compareNames.splice(index, 1);
+                showToast('Đã bỏ chọn ' + productName + ' khỏi so sánh', 'info');
+
+                if (compareSelected.length === 0) {
+                    compareCategory = null;
+                }
+            } else {
+                if (compareSelected.length >= 4) {
+                    showToast('Chỉ được chọn tối đa 4 sản phẩm để so sánh!', 'error');
+                    return;
+                }
+
+                if (compareSelected.length > 0 && compareCategory != categoryId) {
+                    showToast('Vui lòng chỉ chọn các sản phẩm trong cùng một danh mục!', 'error');
+                    return;
+                }
+
+                compareSelected.push(productId);
+                compareNames.push(productName);
+
+                if (compareSelected.length === 1) {
+                    compareCategory = categoryId;
+                }
+                showToast('Đã thêm ' + productName + ' vào so sánh', 'success');
+            }
+
+            updateCompareButton();
+        }
+
+        function updateCompareButton() {
+            const button = document.getElementById('compareButton');
+            const count = document.getElementById('compareCount');
+            const text = document.getElementById('compareButtonText');
+
+            if (!button || !count || !text) return;
+
+            if (compareSelected.length > 0) {
+                button.style.display = 'block';
+                count.textContent = compareSelected.length;
+                if (compareSelected.length >= 2) {
+                    text.textContent = 'So sánh ngay';
+                    button.style.background = '#28a745';
+                } else {
+                    text.textContent = 'Chọn thêm sản phẩm';
+                    button.style.background = '#007bff';
+                }
+            } else {
+                button.style.display = 'none';
+            }
+        }
+
+        function goToCompare() {
+            if (compareSelected.length >= 2 && compareSelected.length <= 4) {
+                const form = document.createElement('form');
+                form.method = 'GET';
+                form.action = '{{ route('compare.index') }}';
+
+                const productsInput = document.createElement('input');
+                productsInput.type = 'hidden';
+                productsInput.name = 'products';
+                productsInput.value = compareSelected.join(',');
+                form.appendChild(productsInput);
+
+                document.body.appendChild(form);
+                form.submit();
+            } else {
+                showToast('Vui lòng chọn từ 2 đến 4 sản phẩm để so sánh!', 'error');
+            }
+        }
     </script>
+
+    <!-- Nút So sánh nổi (đồng bộ giao diện với trang chủ) -->
+    <div id="compareButton"
+        style="display:none; position:fixed; bottom:20px; left:50%; transform:translateX(-50%); z-index:9999; background:#007bff; color:white; padding:15px 25px; border-radius:25px; box-shadow:0 4px 12px rgba(0,123,255,0.3); cursor:pointer; transition:all 0.3s ease;"
+        onclick="goToCompare()">
+        <i class="fa-solid fa-code-compare me-2"></i>
+        <span id="compareButtonText">So sánh ngay</span>
+        <span id="compareCount" class="badge bg-light text-dark ms-2">0</span>
+    </div>
 
 @endsection

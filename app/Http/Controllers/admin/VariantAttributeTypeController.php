@@ -17,11 +17,11 @@ class VariantAttributeTypeController
     {
         $categories = Category::where('type', 1)->get();
         $query = VariantAttributeType::query();
-        
+
         if ($request->filled('category_id')) {
             $query->whereJsonContains('category_ids', $request->category_id);
         }
-        
+
         $attributeTypes = $query->paginate(10);
         return view('admin.attributes.index', compact('attributeTypes', 'categories'));
     }
@@ -53,7 +53,7 @@ class VariantAttributeTypeController
         ]);
 
         $attributeType = VariantAttributeType::create($validated);
-        
+
         if ($request->ajax()) {
             return response()->json([
                 'success' => true,
@@ -61,7 +61,7 @@ class VariantAttributeTypeController
                 'attributeType' => $attributeType
             ]);
         }
-        
+
         return redirect()->route('admin.attributes.index')->with('success', 'Loại thuộc tính đã được tạo thành công.');
     }
 
@@ -75,25 +75,25 @@ class VariantAttributeTypeController
                 'string',
                 'max:255',
                 function ($attribute, $value, $fail) use ($request) {
-                    // Get all values from the current request
+                    // Lấy tất cả giá trị từ yêu cầu hiện tại
                     $currentValues = collect($request->values);
-                    
-                    // Get the current value's hex color
+
+                    // Lấy màu hex của giá trị hiện tại
                     $index = explode('.', $attribute)[1];
                     $currentHexColor = $request->values[$index]['hex_color'] ?? null;
-                    
-                    // Check for duplicates within the current request
+
+                    // Kiểm tra trùng lặp trong yêu cầu hiện tại
                     $duplicateCount = $currentValues->filter(function ($item) use ($value, $currentHexColor) {
-                        return strtolower($item['value']) === strtolower($value) 
+                        return strtolower($item['value']) === strtolower($value)
                             && ($item['hex_color'] ?? null) === $currentHexColor;
                     })->count();
-                    
+
                     if ($duplicateCount > 1) {
                         $fail('Sự kết hợp giá trị và màu sắc này đã được sử dụng nhiều lần trong yêu cầu của bạn.');
                         return;
                     }
 
-                    // Check for duplicates in the database
+                    // Kiểm tra trùng lặp trong cơ sở dữ liệu
                     $exists = VariantAttributeValue::where('attribute_type_id', $request->attribute_type_id)
                         ->where(function ($query) use ($value, $currentHexColor) {
                             $query->whereJsonContains('value', $value)
@@ -102,8 +102,8 @@ class VariantAttributeTypeController
                                         $q->whereJsonContains('hex', $currentHexColor);
                                     } else {
                                         $q->whereNull('hex')
-                                          ->orWhere('hex', '[]')
-                                          ->orWhere('hex', '[""]');
+                                            ->orWhere('hex', '[]')
+                                            ->orWhere('hex', '[""]');
                                     }
                                 });
                         })
@@ -156,26 +156,26 @@ class VariantAttributeTypeController
     {
         try {
             DB::beginTransaction();
-            
-            // Update attribute type details
+
+            // Cập nhật chi tiết loại thuộc tính
             $data = $request->only(['name', 'status', 'category_ids']);
             $attributeType->update($data);
 
-            // Get existing value IDs that should be kept
+            // Lấy ID giá trị hiện có cần giữ lại
             $existingValueIds = $request->input('existing_values', []);
-            
-            // Get IDs of values that are being updated
+
+            // Lấy ID của các giá trị đang được cập nhật
             $updatingValueIds = collect($request->input('values', []))
                 ->pluck('id')
                 ->filter()
                 ->toArray();
 
-            // Delete values that are not in either existing_values or being updated
+            // Xóa các giá trị không có trong existing_values hoặc đang được cập nhật
             VariantAttributeValue::where('attribute_type_id', $attributeType->id)
                 ->whereNotIn('id', array_merge($existingValueIds, $updatingValueIds))
                 ->delete();
 
-            // Handle attribute values updates
+            // Xử lý cập nhật giá trị thuộc tính
             if ($request->has('values')) {
                 $validated = $request->validate([
                     'values' => 'required|array|min:1',
@@ -188,26 +188,28 @@ class VariantAttributeTypeController
                             $index = explode('.', $attribute)[1];
                             $currentHexColor = $request->values[$index]['hex_color'] ?? null;
                             $valueId = $request->values[$index]['id'] ?? null;
-                            
-                            // Skip validation if hex_color is disabled
-                            if (!isset($request->values[$index]['hex_color']) || 
-                                $request->values[$index]['hex_color'] === '') {
+
+                            // Bỏ qua validation nếu hex_color bị vô hiệu hóa
+                            if (
+                                !isset($request->values[$index]['hex_color']) ||
+                                $request->values[$index]['hex_color'] === ''
+                            ) {
                                 $currentHexColor = null;
                             }
-                            
-                            // Check for duplicates within submitted values
+
+                            // Kiểm tra trùng lặp trong các giá trị đã gửi
                             $duplicateCount = collect($request->values)->filter(function ($item) use ($value, $currentHexColor) {
                                 $itemHexColor = isset($item['hex_color']) && $item['hex_color'] !== '' ? $item['hex_color'] : null;
-                                return strtolower($item['value']) === strtolower($value) 
+                                return strtolower($item['value']) === strtolower($value)
                                     && $itemHexColor === $currentHexColor;
                             })->count();
-                            
+
                             if ($duplicateCount > 1) {
                                 $fail('Sự kết hợp giá trị và màu sắc này đã được sử dụng nhiều lần trong yêu cầu của bạn.');
                                 return;
                             }
 
-                            // Check for duplicates in database, excluding current value
+                            // Kiểm tra trùng lặp trong cơ sở dữ liệu, loại trừ giá trị hiện tại
                             $exists = VariantAttributeValue::where('attribute_type_id', $attributeType->id)
                                 ->where('id', '!=', $valueId)
                                 ->where(function ($query) use ($value, $currentHexColor) {
@@ -217,8 +219,8 @@ class VariantAttributeTypeController
                                                 $q->whereJsonContains('hex', $currentHexColor);
                                             } else {
                                                 $q->whereNull('hex')
-                                                  ->orWhere('hex', '[]')
-                                                  ->orWhere('hex', '[""]');
+                                                    ->orWhere('hex', '[]')
+                                                    ->orWhere('hex', '[""]');
                                             }
                                         });
                                 })
@@ -232,14 +234,14 @@ class VariantAttributeTypeController
                     'values.*.hex_color' => 'nullable|string|regex:/^#[0-9A-F]{6}$/i'
                 ]);
 
-                // Process each value
+                // Xử lý từng giá trị
                 foreach ($validated['values'] as $valueData) {
-                    $hexColor = isset($valueData['hex_color']) && $valueData['hex_color'] !== '' 
-                        ? array_map('trim', explode(',', $valueData['hex_color'])) 
+                    $hexColor = isset($valueData['hex_color']) && $valueData['hex_color'] !== ''
+                        ? array_map('trim', explode(',', $valueData['hex_color']))
                         : [];
 
                     if (isset($valueData['id'])) {
-                        // Update existing value
+                        // Cập nhật giá trị hiện có
                         $attributeValue = VariantAttributeValue::find($valueData['id']);
                         if ($attributeValue) {
                             $attributeValue->update([
@@ -248,7 +250,7 @@ class VariantAttributeTypeController
                             ]);
                         }
                     } else {
-                        // Create new value
+                        // Tạo giá trị mới
                         VariantAttributeValue::create([
                             'attribute_type_id' => $attributeType->id,
                             'value' => array_map('trim', explode(',', $valueData['value'])),
@@ -284,6 +286,6 @@ class VariantAttributeTypeController
     {
         $attributeType = VariantAttributeType::onlyTrashed()->findOrFail($id);
         $attributeType->restore();
-        return redirect()->route('admin.attributes.trash')->with('success', 'Attribute type restored successfully.');
+        return redirect()->route('admin.attributes.trash')->with('success', 'Loại thuộc tính đã được khôi phục thành công.');
     }
 }

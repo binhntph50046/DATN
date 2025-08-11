@@ -168,7 +168,7 @@
                                 </div>
                             </div>
 
-                            <!-- Attribute Values Section -->
+                            <!-- Phần giá trị thuộc tính -->
                             <div class="mt-4">
                                 <h5 class="mb-3">Giá trị thuộc tính</h5>
                                 <div id="valuesContainer">
@@ -253,7 +253,7 @@
             placeholder: "Chọn danh mục"
         });
 
-        // Add existing values to the form when page loads
+        // Thêm các giá trị hiện có vào form khi trang tải
         $('.value-row').each(function() {
             const valueId = $(this).data('value-id');
             if (valueId) {
@@ -261,13 +261,13 @@
             }
         });
 
-        // Handle Add Value Button
+        // Xử lý nút thêm giá trị
         $('#addValue').click(function() {
-            const index = Date.now(); // Use timestamp as unique index
+            const index = Date.now(); // Sử dụng timestamp làm index duy nhất
             addValueRow(index);
         });
 
-        // Handle Remove Value Button
+        // Xử lý nút xóa giá trị
         let deletedValues = [];
         $(document).on('click', '.remove-value', function() {
             const valueRow = $(this).closest('.value-row');
@@ -286,7 +286,7 @@
             }
         });
 
-        // Handle Has Hex Color checkbox change
+        // Xử lý thay đổi checkbox có màu hex
         $(document).on('change', '.has-hex-color', function() {
             const colorPickerContainer = $(this).closest('.color-section').find('.color-picker-container');
             const colorInput = colorPickerContainer.find('.hex-color-input');
@@ -295,23 +295,23 @@
                 colorPickerContainer.fadeIn(200);
                 colorInput.prop('disabled', false);
                 if (!colorInput.val()) {
-                    colorInput.val('#000000'); // Set default color when checked
+                    colorInput.val('#000000'); // Đặt màu mặc định khi được chọn
                     colorPickerContainer.find('.color-preview').css('background-color', '#000000');
                 }
             } else {
                 colorPickerContainer.fadeOut(200);
                 colorInput.prop('disabled', true);
-                colorInput.val(''); // Clear the value when unchecked
+                colorInput.val(''); // Xóa giá trị khi bỏ chọn
             }
         });
 
-        // Update color preview when color changes
+        // Cập nhật xem trước màu khi màu thay đổi
         $(document).on('input change', '.hex-color-input', function() {
             const hexValue = $(this).val();
             $(this).closest('.color-preview').css('background-color', hexValue);
         });
 
-        // Function to add value row
+        // Hàm thêm hàng giá trị
         function addValueRow(index) {
             const row = `
                 <div class="value-row">
@@ -354,11 +354,11 @@
             $('#valuesContainer').append(row);
         }
 
-        // Form submission
+        // Gửi form
         $('#editAttributeForm').on('submit', function(e) {
             e.preventDefault();
             
-            // Disable hex_color inputs for unchecked checkboxes
+            // Vô hiệu hóa input hex_color cho các checkbox chưa được chọn
             $('.has-hex-color').each(function() {
                 const colorInput = $(this).closest('.value-row').find('.hex-color-input');
                 if (!$(this).is(':checked')) {
@@ -369,7 +369,7 @@
                 }
             });
 
-            // Add a hidden input to track existing values that should be kept
+            // Thêm input ẩn để theo dõi các giá trị hiện có cần giữ lại
             $('.value-row').each(function() {
                 const valueId = $(this).data('value-id');
                 if (valueId) {

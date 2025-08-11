@@ -83,7 +83,7 @@ class BlogController
         // }
 
 
-        // Handle image upload to public/uploads/blogs
+        // Xử lý tải lên hình ảnh vào public/uploads/blogs
         $imagePath = null;
         if ($request->hasFile('image')) {
             $file       = $request->file('image');
@@ -140,9 +140,9 @@ class BlogController
             'author_id'   => 'required',
         ]);
 
-        // Handle new image upload if provided
+        // Xử lý tải lên hình ảnh mới nếu được cung cấp
         if ($request->hasFile('image')) {
-            // Optionally delete old image here
+            // Tùy chọn xóa hình ảnh cũ ở đây
             $file     = $request->file('image');
             $filename = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
             $destPath = public_path('uploads/blogs');
@@ -153,7 +153,7 @@ class BlogController
             $data['image'] = 'uploads/blogs/' . $filename;
         }
 
-        // Update slug if title changed
+        // Cập nhật slug nếu tiêu đề thay đổi
         if ($data['title'] !== $blog->title) {
             $data['slug'] = Str::slug($data['title']);
         }

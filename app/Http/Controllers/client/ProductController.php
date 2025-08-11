@@ -6,8 +6,10 @@ use App\Models\Product;
 use App\Models\ProductView;
 use App\Services\Product\ProductSuggestionService;
 use App\Models\ProductVariant;
+use App\Models\OrderItem;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class ProductController
 {
@@ -24,6 +26,21 @@ class ProductController
 
         // Increment view count
         $product->increment('views');
+
+        // Tính số lượng đã bán của sản phẩm
+        $totalSold = OrderItem::join('orders', 'order_items.order_id', '=', 'orders.id')
+            ->where('order_items.product_id', $product->id)
+            ->whereIn('orders.status', ['completed', 'delivered'])
+            ->sum('order_items.quantity');
+
+        // Tính số lượng đã bán theo từng variant
+        $variantSoldData = OrderItem::join('orders', 'order_items.order_id', '=', 'orders.id')
+            ->where('order_items.product_id', $product->id)
+            ->whereIn('orders.status', ['completed', 'delivered'])
+            ->select('order_items.product_variant_id', DB::raw('SUM(order_items.quantity) as total_sold'))
+            ->groupBy('order_items.product_variant_id')
+            ->pluck('total_sold', 'product_variant_id')
+            ->toArray();
 
         // Get related products (same category, excluding current product)
         $relatedProducts = Product::where('category_id', $product->category_id)
@@ -42,7 +59,7 @@ class ProductController
         ];
         // dd($suggestions);
 
-        return view('client.product.product-detail', compact('product', 'relatedProducts', 'suggestions'));
+        return view('client.product.product-detail', compact('product', 'relatedProducts', 'suggestions', 'totalSold', 'variantSoldData'));
     }
 
     public function getProductDetails($id): JsonResponse

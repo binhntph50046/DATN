@@ -26,7 +26,7 @@ class SubcriberController
 
         return redirect()
             ->route('admin.subscribers.index')
-            ->with('success', 'subscribers delete successfully');
+            ->with('success', 'Đã xóa người đăng ký thành công.');
     }
     public function restore($id)
     {

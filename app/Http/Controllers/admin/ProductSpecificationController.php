@@ -10,7 +10,7 @@ use Illuminate\Http\Request;
 class ProductSpecificationController
 {
     /**
-     * Display a listing of the resource.
+     * Hiển thị danh sách tài nguyên.
      */
     public function index(Request $request)
     {
@@ -36,7 +36,7 @@ class ProductSpecificationController
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Hiển thị form để tạo tài nguyên mới.
      */
     public function create()
     {
@@ -45,7 +45,7 @@ class ProductSpecificationController
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Lưu trữ tài nguyên mới được tạo.
      */
     public function store(Request $request)
     {
@@ -70,7 +70,7 @@ class ProductSpecificationController
     }
 
     /**
-     * Display the specified resource.
+     * Hiển thị tài nguyên được chỉ định.
      */
     public function show(string $id)
     {
@@ -78,7 +78,7 @@ class ProductSpecificationController
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * Hiển thị form để chỉnh sửa tài nguyên được chỉ định.
      */
     public function edit(Specification $specification)
     {
@@ -87,7 +87,7 @@ class ProductSpecificationController
     }
 
     /**
-     * Update the specified resource in storage.
+     * Cập nhật tài nguyên được chỉ định trong bộ nhớ.
      */
     public function update(Request $request, Specification $specification)
     {
@@ -112,7 +112,7 @@ class ProductSpecificationController
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Xóa tài nguyên được chỉ định khỏi bộ nhớ.
      */
     public function destroy(Specification $specification)
     {

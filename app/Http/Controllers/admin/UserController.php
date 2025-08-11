@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class UserController
 {
@@ -136,7 +137,7 @@ class UserController
         }
 
         // Debug: Log dữ liệu để kiểm tra
-        \Log::info('Update user data:', [
+        \Log::info('Cập nhật dữ liệu người dùng:', [
             'user_id' => $user->id,
             'status' => $validated['status'],
             'ban_reason' => $request->ban_reason,

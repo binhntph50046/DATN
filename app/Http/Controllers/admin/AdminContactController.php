@@ -62,7 +62,7 @@ class AdminContactController
 
         return redirect()
             ->route('admin.contacts.index')
-            ->with('success', 'Contact delete successfully');
+            ->with('success', 'Đã xóa liên hệ thành công.');
     }
     public function restore($id)
     {
@@ -87,7 +87,7 @@ class AdminContactController
         
         return response()->json([
             'success' => true,
-            'message' => 'Contact marked as read'
+            'message' => 'Liên hệ đã được đánh dấu là đã đọc'
         ]);
     }
 
@@ -100,7 +100,7 @@ class AdminContactController
         
         return response()->json([
             'success' => true,
-            'message' => 'Contact marked as replied'
+            'message' => 'Liên hệ đã được đánh dấu là đã trả lời'
         ]);
     }
 }

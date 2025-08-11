@@ -81,7 +81,7 @@ class FaqController
     {
         $faq = Faq::withTrashed()->findOrFail($id);
         $faq->restore();
-        return redirect()->route('admin.faqs.index')->with('success', 'FAQ restored successfully.');
+        return redirect()->route('admin.faqs.index')->with('success', 'FAQ đã được khôi phục thành công.');
     }
 
     public function forceDelete($id)

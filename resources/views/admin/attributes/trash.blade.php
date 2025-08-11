@@ -1,5 +1,5 @@
 @extends('admin.layouts.app')
-@section('title', 'Trash - Attribute Types')
+@section('title', 'Thùng rác - Loại thuộc tính')
 
 <style>
     .custom-shadow {
@@ -48,11 +48,11 @@
                 <div class="row align-items-center">
                     <div class="col-md-12">
                         <div class="page-header-title">
-                            <h5 class="m-b-10">Trash - Attribute Types</h5>
+                            <h5 class="m-b-10">Thùng rác - Loại thuộc tính</h5>
                         </div>
                         <ul class="breadcrumb">
-                            <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Home</a></li>
-                            <li class="breadcrumb-item" aria-current="page">Trash - Attribute Types</li>
+                            <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Trang chủ</a></li>
+                            <li class="breadcrumb-item" aria-current="page">Thùng rác - Loại thuộc tính</li>
                         </ul>
                     </div>
                 </div>
@@ -65,10 +65,10 @@
             <div class="col-12">
                 <div class="card custom-shadow">
                     <div class="card-header">
-                        <h5>Trash Attribute Types</h5>
+                        <h5>Thùng rác loại thuộc tính</h5>
                         <div class="card-header-right">
                             <a href="{{ route('admin.attributes.index') }}" class="btn btn-primary btn-sm rounded-3">
-                                <i class="ti ti-arrow-left"></i> Back to Attribute Types
+                                <i class="ti ti-arrow-left"></i> Quay lại loại thuộc tính
                             </a>
                         </div>
                     </div>
@@ -77,19 +77,19 @@
                             <div class="alert alert-success">{{ session('success') }}</div>
                         @endif
                         @if ($attributeTypes->isEmpty())
-                            <p>No deleted attribute types found.</p>
+                            <p>Không tìm thấy loại thuộc tính nào đã xóa.</p>
                         @else
                         <div class="table custom-shadow">
                             <table class="table table-hover table-borderless">
                                 <thead>
                                     <tr>
                                         <th>ID</th>
-                                        <th>Name</th>
-                                        <th>Categories</th>
-                                        <th>Values</th>
-                                        <th>Colors</th>
-                                        <th>Status</th>
-                                        <th>Actions</th>
+                                        <th>Tên</th>
+                                        <th>Danh mục</th>
+                                        <th>Giá trị</th>
+                                        <th>Màu sắc</th>
+                                        <th>Trạng thái</th>
+                                        <th>Thao tác</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -109,7 +109,7 @@
                                                             @endif
                                                         @endforeach
                                                     @else
-                                                        <span class="text-muted">No categories</span>
+                                                        <span class="text-muted">Không có danh mục</span>
                                                     @endif
                                                 </div>
                                             </td>
@@ -123,7 +123,7 @@
                                                         @endforeach
                                                     </div>
                                                 @else
-                                                    <span class="text-muted">No values</span>
+                                                    <span class="text-muted">Không có giá trị</span>
                                                 @endif
                                             </td>
                                             <td>
@@ -135,13 +135,13 @@
                                                                     <div class="color-preview" style="background-color: {{ $value->hex[0] }}"></div>
                                                                     <span class="small">{{ $value->hex[0] }}</span>
                                                                 @else
-                                                                    <span class="text-muted">No color</span>
+                                                                    <span class="text-muted">Không có màu sắc</span>
                                                                 @endif
                                                             </div>
                                                         @endforeach
                                                     </div>
                                                 @else
-                                                    <span class="text-muted">No colors</span>
+                                                    <span class="text-muted">Không có màu sắc</span>
                                                 @endif
                                             </td>
                                             <td>
@@ -150,9 +150,9 @@
                                                 </span>
                                             </td>
                                             <td>
-                                                <form action="{{ route('admin.attributes.restore', $attributeType) }}" method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to restore this attribute type?');">
+                                                <form action="{{ route('admin.attributes.restore', $attributeType) }}" method="POST" class="d-inline" onsubmit="return confirm('Bạn có chắc chắn muốn khôi phục loại thuộc tính này không?');">
                                                     @csrf
-                                                    <button type="submit" class="btn btn-sm btn-success">Restore</button>
+                                                    <button type="submit" class="btn btn-sm btn-success">Khôi phục</button>
                                                 </form>
                                             </td>
                                         </tr>

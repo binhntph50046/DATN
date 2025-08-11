@@ -91,6 +91,7 @@ Route::get('/compare', [CompareController::class, 'index'])->name('compare.index
 Route::get('/shop', [ShopController::class, 'index'])->name('shop');
 Route::get('/shop/{slug}', [ShopController::class, 'showCategory'])->name('shop.category');
 Route::get('/about', [AboutController::class, 'index'])->name('about');
+Route::get('/shop/filter-data', [App\Http\Controllers\client\ShopController::class, 'getFilterData'])->name('shop.filter-data');
 
 // Profile Routes
 Route::prefix('profile')->name('profile.')->group(function () {
@@ -159,7 +160,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/invoice/{order}', [CheckoutController::class, 'invoice'])->name('invoice');
         Route::get('/resend-invoice/{order}', [CheckoutController::class, 'resendInvoice'])->name('resend-invoice');
         Route::post('{id}/request-resend-invoice', [ClientOrderController::class, 'requestResendInvoice'])->name('request-resend-invoice');
-        
+
         // Hoàn đơn
         Route::prefix('return')->name('returns.')->group(function () {
             Route::get('/{order}', [ClientOrderReturnController::class, 'create'])->name('create');
@@ -198,7 +199,7 @@ Route::prefix('order')->name('order.')->group(function () {
 });
 
 // Chatify Messenger Client
-Route::get('/chat', [ChatController::class, 'index'])->name('client.chat'); 
+Route::get('/chat', [ChatController::class, 'index'])->name('client.chat');
 // Route::get('/chat/unread-count', [ChatController::class, 'unreadCount']);
 
 // Product Review
@@ -355,7 +356,7 @@ Route::prefix('admin')
         });
         Route::get('ajax/product-variants/{id}', [FlashSaleController::class, 'getVariantsByProduct']);
         Route::post('flash-sales/{id}/return-stock', [FlashSaleController::class, 'returnStock'])->middleware('permission:edit orders')->name('flash-sales.return-stock');
-        
+
         Route::prefix('flash-sale-items')->name('flash-sale-items.')->middleware('permission:view orders')->group(function () {
             Route::get('/', [FlashSaleItemController::class, 'index'])->name('index');
             Route::get('/create', [FlashSaleItemController::class, 'create'])->middleware('permission:create orders')->name('create');
@@ -378,9 +379,8 @@ Route::prefix('admin')
             Route::delete('/{blog}', [BlogController::class, 'destroy'])->middleware('permission:delete blogs')->name('destroy');
             Route::put('/{id}/restore', [BlogController::class, 'restore'])->middleware('permission:edit blogs')->name('restore');
             Route::delete('/{id}/force-delete', [BlogController::class, 'forceDelete'])->middleware('permission:delete blogs')->name('forceDelete');
-            
         });
-        
+
         Route::get('reviews', [AdminProductReviewController::class, 'index'])->name('reviews.index');
         Route::get('reviews/{id}', [AdminProductReviewController::class, 'show'])->name('reviews.show');
 

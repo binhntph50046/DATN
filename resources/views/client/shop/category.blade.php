@@ -30,7 +30,7 @@
                     <div class="col-lg-3 col-md-4">
                         <!-- Clear Filters -->
                         <div class="filter-actions mb-3">
-                            <button type="button" class="btn btn-outline-secondary btn-sm w-100"
+                            <button type="button" class="btn btn-clear-filter w-100"
                                 onclick="clearFilters()">
                                 <i class="fas fa-times"></i> Xóa bộ lọc
                             </button>

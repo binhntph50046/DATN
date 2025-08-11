@@ -7,6 +7,10 @@
      .footer-info-bar {
          background: #111827;
      }
+
+     .untree_co-section a{
+        color: #ffffff !important;
+     }
  </style>
 
  <div class="footer-info-bar py-4">

@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Admin;
 
 use Illuminate\Routing\Controller;
 use App\Models\Order;
+use App\Models\OrderItem;
+use App\Models\ProductVariant;
 use Illuminate\Http\Request;
 use App\Events\OrderStatusUpdated;
 use Illuminate\Support\Facades\Mail;
@@ -14,7 +16,6 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
 use App\Models\OrderAddress;
-use App\Models\OrderItem;
 
 class OrderController extends Controller
 {
@@ -57,7 +58,7 @@ class OrderController extends Controller
     }
     public function updateStatus(Request $request, $id)
     {
-        $order = Order::findOrFail($id);
+        $order = Order::with('items.product')->findOrFail($id);
         // Nếu đơn đã bị huỷ hoặc đã hoàn thành thì không cho cập nhật nữa
         if (in_array($order->status, ['cancelled', 'completed'])) {
             if ($request->ajax() || $request->wantsJson()) {
@@ -74,27 +75,60 @@ class OrderController extends Controller
             "pending" => ["confirmed", "cancelled"],
             "confirmed" => ["preparing", "cancelled"],
             "preparing" => ["shipping"],
-            "shipping" => ["completed"],
+            "shipping" => ["delivered"],
+            "delivered" => [],
             "completed" => [],
             "cancelled" => []
         ];
         $new_status = $request->status;
+        
+        // Ngăn admin chuyển sang trạng thái completed
+        if ($new_status === 'completed') {
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Admin không thể chuyển trạng thái sang "Đã hoàn thành". Chỉ client mới có thể xác nhận nhận hàng.'
+                ]);
+            }
+            return redirect()->route('admin.orders.show', $order->id)
+                ->with('error', 'Admin không thể chuyển trạng thái sang "Đã hoàn thành". Chỉ client mới có thể xác nhận nhận hàng.');
+        }
+        
         if (isset($status[$order->status]) && in_array($new_status, $status[$order->status])) {
             $old_status = $order->status;
             
-            // Nếu chuyển sang trạng thái completed, cập nhật payment_status thành paid
-            if ($new_status === 'completed') {
+            // Nếu chuyển sang trạng thái cancelled, hoàn trả stock và giảm total_sold
+            if ($new_status === 'cancelled') {
+                foreach ($order->items as $item) {
+                    $product = $item->product;
+                    if ($product) {
+                        $product->decrement('total_sold', $item->quantity);
+                    }
+                    
+                    // Hoàn trả stock cho tất cả đơn hàng bị hủy (vì stock đã được trừ khi đặt hàng)
+                    if ($item->product_variant_id) {
+                        $variant = ProductVariant::find($item->product_variant_id);
+                        if ($variant) {
+                            $variant->increment('stock', $item->quantity);
+                        }
+                    }
+                }
+            }
+            // Nếu chuyển sang trạng thái delivered, cập nhật payment_status thành paid
+            if ($new_status === 'delivered') {
                 $order->update([
                     'status' => $new_status,
                     'payment_status' => 'paid'
                 ]);
+                
             } else {
                 $order->update(['status' => $new_status]);
             }
 
-            // Gửi email hóa đơn kèm PDF khi chuyển sang 'confirmed'
+            // Gửi email hóa đơn kèm PDF khi chuyển sang trạng thái 'confirmed'
             if ($old_status !== 'confirmed' && $new_status === 'confirmed') {
                 try {
+                    // Gửi email hóa đơn kèm PDF
                     if ($order->shipping_email) {
                         // Tạo hoặc lấy hóa đơn
                         $invoice = Invoice::where('order_id', $order->id)->first();

@@ -118,7 +118,7 @@
                 <div class="card h-100">
                     <div class="card-header">
                         <i class="fas fa-user me-2"></i>
-                        Thông tin khách hàng
+                        Thông tin người nhận 
                     </div>
                     <div class="card-body">
                         <table class="table table-borderless mb-0">
@@ -163,7 +163,8 @@
                                             <option value="confirmed" {{ $order->status == 'confirmed' ? 'selected' : '' }}>Đã xác nhận</option>
                                             <option value="preparing" {{ $order->status == 'preparing' ? 'selected' : '' }}>Đang chuẩn bị</option>
                                             <option value="shipping" {{ $order->status == 'shipping' ? 'selected' : '' }}>Đang giao hàng</option>
-                                            <option value="completed" {{ $order->status == 'completed' ? 'selected' : '' }}>Hoàn thành</option>
+                                            <option value="delivered" {{ $order->status == 'delivered' ? 'selected' : '' }}>Đã giao</option>
+                                            <option value="completed" {{ $order->status == 'completed' ? 'selected' : '' }} disabled>Đã hoàn thành (Chỉ client xác nhận)</option>
                                             <option value="cancelled" {{ $order->status == 'cancelled' ? 'selected' : '' }}>Đã hủy</option>
                                         </select>
                                         <button type="submit" class="btn btn-primary" style="height: 38px; padding: 0.375rem 0.75rem;">
@@ -207,7 +208,7 @@
                 <div class="card h-100">
                     <div class="card-header">
                         <i class="fas fa-user-friends me-2"></i>
-                        Thông tin người nhận khác
+                        Thông tin khách hàng 
                     </div>
                     <div class="card-body">
                         <div class="row">
@@ -346,6 +347,17 @@
                 alert.classList.add('fade');
                 setTimeout(() => alert.remove(), 500);
             }, 3000);
+        }
+
+        // Ngăn admin chọn trạng thái completed
+        const statusSelect = document.querySelector('select[name="status"]');
+        if (statusSelect) {
+            statusSelect.addEventListener('change', function() {
+                if (this.value === 'completed') {
+                    alert('Admin không thể chuyển trạng thái sang "Đã hoàn thành". Chỉ client mới có thể xác nhận nhận hàng.');
+                    this.value = '{{ $order->status }}'; // Khôi phục giá trị cũ
+                }
+            });
         }
     });
 </script>

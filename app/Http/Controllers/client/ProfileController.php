@@ -77,7 +77,8 @@ class ProfileController
 
         // Validation tùy theo việc user có password hay không
         $rules = [
-            'password' => ['required', 'string', 'min:8', 'confirmed'],
+            'password' => ['required', 'string', 'min:8'],
+            'password_confirmation' => ['required', 'same:password'],
         ];
 
         if ($hasPassword) {
@@ -85,7 +86,10 @@ class ProfileController
         }
 
         $request->validate($rules, [
-            'password.confirmed' => 'Xác nhận mật khẩu không khớp.',
+            'password.required' => 'Vui lòng nhập mật khẩu mới.',
+            'password.min' => 'Mật khẩu phải có ít nhất 8 ký tự.',
+            'password_confirmation.required' => 'Vui lòng nhập xác nhận mật khẩu mới.',
+            'password_confirmation.same' => 'Xác nhận mật khẩu không khớp.',
             'current_password.required' => 'Vui lòng nhập mật khẩu hiện tại.',
             'current_password.current_password' => 'Mật khẩu hiện tại không đúng.',
         ]);

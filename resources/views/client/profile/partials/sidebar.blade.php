@@ -20,11 +20,11 @@
                     <i class="fas fa-lock me-2"></i> Đổi mật khẩu
                 </a>
             </li>
-            <li class="list-group-item" style="background: transparent; border: none;">
+            {{-- <li class="list-group-item" style="background: transparent; border: none;">
                 <a href="{{ route('profile.orders') }}" class="d-flex align-items-center text-decoration-none {{ request()->routeIs('profile.orders') ? 'text-danger fw-bold' : 'text-dark' }}">
                     <i class="fas fa-receipt me-2"></i> Đơn hàng
                 </a>
-            </li>
+            </li> --}}
         </ul>
     </div>
 </div>

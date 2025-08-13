@@ -105,7 +105,7 @@ class OrderController extends Controller
                         $product->decrement('total_sold', $item->quantity);
                     }
                     
-                    // Hoàn trả stock cho tất cả đơn hàng bị hủy (vì stock đã được trừ khi đặt hàng)
+                    // Hoàn trả stock cho tất cả đơn hàng bị hủy
                     if ($item->product_variant_id) {
                         $variant = ProductVariant::find($item->product_variant_id);
                         if ($variant) {
@@ -114,6 +114,43 @@ class OrderController extends Controller
                     }
                 }
             }
+            
+            // Nếu chuyển từ pending sang confirmed, kiểm tra và trừ stock cho đơn hàng có số lượng lớn
+            if ($old_status === 'pending' && $new_status === 'confirmed') {
+                $maxQuantityPerOrder = 10;
+                $shouldDeductStock = true;
+                
+                // Kiểm tra xem đơn hàng có số lượng lớn không
+                foreach ($order->items as $item) {
+                    if ($item->quantity > $maxQuantityPerOrder) {
+                        $shouldDeductStock = false;
+                        break;
+                    }
+                }
+                
+                // Nếu tổng số lượng vượt quá giới hạn, cũng không trừ stock
+                $totalQuantity = $order->items->sum('quantity');
+                if ($totalQuantity > ($maxQuantityPerOrder * 2)) {
+                    $shouldDeductStock = false;
+                }
+                
+                // Nếu cần trừ stock (đơn hàng có số lượng lớn)
+                if (!$shouldDeductStock) {
+                    foreach ($order->items as $item) {
+                        if ($item->product_variant_id) {
+                            $variant = ProductVariant::find($item->product_variant_id);
+                            if ($variant) {
+                                // Kiểm tra stock còn đủ không
+                                if ($variant->stock < $item->quantity) {
+                                    throw new \Exception('Không đủ số lượng tồn kho cho sản phẩm: ' . $variant->name);
+                                }
+                                $variant->decrement('stock', $item->quantity);
+                            }
+                        }
+                    }
+                }
+            }
+            
             // Nếu chuyển sang trạng thái delivered, cập nhật payment_status thành paid
             if ($new_status === 'delivered') {
                 $order->update([

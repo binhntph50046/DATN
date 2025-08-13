@@ -3,6 +3,7 @@
 namespace App\Http\Requests\admin;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Log;
 
 class StoreProductRequest extends FormRequest
 {
@@ -110,11 +111,46 @@ class StoreProductRequest extends FormRequest
     }
 
     protected function prepareForValidation()
-    {
-        $this->merge([
-            'views' => 0 // Always set views to 0 for new products
-        ]);
+{
+    $this->merge([
+        'views' => 0 // Always set views to 0 for new products
+    ]);
+
+    // Ép lại kiểu dữ liệu cho attributes nếu là mảng chỉ số (sau khi validate lỗi)
+    $attributes = $this->input('attributes');
+    if (is_array($attributes)) {
+        foreach ($attributes as $key => $attr) {
+            if (is_array($attr) && array_key_exists(0, $attr) && array_key_exists(1, $attr)) {
+                $attributes[$key] = [
+                    'attribute_type_id' => $attr[0] ?? null,
+                    'selected_values' => $attr[1] ?? [],
+                ];
+            }
+        }
+        $this->merge(['attributes' => $attributes]);
     }
+
+    // Ép lại kiểu dữ liệu cho variants.*.attributes nếu là mảng chỉ số
+    $variants = $this->input('variants');
+    if (is_array($variants)) {
+        foreach ($variants as $vKey => $variant) {
+            if (isset($variant['attributes']) && is_array($variant['attributes'])) {
+                foreach ($variant['attributes'] as $aKey => $attr) {
+                    if (is_array($attr) && array_key_exists(0, $attr) && array_key_exists(1, $attr)) {
+                        $variants[$vKey]['attributes'][$aKey] = [
+                            'attribute_type_id' => $attr[0] ?? null,
+                            'selected_values' => $attr[1] ?? [],
+                        ];
+                    }
+                }
+            }
+        }
+        $this->merge(['variants' => $variants]);
+    }
+
+    // Debug: Log the incoming data
+    Log::info('Product creation data:', $this->all());
+}
 
     public function withValidator($validator)
     {
@@ -135,6 +171,24 @@ class StoreProductRequest extends FormRequest
             // Kiểm tra không được chọn trùng loại thuộc tính
             if ($attributeTypeIds->count() !== $attributeTypeIds->unique()->count()) {
                 $validator->errors()->add('attributes', 'Không được chọn trùng loại thuộc tính.');
+            }
+
+            // Kiểm tra variants có đủ thuộc tính
+            $variants = $this->input('variants', []);
+            foreach ($variants as $variantIndex => $variant) {
+                $variantAttributes = $variant['attributes'] ?? [];
+                if (empty($variantAttributes)) {
+                    $validator->errors()->add("variants.{$variantIndex}.attributes", 'Biến thể phải có thuộc tính.');
+                    continue;
+                }
+
+                foreach ($variantAttributes as $attrIndex => $attribute) {
+                    $selectedValues = $attribute['selected_values'] ?? [];
+                    
+                    if (empty($selectedValues)) {
+                        $validator->errors()->add("variants.{$variantIndex}.attributes.{$attrIndex}.selected_values", 'Phải chọn ít nhất một giá trị cho thuộc tính biến thể.');
+                    }
+                }
             }
         });
     }

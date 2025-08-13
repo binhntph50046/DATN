@@ -412,21 +412,13 @@
     <!-- End Why Choose Us Section -->
 
     <!-- Start Testimonial Slider -->
-    <!-- SẢN PHẨM ĐƯỢC ĐÁNH GIÁ TỐT NHẤT -->
+    @if ($topRatedVariants->count() > 0)
 <section class="top-rated-products py-5" data-aos="fade-up">
     <div class="container">
         <div class="text-center mb-4">
             <h2 class="section-title">Các Đánh Giá Của Sản Phẩm</h2>
         </div>
-
         <div class="position-relative">
-            <!-- Điều hướng mũi tên -->
-            {{-- <div id="testimonial-nav" class="d-flex justify-content-between mb-3">
-                <span class="prev" data-controls="prev"><i class="fa fa-chevron-left"></i></span>
-                <span class="next" data-controls="next"><i class="fa fa-chevron-right"></i></span>
-            </div> --}}
-
-            <!-- Slider sản phẩm -->
             <div class="top-rated-slider py-2">
                 @php
                     if (!function_exists('getImagesArray')) {
@@ -454,9 +446,7 @@
                                  alt="{{ $variant->product->name }}"
                                  class="img-fluid mb-3"
                                  style="height: 220px; object-fit: contain; display: inline-block; margin: 0 auto;">
-                            {{-- <h5 class="mb-1">{{ $variant->product->name }}</h5> --}}
                             <small class="text-muted d-block mb-2"> {{ $variant->name }}</small>
-
                             @if ($variant->reviews_count > 0)
                                 <div class="text-warning fw-bold mb-2">
                                     {{ number_format($variant->avg_rating, 1) }} ★
@@ -468,24 +458,11 @@
                         </div>
                     </div>
                 @endforeach
-
-                @if ($topRatedVariants->isEmpty())
-                    <div class="product-card px-3">
-                        <div class="border rounded p-3 text-center shadow-sm bg-light">
-                            <img src="{{ asset('uploads/default/default.jpg') }}"
-                                 alt="No data"
-                                 class="img-fluid mb-3"
-                                 style="height: 180px;">
-                            <h5>Chưa có dữ liệu</h5>
-                            <p class="text-muted">Không có sản phẩm nào được đánh giá.</p>
-                        </div>
-                    </div>
-                @endif
             </div>
         </div>
     </div>
 </section>
-
+@endif
     <!-- End Testimonial Slider -->
 
     <!-- Start Blog Section -->

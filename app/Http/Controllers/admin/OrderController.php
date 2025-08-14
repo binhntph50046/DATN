@@ -59,6 +59,14 @@ class OrderController extends Controller
     public function updateStatus(Request $request, $id)
     {
         $order = Order::with('items.product')->findOrFail($id);
+        
+        // Validate lý do hủy nếu chuyển sang trạng thái cancelled
+        if ($request->status === 'cancelled') {
+            $request->validate([
+                'cancel_reason' => 'required|string|max:255'
+            ]);
+        }
+        
         // Nếu đơn đã bị huỷ hoặc đã hoàn thành thì không cho cập nhật nữa
         if (in_array($order->status, ['cancelled', 'completed'])) {
             if ($request->ajax() || $request->wantsJson()) {
@@ -105,11 +113,14 @@ class OrderController extends Controller
                         $product->decrement('total_sold', $item->quantity);
                     }
                     
-                    // Hoàn trả stock cho tất cả đơn hàng bị hủy
-                    if ($item->product_variant_id) {
-                        $variant = ProductVariant::find($item->product_variant_id);
-                        if ($variant) {
-                            $variant->increment('stock', $item->quantity);
+                    // Chỉ hoàn trả stock nếu đơn hàng đã được trừ stock từ trước
+                    // (đơn hàng có số lượng bình thường)
+                    if (!$this->hasLargeQuantity($order)) {
+                        if ($item->product_variant_id) {
+                            $variant = ProductVariant::find($item->product_variant_id);
+                            if ($variant) {
+                                $variant->increment('stock', $item->quantity);
+                            }
                         }
                     }
                 }
@@ -117,25 +128,8 @@ class OrderController extends Controller
             
             // Nếu chuyển từ pending sang confirmed, kiểm tra và trừ stock cho đơn hàng có số lượng lớn
             if ($old_status === 'pending' && $new_status === 'confirmed') {
-                $maxQuantityPerOrder = 10;
-                $shouldDeductStock = true;
-                
                 // Kiểm tra xem đơn hàng có số lượng lớn không
-                foreach ($order->items as $item) {
-                    if ($item->quantity > $maxQuantityPerOrder) {
-                        $shouldDeductStock = false;
-                        break;
-                    }
-                }
-                
-                // Nếu tổng số lượng vượt quá giới hạn, cũng không trừ stock
-                $totalQuantity = $order->items->sum('quantity');
-                if ($totalQuantity > ($maxQuantityPerOrder * 2)) {
-                    $shouldDeductStock = false;
-                }
-                
-                // Nếu cần trừ stock (đơn hàng có số lượng lớn)
-                if (!$shouldDeductStock) {
+                if ($this->hasLargeQuantity($order)) {
                     foreach ($order->items as $item) {
                         if ($item->product_variant_id) {
                             $variant = ProductVariant::find($item->product_variant_id);
@@ -159,7 +153,12 @@ class OrderController extends Controller
                 ]);
                 
             } else {
-                $order->update(['status' => $new_status]);
+                // Cập nhật trạng thái và lý do hủy nếu có
+                $updateData = ['status' => $new_status];
+                if ($new_status === 'cancelled' && $request->has('cancel_reason')) {
+                    $updateData['cancel_reason'] = $request->cancel_reason;
+                }
+                $order->update($updateData);
             }
 
             // Gửi email hóa đơn kèm PDF khi chuyển sang trạng thái 'confirmed'
@@ -310,5 +309,26 @@ class OrderController extends Controller
             DB::rollBack();
             return back()->with('error', 'Có lỗi xảy ra: ' . $e->getMessage());
         }
+    }
+
+   // Kiểm tra đơn hàng có số lượng lớn không
+    private function hasLargeQuantity($order)
+    {
+        $maxQuantityPerOrder = 10;
+        $totalQuantity = $order->items->sum('quantity');
+        
+        // Kiểm tra từng sản phẩm có vượt quá giới hạn không
+        foreach ($order->items as $item) {
+            if ($item->quantity > $maxQuantityPerOrder) {
+                return true;
+            }
+        }
+        
+        // Kiểm tra tổng số lượng có vượt quá giới hạn không
+        if ($totalQuantity > ($maxQuantityPerOrder * 2)) {
+            return true;
+        }
+        
+        return false;
     }
 }

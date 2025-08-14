@@ -287,10 +287,20 @@
                                         '' => 'fa-circle',
                                     ][$order->status] ?? 'fa-circle';
                                 @endphp
-                                <span class="status-badge status-{{ $statusClass }}">
-                                    <i class="fas {{ $statusIcons }}"></i>
-                                    {{ $order->getStatusTextAttribute() }}
-                                </span>
+                                <div class="status-container">
+                                    <span class="status-badge status-{{ $statusClass }}">
+                                        <i class="fas {{ $statusIcons }}"></i>
+                                        {{ $order->getStatusTextAttribute() }}
+                                    </span>
+                                    @if($order->status === 'cancelled' && $order->cancel_reason)
+                                        <div class="cancel-reason mt-2">
+                                            <small class="text-danger">
+                                                <i class="fas fa-info-circle me-1"></i>
+                                                <strong>Lý do hủy:</strong> {{ $order->cancel_reason }}
+                                            </small>
+                                        </div>
+                                    @endif
+                                </div>
                             </td>
                             <td>
                                 <div class="order-actions" id="order-actions-{{ $order->id }}">
@@ -574,6 +584,32 @@
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
+}
+
+/* Status Container */
+.status-container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+/* Cancel Reason */
+.cancel-reason {
+    background: #fff5f5;
+    border: 1px solid #fed7d7;
+    border-radius: 8px;
+    padding: 0.5rem 0.75rem;
+    max-width: 300px;
+    word-wrap: break-word;
+}
+
+.cancel-reason small {
+    line-height: 1.4;
+    display: block;
+}
+
+.cancel-reason i {
+    color: #e53e3e;
 }
 
 .status-warning { background: #fff3cd; color: #856404; }
@@ -1128,8 +1164,26 @@ document.addEventListener('DOMContentLoaded', function() {
                         'partially_returned': 'fa-undo'
                     }[event.status] || 'fa-circle';
 
-                    statusBadge.className = `status-badge status-${statusClass}`;
-                    statusBadge.innerHTML = `<i class="fas ${statusIcon}"></i> ${event.status_text}`;
+                    // Cập nhật status container
+                    const statusContainer = row.querySelector('.status-container');
+                    if (statusContainer) {
+                        let statusHtml = `<span class="status-badge status-${statusClass}">
+                            <i class="fas ${statusIcon}"></i> ${event.status_text}
+                        </span>`;
+                        
+                        // Thêm lý do hủy nếu có
+                        if (event.status === 'cancelled' && event.cancel_reason) {
+                            statusHtml += `
+                                <div class="cancel-reason mt-2">
+                                    <small class="text-danger">
+                                        <i class="fas fa-info-circle me-1"></i>
+                                        <strong>Lý do hủy:</strong> ${event.cancel_reason}
+                                    </small>
+                                </div>`;
+                        }
+                        
+                        statusContainer.innerHTML = statusHtml;
+                    }
 
                     const actionsContainer = document.getElementById(`order-actions-${orderId}`);
                     if (!actionsContainer) {

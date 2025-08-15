@@ -379,6 +379,7 @@ class ProductController
             foreach ($variantData['attributes'] as $attr) {
                 if (!empty($attr['attribute_type_id']) && !empty($attr['selected_values'])) {
                     $selectedValues = $attr['selected_values'];
+                    // Đảm bảo selected_values luôn là array
                     if (!is_array($selectedValues)) {
                         $selectedValues = [$selectedValues];
                     }

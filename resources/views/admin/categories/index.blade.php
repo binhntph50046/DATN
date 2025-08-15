@@ -97,7 +97,7 @@
                             <table class="table table-hover table-borderless">
                                 <thead>
                                     <tr>
-                                        <th>ID</th>
+                                        <th>STT</th>
                                         <th>Ảnh</th>
                                         <th>Icon</th>
                                         <th>Tên</th>

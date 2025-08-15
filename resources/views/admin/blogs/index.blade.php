@@ -61,7 +61,7 @@
                                         <div class="col-md-4">
                                             <label for="category_id" class="form-label mb-1">Danh mục</label>
                                             <select name="category_id" id="category_id" class="form-select">
-                                                <option value="">-- tất cả --</option>
+                                                <option value="">-- Tất cả --</option>
                                                 @foreach ($categories as $category)
                                                     <option value="{{ $category->id }}"
                                                         {{ request('category_id') == $category->id ? 'selected' : '' }}>
@@ -73,7 +73,7 @@
                                         <div class="col-md-4">
                                             <label for="author_id" class="form-label mb-1">Tác giả</label>
                                             <select name="author_id" id="author_id" class="form-select">
-                                                <option value="">-- tất cả --</option>
+                                                <option value="">-- Tất cả --</option>
                                                 @foreach ($authors as $author)
                                                     <option value="{{ $author->id }}"
                                                         {{ request('author_id') == $author->id ? 'selected' : '' }}>
@@ -97,7 +97,7 @@
                                 <table class="table table-hover table-borderless align-middle">
                                     <thead>
                                         <tr>
-                                            <th>Số TT</th>
+                                            <th>STT</th>
                                             <th>Tiêu đề</th>
                                             <th>Hình ảnh</th>
                                             <th>Danh mục</th>

@@ -30,8 +30,7 @@
                     <div class="col-lg-3 col-md-4">
                         <!-- Clear Filters -->
                         <div class="filter-actions mb-3">
-                            <button type="button" class="btn btn-clear-filter w-100"
-                                onclick="clearFilters()">
+                            <button type="button" class="btn btn-clear-filter w-100" onclick="clearFilters()">
                                 <i class="fas fa-times"></i> Xóa bộ lọc
                             </button>
                         </div>
@@ -70,7 +69,7 @@
                                                     style="background-color: {{ $filter['hexValues'][$value] ?? '#CCCCCC' }}"
                                                     title="{{ $value }}">
                                                 </label>
-                                                
+
                                             </div>
                                         @endforeach
                                     </div>
@@ -120,14 +119,29 @@
                                 <div class="col-md-6 text-md-end">
                                     <div class="d-flex align-items-center justify-content-md-end">
                                         <label class="me-2">Sắp xếp:</label>
-                                        <select class="form-select form-select-sm" id="sortSelect" name="sort" style="width: auto;">
-                                            <option value="newest" {{ ($appliedFilters['sort'] ?? 'newest') == 'newest' ? 'selected' : '' }}>Mới nhất</option>
-                                            <option value="price_low" {{ ($appliedFilters['sort'] ?? '') == 'price_low' ? 'selected' : '' }}>Giá tăng dần</option>
-                                            <option value="price_high" {{ ($appliedFilters['sort'] ?? '') == 'price_high' ? 'selected' : '' }}>Giá giảm dần</option>
-                                            <option value="name_asc" {{ ($appliedFilters['sort'] ?? '') == 'name_asc' ? 'selected' : '' }}>Tên A-Z</option>
-                                            <option value="name_desc" {{ ($appliedFilters['sort'] ?? '') == 'name_desc' ? 'selected' : '' }}>Tên Z-A</option>
-                                            <option value="popular" {{ ($appliedFilters['sort'] ?? '') == 'popular' ? 'selected' : '' }}>Phổ biến</option>
-                                            <option value="rating" {{ ($appliedFilters['sort'] ?? '') == 'rating' ? 'selected' : '' }}>Đánh giá cao</option>
+                                        <select class="form-select form-select-sm" id="sortSelect" name="sort"
+                                            style="width: auto;">
+                                            <option value="newest"
+                                                {{ ($appliedFilters['sort'] ?? 'newest') == 'newest' ? 'selected' : '' }}>
+                                                Mới nhất</option>
+                                            <option value="price_low"
+                                                {{ ($appliedFilters['sort'] ?? '') == 'price_low' ? 'selected' : '' }}>Giá
+                                                tăng dần</option>
+                                            <option value="price_high"
+                                                {{ ($appliedFilters['sort'] ?? '') == 'price_high' ? 'selected' : '' }}>Giá
+                                                giảm dần</option>
+                                            <option value="name_asc"
+                                                {{ ($appliedFilters['sort'] ?? '') == 'name_asc' ? 'selected' : '' }}>Tên
+                                                A-Z</option>
+                                            <option value="name_desc"
+                                                {{ ($appliedFilters['sort'] ?? '') == 'name_desc' ? 'selected' : '' }}>Tên
+                                                Z-A</option>
+                                            <option value="popular"
+                                                {{ ($appliedFilters['sort'] ?? '') == 'popular' ? 'selected' : '' }}>Phổ
+                                                biến</option>
+                                            <option value="rating"
+                                                {{ ($appliedFilters['sort'] ?? '') == 'rating' ? 'selected' : '' }}>Đánh
+                                                giá cao</option>
                                         </select>
                                     </div>
                                 </div>
@@ -140,7 +154,8 @@
                                     <div class="col-lg-4 col-md-6 mb-4">
                                         <div class="product-card">
                                             <div class="product-media">
-                                                <a href="{{ route('product.detail', $product->slug) }}" class="d-block w-100 h-100 text-center">
+                                                <a href="{{ route('product.detail', $product->slug) }}"
+                                                    class="d-block w-100 h-100 text-center">
                                                     @php
                                                         $defaultImage = asset('uploads/default/default.jpg');
                                                         $variantImage = null;
@@ -158,13 +173,14 @@
                                                             }
                                                         }
                                                     @endphp
-                                                    <img src="{{ $variantImage ?? $defaultImage }}" class="product-img" alt="{{ $product->name }}">
+                                                    <img src="{{ $variantImage ?? $defaultImage }}" class="product-img"
+                                                        alt="{{ $product->name }}">
                                                 </a>
                                             </div>
 
                                             <div class="product-tools">
                                                 <span class="tool-btn" title="So sánh"
-                                                      onclick="event.preventDefault(); addToCompare('{{ $product->id }}', '{{ $product->name }}', '{{ $product->category_id }}')">
+                                                    onclick="event.preventDefault(); addToCompare('{{ $product->id }}', '{{ $product->name }}', '{{ $product->category_id }}')">
                                                     <i class="fa-solid fa-code-compare"></i>
                                                 </span>
                                                 @auth
@@ -175,19 +191,21 @@
                                                         <i class="fas fa-heart"></i>
                                                     </span>
                                                 @else
-                                                    <span class="tool-btn icon-heart icon-add-to-wishlist" title="Đăng nhập để thêm vào yêu thích"
-                                                          onclick="event.preventDefault(); showLoginPrompt()">
+                                                    <span class="tool-btn icon-heart icon-add-to-wishlist"
+                                                        title="Đăng nhập để thêm vào yêu thích"
+                                                        onclick="event.preventDefault(); showLoginPrompt()">
                                                         <i class="fas fa-heart"></i>
                                                     </span>
                                                 @endauth
                                                 <span class="tool-btn" title="Xem nhanh"
-                                                      onclick="event.preventDefault(); showQuickView({{ $product->id }}, '{{ $product->slug }}')">
+                                                    onclick="event.preventDefault(); showQuickView({{ $product->id }}, '{{ $product->slug }}')">
                                                     <i class="fas fa-eye"></i>
                                                 </span>
                                             </div>
 
                                             <div class="product-body">
-                                                <a href="{{ route('product.detail', $product->slug) }}" class="text-decoration-none">
+                                                <a href="{{ route('product.detail', $product->slug) }}"
+                                                    class="text-decoration-none">
                                                     <h3 class="product-title mb-1">{{ $product->name }}</h3>
                                                 </a>
 
@@ -195,10 +213,13 @@
                                                     @if ($product->variants->isNotEmpty())
                                                         @php $variant = $product->variants->first(); @endphp
                                                         @if ($variant->discount_price)
-                                                            <strong class="product-price">{{ number_format($variant->discount_price) }}đ</strong>
-                                                            <span class="old-price"><del>{{ number_format($variant->selling_price) }}đ</del></span>
+                                                            <strong
+                                                                class="product-price">{{ number_format($variant->discount_price) }}đ</strong>
+                                                            <span
+                                                                class="old-price"><del>{{ number_format($variant->selling_price) }}đ</del></span>
                                                         @else
-                                                            <strong class="product-price">{{ number_format($variant->selling_price) }}đ</strong>
+                                                            <strong
+                                                                class="product-price">{{ number_format($variant->selling_price) }}đ</strong>
                                                         @endif
                                                     @endif
                                                 </div>
@@ -210,17 +231,24 @@
                                                         $halfStar = $rating - $fullStars >= 0.5;
                                                     @endphp
                                                     <div class="stars">
-                                                        @for ($i = 1; $i <= 5; $i++)
-                                                            @if ($i <= $fullStars)
+                                                        @if ($rating == 0)
+                                                            @for ($i = 1; $i <= 5; $i++)
                                                                 <i class="fas fa-star"></i>
-                                                            @elseif($i == $fullStars + 1 && $halfStar)
-                                                                <i class="fas fa-star-half-alt"></i>
-                                                            @else
-                                                                <i class="far fa-star"></i>
-                                                            @endif
-                                                        @endfor
+                                                            @endfor
+                                                        @else
+                                                            @for ($i = 1; $i <= 5; $i++)
+                                                                @if ($i <= $fullStars)
+                                                                    <i class="fas fa-star"></i>
+                                                                @elseif($i == $fullStars + 1 && $halfStar)
+                                                                    <i class="fas fa-star-half-alt"></i>
+                                                                @else
+                                                                    <i class="far fa-star"></i>
+                                                                @endif
+                                                            @endfor
+                                                        @endif
                                                     </div>
-                                                    <span class="views">({{ number_format($product->views) }} lượt xem)</span>
+                                                    <span class="views">({{ number_format($product->views) }} lượt
+                                                        xem)</span>
                                                 </div>
                                             </div>
                                         </div>
@@ -297,7 +325,7 @@
         function clearFilters() {
             window.location.href = '{{ route('shop.category', ['slug' => $category->slug]) }}';
         }
-        
+
         // Toast helper
         function showToast(message, type = 'success') {
             const Toast = Swal.mixin({
@@ -449,8 +477,8 @@
 
     <!-- Nút So sánh nổi (đồng bộ với shop/index) -->
     <div id="compareButton"
-         style="display:none; position:fixed; bottom:20px; left:50%; transform:translateX(-50%); z-index:9999; background:#007bff; color:white; padding:15px 25px; border-radius:25px; box-shadow:0 4px 12px rgba(0,123,255,0.3); cursor:pointer; transition:all 0.3s ease;"
-         onclick="goToCompare()">
+        style="display:none; position:fixed; bottom:20px; left:50%; transform:translateX(-50%); z-index:9999; background:#007bff; color:white; padding:15px 25px; border-radius:25px; box-shadow:0 4px 12px rgba(0,123,255,0.3); cursor:pointer; transition:all 0.3s ease;"
+        onclick="goToCompare()">
         <i class="fa-solid fa-code-compare me-2"></i>
         <span id="compareButtonText">So sánh ngay</span>
         <span id="compareCount" class="badge bg-light text-dark ms-2">0</span>

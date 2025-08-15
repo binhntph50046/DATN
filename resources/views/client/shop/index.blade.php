@@ -128,8 +128,7 @@
                     <div class="col-lg-3 col-md-4">
                         <!-- Clear Filters -->
                         <div class="filter-actions mb-3">
-                            <button type="button" class="btn btn-clear-filter w-100"
-                                onclick="clearFilters()">
+                            <button type="button" class="btn btn-clear-filter w-100" onclick="clearFilters()">
                                 <i class="fas fa-times"></i> Xóa bộ lọc
                             </button>
                         </div>
@@ -312,7 +311,8 @@
                                                             <i class="fas fa-heart"></i>
                                                         </span>
                                                     @else
-                                                        <span class="tool-btn icon-heart icon-add-to-wishlist" title="Đăng nhập để thêm vào yêu thích"
+                                                        <span class="tool-btn icon-heart icon-add-to-wishlist"
+                                                            title="Đăng nhập để thêm vào yêu thích"
                                                             onclick="event.preventDefault(); showLoginPrompt()">
                                                             <i class="fas fa-heart"></i>
                                                         </span>
@@ -355,15 +355,22 @@
                                                         $halfStar = $rating - $fullStars >= 0.5;
                                                     @endphp
                                                     <div class="stars">
-                                                        @for ($i = 1; $i <= 5; $i++)
-                                                            @if ($i <= $fullStars)
+                                                        @if ($product->reviews->count() == 0)
+                                                            {{-- Nếu chưa có đánh giá, luôn hiện 5 sao vàng --}}
+                                                            @for ($i = 1; $i <= 5; $i++)
                                                                 <i class="fas fa-star"></i>
-                                                            @elseif($i == $fullStars + 1 && $halfStar)
-                                                                <i class="fas fa-star-half-alt"></i>
-                                                            @else
-                                                                <i class="far fa-star"></i>
-                                                            @endif
-                                                        @endfor
+                                                            @endfor
+                                                        @else
+                                                            @for ($i = 1; $i <= 5; $i++)
+                                                                @if ($i <= $fullStars)
+                                                                    <i class="fas fa-star"></i>
+                                                                @elseif($i == $fullStars + 1 && $halfStar)
+                                                                    <i class="fas fa-star-half-alt"></i>
+                                                                @else
+                                                                    <i class="far fa-star"></i>
+                                                                @endif
+                                                            @endfor
+                                                        @endif
                                                     </div>
                                                     <span class="views">({{ number_format($product->views) }} lượt
                                                         xem)</span>

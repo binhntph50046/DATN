@@ -164,7 +164,7 @@ class ShopController
         $query = $this->applyFiltersForCategory($query, $request);
 
         // Paginate results
-        $products = $query->paginate(12);
+        $products = $query->paginate(9);
 
         // Build filter data limited to this category
         $filterData = $this->getFilterDataForCategory($category);

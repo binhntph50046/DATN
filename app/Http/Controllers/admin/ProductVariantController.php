@@ -24,6 +24,9 @@ class ProductVariantController
             $query->where('status', $request->status);
         }
 
+        // Thêm dòng này để sắp xếp biến thể mới nhất lên đầu
+        $query->orderBy('created_at', 'desc');
+
         $variants = $query->paginate(20)->appends($request->query());
         $trashCount = ProductVariant::onlyTrashed()->count();
         $products = Product::select('id', 'name')->orderBy('name')->get();
@@ -42,10 +45,10 @@ class ProductVariantController
             DB::beginTransaction();
 
             $variant = ProductVariant::onlyTrashed()->findOrFail($id);
-            
+
             // Kiểm tra xem biến thể này có phải là biến thể mặc định ban đầu không
             $wasDefault = $variant->is_default;
-            
+
             // Khôi phục biến thể và các combinations
             $variant->restore();
             $variant->combinations()->withTrashed()->restore();
@@ -57,7 +60,7 @@ class ProductVariantController
                     ->where('id', '!=', $variant->id)
                     ->where('is_default', 1)
                     ->update(['is_default' => 0]);
-                
+
                 // Đặt lại biến thể này làm mặc định
                 $variant->update(['is_default' => 1]);
             }
@@ -91,9 +94,9 @@ class ProductVariantController
         if ($request->hasFile('images')) {
             $images = [];
             foreach ($request->file('images') as $img) {
-                $filename = time().'_'.uniqid().'_'.$img->getClientOriginalName();
+                $filename = time() . '_' . uniqid() . '_' . $img->getClientOriginalName();
                 $img->move(public_path('uploads/products'), $filename);
-                $images[] = 'uploads/products/'.$filename;
+                $images[] = 'uploads/products/' . $filename;
             }
             $variant->images = $images;
         }
@@ -148,4 +151,4 @@ class ProductVariantController
             return redirect()->back()->with('error', 'Có lỗi xảy ra khi xóa biến thể.');
         }
     }
-} 
+}

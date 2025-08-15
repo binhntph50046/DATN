@@ -97,7 +97,7 @@
                                 <table class="table table-hover table-borderless align-middle">
                                     <thead>
                                         <tr>
-                                            <th>Số TT</th>
+                                            <th>STT</th>
                                             <th>Tiêu đề</th>
                                             <th>Hình ảnh</th>
                                             <th>Danh mục</th>

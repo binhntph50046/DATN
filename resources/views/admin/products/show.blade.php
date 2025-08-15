@@ -662,7 +662,7 @@
                                             style="font-size: 0.95em;">
                                             <thead>
                                                 <tr>
-                                                    <th>Ảnh</th>
+                                                    <th>STT</th>
                                                     <th style="width:90px;">Ảnh biến thể</th>
                                                     <th>Tên biến thể</th>
                                                     <th>Thuộc tính</th>

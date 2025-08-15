@@ -31,7 +31,7 @@
                                 <table class="table table-hover">
                                     <thead>
                                         <tr>
-                                            <th>ID</th>
+                                            <th>STT</th>
                                             <th>Đơn hàng</th>
                                             <th>Khách hàng</th>
                                             <th>Trạng thái</th>

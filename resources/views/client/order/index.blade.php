@@ -1185,6 +1185,27 @@ document.addEventListener('DOMContentLoaded', function() {
                         statusContainer.innerHTML = statusHtml;
                     }
 
+                    // Cập nhật payment status nếu có
+                    if (event.payment_status) {
+                        const paymentMethodCell = row.querySelector('td:nth-child(5)'); // Cột phương thức thanh toán
+                        if (paymentMethodCell) {
+                            const paymentStatusDiv = paymentMethodCell.querySelector('.mt-1');
+                            if (paymentStatusDiv) {
+                                if (event.payment_status === 'paid') {
+                                    paymentStatusDiv.innerHTML = `
+                                        <small class="text-success">
+                                            <i class="fas fa-check-circle me-1"></i>Đã thanh toán
+                                        </small>`;
+                                } else {
+                                    paymentStatusDiv.innerHTML = `
+                                        <small class="text-warning">
+                                            <i class="fas fa-clock me-1"></i>Chưa thanh toán
+                                        </small>`;
+                                }
+                            }
+                        }
+                    }
+
                     const actionsContainer = document.getElementById(`order-actions-${orderId}`);
                     if (!actionsContainer) {
                         throw new Error('Không tìm thấy actions container');

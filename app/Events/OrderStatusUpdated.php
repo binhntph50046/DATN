@@ -51,8 +51,14 @@ class OrderStatusUpdated implements ShouldBroadcastNow
         $data = [
             'order_id' => $this->order->id,
             'status' => $this->status,
-            'status_text' => $this->status_text
+            'status_text' => $this->status_text,
+            'payment_status' => $this->order->payment_status
         ];
+        
+        // Thêm lý do hủy nếu đơn hàng bị hủy
+        if ($this->status === 'cancelled' && $this->order->cancel_reason) {
+            $data['cancel_reason'] = $this->order->cancel_reason;
+        }
         
         // Thêm return_id nếu đơn hàng đã hoàn
         if (in_array($this->status, ['returned', 'partially_returned'])) {

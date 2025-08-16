@@ -21,8 +21,7 @@
 
                     <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-5 row-cols-xl-6 g-3">
                         @foreach ($products as $product)
-                            <div class="col" data-aos="fade-up" ...
-                                data-aos-delay="{{ $loop->iteration * 100 }}">
+                            <div class="col" data-aos="fade-up" ... data-aos-delay="{{ $loop->iteration * 100 }}">
                                 <a class="product-item d-block text-decoration-none"
                                     href="{{ route('product.detail', $product->slug) }}"
                                     onclick="incrementView('{{ $product->id }}')">
@@ -56,7 +55,8 @@
                                             alt="{{ $product->name }}" style="max-height: 200px; object-fit: contain;">
                                     </div>
 
-                                    <h6 class="product-title text-center text-dark" style="height: 37px;line-height: 22px">{{ $product->name }}</h6>
+                                    <h6 class="product-title text-center text-dark"
+                                        style="height: 37px;line-height: 22px">{{ $product->name }}</h6>
 
                                     <div class="product-price-and-rating text-center">
                                         @if ($variant)
@@ -81,15 +81,21 @@
                                                 $fullStars = floor($rating);
                                                 $halfStar = $rating - $fullStars >= 0.5;
                                             @endphp
-                                            @for ($i = 1; $i <= 5; $i++)
-                                                @if ($i <= $fullStars)
+                                            @if ($rating == 0)
+                                                @for ($i = 1; $i <= 5; $i++)
                                                     <i class="fas fa-star"></i>
-                                                @elseif($i == $fullStars + 1 && $halfStar)
-                                                    <i class="fas fa-star-half-alt"></i>
-                                                @else
-                                                    <i class="far fa-star"></i>
-                                                @endif
-                                            @endfor
+                                                @endfor
+                                            @else
+                                                @for ($i = 1; $i <= 5; $i++)
+                                                    @if ($i <= $fullStars)
+                                                        <i class="fas fa-star"></i>
+                                                    @elseif($i == $fullStars + 1 && $halfStar)
+                                                        <i class="fas fa-star-half-alt"></i>
+                                                    @else
+                                                        <i class="far fa-star"></i>
+                                                    @endif
+                                                @endfor
+                                            @endif
                                             {{-- <span style="font-size: 0.75rem;">({{ number_format($product->views) }} lượt xem)</span> --}}
                                         </div>
                                     </div>
@@ -140,15 +146,61 @@
 
         .product-item {
             scroll-snap-align: start;
-        }
-
-        .product-item {
             color: #212529 !important;
             /* Màu đen Bootstrap */
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            padding: 18px 10px 16px 10px;
+            min-height: 320px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: stretch;
+            transition: box-shadow 0.2s;
+            height: 100%;
         }
 
         .product-item:hover {
             color: #000 !important;
-            /* Màu khi hover (tùy chỉnh nếu cần) */
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.10);
+        }
+
+        .product-thumbnail {
+            min-height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .product-title {
+            min-height: 40px;
+            max-height: 44px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            margin-bottom: 8px;
+        }
+
+        .product-price-and-rating {
+            min-height: 48px;
+            margin-bottom: 4px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            align-items: center;
+        }
+
+        .product-price {
+            font-size: 1.1rem;
+            font-weight: 600;
+            display: block;
+            line-height: 1.2;
+        }
+
+        .product-rating {
+            min-height: 22px;
         }
     </style>

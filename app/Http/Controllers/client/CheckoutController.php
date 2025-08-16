@@ -326,19 +326,15 @@ class CheckoutController
             // Gửi email hóa đơn
             try {
                 $toAddresses = config('mail.to.addresses');
-                Log::info('Danh sách email nhận:', ['emails' => $toAddresses]);
-
                 foreach ($toAddresses as $email) {
                     try {
                         Mail::to($email)->send(new OrderInvoice($order));
-                        Log::info('Gửi email thành công đến: ' . $email);
                     } catch (\Exception $e) {
-                        Log::error('Lỗi gửi email đến ' . $email . ': ' . $e->getMessage());
+                       
                     }
                 }
             } catch (\Exception $e) {
-                // Log lỗi gửi email nhưng không ảnh hưởng đến flow chính
-                Log::error('Lỗi gửi email hóa đơn: ' . $e->getMessage());
+               
             }
 
             // Chuyển hướng sau khi đặt hàng thành công
@@ -349,7 +345,6 @@ class CheckoutController
             return $this->redirectAfterOrder($order);
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Lỗi đặt hàng: ' . $e->getMessage());
             return back()->withErrors(['error' => $e->getMessage()]);
         }
     }
@@ -357,17 +352,22 @@ class CheckoutController
     // Kiểm tra xem có nên trừ stock ngay hay không
     private function shouldDeductStock($request)
     {
-        $maxQuantityPerOrder = 10; // Giới hạn mặc định
+        $maxQuantityPerItem = 10; // Số lượng tối đa cho mỗi sản phẩm
+        $maxTotalQuantity = 20; // Tổng số lượng tối đa cho toàn bộ đơn hàng
+        $maxTotalItems = 5; // Số lượng sản phẩm tối đa trong đơn hàng
+        
         $totalQuantity = 0;
-        $hasLargeQuantity = false;
+        $totalItems = 0;
 
         if ($request->has('variant_id')) {
             // Mua ngay từ trang sản phẩm
             $quantity = $request->quantity;
             $totalQuantity = $quantity;
+            $totalItems = 1;
             
-            if ($quantity > $maxQuantityPerOrder) {
-                $hasLargeQuantity = true;
+            // Kiểm tra từng sản phẩm có vượt quá giới hạn không
+            if ($quantity > $maxQuantityPerItem) {
+                return false;
             }
         } else {
             // Mua từ giỏ hàng
@@ -387,18 +387,25 @@ class CheckoutController
                 $cartItems = $cartItems->whereIn('id', $request->selected_items);
             }
 
+            $totalItems = $cartItems->count();
+            
             foreach ($cartItems as $item) {
                 $totalQuantity += $item->quantity;
                 
                 // Kiểm tra từng sản phẩm có vượt quá giới hạn không
-                if ($item->quantity > $maxQuantityPerOrder) {
-                    $hasLargeQuantity = true;
+                if ($item->quantity > $maxQuantityPerItem) {
+                    return false;
                 }
             }
         }
-
-        // Nếu tổng số lượng hoặc bất kỳ sản phẩm nào vượt quá giới hạn, không trừ stock ngay
-        if ($hasLargeQuantity || $totalQuantity > ($maxQuantityPerOrder * 2)) {
+        
+        // Kiểm tra tổng số lượng có vượt quá giới hạn không
+        if ($totalQuantity > $maxTotalQuantity) {
+            return false;
+        }
+        
+        // Kiểm tra tổng số sản phẩm có vượt quá giới hạn không
+        if ($totalItems > $maxTotalItems) {
             return false;
         }
 
@@ -646,19 +653,15 @@ class CheckoutController
             // Gửi email hóa đơn
             try {
                 $toAddresses = config('mail.to.addresses');
-                Log::info('Danh sách email nhận:', ['emails' => $toAddresses]);
-
                 foreach ($toAddresses as $email) {
                     try {
                         Mail::to($email)->send(new OrderInvoice($order));
-                        Log::info('Gửi email thành công đến: ' . $email);
                     } catch (\Exception $e) {
-                        Log::error('Lỗi gửi email đến ' . $email . ': ' . $e->getMessage());
+                       
                     }
                 }
             } catch (\Exception $e) {
-                // Log lỗi gửi email nhưng không ảnh hưởng đến flow chính
-                Log::error('Lỗi gửi email hóa đơn: ' . $e->getMessage());
+               
             }
 
             DB::commit();
@@ -862,3 +865,4 @@ class CheckoutController
         ])->with('success', 'Đặt hàng thành công! Bạn có thể dùng mã đơn hàng và email để tra cứu đơn hàng sau này.');
     }
 }
+

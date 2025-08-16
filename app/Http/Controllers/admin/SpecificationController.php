@@ -12,10 +12,19 @@ class SpecificationController
     {
         $categories = Category::where('type', 1)->get();
         $query = Specification::query();
+        
+        // Tìm kiếm theo tên
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where('name', 'like', "%$search%");
+        }
+        
+        // Lọc theo danh mục
         if ($request->filled('category_id')) {
             $query->whereJsonContains('category_ids', $request->category_id);
         }
-        $specifications = $query->paginate(10);
+        
+        $specifications = $query->paginate(10)->appends($request->all());
         return view('admin.specifications.index', compact('specifications', 'categories'));
     }
 

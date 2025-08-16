@@ -70,7 +70,7 @@
                             <table class="table table-hover table-borderless align-middle">
                                 <thead>
                                     <tr>
-                                        <th>#</th>
+                                        <th>STT</th>
                                         <th>Sản phẩm</th>
                                         <th>Biến thể</th>
                                         <th>Hình ảnh biến thể</th>

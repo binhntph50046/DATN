@@ -30,7 +30,7 @@
                         <div class="mb-3">
                             <label for="password" class="form-label">Mật khẩu mới</label>
                             <input type="password" class="form-control @error('password') is-invalid @enderror"
-                                id="password" name="password" required>
+                                id="password" name="password">
                             @error('password')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
@@ -38,9 +38,13 @@
 
                         <div class="mb-3">
                             <label for="password_confirmation" class="form-label">Xác nhận mật khẩu mới</label>
-                            <input type="password" class="form-control" id="password_confirmation"
-                                name="password_confirmation" required>
+                            <input type="password" class="form-control @error('password_confirmation') is-invalid @enderror"
+                                id="password_confirmation" name="password_confirmation">
+                            @error('password_confirmation')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
                         </div>
+
 
                         <button type="submit" class="btn btn-primary">Cập nhật mật khẩu</button>
                     </form>

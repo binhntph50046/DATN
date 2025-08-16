@@ -622,6 +622,8 @@
         let requiredTypes = [];
         let currentImageIndex = 0;
         let currentImages = @json($images);
+        let totalSold = {{ $totalSold }};
+        let variantSoldData = @json($variantSoldData);
 
         document.addEventListener('DOMContentLoaded', function() {
             // Custom styling cho SweetAlert2
@@ -686,11 +688,7 @@
                 @endif
             @endforeach
 
-            // Số lượng đã bán của sản phẩm
-            const totalSold = {{ $totalSold }};
-            
-            // Số lượng đã bán theo từng variant
-            const variantSoldData = @json($variantSoldData);
+
 
             // Khởi tạo mapping attribute -> variant
             @foreach ($product->variants as $variant)
@@ -793,6 +791,20 @@
                     });
                     return false;
                 }
+
+                // Kiểm tra xem user đã đăng nhập chưa
+                // @guest
+                //     Toast.fire({
+                //         icon: 'info',
+                //         title: 'Thông báo',
+                //         text: 'Vui lòng đăng nhập để tiếp tục mua hàng!'
+                //     }).then((result) => {
+                //         if (result.isConfirmed) {
+                //             window.location.href = '{{ route('login') }}';
+                //         }
+                //     });
+                //     return false;
+                // @endguest
 
                 const mainImage = document.getElementById('mainProductImage').src;
                 window.location.href = '/checkout?variant_id=' + variantId + '&quantity=' + quantity +

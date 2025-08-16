@@ -270,7 +270,7 @@
     </style>
 
     <div class="order-page">
-        <div class="order-card">
+        <div class="order-card  ">
             <div class="order-header">
                 <div class="order-title">
                     <div>
@@ -289,8 +289,12 @@
                     <span id="order-status-text">{{ $order->getStatusTextAttribute() }}</span>
                 </div>
             </div>
-
             <div class="shipping-info">
+                <div class="info-section-title" style="grid-column: 1 / -1; margin-bottom: 16px;">
+                    <h3 style="margin: 0; color: var(--text-primary); font-size: 18px; font-weight: 600;">
+                        <i class="fas fa-user me-2"></i>Thông tin người nhận
+                    </h3>
+                </div>
                 <div class="info-group">
                     <div class="info-icon">
                         <i class="fas fa-user"></i>
@@ -323,11 +327,71 @@
                         <i class="fas fa-map-marker-alt"></i>
                     </div>
                     <div class="info-content">
-                        <div class="info-label">Địa chỉ</div>
+                        <div class="info-label">Địa chỉ giao hàng</div>
                         <div class="info-value">{{ $order->shipping_address }}</div>
                     </div>
                 </div>
             </div>
+
+            <!-- Hiển thị thông tin người đặt nếu có đặt hàng hộ -->
+            @if($order->orderAddress)
+            <div class="order-card" style="margin-top: 24px;">
+                <div class="order-header" style="background: #f8f9fa;">
+                    <div class="order-title">
+                        <div>
+                            <div class="order-number" style="font-size: 18px;">
+                                <i class="fas fa-user-friends"></i>
+                                Thông tin người đặt hàng 
+                            </div>
+                            <div class="order-date" style="font-size: 12px;">
+                                <i class="fas fa-info-circle"></i>
+                                Đơn hàng được đặt hộ
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="shipping-info">
+                    <div class="info-group">
+                        <div class="info-icon">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div class="info-content">
+                            <div class="info-label">Người đặt</div>
+                            <div class="info-value highlight">{{ $order->orderAddress->full_name }}</div>
+                        </div>
+                    </div>
+                    <div class="info-group">
+                        <div class="info-icon">
+                            <i class="fas fa-phone"></i>
+                        </div>
+                        <div class="info-content">
+                            <div class="info-label">Số điện thoại</div>
+                            <div class="info-value highlight">{{ $order->orderAddress->phone_number }}</div>
+                        </div>
+                    </div>
+                    <div class="info-group">
+                        <div class="info-icon">
+                            <i class="fas fa-map-marker-alt"></i>
+                        </div>
+                        <div class="info-content">
+                            <div class="info-label">Địa chỉ người đặt</div>
+                            <div class="info-value">{{ $order->orderAddress->address }}</div>
+                        </div>
+                    </div>
+                    @if($order->orderAddress->note)
+                    <div class="info-group">
+                        <div class="info-icon">
+                            <i class="fas fa-sticky-note"></i>
+                        </div>
+                        <div class="info-content">
+                            <div class="info-label">Ghi chú</div>
+                            <div class="info-value">{{ $order->orderAddress->note }}</div>
+                        </div>
+                    </div>
+                    @endif
+                </div>
+            </div>
+            @endif
 
             <div class="order-products">
                 <table class="product-table">

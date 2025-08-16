@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 class BannerController
 {
     /**
-     * Display a listing of the resource.
+     * Hiển thị danh sách tài nguyên.
      */
     public function index()
     {
@@ -19,7 +19,7 @@ class BannerController
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Hiển thị form để tạo tài nguyên mới.
      */
     public function create()
     {
@@ -29,7 +29,7 @@ class BannerController
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Lưu trữ tài nguyên mới được tạo.
      */
     public function store(Request $request)
     {
@@ -102,7 +102,7 @@ class BannerController
     }
 
     /**
-     * Display the specified resource.
+     * Hiển thị tài nguyên được chỉ định.
      */
     public function show(Banner $banner)
     {
@@ -110,7 +110,7 @@ class BannerController
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * Hiển thị form để chỉnh sửa tài nguyên được chỉ định.
      */
     public function edit(Banner $banner)
     {
@@ -119,7 +119,7 @@ class BannerController
     }
 
     /**
-     * Update the specified resource in storage.
+     * Cập nhật tài nguyên được chỉ định.
      */
     public function update(Request $request, Banner $banner)
     {
@@ -176,7 +176,7 @@ class BannerController
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Xóa tài nguyên được chỉ định.
      */
     public function destroy(Banner $banner)
     {

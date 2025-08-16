@@ -74,14 +74,45 @@
                                 VNĐ</span>
                         </div>
 
-                        <!-- Category -->
-                        <div class="product-category mb-3">
-                            <strong>Category:</strong> {{ $product->category ? $product->category->name : 'N/A' }}
+                        <!-- Product Info Row 1: Stock & Sold -->
+                        <div class="product-info-row mb-3">
+                            <div class="info-item">
+                                <i class="fas fa-boxes me-2"></i>
+                                <span class="info-label">Tồn kho:</span>
+                                <span class="info-value" id="productStock">
+                                    @if($defaultVariant)
+                                        @if($defaultVariant->stock > 0)
+                                            <span class="text-success">{{ $defaultVariant->stock }} sản phẩm</span>
+                                        @else
+                                            <span class="text-danger">Hết hàng</span>
+                                        @endif
+                                    @else
+                                        <span class="text-warning">Đang cập nhật</span>
+                                    @endif
+                                </span>
+                            </div>
+                            <div class="info-item sold-info" title="Số lượng sản phẩm đã được bán thành công">
+                                <i class="fas fa-shopping-cart me-2"></i>
+                                <span class="info-label">Đã bán:</span>
+                                <span class="info-value">
+                                    <span class="text-primary" id="soldQuantity">{{ number_format($totalSold) }} sản phẩm</span>
+                                </span>
+                            </div>
                         </div>
 
-                        <!-- Warranty -->
-                        <div class="product-warranty mb-3">
-                            <strong>Warranty:</strong> {{ $product->warranty_months ?? 'N/A' }} months
+                        <!-- Product Info Row 2: Category & Warranty -->
+                        <div class="product-info-row mb-3">
+                            <div class="info-item">
+                                <i class="fas fa-tag me-2"></i>
+                                <span class="info-label">Danh mục:</span>
+                                <span class="info-value">{{ $product->category ? $product->category->name : 'N/A' }}</span>
+                            </div>
+                            <div class="info-item">
+                                <i class="fas fa-shield-alt me-2"></i>
+                                <span class="info-label">Bảo hành:</span>
+                                <span class="info-value">{{ $product->warranty_months ?? 'N/A' }} tháng</span>
+                            </div>
+                        </div>
                         </div>
 
                         <!-- Dynamic Attribute Variants (Color, Storage, ...) -->
@@ -591,6 +622,8 @@
         let requiredTypes = [];
         let currentImageIndex = 0;
         let currentImages = @json($images);
+        let totalSold = {{ $totalSold }};
+        let variantSoldData = @json($variantSoldData);
 
         document.addEventListener('DOMContentLoaded', function() {
             // Custom styling cho SweetAlert2
@@ -655,6 +688,8 @@
                 @endif
             @endforeach
 
+
+
             // Khởi tạo mapping attribute -> variant
             @foreach ($product->variants as $variant)
                 @if ($variant->deleted_at === null)
@@ -694,6 +729,9 @@
 
             // Khởi tạo thumbnails
             updateThumbnails(@json($allImages));
+
+            // Cập nhật hiển thị số lượng đã bán ban đầu
+            updateSoldDisplay();
 
             // Add event listeners for buttons
             addToCartBtn.addEventListener('click', function(e) {
@@ -754,6 +792,20 @@
                     return false;
                 }
 
+                // Kiểm tra xem user đã đăng nhập chưa
+                @guest
+                    Toast.fire({
+                        icon: 'info',
+                        title: 'Thông báo',
+                        text: 'Vui lòng đăng nhập để tiếp tục mua hàng!'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            window.location.href = '{{ route('login') }}';
+                        }
+                    });
+                    return false;
+                @endguest
+
                 const mainImage = document.getElementById('mainProductImage').src;
                 window.location.href = '/checkout?variant_id=' + variantId + '&quantity=' + quantity +
                     '&image=' + encodeURIComponent(mainImage);
@@ -801,6 +853,24 @@
 
                 // Cập nhật variant_id cho form
                 document.getElementById('selectedVariantId').value = matchedVariantId;
+
+                // Cập nhật hiển thị số lượng đã bán (giữ nguyên vì là tổng của sản phẩm)
+                updateSoldDisplay();
+            }
+        }
+
+        function updateSoldDisplay() {
+            const soldQuantityElement = document.getElementById('soldQuantity');
+            if (soldQuantityElement) {
+                const currentVariantId = document.getElementById('selectedVariantId').value;
+                let soldCount = totalSold; // Mặc định hiển thị tổng số đã bán
+                
+                // Nếu có dữ liệu đã bán theo variant và variant hiện tại có dữ liệu
+                if (currentVariantId && variantSoldData[currentVariantId]) {
+                    soldCount = variantSoldData[currentVariantId];
+                }
+                
+                soldQuantityElement.textContent = new Intl.NumberFormat('vi-VN').format(soldCount) + ' sản phẩm';
             }
         }
 
@@ -857,6 +927,9 @@
 
                     // Cập nhật variant_id cho form
                     document.getElementById('selectedVariantId').value = variantId;
+
+                    // Cập nhật hiển thị số lượng đã bán
+                    updateSoldDisplay();
                 }
             }
         }
@@ -1023,6 +1096,81 @@
         .swal2-toast .swal2-success-ring {
             width: 2em !important;
             height: 2em !important;
+        }
+
+        /* Styling cho layout thông tin sản phẩm gọn gàng */
+        .product-info-row {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .info-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 8px 12px;
+            background-color: #f8f9fa;
+            border-radius: 6px;
+            border-left: 3px solid #dee2e6;
+            transition: all 0.3s ease;
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .info-item:hover {
+            background-color: #e9ecef;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .info-item.sold-info {
+            border-left-color: #007bff;
+            cursor: help;
+        }
+
+        .info-item.sold-info:hover {
+            background-color: #e3f2fd;
+            box-shadow: 0 2px 8px rgba(0, 123, 255, 0.15);
+        }
+
+        .info-item i {
+            color: #6c757d;
+            font-size: 1rem;
+            width: 16px;
+            text-align: center;
+        }
+
+        .info-item.sold-info i {
+            color: #007bff;
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: #495057;
+            font-size: 0.9rem;
+        }
+
+        .info-value {
+            font-weight: 500;
+            color: #212529;
+        }
+
+        .info-value .text-primary {
+            color: #007bff !important;
+            font-weight: 600;
+        }
+
+        /* Responsive cho mobile */
+        @media (max-width: 768px) {
+            .product-info-row {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+            
+            .info-item {
+                min-width: auto;
+            }
         }
     </style>
     @endsection

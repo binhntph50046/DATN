@@ -108,7 +108,7 @@
                                 </style>
                                 <thead>
                                     <tr>
-                                        <th class="text-nowrap">ID</th>
+                                        <th class="text-nowrap">STT</th>
                                         <th>Hình ảnh</th>
                                         <th class="text-nowrap">Tên sản phẩm</th>
                                         <th class="text-nowrap">Danh mục</th>

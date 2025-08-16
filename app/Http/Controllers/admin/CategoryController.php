@@ -72,7 +72,7 @@ class CategoryController
         $data = $request->all();
         $data['slug'] = Str::slug($request->name);
 
-        // Handle image upload
+        // Xử lý tải lên hình ảnh
         if ($request->hasFile('image')) {
             $image = $request->file('image');
             $imageName = time() . '_' . $image->getClientOriginalName();
@@ -126,9 +126,9 @@ class CategoryController
         $data = $request->all();
         $data['slug'] = Str::slug($request->name);
 
-        // Handle image upload
+        // Xử lý tải lên hình ảnh
         if ($request->hasFile('image')) {
-            // Delete old image if exists
+            // Xóa hình ảnh cũ nếu tồn tại
             if ($category->image && file_exists(public_path($category->image))) {
                 unlink(public_path($category->image));
             }

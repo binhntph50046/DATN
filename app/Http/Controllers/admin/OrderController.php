@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use Illuminate\Routing\Controller;
 use App\Models\Order;
 use App\Models\OrderItem;
+use App\Models\ProductVariant;
 use Illuminate\Http\Request;
 use App\Events\OrderStatusUpdated;
 use Illuminate\Support\Facades\Mail;
@@ -96,12 +97,20 @@ class OrderController extends Controller
         if (isset($status[$order->status]) && in_array($new_status, $status[$order->status])) {
             $old_status = $order->status;
             
-            // Nếu chuyển sang trạng thái cancelled, giảm total_sold
-            if ($new_status === 'cancelled' && in_array($old_status, ['confirmed', 'preparing', 'shipping', 'delivered'])) {
+            // Nếu chuyển sang trạng thái cancelled, hoàn trả stock và giảm total_sold
+            if ($new_status === 'cancelled') {
                 foreach ($order->items as $item) {
                     $product = $item->product;
                     if ($product) {
                         $product->decrement('total_sold', $item->quantity);
+                    }
+                    
+                    // Hoàn trả stock cho tất cả đơn hàng bị hủy (vì stock đã được trừ khi đặt hàng)
+                    if ($item->product_variant_id) {
+                        $variant = ProductVariant::find($item->product_variant_id);
+                        if ($variant) {
+                            $variant->increment('stock', $item->quantity);
+                        }
                     }
                 }
             }
@@ -112,14 +121,14 @@ class OrderController extends Controller
                     'payment_status' => 'paid'
                 ]);
                 
-                // Không tăng total_sold ở đây vì sẽ tăng khi client xác nhận nhận hàng
             } else {
                 $order->update(['status' => $new_status]);
             }
 
-            // Gửi email hóa đơn kèm PDF khi chuyển sang 'confirmed'
+            // Gửi email hóa đơn kèm PDF khi chuyển sang trạng thái 'confirmed'
             if ($old_status !== 'confirmed' && $new_status === 'confirmed') {
                 try {
+                    // Gửi email hóa đơn kèm PDF
                     if ($order->shipping_email) {
                         // Tạo hoặc lấy hóa đơn
                         $invoice = Invoice::where('order_id', $order->id)->first();

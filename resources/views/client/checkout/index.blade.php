@@ -660,6 +660,18 @@ textarea.form-control {
     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
 }
 
+/* Style cho readonly fields */
+.readonly-field {
+    background-color: #f8f9fa !important;
+    cursor: not-allowed !important;
+    opacity: 0.8;
+}
+
+.readonly-field:focus {
+    box-shadow: none !important;
+    border-color: #e2e8f0 !important;
+}
+
 .modal-header {
     border-bottom: 1px solid #e5e7eb;
     padding: 1rem 1.25rem;
@@ -721,13 +733,13 @@ textarea.form-control {
                             </div>
                             <div class="section-content">
                                 <div class="form-floating mb-3">
-                                        <input type="text" class="form-control" id="c_fname" name="c_fname" required
+                                        <input type="text" class="form-control" id="c_fname" name="c_fname"
                                         value="{{ old('c_fname', Auth::check() && Auth::user() ? Auth::user()->name : '') }}"
                                         placeholder="Nhập họ và tên">
                                     <label for="c_fname">Họ và tên <span class="text-danger">*</span></label>
                                 </div>
                                 <div class="form-floating mb-3">
-                                        <input type="text" class="form-control" id="c_address" name="c_address" required
+                                        <input type="text" class="form-control" id="c_address" name="c_address"
                                         value="{{ old('c_address', Auth::check() && Auth::user() ? Auth::user()->address : '') }}"
                                         placeholder="Nhập địa chỉ">
                                     <label for="c_address">Địa chỉ <span class="text-danger">*</span></label>
@@ -735,7 +747,7 @@ textarea.form-control {
                                 <div class="row">
                                     <div class="col-md-6">
                                         <div class="form-floating mb-3">
-                                            <input type="email" class="form-control" id="c_email_address" name="c_email_address" required
+                                            <input type="email" class="form-control" id="c_email_address" name="c_email_address"
                                                 value="{{ old('c_email_address', Auth::check() && Auth::user() ? Auth::user()->email : '') }}"
                                                 placeholder="Nhập email">
                                             <label for="c_email_address">Email <span class="text-danger">*</span></label>
@@ -743,7 +755,7 @@ textarea.form-control {
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-floating mb-3">
-                                        <input type="text" class="form-control" id="c_phone" name="c_phone" required
+                                        <input type="text" class="form-control" id="c_phone" name="c_phone"
                                                 value="{{ old('c_phone', Auth::check() && Auth::user() ? Auth::user()->phone : '') }}"
                                                 placeholder="Nhập số điện thoại">
                                             <label for="c_phone">Số điện thoại <span class="text-danger">*</span></label>
@@ -935,13 +947,17 @@ textarea.form-control {
                                         <span>Giảm giá</span>
                                         <span class="discount">-<span id="voucher-discount-amount">0</span> VNĐ</span>
                                     </div>
+                                    <div class="total-row">
+                                        <span>Phí vận chuyển</span>
+                                        <span>30.000 VNĐ</span>
+                                    </div>
                                     <div class="total-row grand-total">
                                         <span>Tổng cộng</span>
-                                        <span id="final-total">{{ number_format(isset($variant) ? $variant->selling_price * $quantity : $subtotal, 0, ',', '.') }} VNĐ</span>
+                                        <span id="final-total">{{ number_format((isset($variant) ? $variant->selling_price * $quantity : $subtotal) + 30000, 0, ',', '.') }} VNĐ</span>
                                     </div>
                                 </div>
 
-                                <button type="submit" class="btn-place-order mt-4" form="checkoutForm">
+                                <button type="button" class="btn-place-order mt-4" id="placeOrderBtn">
                                     <i class="fas fa-lock"></i>
                                     <span>Đặt hàng</span>
                                 </button>
@@ -953,6 +969,8 @@ textarea.form-control {
         </div>
     </div>
 </div>
+
+
 
 <!-- Voucher Modal -->
 <div class="modal fade" id="voucherModal" tabindex="-1" aria-labelledby="voucherModalLabel" aria-hidden="true">
@@ -1025,9 +1043,101 @@ textarea.form-control {
     <script>
     document.addEventListener('DOMContentLoaded', function() {
         const checkoutForm = document.getElementById('checkoutForm');
-        const checkoutButton = document.querySelector('.btn-place-order');
+        const placeOrderBtn = document.getElementById('placeOrderBtn');
         
-        checkoutForm.addEventListener('submit', function(e) {
+        // Xử lý khi click nút đặt hàng
+        placeOrderBtn.addEventListener('click', function() {
+            // Kiểm tra validation trước
+            if (!validateForm()) {
+                return;
+            }
+            
+            // Xử lý đặt hàng trực tiếp
+            processOrder();
+        });
+        
+
+        
+        function validateForm() {
+            let isValid = true;
+            
+            // Kiểm tra các trường bắt buộc
+            const requiredFields = [
+                { id: 'c_fname', name: 'Họ và tên' },
+                { id: 'c_address', name: 'Địa chỉ' },
+                { id: 'c_email_address', name: 'Email' },
+                { id: 'c_phone', name: 'Số điện thoại' }
+            ];
+            
+            requiredFields.forEach(field => {
+                const element = document.getElementById(field.id);
+                if (!element.value.trim()) {
+                    showFieldError(element, `${field.name} là bắt buộc`);
+                    isValid = false;
+                } else if (element.value.includes('  ')) {
+                    showFieldError(element, `${field.name} không được chứa khoảng trắng liên tiếp`);
+                    isValid = false;
+                } else {
+                    clearFieldError(element);
+                }
+            });
+            
+            // Kiểm tra email
+            const emailField = document.getElementById('c_email_address');
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (emailField.value.trim() && !emailRegex.test(emailField.value.trim())) {
+                showFieldError(emailField, 'Email không hợp lệ');
+                isValid = false;
+            }
+            
+            // Kiểm tra thông tin người nhận nếu có chọn
+            const shipToDifferent = document.getElementById('ship_to_different').checked;
+            if (shipToDifferent) {
+                const recipientFields = [
+                    { id: 'shipping_name', name: 'Họ và tên người nhận' },
+                    { id: 'shipping_address', name: 'Địa chỉ giao hàng' },
+                    { id: 'shipping_phone', name: 'Số điện thoại người nhận' }
+                ];
+                
+                recipientFields.forEach(field => {
+                    const element = document.getElementById(field.id);
+                    if (!element.value.trim()) {
+                        showFieldError(element, `${field.name} là bắt buộc`);
+                        isValid = false;
+                    } else if (element.value.includes('  ')) {
+                        showFieldError(element, `${field.name} không được chứa khoảng trắng liên tiếp`);
+                        isValid = false;
+                    } else {
+                        clearFieldError(element);
+                    }
+                });
+            }
+            
+            return isValid;
+        }
+        
+        function showFieldError(element, message) {
+            element.classList.add('is-invalid');
+            let errorDiv = element.parentNode.querySelector('.invalid-feedback');
+            if (!errorDiv) {
+                errorDiv = document.createElement('div');
+                errorDiv.className = 'invalid-feedback d-block';
+                element.parentNode.appendChild(errorDiv);
+            }
+            errorDiv.textContent = message;
+        }
+        
+        function clearFieldError(element) {
+            element.classList.remove('is-invalid');
+            const errorDiv = element.parentNode.querySelector('.invalid-feedback');
+            if (errorDiv) {
+                errorDiv.remove();
+            }
+        }
+        
+
+        
+        function processOrder() {
             const paymentMethod = document.querySelector('input[name="payment_method"]:checked')?.value;
             
             // Thêm input ẩn để truyền thông tin voucher và giá đã giảm
@@ -1046,7 +1156,10 @@ textarea.form-control {
             } else {
                 checkoutForm.setAttribute('action', "{{ isset($variant) ? route('checkout.store') : route('cart.checkout.store') }}");
             }
-        });
+            
+            // Submit form
+            checkoutForm.submit();
+        }
     });
     </script>
     <script>
@@ -1063,6 +1176,7 @@ textarea.form-control {
 
         // Lấy tạm tính (subtotal) từ view
         let subtotal = {{ (isset($variant) ? $variant->selling_price * ($quantity ?? 1) : (isset($subtotal) ? $subtotal : 0)) }};
+        const shippingFee = 30000; // Phí vận chuyển cố định
 
         // Mở modal khi click button
         voucherSelectBtn.addEventListener('click', function() {
@@ -1082,8 +1196,8 @@ textarea.form-control {
                     voucherMsg.style.display = 'block';
                     voucherMsg.className = 'alert alert-warning mt-2';
                     voucherMsg.innerText = 'Chỉ có thể áp dụng 1 mã giảm giá cho mỗi đơn hàng!';
-                    voucherDiscountRow.style.display = 'none';
-                    finalTotal.innerText = subtotal.toLocaleString('vi-VN') + ' VNĐ';
+                                            voucherDiscountRow.style.display = 'none';
+                        finalTotal.innerText = (subtotal + shippingFee).toLocaleString('vi-VN') + ' VNĐ';
                     voucherCodeInput.value = '';
                     voucherIdInput.value = '';
                     discountAmountInput.value = '';
@@ -1131,7 +1245,7 @@ textarea.form-control {
                         voucherMsg.className = 'alert alert-danger mt-2';
                         voucherMsg.innerText = data.message;
                         voucherDiscountRow.style.display = 'none';
-                        finalTotal.innerText = subtotal.toLocaleString('vi-VN') + ' VNĐ';
+                        finalTotal.innerText = (subtotal + shippingFee).toLocaleString('vi-VN') + ' VNĐ';
                         
                         // Reset các input hidden
                         voucherCodeInput.value = '';
@@ -1190,8 +1304,13 @@ document.addEventListener('DOMContentLoaded', function() {
     const recipientInputs = document.querySelectorAll('input[name^="shipping_"]');
     const requiredMarks = document.querySelectorAll('.recipient-required');
     
+    // Lấy các trường thông tin người đặt (từ tài khoản)
+    const senderFields = document.querySelectorAll('input[name^="c_"]');
+    
     function toggleRecipientFields(isChecked) {
         recipientInfo.style.display = isChecked ? 'block' : 'none';
+        
+        // Xử lý các trường thông tin người nhận
         recipientInputs.forEach(input => {
             if (input.id !== 'shipping_email') { // Email không bắt buộc
                 input.required = isChecked;
@@ -1199,6 +1318,36 @@ document.addEventListener('DOMContentLoaded', function() {
         });
         requiredMarks.forEach(mark => {
             mark.style.display = isChecked ? 'inline' : 'none';
+        });
+        
+        // Xử lý các trường thông tin người đặt (từ tài khoản)
+        senderFields.forEach(field => {
+            if (isChecked) {
+                // Khi chọn địa chỉ khác - làm cho các trường thông tin người đặt chỉ đọc
+                field.readOnly = true;
+                field.style.backgroundColor = '#f8f9fa';
+                field.style.cursor = 'not-allowed';
+                field.classList.add('readonly-field');
+                
+                // Thêm ghi chú nhỏ
+                const note = document.createElement('small');
+                note.className = 'text-muted d-block mt-1';
+                note.textContent = 'Thông tin từ tài khoản - không thể chỉnh sửa khi đặt hàng hộ';
+                note.id = 'sender-note-' + field.id;
+                field.parentNode.appendChild(note);
+            } else {
+                // Khi không chọn địa chỉ khác - cho phép chỉnh sửa
+                field.readOnly = false;
+                field.style.backgroundColor = '';
+                field.style.cursor = '';
+                field.classList.remove('readonly-field');
+                
+                // Xóa ghi chú
+                const note = document.getElementById('sender-note-' + field.id);
+                if (note) {
+                    note.remove();
+                }
+            }
         });
     }
     

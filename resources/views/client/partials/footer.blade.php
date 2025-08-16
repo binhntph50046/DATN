@@ -7,6 +7,10 @@
      .footer-info-bar {
          background: #111827;
      }
+
+     .untree_co-section a{
+        color: #ffffff !important;
+     }
  </style>
 
  <div class="footer-info-bar py-4">
@@ -130,8 +134,7 @@
              <div class="row pt-4">
                  <div class="col-lg-6">
                      <p class="mb-2 text-center text-lg-start text-white">© 2025 Apple Store. Thiết kế bởi
-                         <a href="https://www.facebook.com/nguyenbaoanhhh"><strong style="color: #ffffff">Nguyen Bao
-                                 Anh</strong></a>
+                         <a href="https://www.facebook.com/nguyenbaoanhhh"><strong style="color: #ffffff">Apple Store</strong></a>
                      </p>
                  </div>
                  {{-- <div class="col-lg-6">

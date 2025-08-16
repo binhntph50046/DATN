@@ -190,7 +190,7 @@
                             <input type="hidden" id="attribute_type_id" name="attribute_type_id">
                             
                             <div id="valuesContainer">
-                                <!-- Values will be added here dynamically -->
+                                <!-- Giá trị sẽ được thêm vào đây động -->
                             </div>
 
                             <div class="mb-3">
@@ -221,10 +221,10 @@
             placeholder: "Chọn danh mục"
         });
 
-        // Handle Attribute Type Form Submission
+        // Xử lý gửi form loại thuộc tính
         $('#createAttributeTypeForm').on('submit', function(e) {
             e.preventDefault();
-            // Reset previous errors
+            // Đặt lại lỗi trước đó
             $('.is-invalid').removeClass('is-invalid');
             $('.invalid-feedback').remove();
 
@@ -255,15 +255,15 @@
             });
         });
 
-        // Handle Add Value Button
+        // Xử lý nút thêm giá trị
         $('#addValue').click(function() {
             addValueRow();
         });
 
-        // Handle Value Form Submission
+        // Xử lý gửi form giá trị
         $('#createAttributeValuesForm').on('submit', function(e) {
             e.preventDefault();
-            // Reset previous errors
+            // Đặt lại lỗi trước đó
             $('.is-invalid').removeClass('is-invalid');
             $('.invalid-feedback').remove();
             $('.alert').remove();
@@ -294,7 +294,7 @@
                     if (xhr.status === 422) {
                         const errors = xhr.responseJSON.errors;
                         
-                        // Handle general errors
+                        // Xử lý lỗi chung
                         if (errors.general) {
                             $('#valuesContainer').before(`
                                 <div class="alert alert-danger alert-dismissible fade show" role="alert">
@@ -304,7 +304,7 @@
                             `);
                         }
 
-                        // Handle specific field errors
+                        // Xử lý lỗi trường cụ thể
                         Object.keys(errors).forEach(function(key) {
                             if (key.startsWith('values.')) {
                                 const matches = key.match(/values\.(\d+)\.(value|hex_color)/);
@@ -333,7 +333,7 @@
             });
         });
 
-        // Handle Has Hex Color checkbox change
+        // Xử lý thay đổi checkbox có màu hex
         $(document).on('change', '.has-hex-color', function() {
             const colorPickerContainer = $(this).closest('.color-section').find('.color-picker-container');
             if ($(this).is(':checked')) {
@@ -347,13 +347,13 @@
             }
         });
 
-        // Update color preview when color changes
+        // Cập nhật xem trước màu khi màu thay đổi
         $(document).on('input change', '.hex-color-input', function() {
             const hexValue = $(this).val();
             $(this).closest('.color-preview').css('background-color', hexValue);
         });
 
-        // Function to add value row
+        // Hàm thêm hàng giá trị
         function addValueRow() {
             const row = `
                 <div class="value-row">
@@ -396,7 +396,7 @@
             $('#valuesContainer').append(row);
         }
 
-        // Handle Remove Value Button
+        // Xử lý nút xóa giá trị
         $(document).on('click', '.remove-value', function() {
             if ($('.value-row').length > 1) {
                 $(this).closest('.value-row').remove();

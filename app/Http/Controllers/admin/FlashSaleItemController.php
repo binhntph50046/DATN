@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 class FlashSaleItemController
 {
     /**
-     * Display a listing of the resource.
+     * Hiển thị danh sách tài nguyên.
      */
     public function index()
     {
@@ -15,7 +15,7 @@ class FlashSaleItemController
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Hiển thị form để tạo tài nguyên mới.
      */
     public function create()
     {
@@ -23,7 +23,7 @@ class FlashSaleItemController
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Lưu trữ tài nguyên mới được tạo.
      */
     public function store(Request $request)
     {
@@ -31,7 +31,7 @@ class FlashSaleItemController
     }
 
     /**
-     * Display the specified resource.
+     * Hiển thị tài nguyên được chỉ định.
      */
     public function show(string $id)
     {
@@ -39,7 +39,7 @@ class FlashSaleItemController
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * Hiển thị form để chỉnh sửa tài nguyên được chỉ định.
      */
     public function edit(string $id)
     {
@@ -47,7 +47,7 @@ class FlashSaleItemController
     }
 
     /**
-     * Update the specified resource in storage.
+     * Cập nhật tài nguyên được chỉ định trong bộ nhớ.
      */
     public function update(Request $request, string $id)
     {
@@ -55,7 +55,7 @@ class FlashSaleItemController
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Xóa tài nguyên được chỉ định khỏi bộ nhớ.
      */
     public function destroy(string $id)
     {

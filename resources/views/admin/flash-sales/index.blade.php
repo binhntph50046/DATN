@@ -85,7 +85,7 @@
                                 <table class="table table-hover">
                                     <thead>
                                         <tr>
-                                            <th>ID</th>
+                                            <th>STT</th>
                                             <th>Tên</th>
                                             <th>Thời gian bắt đầu</th>
                                             <th>Thời gian kết thúc</th>

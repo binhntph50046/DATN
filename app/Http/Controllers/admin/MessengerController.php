@@ -16,44 +16,44 @@ class MessengerController
 {
     public function index(Request $request)
     {
-        // Check if user is authenticated
+        // Kiểm tra xem người dùng đã xác thực chưa
         if (!Auth::check()) {
-            return redirect()->route('login')->with('error', 'Please log in first.');
+            return redirect()->route('login')->with('error', 'Vui lòng đăng nhập trước.');
         }
 
-        $id = $request->input('id'); // Recipient ID from request
+        $id = $request->input('id'); // ID người nhận từ request
         if (!$id && Auth::check()) {
-            $id = Auth::id(); // Default to current user ID
+            $id = Auth::id(); // Mặc định là ID người dùng hiện tại
         }
 
         $messengerColor = Config::get('chatify.colors.primary', '#1890ff');
         $dark_mode = Auth::check() ? (Auth::user()->dark_mode ?? 'light') : 'light';
 
-        // Check user role
+        // Kiểm tra vai trò người dùng
         if (!Auth::user()->hasAnyRole(['admin', 'staff'])) {
-            return redirect()->route('home') // Redirect to user dashboard or home
-                ->with('error', 'You do not have permission to access the admin chat.');
+            return redirect()->route('home') // Chuyển hướng đến trang chủ người dùng
+                ->with('error', 'Bạn không có quyền truy cập vào chat admin.');
         }
 
         return view('admin.livechat.index', compact('id', 'messengerColor', 'dark_mode'));
     }
 
-    // Optional: Method for users to chat with admins
+    // Tùy chọn: Phương thức cho người dùng chat với admin
     public function userChat(Request $request)
     {
         if (!Auth::check()) {
-            return redirect()->route('login')->with('error', 'Please log in first.');
+            return redirect()->route('login')->with('error', 'Vui lòng đăng nhập trước.');
         }
 
-        $id = Auth::id(); // Current user ID
-        $admin = User::role('admin')->first(); // Get first admin
+        $id = Auth::id(); // ID người dùng hiện tại
+        $admin = User::role('admin')->first(); // Lấy admin đầu tiên
         if ($admin) {
             $messengerColor = Config::get('chatify.colors.primary', '#1890ff');
             $dark_mode = Auth::check() ? (Auth::user()->dark_mode ?? 'light') : 'light';
             return view('user.chat', compact('id', 'messengerColor', 'dark_mode', 'admin')); 
         }
 
-        return redirect()->route('home')->with('error', 'No admin available to chat.');
+        return redirect()->route('home')->with('error', 'Không có admin nào để chat.');
     }
     public function fetch(Request $request)
     {

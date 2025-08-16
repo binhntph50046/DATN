@@ -21,17 +21,27 @@ class ProductController
 {
     public function index()
     {
-        $products = Product::with([
-            'category', 
+        $query = Product::with([
+            'category',
             'variants',
             'defaultVariant'
-        ])->latest()->paginate(10);
-        
+        ]);
+
+        if (request('name')) {
+            $query->where('name', 'like', '%' . request('name') . '%');
+        }
+        if (request('category_id')) {
+            $query->where('category_id', request('category_id'));
+        }
+        if (request('status')) {
+            $query->where('status', request('status'));
+        }
+
+        $products = $query->latest()->paginate(10);
+
         $categories = Category::where('type', 1)->get();
-        
-        // Lấy số lượng sản phẩm đã bị xóa mềm
         $trashedCount = Product::onlyTrashed()->count();
-        
+
         return view('admin.products.index', compact('products', 'categories', 'trashedCount'));
     }
 
@@ -163,12 +173,12 @@ class ProductController
                     // Lấy ID biến thể từ yêu cầu
                     $requestedVariantIds = [];
                     $existingVariantIds = $product->variants()->whereNull('deleted_at')->pluck('id')->toArray();
-                    
+
                     foreach ($variants as $index => $variantData) {
                         if (!is_array($variantData)) {
                             continue;
                         }
-                        
+
                         // Nếu biến thể có ID, nó là biến thể hiện tại
                         if (!empty($variantData['id'])) {
                             $requestedVariantIds[] = $variantData['id'];
@@ -178,7 +188,7 @@ class ProductController
                             $this->createNewVariant($product, $variantData, $request, $index);
                         }
                     }
-                    
+
                     // Xử lý biến thể để xóa từ yêu cầu
                     $variantsToDelete = [];
                     if ($request->has('variants_to_delete') && !empty($request->variants_to_delete)) {
@@ -189,10 +199,10 @@ class ProductController
                             $variantsToDelete = $variantsToDeleteData;
                         }
                     }
-                    
+
                     // Xóa mềm biến thể không còn trong yêu cầu
                     $variantsToDelete = array_merge($variantsToDelete, array_diff($existingVariantIds, $requestedVariantIds));
-                    
+
                     if (!empty($variantsToDelete)) {
                         foreach ($variantsToDelete as $variantId) {
                             $variant = ProductVariant::find($variantId);
@@ -209,7 +219,7 @@ class ProductController
                                         $newDefaultVariant->update(['is_default' => 1]);
                                     }
                                 }
-                                
+
                                 $variant->combinations()->delete();
                                 $variant->delete();
                             }
@@ -295,7 +305,7 @@ class ProductController
         }
         $existingImages = is_string($variant->images) ? (json_decode($variant->images, true) ?: []) : ($variant->images ?: []);
         if (!empty($imagesToDelete) || !empty($newImagePaths) || $request->has('has_image_deletions')) {
-            $updatedImages = array_filter($existingImages, function($image) use ($imagesToDelete) {
+            $updatedImages = array_filter($existingImages, function ($image) use ($imagesToDelete) {
                 $normalizedImage = ltrim($image, '/');
                 if (!str_starts_with($normalizedImage, 'uploads/')) $normalizedImage = 'uploads/' . $normalizedImage;
                 foreach ($imagesToDelete as $deletePath) {
@@ -358,7 +368,7 @@ class ProductController
             if (!file_exists($destinationPath)) {
                 mkdir($destinationPath, 0777, true);
             }
-            
+
             foreach ($request->file("variants.{$index}.images") as $image) {
                 if ($image->isValid()) {
                     $filename = time() . '_' . $index . '_' . $image->getClientOriginalName();
@@ -367,7 +377,7 @@ class ProductController
                     $imagePaths[] = $path;
                 }
             }
-            
+
             if (!empty($imagePaths)) {
                 $variant->images = json_encode($imagePaths);
                 $variant->save();
@@ -410,13 +420,13 @@ class ProductController
             ->keyBy('specification_id');
 
         // Chuẩn bị mảng dữ liệu cho view
-        $specificationsData = $specifications->map(function($spec) use ($productSpecs) {
+        $specificationsData = $specifications->map(function ($spec) use ($productSpecs) {
             $value = '';
             if (isset($productSpecs[$spec->id])) {
                 $specValue = $productSpecs[$spec->id]->value;
                 $value = is_array($specValue) ? implode(', ', $specValue) : $specValue;
             }
-            
+
             return [
                 'id' => $spec->id,
                 'name' => is_array($spec->name) ? implode(', ', $spec->name) : $spec->name,
@@ -427,13 +437,13 @@ class ProductController
         // Lấy thuộc tính biến thể theo danh mục
         $attributeTypes = VariantAttributeType::where('status', 'active')
             ->whereJsonContains('category_ids', (string)$categoryId)
-            ->with(['attributeValues' => function($query) {
+            ->with(['attributeValues' => function ($query) {
                 $query->where('status', 'active');
             }])
             ->get();
 
         // Tải chỉ các biến thể hoạt động (không bị xóa mềm) với tổ hợp và hình ảnh
-        $product->load(['variants' => function($query) {
+        $product->load(['variants' => function ($query) {
             $query->whereNull('deleted_at')
                 ->with(['combinations.attributeValue.attributeType']);
         }]);
@@ -462,7 +472,7 @@ class ProductController
         }
 
         // Chuẩn bị biến thể với thuộc tính cho Blade
-        $variants = $product->variants->whereNull('deleted_at')->map(function($variant) {
+        $variants = $product->variants->whereNull('deleted_at')->map(function ($variant) {
             // Chuyển tổ hợp thành thuộc tính
             $attributes = [];
             foreach ($variant->combinations as $comb) {
@@ -512,7 +522,7 @@ class ProductController
         $values = \App\Models\VariantAttributeValue::where('attribute_type_id', $attributeTypeId)
             ->where('status', 'active')
             ->get()
-            ->map(function($value) {
+            ->map(function ($value) {
                 // Đảm bảo trả về đúng cấu trúc mà view đang mong đợi
                 $displayValue = $value->value;
                 if (is_string($displayValue) && json_decode($displayValue) !== null) {
@@ -529,7 +539,7 @@ class ProductController
                 if (is_array($hexValue) && !empty($hexValue)) {
                     $hexValue = implode(', ', $hexValue);
                 }
-                
+
                 return [
                     'id' => $value->id,
                     'value' => $displayValue,
@@ -542,7 +552,7 @@ class ProductController
             'attribute_type_id' => $attributeTypeId,
             'values' => $values->toArray()
         ]);
-        
+
         return response()->json($values);
     }
 
@@ -556,14 +566,14 @@ class ProductController
         return $sku;
     }
 
-    private function generateCombinations($arrays) 
+    private function generateCombinations($arrays)
     {
         if (empty($arrays)) {
             return [];
         }
 
         // Bắt đầu với mảng đầu tiên
-        $result = array_map(function($item) {
+        $result = array_map(function ($item) {
             return [$item];
         }, $arrays[0]);
 
@@ -577,7 +587,7 @@ class ProductController
             }
             $result = $temp;
         }
-        
+
         return $result;
     }
 
@@ -625,7 +635,7 @@ class ProductController
                                 $displayValue = $decoded;
                             }
                         }
-                        
+
                         // Chuyển mảng thành chuỗi nếu cần
                         if (is_array($displayValue)) {
                             $displayValue = implode(', ', $displayValue);
@@ -644,13 +654,13 @@ class ProductController
             }
 
             $combinations = $this->generateCombinations($attributeValueIds);
-            
+
             Log::info('Đã tạo các tổ hợp:', ['combinations' => $combinations]);
 
             foreach ($combinations as $index => $combination) {
                 $variantAttributeValues = [];
                 $attributeIds = [];
-                
+
                 foreach ($combination as $attrValue) {
                     if (isset($attrValue['display_value'])) {
                         $variantAttributeValues[] = $attrValue['display_value'];
@@ -667,7 +677,7 @@ class ProductController
 
                 $slug = Str::slug($variantName) . '-' . time() . '-' . $index;
                 $sku = $this->generateUniqueSku($product->id);
-                
+
                 $imagePaths = [];
                 if (isset($request->variants[$index]) && $request->hasFile("variants.{$index}.images")) {
                     $destinationPath = public_path('uploads/products');
@@ -685,7 +695,7 @@ class ProductController
                 }
 
                 $variantData = $request->variants[$index] ?? [];
-                
+
                 $productVariant = ProductVariant::create([
                     'product_id' => $product->id,
                     'name' => $variantName,
@@ -705,7 +715,6 @@ class ProductController
                     ]);
                 }
             }
-
         } catch (\Exception $e) {
             Log::error('Lỗi trong createVariantsFromAttributes: ' . $e->getMessage());
             Log::error('Chi tiết lỗi đầy đủ:', [
@@ -734,17 +743,17 @@ class ProductController
     {
         $products = Product::onlyTrashed()
             ->with([
-                'category', 
-                'variants' => function($query) {
+                'category',
+                'variants' => function ($query) {
                     $query->withTrashed(); // Load cả variants đã bị xóa mềm
                 },
-                'defaultVariant' => function($query) {
+                'defaultVariant' => function ($query) {
                     $query->withTrashed(); // Load default variant đã bị xóa mềm
                 }
             ])
             ->latest()
             ->paginate(10);
-        
+
         return view('admin.products.trash', compact('products'));
     }
 
@@ -752,33 +761,33 @@ class ProductController
     {
         try {
             DB::beginTransaction();
-            
+
             // Tìm sản phẩm đã bị xóa mềm
             $product = Product::onlyTrashed()->findOrFail($id);
-            
+
             // Lấy tất cả biến thể đã bị xóa mềm của sản phẩm này
             $variantIds = ProductVariant::onlyTrashed()
                 ->where('product_id', $id)
                 ->pluck('id')
                 ->toArray();
-            
+
             if (!empty($variantIds)) {
                 // Khôi phục tất cả biến thể đã bị xóa mềm
                 ProductVariant::onlyTrashed()
                     ->whereIn('id', $variantIds)
                     ->restore();
-                
+
                 // Khôi phục tất cả tổ hợp biến thể đã bị xóa mềm
                 VariantCombination::onlyTrashed()
                     ->whereIn('variant_id', $variantIds)
                     ->restore();
             }
-            
+
             // Khôi phục sản phẩm
             $product->restore();
-            
+
             DB::commit();
-            
+
             return redirect()->route('admin.products.trash')
                 ->with('success', 'Sản phẩm đã được khôi phục thành công!');
         } catch (\Exception $e) {
@@ -793,21 +802,21 @@ class ProductController
     {
         try {
             DB::beginTransaction();
-            
+
             // Lấy tất cả ID biến thể trước khi xóa mềm
             $variantIds = $product->variants()->pluck('id')->toArray();
-            
+
             // Xóa mềm tất cả biến thể
             if (!empty($variantIds)) {
                 ProductVariant::whereIn('id', $variantIds)->delete();
-                
+
                 // Xóa mềm tất cả tổ hợp biến thể
                 VariantCombination::whereIn('variant_id', $variantIds)->delete();
             }
-            
+
             // Xóa mềm sản phẩm
             $product->delete();
-            
+
             DB::commit();
             return redirect()->route('admin.products.index')
                 ->with('success', 'Sản phẩm đã được chuyển vào thùng rác thành công!');
@@ -822,22 +831,22 @@ class ProductController
     public function show(Product $product)
     {
         $product->load(['category', 'variants', 'specifications.specification']);
-        
+
         // F. Đánh giá và đánh giá
         $reviews = $product->reviews()
             ->with(['user', 'variant'])
             ->whereNull('deleted_at')
             ->latest()
             ->get();
-            
+
         $averageRating = $reviews->avg('rating') ?? 0;
         $ratingStats = [];
         for ($i = 1; $i <= 5; $i++) {
             $ratingStats[$i] = $reviews->where('rating', $i)->count();
         }
-        
+
         $topReviews = $reviews->take(3);
-        
+
         // G. Biểu đồ dữ liệu
         $monthlySales = DB::table('order_items')
             ->join('orders', 'order_items.order_id', '=', 'orders.id')
@@ -856,7 +865,7 @@ class ProductController
             ->get()
             ->keyBy('month')
             ->toArray();
-            
+
         // Thêm chi tiết doanh số theo tháng để debug
         $monthlySalesDetail = DB::table('order_items')
             ->join('orders', 'order_items.order_id', '=', 'orders.id')
@@ -875,7 +884,7 @@ class ProductController
             ->orderBy('month')
             ->orderBy('total_sales', 'desc')
             ->get();
-            
+
         $dailyViews = DB::table('product_views')
             ->where('product_id', $product->id)
             ->where('viewed_at', '>=', now()->subDays(7))
@@ -883,14 +892,14 @@ class ProductController
             ->groupBy('date')
             ->orderBy('date')
             ->get();
-            
+
         // H. Nhật ký hoạt động - Sử dụng ProductActivity thực tế
         $activityLogs = $product->activities()
             ->with('user')
             ->latest()
             ->take(10)
             ->get()
-            ->map(function($activity) {
+            ->map(function ($activity) {
                 return [
                     'type' => $activity->action,
                     'action' => $this->getActionTitle($activity->action),
@@ -899,11 +908,11 @@ class ProductController
                     'user' => $activity->user ? $activity->user->name : 'System'
                 ];
             });
-        
+
         // Nếu chưa có nhật ký hoạt động, tạo dữ liệu giả
         if ($activityLogs->isEmpty()) {
             $activityLogs = collect();
-            
+
             // Thêm hoạt động tạo mới
             if ($product->created_at) {
                 $activityLogs->push([
@@ -914,7 +923,7 @@ class ProductController
                     'user' => 'Admin'
                 ]);
             }
-            
+
             // Thêm hoạt động cập nhật nếu sản phẩm được cập nhật   
             if ($product->updated_at && $product->updated_at->ne($product->created_at)) {
                 $activityLogs->push([
@@ -925,7 +934,7 @@ class ProductController
                     'user' => 'Admin'
                 ]);
             }
-            
+
             // Thêm hoạt động biến thể
             foreach ($product->variants as $variant) {
                 if ($variant->updated_at && $variant->updated_at->ne($variant->created_at)) {
@@ -939,12 +948,12 @@ class ProductController
                 }
             }
         }
-        
+
         return view('admin.products.show', compact(
-            'product', 
-            'reviews', 
-            'averageRating', 
-            'ratingStats', 
+            'product',
+            'reviews',
+            'averageRating',
+            'ratingStats',
             'topReviews',
             'monthlySales',
             'monthlySalesDetail',
@@ -1017,7 +1026,7 @@ class ProductController
 
             if ($existingVariant) {
                 // Lấy tên giá trị
-                $valueNames = collect($valueIds)->map(function($id) use ($valueMap) {
+                $valueNames = collect($valueIds)->map(function ($id) use ($valueMap) {
                     $v = $valueMap[$id] ?? null;
                     if (!$v) return $id;
                     if (is_array($v->value)) return implode(', ', $v->value);

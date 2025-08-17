@@ -402,6 +402,7 @@
     <!-- Scripts -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
+    <script src="https://js.pusher.com/8.4.0/pusher.min.js"></script>
     <script>
         $(document).ready(function() {
             // Initialize flash sale slider
@@ -438,6 +439,9 @@
 
             // Filter form handling
             setupFilters();
+
+            // Initialize realtime product updates
+            initializeRealtimeProducts();
         });
 
         function setupFilters() {
@@ -635,6 +639,172 @@
             } else {
                 showToast('Vui lòng chọn từ 2 đến 4 sản phẩm để so sánh!', 'error');
             }
+        }
+
+        // Realtime product updates
+        function initializeRealtimeProducts() {
+            // Initialize Pusher
+            const pusher = new Pusher('{{ env("PUSHER_APP_KEY") }}', {
+                cluster: '{{ env("PUSHER_APP_CLUSTER") }}',
+                encrypted: true
+            });
+
+            // Subscribe to public products channel
+            const channel = pusher.subscribe('public.products');
+
+            // Listen for new product events
+            channel.bind('product.created', function(data) {
+                console.log('New product received:', data);
+                
+                // Show notification
+                showNewProductNotification(data);
+                
+                // Add product to grid if on first page
+                addProductToGrid(data);
+            });
+        }
+
+        function showNewProductNotification(product) {
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.className = 'new-product-notification';
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+                padding: 15px 20px;
+                border-radius: 10px;
+                box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+                z-index: 10000;
+                max-width: 300px;
+                transform: translateX(100%);
+                transition: transform 0.3s ease;
+                cursor: pointer;
+            `;
+            
+            notification.innerHTML = `
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <img src="${product.image}" alt="${product.name}" style="width: 40px; height: 40px; object-fit: cover; border-radius: 5px;">
+                    <div>
+                        <div style="font-weight: bold; margin-bottom: 5px;">Sản phẩm mới!</div>
+                        <div style="font-size: 14px;">${product.name}</div>
+                        <div style="font-size: 12px; opacity: 0.8;">${product.price}đ</div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // Animate in
+            setTimeout(() => {
+                notification.style.transform = 'translateX(0)';
+            }, 100);
+            
+            // Auto remove after 5 seconds
+            setTimeout(() => {
+                notification.style.transform = 'translateX(100%)';
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.parentNode.removeChild(notification);
+                    }
+                }, 300);
+            }, 5000);
+            
+            // Click to go to product
+            notification.addEventListener('click', () => {
+                window.location.href = product.url;
+            });
+        }
+
+        function addProductToGrid(product) {
+            // Only add to grid if we're on the first page and no filters are applied
+            const urlParams = new URLSearchParams(window.location.search);
+            const hasFilters = urlParams.has('category_slug') || 
+                             urlParams.has('min_price') || 
+                             urlParams.has('max_price') || 
+                             urlParams.has('filters') ||
+                             urlParams.has('page') && urlParams.get('page') !== '1';
+            
+            if (hasFilters) return;
+            
+            const productGrid = document.querySelector('.product-grid');
+            if (!productGrid) return;
+            
+            // Create new product card
+            const productCard = document.createElement('div');
+            productCard.className = 'col-lg-4 col-md-6 mb-4';
+            productCard.style.animation = 'slideInFromTop 0.5s ease';
+            
+            const ratingStars = generateStars(product.rating);
+            
+            productCard.innerHTML = `
+                <div class="product-card">
+                    <div class="product-media">
+                        <a href="${product.url}" class="d-block w-100 h-100 text-center">
+                            <img src="${product.image}" class="product-img" alt="${product.name}">
+                        </a>
+                        <div class="product-tools">
+                            <span class="tool-btn" title="So sánh" onclick="event.preventDefault(); addToCompare('${product.id}', '${product.name}', '${product.category_id || ''}')">
+                                <i class="fa-solid fa-code-compare"></i>
+                            </span>
+                            <span class="tool-btn icon-heart icon-add-to-wishlist" title="Đăng nhập để thêm vào yêu thích" onclick="event.preventDefault(); showLoginPrompt()">
+                                <i class="fas fa-heart"></i>
+                            </span>
+                            <span class="tool-btn" title="Xem nhanh" onclick="event.preventDefault(); showQuickView(${product.id}, '${product.slug}')">
+                                <i class="fas fa-eye"></i>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="product-body">
+                        <a href="${product.url}" class="text-decoration-none">
+                            <h3 class="product-title mb-1">${product.name}</h3>
+                        </a>
+                        <div class="product-price-row">
+                            ${product.discount_price ? 
+                                `<strong class="product-price">${product.discount_price}đ</strong>
+                                 <span class="old-price"><del>${product.price}đ</del></span>` :
+                                `<strong class="product-price">${product.price}đ</strong>`
+                            }
+                        </div>
+                        <div class="product-rating-row">
+                            <div class="stars">
+                                ${ratingStars}
+                            </div>
+                            <span class="views">(${product.views} lượt xem)</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Add to beginning of grid
+            productGrid.insertBefore(productCard, productGrid.firstChild);
+            
+            // Update product count
+            const countElement = document.querySelector('.product-controls h5');
+            if (countElement) {
+                const currentCount = parseInt(countElement.textContent.match(/\d+/)[0]);
+                countElement.textContent = `Tất cả sản phẩm (${currentCount + 1})`;
+            }
+        }
+
+        function generateStars(rating) {
+            const fullStars = Math.floor(rating);
+            const hasHalfStar = rating - fullStars >= 0.5;
+            let stars = '';
+            
+            for (let i = 1; i <= 5; i++) {
+                if (i <= fullStars) {
+                    stars += '<i class="fas fa-star"></i>';
+                } else if (i === fullStars + 1 && hasHalfStar) {
+                    stars += '<i class="fas fa-star-half-alt"></i>';
+                } else {
+                    stars += '<i class="far fa-star"></i>';
+                }
+            }
+            
+            return stars;
         }
     </script>
 

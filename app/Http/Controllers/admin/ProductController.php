@@ -137,7 +137,7 @@ class ProductController
             // Cập nhật thông tin sản phẩm cơ bản
             $product->update([
                 'name' => $request->name,
-                'slug' => Str::slug($request->name) . '-' . time(),
+                'slug' => $product->name !== $request->name ? Str::slug($request->name) . '-' . time() : $product->slug,
                 // 'category_id' => $request->category_id,
                 'warranty_months' => $request->warranty_months ?? 12,
                 'description' => $request->description,

@@ -793,18 +793,18 @@
                 }
 
                 // Kiểm tra xem user đã đăng nhập chưa
-                @guest
-                    Toast.fire({
-                        icon: 'info',
-                        title: 'Thông báo',
-                        text: 'Vui lòng đăng nhập để tiếp tục mua hàng!'
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            window.location.href = '{{ route('login') }}';
-                        }
-                    });
-                    return false;
-                @endguest
+                // @guest
+                //     Toast.fire({
+                //         icon: 'info',
+                //         title: 'Thông báo',
+                //         text: 'Vui lòng đăng nhập để tiếp tục mua hàng!'
+                //     }).then((result) => {
+                //         if (result.isConfirmed) {
+                //             window.location.href = '{{ route('login') }}';
+                //         }
+                //     });
+                //     return false;
+                // @endguest
 
                 const mainImage = document.getElementById('mainProductImage').src;
                 window.location.href = '/checkout?variant_id=' + variantId + '&quantity=' + quantity +

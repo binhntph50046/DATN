@@ -158,15 +158,18 @@
                                     <form method="POST" action="{{ route('admin.orders.updateStatus', $order->id) }}" class="d-flex gap-2 align-items-center">
                                         @csrf
                                         @method('PUT')
-                                        <select name="status" class="form-select" style="max-width: 150px; height: 38px;">
+                                        <select name="status" id="order-status" class="form-select" style="max-width: 150px; height: 38px;">
                                             <option value="pending" {{ $order->status == 'pending' ? 'selected' : '' }}>Chờ xử lý</option>
                                             <option value="confirmed" {{ $order->status == 'confirmed' ? 'selected' : '' }}>Đã xác nhận</option>
                                             <option value="preparing" {{ $order->status == 'preparing' ? 'selected' : '' }}>Đang chuẩn bị</option>
                                             <option value="shipping" {{ $order->status == 'shipping' ? 'selected' : '' }}>Đang giao hàng</option>
                                             <option value="delivered" {{ $order->status == 'delivered' ? 'selected' : '' }}>Đã giao</option>
                                             <option value="completed" {{ $order->status == 'completed' ? 'selected' : '' }} disabled>Đã hoàn thành (Chỉ client xác nhận)</option>
-                                            <option value="cancelled" {{ $order->status == 'cancelled' ? 'selected' : '' }}>Đã hủy</option>
+                                            <option value="cancelled" {{ $order->status == 'cancelled' ? 'selected' : '' }}>Hủy đơn</option>
                                         </select>
+                                        <div id="cancel-reason-container" class="d-none">
+                                            <input type="text" name="cancel_reason" class="form-control" placeholder="Nhập lý do hủy đơn hàng" style="width: 250px;" required>
+                                        </div>
                                         <button type="submit" class="btn btn-primary" style="height: 38px; padding: 0.375rem 0.75rem;">
                                             <i class="fas fa-sync-alt me-1"></i> Cập nhật
                                         </button>
@@ -363,3 +366,30 @@
 </script>
 
 @endsection
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const statusSelect = document.getElementById('order-status');
+    const cancelReasonContainer = document.getElementById('cancel-reason-container');
+    const cancelReasonInput = cancelReasonContainer.querySelector('input[name="cancel_reason"]');
+
+    function toggleCancelReason() {
+        if (statusSelect.value === 'cancelled') {
+            cancelReasonContainer.classList.remove('d-none');
+            cancelReasonInput.required = true;
+        } else {
+            cancelReasonContainer.classList.add('d-none');
+            cancelReasonInput.required = false;
+            cancelReasonInput.value = '';
+        }
+    }
+
+    // Kiểm tra trạng thái ban đầu
+    toggleCancelReason();
+
+    // Lắng nghe sự kiện thay đổi trạng thái
+    statusSelect.addEventListener('change', toggleCancelReason);
+});
+</script>
+@endpush

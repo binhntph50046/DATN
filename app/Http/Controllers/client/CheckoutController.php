@@ -144,9 +144,7 @@ class CheckoutController
         return view('client.checkout.index', compact('variant', 'quantity', 'attributes', 'availableVouchers', 'hasDiscountedProducts', 'subtotal'));
     }
 
-    /**
-     * Xử lý đặt hàng
-     */
+    // Xử lý đặt hàng
     public function store(Request $request)
     {
         try {
@@ -177,6 +175,9 @@ class CheckoutController
 
             // Xử lý voucher và tính giá
             $priceInfo = $this->processVoucherAndPrice($request, $subtotal);
+
+            // Kiểm tra số lượng và quyết định có trừ stock hay không
+            $shouldDeductStock = $this->shouldDeductStock($request);
 
             // Tạo đơn hàng
             $order = Order::create([
@@ -218,19 +219,14 @@ class CheckoutController
             foreach ($admins as $admin) {
                 $admin->notify(new AdminDatabaseNotification([
                     'type' => 'order_created',
-                    'title' => 'Đơn hàng mới',
-                    'message' => 'Khách hàng: ' . ($order->user ? $order->user->name : 'Khách vãng lai') . ', Đơn hàng #' . $order->id,
+                    'title' => !$shouldDeductStock ? 'Đơn hàng cần duyệt' : 'Đơn hàng mới',
+                    'message' => 'Khách hàng: ' . ($order->user ? $order->user->name : 'Khách vãng lai') . ', Đơn hàng #' . $order->id . (!$shouldDeductStock ? ' - Cần duyệt số lượng lớn' : ''),
                     'order_id' => $order->id,
                     'user_id' => $order->user_id,
                     'url' => route('admin.orders.show', $order->id),
                     'created_at' => now(),
                 ]));
             }
-
-            // Cập nhật mã đơn hàng
-            $order->update([
-                'order_code' => 'DH' . $order->id
-            ]);
 
             // Tạo chi tiết đơn hàng (order_items)
             if ($request->has('variant_id')) {
@@ -257,8 +253,10 @@ class CheckoutController
                     'total' => $subtotal,
                 ]);
                 
-                // Trừ stock ngay khi đặt hàng
-                $variant->decrement('stock', $request->quantity);
+                // Chỉ trừ stock khi số lượng không vượt quá giới hạn
+                if ($shouldDeductStock) {
+                    $variant->decrement('stock', $request->quantity);
+                }
               
             } else {
                 if (!Auth::check()) {
@@ -295,8 +293,8 @@ class CheckoutController
                         'total' => $total,
                     ]);
                     
-                    // Trừ stock ngay khi đặt hàng
-                    if ($item->variant) {
+                    // Chỉ trừ stock khi số lượng không vượt quá giới hạn
+                    if ($shouldDeductStock && $item->variant) {
                         $item->variant->decrement('stock', $item->quantity);
                     }
                 }
@@ -328,19 +326,15 @@ class CheckoutController
             // Gửi email hóa đơn
             try {
                 $toAddresses = config('mail.to.addresses');
-                Log::info('Danh sách email nhận:', ['emails' => $toAddresses]);
-
                 foreach ($toAddresses as $email) {
                     try {
                         Mail::to($email)->send(new OrderInvoice($order));
-                        Log::info('Gửi email thành công đến: ' . $email);
                     } catch (\Exception $e) {
-                        Log::error('Lỗi gửi email đến ' . $email . ': ' . $e->getMessage());
+                       
                     }
                 }
             } catch (\Exception $e) {
-                // Log lỗi gửi email nhưng không ảnh hưởng đến flow chính
-                Log::error('Lỗi gửi email hóa đơn: ' . $e->getMessage());
+               
             }
 
             // Chuyển hướng sau khi đặt hàng thành công
@@ -351,9 +345,71 @@ class CheckoutController
             return $this->redirectAfterOrder($order);
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Lỗi đặt hàng: ' . $e->getMessage());
             return back()->withErrors(['error' => $e->getMessage()]);
         }
+    }
+
+    // Kiểm tra xem có nên trừ stock ngay hay không
+    private function shouldDeductStock($request)
+    {
+        $maxQuantityPerItem = 10; // Số lượng tối đa cho mỗi sản phẩm
+        $maxTotalQuantity = 20; // Tổng số lượng tối đa cho toàn bộ đơn hàng
+        $maxTotalItems = 5; // Số lượng sản phẩm tối đa trong đơn hàng
+        
+        $totalQuantity = 0;
+        $totalItems = 0;
+
+        if ($request->has('variant_id')) {
+            // Mua ngay từ trang sản phẩm
+            $quantity = $request->quantity;
+            $totalQuantity = $quantity;
+            $totalItems = 1;
+            
+            // Kiểm tra từng sản phẩm có vượt quá giới hạn không
+            if ($quantity > $maxQuantityPerItem) {
+                return false;
+            }
+        } else {
+            // Mua từ giỏ hàng
+            if (!Auth::check()) {
+                throw new \Exception('Vui lòng đăng nhập để mua hàng!');
+            }
+            
+            $cart = \App\Models\Cart::where('user_id', Auth::id())->first();
+            if (!$cart) {
+                throw new \Exception('Giỏ hàng của bạn đang trống!');
+            }
+
+            $cartItems = $cart->cartItems()->with(['product', 'variant'])->get();
+            
+            // Nếu có selected_items, chỉ tính các sản phẩm được chọn
+            if ($request->has('selected_items') && is_array($request->selected_items)) {
+                $cartItems = $cartItems->whereIn('id', $request->selected_items);
+            }
+
+            $totalItems = $cartItems->count();
+            
+            foreach ($cartItems as $item) {
+                $totalQuantity += $item->quantity;
+                
+                // Kiểm tra từng sản phẩm có vượt quá giới hạn không
+                if ($item->quantity > $maxQuantityPerItem) {
+                    return false;
+                }
+            }
+        }
+        
+        // Kiểm tra tổng số lượng có vượt quá giới hạn không
+        if ($totalQuantity > $maxTotalQuantity) {
+            return false;
+        }
+        
+        // Kiểm tra tổng số sản phẩm có vượt quá giới hạn không
+        if ($totalItems > $maxTotalItems) {
+            return false;
+        }
+
+        return true;
     }
 
     public function tracking($orderId)
@@ -376,9 +432,7 @@ class CheckoutController
         return view('client.order.tracking', compact('order'));
     }
 
-    /**
-     * Hiển thị trang checkout cho giỏ hàng
-     */
+        // Hiển thị trang checkout cho giỏ hàng
     public function cartCheckout(Request $request)
     {
         /** @var \App\Models\User|null $user */
@@ -479,9 +533,7 @@ class CheckoutController
         return view('client.checkout.index', compact('cartItems', 'subtotal', 'availableVouchers', 'hasDiscountedProducts'));
     }
 
-    /**
-     * Xử lý đặt hàng từ giỏ hàng
-     */
+    // Xử lý đặt hàng từ giỏ hàng
     public function processCartCheckout(Request $request)
     {
         try {
@@ -518,6 +570,9 @@ class CheckoutController
             if (!Auth::check()) {
                 throw new \Exception('Vui lòng đăng nhập để mua hàng!');
             }
+
+            // Kiểm tra số lượng và quyết định có trừ stock hay không
+            $shouldDeductStock = $this->shouldDeductStock($request);
 
             // Tạo đơn hàng
             $order = Order::create([
@@ -559,19 +614,14 @@ class CheckoutController
             foreach ($admins as $admin) {
                 $admin->notify(new AdminDatabaseNotification([
                     'type' => 'order_created',
-                    'title' => 'Đơn hàng mới',
-                    'message' => 'Khách hàng: ' . ($order->user ? $order->user->name : 'Khách vãng lai') . ', Đơn hàng #' . $order->id,
+                    'title' => !$shouldDeductStock ? 'Đơn hàng cần duyệt' : 'Đơn hàng mới',
+                    'message' => 'Khách hàng: ' . ($order->user ? $order->user->name : 'Khách vãng lai') . ', Đơn hàng #' . $order->id . (!$shouldDeductStock ? ' - Cần duyệt số lượng lớn' : ''),
                     'order_id' => $order->id,
                     'user_id' => $order->user_id,
                     'url' => route('admin.orders.show', $order->id),
                     'created_at' => now(),
                 ]));
             }
-
-            // Cập nhật mã đơn hàng
-            $order->update([
-                'order_code' => 'DH' . $order->id
-            ]);
 
             // Tạo chi tiết đơn hàng và cập nhật tồn kho
             $cart = \App\Models\Cart::where('user_id', Auth::id())->first();
@@ -592,8 +642,8 @@ class CheckoutController
                         'total' => $total,
                     ]);
                     
-                    // Trừ stock ngay khi đặt hàng
-                    if ($item->variant) {
+                    // Chỉ trừ stock khi số lượng không vượt quá giới hạn
+                    if ($shouldDeductStock && $item->variant) {
                         $item->variant->decrement('stock', $item->quantity);
                     }
                 }
@@ -603,19 +653,15 @@ class CheckoutController
             // Gửi email hóa đơn
             try {
                 $toAddresses = config('mail.to.addresses');
-                Log::info('Danh sách email nhận:', ['emails' => $toAddresses]);
-
                 foreach ($toAddresses as $email) {
                     try {
                         Mail::to($email)->send(new OrderInvoice($order));
-                        Log::info('Gửi email thành công đến: ' . $email);
                     } catch (\Exception $e) {
-                        Log::error('Lỗi gửi email đến ' . $email . ': ' . $e->getMessage());
+                       
                     }
                 }
             } catch (\Exception $e) {
-                // Log lỗi gửi email nhưng không ảnh hưởng đến flow chính
-                Log::error('Lỗi gửi email hóa đơn: ' . $e->getMessage());
+               
             }
 
             DB::commit();
@@ -819,3 +865,4 @@ class CheckoutController
         ])->with('success', 'Đặt hàng thành công! Bạn có thể dùng mã đơn hàng và email để tra cứu đơn hàng sau này.');
     }
 }
+

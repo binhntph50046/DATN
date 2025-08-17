@@ -74,7 +74,7 @@ class OrderController
                 foreach ($order->items as $item) {
                     $product = $item->product;
                     if ($product) {
-                        $product->decrement('total_sold', $item->quantity);
+                        $product->safeDecrementTotalSold($item->quantity);
                     }
                 }
             }
@@ -166,7 +166,7 @@ class OrderController
                 foreach ($order->items as $item) {
                     $product = $item->product;
                     if ($product) {
-                        $product->increment('total_sold', $item->quantity);
+                        $product->safeIncrementTotalSold($item->quantity);
                     }
                 }
             }

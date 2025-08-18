@@ -40,6 +40,7 @@ class GoogleController
             );
 
             if ($user->wasRecentlyCreated) {
+                $user->assignRole('user');
                 return redirect()->route('login')
                     ->with('success', 'Đăng ký bằng Google thành công! Vui lòng đăng nhập.');
             }
@@ -49,7 +50,6 @@ class GoogleController
             $user->last_login = now();
             $user->save();
 
-            $user->assignRole('user');
             $hasAccess = $user->roles()->whereIn('name', ['admin', 'staff'])->exists();
 
             if ($hasAccess) {

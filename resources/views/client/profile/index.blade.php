@@ -73,10 +73,9 @@
                             {{-- Ngày sinh --}}
                             <div class="col-6 mb-3">
                                 <label for="dob" class="form-label">Ngày sinh</label>
-                                <input type="text" class="form-control @error('dob') is-invalid @enderror" id="dob"
-                                    name="dob" placeholder="dd/mm/yyyy"
-                                    value="{{ old('dob', auth()->user()->dob ? auth()->user()->dob->format('d/m/Y') : '') }}"
-                                    onfocus="this.type='date'" onblur="if(!this.value)this.type='text'">
+                                <input type="date" class="form-control @error('dob') is-invalid @enderror" id="dob"
+                                    name="dob"
+                                    value="{{ old('dob', auth()->user()->dob ? auth()->user()->dob->format('Y-m-d') : '') }}">
 
                                 @error('dob')
                                     <div class="invalid-feedback">{{ $message }}</div>

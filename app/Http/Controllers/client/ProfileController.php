@@ -25,12 +25,36 @@ class ProfileController
 
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'phone' => 'required|string|max:20',
+            'phone' => [
+                'required',
+                'regex:/^(0[3|5|7|8|9][0-9]{8})$/',
+            ],
             'address' => 'required|string|max:255',
             'dob' => 'nullable|date',
             'gender' => 'required|in:male,female,other',
             'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048'
+        ], [
+            'name.required' => 'Vui lòng nhập họ và tên.',
+            'name.string' => 'Họ và tên phải là chuỗi ký tự.',
+            'name.max' => 'Họ và tên không được vượt quá 255 ký tự.',
+
+            'phone.required' => 'Vui lòng nhập số điện thoại.',
+            'phone.regex' => 'Số điện thoại không hợp lệ. Phải có 10 số và bắt đầu bằng 03, 05, 07, 08 hoặc 09.',
+
+            'address.required' => 'Vui lòng nhập địa chỉ.',
+            'address.string' => 'Địa chỉ phải là chuỗi ký tự.',
+            'address.max' => 'Địa chỉ không được vượt quá 255 ký tự.',
+
+            'dob.date' => 'Ngày sinh không hợp lệ.',
+
+            'gender.required' => 'Vui lòng chọn giới tính.',
+            'gender.in' => 'Giới tính không hợp lệ.',
+
+            'avatar.image' => 'Tệp tải lên phải là hình ảnh.',
+            'avatar.mimes' => 'Ảnh đại diện phải có định dạng: jpeg, png, jpg, gif.',
+            'avatar.max' => 'Ảnh đại diện không được vượt quá 2MB.'
         ]);
+
 
         // Handle avatar upload
         if ($request->hasFile('avatar')) {

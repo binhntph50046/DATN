@@ -1,6 +1,6 @@
 @extends('admin.layouts.app')
 
-@section('title', 'Live Chat')
+@section('title', 'Tin nhắn')
 
 @section('content')
     <div class="pc-container">
@@ -10,11 +10,11 @@
                     <div class="row align-items-center">
                         <div class="col-md-12">
                             <div class="page-header-title">
-                                <h5 class="m-b-10">Live Chat</h5>
+                                <h5 class="m-b-10">Tin nhắn</h5>
                             </div>
                             <ul class="breadcrumb">
-                                <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Home</a></li>
-                                <li class="breadcrumb-item" aria-current="page">Live Chat</li>
+                                <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Trang chủ</a></li>
+                                <li class="breadcrumb-item" aria-current="page">Tin nhắn</li>
                             </ul>
                         </div>
                     </div>
@@ -32,7 +32,7 @@
                                     <div class="m-header">
                                         <nav>
                                             <a href="#"><i class="fas fa-inbox"></i> <span
-                                                    class="messenger-headTitle">MESSAGES</span> </a>
+                                                    class="messenger-headTitle">TIN NHẮN</span> </a>
                                             {{-- header buttons --}}
                                             <nav class="m-header-right">
                                                             <!-- <a href="#"><i class="fas fa-cog settings-btn"></i></a> -->
@@ -40,7 +40,7 @@
                                                         </nav>
                                         </nav>
                                         {{-- Search input --}}
-                                        <input type="text" class="messenger-search" placeholder="Search"
+                                        <input type="text" class="messenger-search" placeholder="Tìm kiếm"
                                             style="border: 1px solid #D3D3D3;" />
 
                                     </div>
@@ -62,7 +62,7 @@
 
                                             {{-- Contact --}}
                                             <div class="messenger-title-line">
-                                                <hr><span>All Messages</span>
+                                                <hr><span>Tất cả tin nhắn</span>
                                                 <hr>
                                             </div>
                                             <div class="listOfContacts"
@@ -136,7 +136,7 @@
                                 <div class="messenger-infoView app-scroll">
                                     {{-- nav actions --}}
                                     <nav>
-                                        <p>User Details</p>
+                                        <p>Thông tin cuộc trò chuyện</p>
                                         <a href="#" class="close-infoSide"><i class="fas fa-times"></i></a>
                                     </nav>
                                     {!! view('Chatify::layouts.info')->render() !!}

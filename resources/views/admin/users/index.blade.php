@@ -100,7 +100,7 @@
                                 <table class="table table-hover table-borderless align-middle" style="font-size: 14px;">
                                     <thead>
                                         <tr>
-                                            <th>ID</th>
+                                            <th>STT</th>
                                             <th>Ảnh đại diện</th>
                                             <th>Họ tên</th>
                                             <th>Email</th>

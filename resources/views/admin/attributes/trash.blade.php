@@ -83,7 +83,7 @@
                             <table class="table table-hover table-borderless">
                                 <thead>
                                     <tr>
-                                        <th>ID</th>
+                                        <th>STT</th>
                                         <th>Tên</th>
                                         <th>Danh mục</th>
                                         <th>Giá trị</th>

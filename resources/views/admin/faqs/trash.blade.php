@@ -57,7 +57,7 @@
                             <table class="table table-hover table-borderless">
                                 <thead>
                                     <tr>
-                                        <th>ID</th>
+                                        <th>STT</th>
                                         <th>Câu hỏi</th>
                                         <th>Câu trả lời</th>
                                         <th>Thời điểm xóa</th>

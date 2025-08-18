@@ -125,7 +125,7 @@
                                             </div>
                                             <div class="col-md-2">
                                                 <label class="form-label">Giảm giá</label>
-                                                <input type="number" step="1" min="0"
+                                                <input type="number" step="1" min="1"
                                                     name="items[{{ $index }}][discount]"
                                                     class="form-control @error("items.$index.discount") is-invalid @enderror"
                                                     placeholder="Số" value="{{ $item['discount'] }}">

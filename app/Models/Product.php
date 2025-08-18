@@ -122,4 +122,37 @@ class Product extends Model
     {
         return $this->default_variant_image;
     }
+
+    /**
+     * Cập nhật total_sold một cách an toàn, tránh giá trị âm
+     */
+    public function safeUpdateTotalSold($quantity, $operation = 'increment')
+    {
+        $currentTotalSold = $this->total_sold ?? 0;
+        
+        if ($operation === 'increment') {
+            $newTotalSold = $currentTotalSold + $quantity;
+        } else {
+            $newTotalSold = max(0, $currentTotalSold - $quantity);
+        }
+        
+        $this->update(['total_sold' => $newTotalSold]);
+        return $this;
+    }
+
+    /**
+     * Tăng total_sold một cách an toàn
+     */
+    public function safeIncrementTotalSold($quantity = 1)
+    {
+        return $this->safeUpdateTotalSold($quantity, 'increment');
+    }
+
+    /**
+     * Giảm total_sold một cách an toàn
+     */
+    public function safeDecrementTotalSold($quantity = 1)
+    {
+        return $this->safeUpdateTotalSold($quantity, 'decrement');
+    }
 }

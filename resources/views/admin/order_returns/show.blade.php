@@ -49,29 +49,7 @@
                         </div>
                     </div>
                     <hr>
-                    <div class="mb-3">
-                        <span class="fw-bold"><i class="fas fa-boxes me-1"></i>Sản phẩm hoàn:</span>
-                        <ul class="list-group list-group-flush">
-                            @foreach($return->items as $item)
-                                <li class="list-group-item d-flex align-items-center px-0" style="background: transparent; border: none;">
-                                    <span class="me-2"><i class="fas fa-cube text-primary"></i></span>
-                                    <span class="flex-grow-1">{{ $item->orderItem->product->name }} - SL: {{ $item->quantity }}</span>
-                                    @if($return->status == 'pending')
-                                        <label class="ms-2">
-                                            <input type="checkbox" name="restock[{{ $item->id }}]" value="1" checked>
-                                            <span class="badge bg-info text-dark">Cộng lại kho</span>
-                                        </label>
-                                    @else
-                                        @if($item->restock)
-                                            <span class="badge bg-success ms-2">Đã cộng kho</span>
-                                        @else
-                                            <span class="badge bg-secondary ms-2">Không cộng kho</span>
-                                        @endif
-                                    @endif
-                                </li>
-                            @endforeach
-                        </ul>
-                    </div>
+                   
                     <div class="mb-3">
                         <span class="fw-bold"><i class="fas fa-video me-1"></i>Video hoàn hàng:</span>
                         @if($return->proof_video)
@@ -116,6 +94,34 @@
                                                     <label for="refund_note" class="form-label">Ghi chú hoàn tiền</label>
                                                     <textarea class="form-control" id="refund_note" name="refund_note" rows="3" placeholder="Nhập ghi chú về việc hoàn tiền (nếu có)"></textarea>
                                                 </div>
+                                                <div class="mb-3">
+                                                    <label class="form-label">Tùy chọn cộng lại kho:</label>
+                                                    <div class="mb-2">
+                                                        <button type="button" class="btn btn-sm btn-outline-primary me-2" onclick="selectAllRestock()">
+                                                            <i class="fas fa-check-square"></i> Chọn tất cả
+                                                        </button>
+                                                        <button type="button" class="btn btn-sm btn-outline-secondary" onclick="deselectAllRestock()">
+                                                            <i class="fas fa-square"></i> Bỏ chọn tất cả
+                                                        </button>
+                                                    </div>
+                                                    <div class="border rounded p-3">
+                                                        @foreach($return->items as $item)
+                                                            <div class="form-check mb-2">
+                                                                <input class="form-check-input restock-checkbox" type="checkbox" name="restock[{{ $item->id }}]" value="1" id="restock_{{ $item->id }}">
+                                                                <label class="form-check-label" for="restock_{{ $item->id }}">
+                                                                    <strong>{{ $item->orderItem->product->name }}</strong> - SL: {{ $item->quantity }}
+                                                                    @if($item->orderItem->variant)
+                                                                        <br><small class="text-muted">Variant: {{ $item->orderItem->variant->name }}</small>
+                                                                    @endif
+                                                                </label>
+                                                            </div>
+                                                        @endforeach
+                                                    </div>
+                                                    <div class="form-text">
+                                                        <i class="fas fa-info-circle text-info"></i> 
+                                                        Chọn các sản phẩm cần cộng lại vào kho. Nếu không chọn, sản phẩm sẽ không được cộng lại kho.
+                                                    </div>
+                                                </div>
                                             </div>
                                             <div class="modal-footer">
                                                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
@@ -157,4 +163,18 @@
         </div>
     </div>
 </div>
+
+<script>
+function selectAllRestock() {
+    document.querySelectorAll('.restock-checkbox').forEach(checkbox => {
+        checkbox.checked = true;
+    });
+}
+
+function deselectAllRestock() {
+    document.querySelectorAll('.restock-checkbox').forEach(checkbox => {
+        checkbox.checked = false;
+    });
+}
+</script>
 @endsection 

@@ -41,7 +41,7 @@
                             <table class="table table-hover">
                                 <thead>
                                     <tr>
-                                        <th>ID</th>
+                                        <th>STT</th>
                                         <th>Tên</th>
                                         <th>Danh mục</th>
                                         <th>Mô tả</th>

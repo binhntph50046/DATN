@@ -5,6 +5,7 @@ namespace App\Http\Controllers\admin;
 use Illuminate\Routing\Controller;
 use Illuminate\Http\Request;
 use App\Models\OrderReturn;
+use App\Models\ProductVariant;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use App\Events\OrderStatusUpdated;
@@ -32,7 +33,7 @@ class OrderReturnController extends Controller
             'refund_note' => 'nullable|string|max:500',
         ]);
 
-        $return = OrderReturn::with('items.orderItem.product')->findOrFail($id);
+        $return = OrderReturn::with(['items.orderItem.product', 'items.orderItem.variant'])->findOrFail($id);
 
         // Upload hình ảnh chứng từ
         if ($request->hasFile('refund_proof_image')) {
@@ -50,13 +51,22 @@ class OrderReturnController extends Controller
         // Tính tổng tiền hoàn lại
         $refundAmount = 0;
         $restockArr = $request->input('restock', []);
+        
         foreach ($return->items as $item) {
             $refundAmount += $item->orderItem->price * $item->quantity;
-            $restock = isset($restockArr[$item->id]);
+            $restock = isset($restockArr[$item->id]) && $restockArr[$item->id] == '1';
             $item->restock = $restock;
             $item->save();
+            
             if ($restock) {
-                $item->orderItem->product->increment('stock', $item->quantity);
+                // Cộng lại stock cho variant tương ứng
+                if ($item->orderItem->variant) {
+                    $variant = $item->orderItem->variant;
+                    $variant->increment('stock', $item->quantity);
+                } else {
+                    // Fallback: cộng lại stock cho sản phẩm nếu không có variant
+                    $item->orderItem->product->increment('stock', $item->quantity);
+                }
             }
         }
 
@@ -76,7 +86,7 @@ class OrderReturnController extends Controller
             foreach ($return->items as $item) {
                 $product = $item->orderItem->product;
                 if ($product) {
-                    $product->decrement('total_sold', $item->quantity);
+                    $product->safeDecrementTotalSold($item->quantity);
                 }
             }
         }
@@ -113,15 +123,26 @@ class OrderReturnController extends Controller
     // Từ chối yêu cầu hoàn hàng
     public function reject($id)
     {
-        $return = OrderReturn::with('items.orderItem.product')->findOrFail($id);
+        $return = OrderReturn::with(['items.orderItem.product', 'items.orderItem.variant'])->findOrFail($id);
         
-        // Nếu đang từ trạng thái approved sang rejected, tăng lại total_sold
+        // Nếu đang từ trạng thái approved sang rejected, tăng lại total_sold và trừ lại stock
         $oldStatus = $return->status;
         if ($oldStatus === 'approved') {
             foreach ($return->items as $item) {
                 $product = $item->orderItem->product;
                 if ($product) {
-                    $product->increment('total_sold', $item->quantity);
+                    $product->safeIncrementTotalSold($item->quantity);
+                }
+                
+                // Trừ lại stock nếu trước đó đã cộng lại (restock = true)
+                if ($item->restock) {
+                    if ($item->orderItem->variant) {
+                        $variant = $item->orderItem->variant;
+                        $variant->decrement('stock', $item->quantity);
+                    } else {
+                        // Fallback: trừ lại stock cho sản phẩm nếu không có variant
+                        $item->orderItem->product->decrement('stock', $item->quantity);
+                    }
                 }
             }
         }

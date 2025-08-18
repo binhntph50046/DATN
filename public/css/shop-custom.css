@@ -692,3 +692,73 @@
     letter-spacing: .3px;
     color: #495057
 }
+
+.pagination {
+    display: flex;
+    gap: 8px;
+    background: #fff;
+    padding: 8px 18px;
+    border-radius: 28px;
+    box-shadow: 0 2px 8px 0 rgba(0, 123, 255, 0.07);
+    align-items: center;
+    margin-top: 18px;
+}
+
+.pagination .page-link,
+.pagination li>span,
+.pagination li>a {
+    min-width: 36px;
+    min-height: 36px;
+    border-radius: 50% !important;
+    border: none !important;
+    background: transparent !important;
+    color: #222 !important;
+    font-weight: 600;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.18s, color 0.18s, transform 0.13s;
+    outline: none;
+    cursor: pointer;
+}
+
+.pagination .page-item.active .page-link,
+.pagination li.active>span,
+.pagination li.active>a {
+    background: linear-gradient(135deg, #007bff 60%, #1abcfe 100%) !important;
+    color: #fff !important;
+    box-shadow: 0 2px 8px 0 rgba(0, 123, 255, 0.10);
+    transform: scale(1.08);
+}
+
+.pagination .page-link:hover,
+.pagination li>a:hover {
+    background: #eaf3ff !important;
+    color: #007bff !important;
+    transform: scale(1.04);
+}
+
+.pagination .page-item.disabled .page-link,
+.pagination li.disabled>span,
+.pagination li.disabled>a {
+    color: #bdbdbd !important;
+    background: transparent !important;
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+@media (max-width: 600px) {
+    .pagination {
+        gap: 4px;
+        padding: 4px 6px;
+    }
+
+    .pagination .page-link,
+    .pagination li>span,
+    .pagination li>a {
+        min-width: 26px;
+        min-height: 26px;
+        font-size: .95rem;
+    }
+}

@@ -68,10 +68,19 @@ class OrderController
                 'cancel_reason' => $request->cancellation_reason
             ]);
 
-            // Giảm total_sold cho các sản phẩm trong đơn hàng bị hủy
-            // Chỉ giảm nếu đơn hàng đã được xác nhận hoặc đang giao
-            if (in_array($oldStatus, ['confirmed', 'preparing', 'shipping', 'delivered'])) {
-                foreach ($order->items as $item) {
+            // Hoàn trả stock cho các sản phẩm trong đơn hàng bị hủy
+            foreach ($order->items as $item) {
+                // Chỉ hoàn trả stock nếu đơn hàng đã được xác nhận hoặc đang giao (đã bị trừ stock)
+                if (in_array($oldStatus, ['confirmed', 'preparing', 'shipping', 'delivered'])) {
+                    // Hoàn trả stock cho variant nếu có
+                    if ($item->product_variant_id) {
+                        $variant = \App\Models\ProductVariant::find($item->product_variant_id);
+                        if ($variant) {
+                            $variant->increment('stock', $item->quantity);
+                        }
+                    }
+                    
+                    // Giảm total_sold cho sản phẩm
                     $product = $item->product;
                     if ($product) {
                         $product->safeDecrementTotalSold($item->quantity);

@@ -1,5 +1,5 @@
 @extends('admin.layouts.app')
-@section('title', 'Assign Role')
+@section('title', 'Phân quyền người dùng')
 
 <style>
     .custom-shadow {
@@ -19,12 +19,12 @@
                     <div class="row align-items-center">
                         <div class="col-md-12">
                             <div class="page-header-title">
-                                <h5 class="m-b-10">Assign Role</h5>
+                                <h5 class="m-b-10">Phân quyền người dùng</h5>
                             </div>
                             <ul class="breadcrumb">
-                                <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Home</a></li>
-                                <li class="breadcrumb-item"><a href="{{ route('admin.users.index') }}">Users</a></li>
-                                <li class="breadcrumb-item active" aria-current="page">Assign Role</li>
+                                <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Trang chủ</a></li>
+                                <li class="breadcrumb-item"><a href="{{ route('admin.users.index') }}">Người dùng</a></li>
+                                <li class="breadcrumb-item active" aria-current="page">Phân quyền</li>
                             </ul>
                         </div>
                     </div>
@@ -36,7 +36,7 @@
                 <div class="col-12">
                     <div class="card custom-shadow">
                         <div class="card-header">
-                            <h5>Assign Role to {{ $user->name }}</h5>
+                            <h5>Gán vai trò cho {{ $user->name }}</h5>
                         </div>
                         <div class="card-body">
                             @if (session('success'))
@@ -48,7 +48,7 @@
                                 @method('PUT')
                                 <div class="row mb-3">
                                     <div class="col-md-6">
-                                        <label for="role" class="form-label">Select Role</label>
+                                        <label for="role" class="form-label">Chọn vai trò</label>
                                         <select name="role" id="role" class="form-control">
                                             <option value="user" {{ $currentRole == 'user' ? 'selected' : '' }}>User</option>
                                             <option value="staff" {{ $currentRole == 'staff' ? 'selected' : '' }}>Staff</option>
@@ -59,8 +59,8 @@
                                     </div>
                                 </div>
                                 <div class="d-flex">
-                                    <button type="submit" class="btn btn-primary btn-sm me-2">Update Role</button>
-                                    <a href="{{ route('admin.users.index') }}" class="btn btn-secondary btn-sm">Back</a>
+                                    <button type="submit" class="btn btn-primary btn-sm me-2">Cập nhật vai trò</button>
+                                    <a href="{{ route('admin.users.index') }}" class="btn btn-secondary btn-sm">Quay lại</a>
                                 </div>
                             </form>
                         </div>

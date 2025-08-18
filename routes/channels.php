@@ -18,3 +18,7 @@ Broadcast::channel('chat.{userId}', function ($user, $userId) {
 Broadcast::channel('admin.notifications', function ($user) {
     return in_array($user->role, ['admin', 'staff']);
 });
+
+Broadcast::channel('public.products', function () {
+    return true; // Allow public access to product updates
+});

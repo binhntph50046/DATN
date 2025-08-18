@@ -351,13 +351,13 @@
                 <div class="col-md-12 col-xl-4">
                     <h5 class="mb-3">Sản phẩm sắp hết hàng</h5>
                     <div class="card">
-                        <div class="list-group list-group-flush">
+                        <div class="list-group list-group-flush" style="max-height: 350px; overflow-y: auto">
                             @forelse ($lowStockProducts as $variant)
                                 <div class="list-group-item d-flex flex-column">
                                     <strong>{{ $variant->product->name ?? 'Sản phẩm không xác định' }}</strong>
                                     <div class="d-flex justify-content-between mt-1">
                                         <span>Biến thể: {{ $variant->name ?? 'Không có' }}</span>
-                                        <span class="badge bg-warning text-dark">Tồn kho: {{ $variant->stock }}</span>
+                                        <span class="badge bg-warning text-dark" style="height: 19px;">Tồn kho: {{ $variant->stock }}</span>
                                     </div>
                                 </div>
                             @empty

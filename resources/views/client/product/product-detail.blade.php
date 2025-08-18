@@ -620,6 +620,7 @@
         let variantData = {};
         let attributeToVariant = {};
         let requiredTypes = [];
+        let sortedTypes = [];
         let currentImageIndex = 0;
         let currentImages = @json($images);
         let totalSold = {{ $totalSold }};
@@ -676,7 +677,6 @@
                 quantityInput.value = currentValue + 1;
                 document.getElementById('cartQuantity').value = quantityInput.value;
             });
-
             // Khởi tạo dữ liệu biến thể
             @foreach ($product->variants as $variant)
                 @if ($variant->deleted_at === null)
@@ -694,12 +694,20 @@
             @foreach ($product->variants as $variant)
                 @if ($variant->deleted_at === null)
                     @php
-                        $attrValues = [];
+                        $attrMap = [];
                         foreach ($variant->combinations as $comb) {
-                            $value = is_array($comb->attributeValue->value) ? $comb->attributeValue->value[0] : json_decode($comb->attributeValue->value, true)[0] ?? '';
-                            $attrValues[] = $value;
+                            $typeName = $comb->attributeValue->attributeType->name ?? '';
+                            $value = is_array($comb->attributeValue->value)
+                                ? ($comb->attributeValue->value[0] ?? '')
+                                : (json_decode($comb->attributeValue->value, true)[0] ?? '');
+                            if ($typeName !== '') {
+                                $attrMap[$typeName] = $value;
+                            }
                         }
-                        $key = implode('|', $attrValues);
+                        if (!empty($attrMap)) {
+                            ksort($attrMap, SORT_NATURAL | SORT_FLAG_CASE);
+                        }
+                        $key = implode('|', $attrMap);
                     @endphp
                     attributeToVariant["{{ $key }}"] = {{ $variant->id }};
                 @endif
@@ -713,6 +721,8 @@
                     requiredTypes.push(typeName);
                 }
             });
+            // Sắp xếp tên thuộc tính theo alpha để đồng bộ với key ánh xạ phía trên
+            sortedTypes = [...requiredTypes].sort((a, b) => a.localeCompare(b, undefined, {sensitivity: 'base'}));
 
             // Khởi tạo giá trị mặc định
             @if ($defaultVariant)
@@ -725,6 +735,8 @@
                     selectedVariants["{{ $typeName }}"] = {{ $defaultVariant->id }};
                 @endforeach
                 document.getElementById('selectedVariantId').value = {{ $defaultVariant->id }};
+                // Cập nhật tồn kho ban đầu theo biến thể mặc định
+                updateStockDisplay({{ $defaultVariant->id }});
             @endif
 
             // Khởi tạo thumbnails
@@ -835,7 +847,7 @@
             selectedVariants[matchedType] = variantId;
 
             // Find matching variant
-            let key = requiredTypes.map(type => selectedValues[type] || '').join('|');
+            let key = sortedTypes.map(type => selectedValues[type] || '').join('|');
             let matchedVariantId = attributeToVariant[key];
 
             // Update images and price if valid variant found
@@ -856,6 +868,8 @@
 
                 // Cập nhật hiển thị số lượng đã bán (giữ nguyên vì là tổng của sản phẩm)
                 updateSoldDisplay();
+                // Cập nhật tồn kho theo biến thể
+                updateStockDisplay(matchedVariantId);
             }
         }
 
@@ -871,6 +885,17 @@
                 }
                 
                 soldQuantityElement.textContent = new Intl.NumberFormat('vi-VN').format(soldCount) + ' sản phẩm';
+            }
+        }
+
+        function updateStockDisplay(variantId) {
+            const stockEl = document.getElementById('productStock');
+            if (!stockEl || !variantId || !variantData[variantId]) return;
+            const stock = variantData[variantId].stock;
+            if (stock > 0) {
+                stockEl.innerHTML = '<span class="text-success">' + new Intl.NumberFormat('vi-VN').format(stock) + ' sản phẩm</span>';
+            } else {
+                stockEl.innerHTML = '<span class="text-danger">Hết hàng</span>';
             }
         }
 
@@ -930,13 +955,15 @@
 
                     // Cập nhật hiển thị số lượng đã bán
                     updateSoldDisplay();
+                    // Cập nhật tồn kho theo biến thể
+                    updateStockDisplay(variantId);
                 }
             }
         }
 
         function getSelectedVariantId() {
             let missingTypes = [];
-            let key = requiredTypes.map(type => {
+            let key = sortedTypes.map(type => {
                 if (!selectedValues[type]) {
                     missingTypes.push(type);
                     return '';

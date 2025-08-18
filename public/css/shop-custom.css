@@ -762,3 +762,137 @@
         font-size: .95rem;
     }
 }
+
+/* Animation for new product cards */
+@keyframes slideInFromTop {
+    0% {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* New product notification styling */
+.new-product-notification {
+    animation: slideInFromRight 0.3s ease;
+}
+
+@keyframes slideInFromRight {
+    0% {
+        transform: translateX(100%);
+    }
+    100% {
+        transform: translateX(0);
+    }
+}
+
+/* Product card hover effects */
+.product-card {
+    transition: all 0.3s ease;
+}
+
+.product-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+}
+
+/* Flash sale animation */
+.flash-sale-box {
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(255, 193, 7, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(255, 193, 7, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(255, 193, 7, 0);
+    }
+}
+
+/* Countdown timer animation */
+#countdown {
+    animation: blink 1s infinite;
+}
+
+@keyframes blink {
+    0%, 50% {
+        opacity: 1;
+    }
+    51%, 100% {
+        opacity: 0.7;
+    }
+}
+
+/* Filter animations */
+.filter-group {
+    transition: all 0.3s ease;
+}
+
+.filter-group:hover {
+    transform: translateX(5px);
+}
+
+/* Product tools animation */
+.product-tools .tool-btn {
+    transition: all 0.2s ease;
+}
+
+.product-tools .tool-btn:hover {
+    transform: scale(1.1);
+    background-color: rgba(255,255,255,0.9);
+}
+
+/* Category menu hover effects */
+.box_category {
+    transition: all 0.3s ease;
+}
+
+.box_category:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3) !important;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .new-product-notification {
+        max-width: 250px !important;
+        right: 10px !important;
+        top: 10px !important;
+    }
+    
+    .product-grid .col-lg-4 {
+        margin-bottom: 1rem;
+    }
+}
+
+/* Loading animation for product grid */
+.product-grid.loading {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+.product-grid.loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 40px;
+    height: 40px;
+    margin: -20px 0 0 -20px;
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #3498db;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}

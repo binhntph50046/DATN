@@ -26,7 +26,8 @@
                                     <p class="d-flex align-items-center gap-2">
                                         <a href="{{ route('shop') }}"
                                             class="btn btn-secondary text-nowrap me-2 d-inline-block">Mua ngay</a>
-                                        <a href="{{ route('blog') }}" class="btn btn-white-outline d-inline-block">Khám phá</a>
+                                        <a href="{{ route('blog') }}" class="btn btn-white-outline d-inline-block">Khám
+                                            phá</a>
                                     </p>
                                 </div>
                             </div>
@@ -130,16 +131,22 @@
                                         @endif
                                         @php
                                             // Lấy các biến thể đã được đánh giá
-                                            $ratedVariants = $product->variants->filter(function($variant) {
-                                                return isset($variant->reviews_count) ? $variant->reviews_count > 0 : ($variant->reviews && $variant->reviews->count() > 0);
+                                            $ratedVariants = $product->variants->filter(function ($variant) {
+                                                return isset($variant->reviews_count)
+                                                    ? $variant->reviews_count > 0
+                                                    : $variant->reviews && $variant->reviews->count() > 0;
                                             });
 
                                             // Tính trung bình đánh giá các biến thể đã được đánh giá
                                             $avgRating = null;
                                             if ($ratedVariants->count() > 0) {
-                                                $avgRating = $ratedVariants->avg(function($variant) {
+                                                $avgRating = $ratedVariants->avg(function ($variant) {
                                                     // Nếu đã eager load avg_rating từ controller thì dùng luôn
-                                                    return isset($variant->avg_rating) ? $variant->avg_rating : ($variant->reviews ? $variant->reviews->avg('rating') : 0);
+                                                    return isset($variant->avg_rating)
+                                                        ? $variant->avg_rating
+                                                        : ($variant->reviews
+                                                            ? $variant->reviews->avg('rating')
+                                                            : 0);
                                                 });
                                             }
                                             $avgRating = $avgRating ? round($avgRating, 1) : 5;
@@ -154,7 +161,8 @@
                                                     <i class="far fa-star text-warning"></i>
                                                 @endif
                                             @endfor
-                                            <span>({{ number_format($product->views) }} views)</span>
+                                            <span class="sold-count">({{ number_format($product->sold_count ?? 0) }} đã
+                                                bán)</span>
                                         </div>
                                     </div>
                                     <div class="product-icons">
@@ -260,7 +268,8 @@
                                         <img src="{{ asset($mainImage) }}" class="img-fluid mx-auto"
                                             alt="{{ $product->name }}" style="max-height: 200px; object-fit: contain;">
                                     </div>
-                                    <h3 class="product-title text-center" style="height: 33px;line-height: 21px">{{ $product->name }}</h3>
+                                    <h3 class="product-title text-center" style="height: 33px;line-height: 21px">
+                                        {{ $product->name }}</h3>
                                     <div class="product-price-and-rating text-center">
                                         @if ($product->variants->isNotEmpty())
                                             @php
@@ -278,16 +287,22 @@
                                         @endif
                                         @php
                                             // Lấy các biến thể đã được đánh giá
-                                            $ratedVariants = $product->variants->filter(function($variant) {
-                                                return isset($variant->reviews_count) ? $variant->reviews_count > 0 : ($variant->reviews && $variant->reviews->count() > 0);
+                                            $ratedVariants = $product->variants->filter(function ($variant) {
+                                                return isset($variant->reviews_count)
+                                                    ? $variant->reviews_count > 0
+                                                    : $variant->reviews && $variant->reviews->count() > 0;
                                             });
 
                                             // Tính trung bình đánh giá các biến thể đã được đánh giá
                                             $avgRating = null;
                                             if ($ratedVariants->count() > 0) {
-                                                $avgRating = $ratedVariants->avg(function($variant) {
+                                                $avgRating = $ratedVariants->avg(function ($variant) {
                                                     // Nếu đã eager load avg_rating từ controller thì dùng luôn
-                                                    return isset($variant->avg_rating) ? $variant->avg_rating : ($variant->reviews ? $variant->reviews->avg('rating') : 0);
+                                                    return isset($variant->avg_rating)
+                                                        ? $variant->avg_rating
+                                                        : ($variant->reviews
+                                                            ? $variant->reviews->avg('rating')
+                                                            : 0);
                                                 });
                                             }
                                             $avgRating = $avgRating ? round($avgRating, 1) : 5;
@@ -302,7 +317,8 @@
                                                     <i class="far fa-star text-warning"></i>
                                                 @endif
                                             @endfor
-                                            <span>({{ number_format($product->views) }} views)</span>
+                                            <span class="sold-count">({{ number_format($product->sold_count ?? 0) }} đã
+                                                bán)</span>
                                         </div>
                                     </div>
                                     <div class="product-icons">
@@ -413,93 +429,97 @@
 
     <!-- Start Testimonial Slider -->
     @if ($topRatedVariants->count() > 0)
-<section class="top-rated-products py-5" data-aos="fade-up">
-    <div class="container">
-        <div class="text-center mb-4">
-            <h2 class="section-title">Các Đánh Giá Của Sản Phẩm</h2>
-        </div>
-        <div class="position-relative">
-            <div class="top-rated-slider py-2">
-                @php
-                    if (!function_exists('getImagesArray')) {
-                        function getImagesArray($images)
-                        {
-                            if (is_array($images)) return $images;
-                            if (is_string($images)) {
-                                $decoded = json_decode($images, true);
-                                return is_array($decoded) ? $decoded : [];
+        <section class="top-rated-products py-5" data-aos="fade-up">
+            <div class="container">
+                <div class="text-center mb-4">
+                    <h2 class="section-title">Các Đánh Giá Của Sản Phẩm</h2>
+                </div>
+                <div class="position-relative">
+                    <div class="top-rated-slider py-2">
+                        @php
+                            if (!function_exists('getImagesArray')) {
+                                function getImagesArray($images)
+                                {
+                                    if (is_array($images)) {
+                                        return $images;
+                                    }
+                                    if (is_string($images)) {
+                                        $decoded = json_decode($images, true);
+                                        return is_array($decoded) ? $decoded : [];
+                                    }
+                                    return [];
+                                }
                             }
-                            return [];
-                        }
-                    }
-                @endphp
+                        @endphp
 
-                @foreach ($topRatedVariants as $variant)
-                    @php
-                        $images = getImagesArray($variant->images);
-                        $imageUrl = !empty($images[0]) ? $images[0] : 'uploads/default/default.jpg';
-                    @endphp
+                        @foreach ($topRatedVariants as $variant)
+                            @php
+                                $images = getImagesArray($variant->images);
+                                $imageUrl = !empty($images[0]) ? $images[0] : 'uploads/default/default.jpg';
+                            @endphp
 
-                    <div class="product-card py-1 px-4">
-                        <div class="border p-4 h-100 text-center bg-white" style="border-radius: 8px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.21);">
-                            <img src="{{ asset($imageUrl) }}"
-                                 alt="{{ $variant->product->name }}"
-                                 class="img-fluid mb-3"
-                                 style="height: 220px; object-fit: contain; display: inline-block; margin: 0 auto;">
-                            <small class="text-muted d-block mb-2"> {{ $variant->name }}</small>
-                            @if ($variant->reviews_count > 0)
-                                <div class="text-warning fw-bold mb-2">
-                                    {{ number_format($variant->avg_rating, 1) }} ★
-                                    <small class="text-secondary">({{ $variant->reviews_count }} đánh giá)</small>
+                            <div class="product-card py-1 px-4">
+                                <div class="border p-4 h-100 text-center bg-white"
+                                    style="border-radius: 8px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.21);">
+                                    <img src="{{ asset($imageUrl) }}" alt="{{ $variant->product->name }}"
+                                        class="img-fluid mb-3"
+                                        style="height: 220px; object-fit: contain; display: inline-block; margin: 0 auto;">
+                                    <small class="text-muted d-block mb-2"> {{ $variant->name }}</small>
+                                    @if ($variant->reviews_count > 0)
+                                        <div class="text-warning fw-bold mb-2">
+                                            {{ number_format($variant->avg_rating, 1) }} ★
+                                            <small class="text-secondary">({{ $variant->reviews_count }} đánh giá)</small>
+                                        </div>
+                                    @else
+                                        <small class="text-muted">Chưa có đánh giá</small>
+                                    @endif
                                 </div>
-                            @else
-                                <small class="text-muted">Chưa có đánh giá</small>
-                            @endif
-                        </div>
+                            </div>
+                        @endforeach
                     </div>
-                @endforeach
+                </div>
             </div>
-        </div>
-    </div>
-</section>
-@endif
+        </section>
+    @endif
     <!-- End Testimonial Slider -->
 
     <!-- Start Blog Section -->
     @if ($latestBlogs->count() > 0)
-    <div class="blog-section" data-aos="fade-up">
-        <div class="container">
-            <div class="row mb-5">
-                <div class="col-md-6" data-aos="fade-right">
-                    <h2 class="section-title">Bài viết gần đây</h2>
+        <div class="blog-section" data-aos="fade-up">
+            <div class="container">
+                <div class="row mb-5">
+                    <div class="col-md-6" data-aos="fade-right">
+                        <h2 class="section-title">Bài viết gần đây</h2>
+                    </div>
+                    <div class="col-md-6 text-start text-md-end" data-aos="fade-left">
+                        <a href="{{ route('blog') }}" class="more">Xem tất cả</a>
+                    </div>
                 </div>
-                <div class="col-md-6 text-start text-md-end" data-aos="fade-left">
-                    <a href="{{ route('blog') }}" class="more">Xem tất cả</a>
-                </div>
-            </div>
 
-            <div class="row">
-                @foreach ($latestBlogs as $blog)
-                    <div class="col-12 col-sm-6 col-md-4 mb-4 mb-md-0" data-aos="fade-up"
-                        data-aos-delay="{{ $loop->iteration * 100 }}">
-                        <div class="post-entry">
-                            <a href="{{ route('blog.show', $blog->slug) }}" class="post-thumbnail">
-                                <img src="{{ asset($blog->image ?? 'uploads/default/default.jpg') }}"
-                                    alt="{{ $blog->title }}" class="img-fluid">
-                            </a>
-                            <div class="post-content-entry">
-                                <h3 style="height: 33px;line-height: 21px"><a href="{{ route('blog.show', $blog->slug) }}">{{ Str::limit($blog->title, 90) }}</a></h3>
-                                <div class="meta">
-                                    <span>{{ $blog->created_at->diffForHumans() }}</span> 
-                                    {{-- <span>on <a href="#">{{ $blog->created_at->format('M d, Y') }}</a></span> --}}
+                <div class="row">
+                    @foreach ($latestBlogs as $blog)
+                        <div class="col-12 col-sm-6 col-md-4 mb-4 mb-md-0" data-aos="fade-up"
+                            data-aos-delay="{{ $loop->iteration * 100 }}">
+                            <div class="post-entry">
+                                <a href="{{ route('blog.show', $blog->slug) }}" class="post-thumbnail">
+                                    <img src="{{ asset($blog->image ?? 'uploads/default/default.jpg') }}"
+                                        alt="{{ $blog->title }}" class="img-fluid">
+                                </a>
+                                <div class="post-content-entry">
+                                    <h3 style="height: 33px;line-height: 21px"><a
+                                            href="{{ route('blog.show', $blog->slug) }}">{{ Str::limit($blog->title, 90) }}</a>
+                                    </h3>
+                                    <div class="meta">
+                                        <span>{{ $blog->created_at->diffForHumans() }}</span>
+                                        {{-- <span>on <a href="#">{{ $blog->created_at->format('M d, Y') }}</a></span> --}}
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                @endforeach
+                    @endforeach
+                </div>
             </div>
         </div>
-    </div>
     @endif
     <!-- End Blog Section -->
 
@@ -764,13 +784,14 @@
                 });
 
                 const data = await response.json();
-                
+
                 if (response.ok) {
                     // Hiển thị thông báo
                     showToast(data.message, data.type || 'success');
-                    
+
                     // Cập nhật trạng thái icon
-                    const allHeartIcons = document.querySelectorAll(`.icon-heart[onclick*="toggleWishlist('${productId}'"]`);
+                    const allHeartIcons = document.querySelectorAll(
+                        `.icon-heart[onclick*="toggleWishlist('${productId}'"]`);
                     allHeartIcons.forEach(icon => {
                         if (data.in_wishlist) {
                             icon.classList.add('in-wishlist');
@@ -849,6 +870,16 @@
         font-size: 1.1rem;
         margin: 10px 0;
         color: #333;
+        min-height: 44px;
+        max-height: 44px;
+        line-height: 22px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        /* Số dòng tối đa */
+        -webkit-box-orient: vertical;
+        white-space: normal;
     }
 
     .product-price-and-rating {
@@ -1066,7 +1097,7 @@
             font-size: 1.5rem;
         }
 
-       
+
     }
 
     .author-pic img {

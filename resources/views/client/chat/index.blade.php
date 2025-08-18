@@ -11,7 +11,7 @@
                 {{-- Header and search bar --}}
                 <div class="m-header">
                     <nav>
-                        <a href=""><i class="fas fa-inbox"></i> <span class="messenger-headTitle">MESSAGES</span> </a>
+                        <a href=""><i class="fas fa-inbox"></i> <span class="messenger-headTitle">Tin nhắn</span> </a>
 
                     </nav>
 
@@ -30,7 +30,7 @@
 
                         {{-- Contact --}}
                         <div class="messenger-title-line">
-                            <hr><span>All Messages</span>
+                            <hr><span>Tất cả tin nhắn</span>
                             <hr>
                         </div>
                         <div class="listOfContacts" style="width: 100%;height: calc(100% - 272px);position: relative;">
@@ -39,9 +39,9 @@
                     {{-- ---------------- [ Search Tab ] ---------------- --}}
                     <div class="messenger-tab search-tab app-scroll" data-view="search">
                         {{-- items --}}
-                        <p class="messenger-title"><span>Search</span></p>
+                        <p class="messenger-title"><span>Tìm kiếm...</span></p>
                         <div class="search-records">
-                            <p class="message-hint center-el"><span>Type to search..</span></p>
+                            <p class="message-hint center-el"><span>Tìm kiếm tin nhắn...</span></p>
                         </div>
                     </div>
                 </div>

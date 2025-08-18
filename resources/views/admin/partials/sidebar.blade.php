@@ -143,7 +143,7 @@
                         <li class="pc-item">
                             <a href="{{ route('admin.livechat.index') }}" class="pc-link">
                                 <span class="pc-micon"><i class="ti ti-message"></i></span>
-                                <span class="pc-mtext">Message</span>
+                                <span class="pc-mtext">Tin nhắn</span>
                             </a>
                         </li>
                         <li class="pc-item">

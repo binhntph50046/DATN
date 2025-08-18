@@ -133,7 +133,7 @@
                             </button>
                         </div>
                         <!-- Category Filter -->
-                        @if ($filterData['categories']->count() > 0)
+                        {{-- @if ($filterData['categories']->count() > 0)
                             <div class="filter-group mb-3">
                                 <h6 class="filter-title">Danh mục ({{ $filterData['categories']->count() }})</h6>
                                 <div class="filter-options">
@@ -149,7 +149,7 @@
                                     @endforeach
                                 </div>
                             </div>
-                        @endif
+                        @endif --}}
 
                         <!-- Price Filter -->
                         <div class="filter-group mb-3">
@@ -171,60 +171,64 @@
                         <!-- Dynamic Filters -->
                         @foreach ($filterData['dynamicFilters'] as $filterId => $filter)
                             <div class="filter-group mb-3">
-                                <h6 class="filter-title">{{ $filter['name'] }} ({{ $filter['count'] }})</h6>
-
-                                @if ($filter['type'] === 'color')
-                                    <!-- Color Filter -->
-                                    <div class="color-options">
-                                        @foreach ($filter['values'] as $value)
-                                            <div class="color-option-wrapper">
-                                                <input type="checkbox" class="color-checkbox"
-                                                    id="filter_{{ $filterId }}_{{ $loop->index }}"
-                                                    value="{{ $value }}" name="filters[{{ $filterId }}][]"
-                                                    {{ in_array($value, $appliedFilters['filters'][$filterId] ?? []) ? 'checked' : '' }}>
-                                                <label for="filter_{{ $filterId }}_{{ $loop->index }}"
-                                                    class="color-label"
-                                                    style="background-color: {{ $filter['hexValues'][$value] ?? '#CCCCCC' }}"
-                                                    title="{{ $value }}">
-                                                </label>
-                                            </div>
-                                        @endforeach
-                                    </div>
-                                @elseif($filter['type'] === 'storage')
-                                    <!-- Storage Filter -->
-                                    <div class="filter-options">
-                                        @foreach ($filter['values'] as $value)
-                                            <div class="form-check">
-                                                <input class="form-check-input" type="checkbox"
-                                                    name="filters[{{ $filterId }}][]"
-                                                    id="filter_{{ $filterId }}_{{ $loop->index }}"
-                                                    value="{{ $value }}"
-                                                    {{ in_array($value, $appliedFilters['filters'][$filterId] ?? []) ? 'checked' : '' }}>
-                                                <label class="form-check-label"
-                                                    for="filter_{{ $filterId }}_{{ $loop->index }}">
-                                                    {{ $value }}
-                                                </label>
-                                            </div>
-                                        @endforeach
-                                    </div>
-                                @else
-                                    <!-- Default Text Filter -->
-                                    <div class="filter-options">
-                                        @foreach ($filter['values'] as $value)
-                                            <div class="form-check">
-                                                <input class="form-check-input" type="checkbox"
-                                                    name="filters[{{ $filterId }}][]"
-                                                    id="filter_{{ $filterId }}_{{ $loop->index }}"
-                                                    value="{{ $value }}"
-                                                    {{ in_array($value, $appliedFilters['filters'][$filterId] ?? []) ? 'checked' : '' }}>
-                                                <label class="form-check-label"
-                                                    for="filter_{{ $filterId }}_{{ $loop->index }}">
-                                                    {{ $value }}
-                                                </label>
-                                            </div>
-                                        @endforeach
-                                    </div>
-                                @endif
+                                <h6 class="filter-title d-flex align-items-center" style="cursor:pointer"
+                                    data-bs-toggle="collapse" data-bs-target="#filterCollapse{{ $filterId }}"
+                                    aria-expanded="false" aria-controls="filterCollapse{{ $filterId }}">
+                                    {{ $filter['name'] }} ({{ $filter['count'] }})
+                                    <span class="ms-auto filter-arrow" style="transition:0.3s;"><i
+                                            class="fas fa-chevron-down"></i></span>
+                                </h6>
+                                <div class="collapse" id="filterCollapse{{ $filterId }}">
+                                    @if ($filter['type'] === 'color')
+                                        <div class="color-options">
+                                            @foreach ($filter['values'] as $value)
+                                                <div class="color-option-wrapper">
+                                                    <input type="checkbox" class="color-checkbox"
+                                                        id="filter_{{ $filterId }}_{{ $loop->index }}"
+                                                        value="{{ $value }}" name="filters[{{ $filterId }}][]"
+                                                        {{ in_array($value, $appliedFilters['filters'][$filterId] ?? []) ? 'checked' : '' }}>
+                                                    <label for="filter_{{ $filterId }}_{{ $loop->index }}"
+                                                        class="color-label"
+                                                        style="background-color: {{ $filter['hexValues'][$value] ?? '#CCCCCC' }}"
+                                                        title="{{ $value }}">
+                                                    </label>
+                                                </div>
+                                            @endforeach
+                                        </div>
+                                    @elseif($filter['type'] === 'storage')
+                                        <div class="filter-options">
+                                            @foreach ($filter['values'] as $value)
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox"
+                                                        name="filters[{{ $filterId }}][]"
+                                                        id="filter_{{ $filterId }}_{{ $loop->index }}"
+                                                        value="{{ $value }}"
+                                                        {{ in_array($value, $appliedFilters['filters'][$filterId] ?? []) ? 'checked' : '' }}>
+                                                    <label class="form-check-label"
+                                                        for="filter_{{ $filterId }}_{{ $loop->index }}">
+                                                        {{ $value }}
+                                                    </label>
+                                                </div>
+                                            @endforeach
+                                        </div>
+                                    @else
+                                        <div class="filter-options">
+                                            @foreach ($filter['values'] as $value)
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox"
+                                                        name="filters[{{ $filterId }}][]"
+                                                        id="filter_{{ $filterId }}_{{ $loop->index }}"
+                                                        value="{{ $value }}"
+                                                        {{ in_array($value, $appliedFilters['filters'][$filterId] ?? []) ? 'checked' : '' }}>
+                                                    <label class="form-check-label"
+                                                        for="filter_{{ $filterId }}_{{ $loop->index }}">
+                                                        {{ $value }}
+                                                    </label>
+                                                </div>
+                                            @endforeach
+                                        </div>
+                                    @endif
+                                </div>
                             </div>
                         @endforeach
                     </div>
@@ -372,8 +376,9 @@
                                                             @endfor
                                                         @endif
                                                     </div>
-                                                    <span class="views">({{ number_format($product->views) }} lượt
-                                                        xem)</span>
+                                                    <span
+                                                        class="sold-count">({{ number_format($product->sold_count ?? 0) }}
+                                                        đã bán)</span>
                                                 </div>
                                             </div>
                                         </div>

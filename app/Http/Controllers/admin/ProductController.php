@@ -36,9 +36,7 @@ class ProductController
         if (request('status')) {
             $query->where('status', request('status'));
         }
-
-        $products = $query->latest()->paginate(10);
-
+        $products = $query->orderBy('created_at', 'desc')->paginate(10);
         $categories = Category::where('type', 1)->get();
         $trashedCount = Product::onlyTrashed()->count();
 

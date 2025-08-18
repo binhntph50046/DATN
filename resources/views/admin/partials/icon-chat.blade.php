@@ -302,34 +302,36 @@
 
     <!-- <div class="chatbot-icon shake" id="chatbotIcon" onclick="toggleChatbot()">
         <!-- Icon chat -->
-        <!-- <span class="icon-chat">
+    <!-- <span class="icon-chat">
             <svg width="40" height="40" viewBox="0 0 38 38" fill="none">
                 <!-- Thân dưới -->
-                <ellipse cx="19" cy="33" rx="9" ry="3" fill="#E6E6F0" />
-                <!-- Thân chính -->
-                <rect x="6" y="10" width="26" height="16" rx="8" fill="#fff" stroke="#E6E6F0" stroke-width="2" />
-                <!-- Mặt đen -->
-                <rect x="10" y="13" width="18" height="10" rx="5" fill="#181A2A" />
-                <!-- Mắt trái -->
-                <circle cx="15" cy="18" r="2" fill="#00E1FF" />
-                <!-- Mắt phải -->
-                <circle cx="23" cy="18" r="2" fill="#00E1FF" />
-                <!-- Miệng cười -->
-                <path d="M16.5 21c1 1 4 1 5 0" stroke="#fff" stroke-width="1.2" stroke-linecap="round" />
-                <!-- Tai trái -->
-                <ellipse cx="6" cy="18" rx="2" ry="2.5" fill="#fff" stroke="#E6E6F0" stroke-width="1" />
-                <!-- Tai phải -->
-                <ellipse cx="32" cy="18" rx="2" ry="2.5" fill="#fff" stroke="#E6E6F0" stroke-width="1" />
-                <!-- 2 Ăng-ten -->
-                <rect x="17.2" y="5" width="1.6" height="6" rx="0.8" fill="#fff" />
-                <rect x="19.2" y="5" width="1.6" height="6" rx="0.8" fill="#fff" />
-                <!-- Đầu ăng-ten -->
-                <circle cx="18" cy="5" r="1.2" fill="#fff" stroke="#E6E6F0" stroke-width="0.7" />
-                <circle cx="20" cy="5" r="1.2" fill="#fff" stroke="#E6E6F0" stroke-width="0.7" />
-            </svg>
-        </span> -->
-        <!-- Icon close (dấu X) -->
-        <!-- <span class="icon-close">
+    <ellipse cx="19" cy="33" rx="9" ry="3" fill="#E6E6F0" />
+    <!-- Thân chính -->
+    <rect x="6" y="10" width="26" height="16" rx="8" fill="#fff" stroke="#E6E6F0" stroke-width="2" />
+    <!-- Mặt đen -->
+    <rect x="10" y="13" width="18" height="10" rx="5" fill="#181A2A" />
+    <!-- Mắt trái -->
+    <circle cx="15" cy="18" r="2" fill="#00E1FF" />
+    <!-- Mắt phải -->
+    <circle cx="23" cy="18" r="2" fill="#00E1FF" />
+    <!-- Miệng cười -->
+    <path d="M16.5 21c1 1 4 1 5 0" stroke="#fff" stroke-width="1.2" stroke-linecap="round" />
+    <!-- Tai trái -->
+    <ellipse cx="6" cy="18" rx="2" ry="2.5" fill="#fff" stroke="#E6E6F0"
+        stroke-width="1" />
+    <!-- Tai phải -->
+    <ellipse cx="32" cy="18" rx="2" ry="2.5" fill="#fff" stroke="#E6E6F0"
+        stroke-width="1" />
+    <!-- 2 Ăng-ten -->
+    <rect x="17.2" y="5" width="1.6" height="6" rx="0.8" fill="#fff" />
+    <rect x="19.2" y="5" width="1.6" height="6" rx="0.8" fill="#fff" />
+    <!-- Đầu ăng-ten -->
+    <circle cx="18" cy="5" r="1.2" fill="#fff" stroke="#E6E6F0" stroke-width="0.7" />
+    <circle cx="20" cy="5" r="1.2" fill="#fff" stroke="#E6E6F0" stroke-width="0.7" />
+    </svg>
+    </span> -->
+    <!-- Icon close (dấu X) -->
+    <!-- <span class="icon-close">
             <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
                 <line x1="6" y1="6" x2="22" y2="22" stroke="white" stroke-width="3" stroke-linecap="round" />
                 <line x1="22" y1="6" x2="6" y2="22" stroke="white" stroke-width="3" stroke-linecap="round" />
@@ -345,7 +347,8 @@
         </svg>
         <span class="chat-label">Chat</span>
         <!-- 🔴 Badge số lượng chưa đọc -->
-        <span id="unreadBadge" style="position:absolute; top:-4px; right:-4px; background:red; color:white;
+        <span id="unreadBadge"
+            style="position:absolute; top:-4px; right:-4px; background:red; color:white;
                     font-size:12px; font-weight:bold; border-radius:50%; padding:3px 6px;
                     display:none;">0</span>
     </div>
@@ -406,14 +409,16 @@
                 typingDots.textContent = '.'.repeat(dotCount);
             }, 400);
 
-            fetch('{{ route("chatbot.ask") }}', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                },
-                body: JSON.stringify({ text: msg })
-            })
+            fetch('{{ route('chatbot.ask') }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    },
+                    body: JSON.stringify({
+                        text: msg
+                    })
+                })
                 .then(res => res.json())
                 .then(data => {
                     clearInterval(dotsInterval);
@@ -435,7 +440,8 @@
             msgDiv.className = 'chatbot-message ' + sender;
             // Kiểm tra và thay thế link bằng nút nếu cần
             if (text.includes('<a href="/admin/livechat"')) {
-                msgDiv.innerHTML = `<div class="chatbot-bubble">${text.replace('<a href="/admin/livechat" target="_blank">', '<button onclick="window.open(\'/admin/livechat\', \'_blank\')">').replace('</a>', '</button>')}</div>`;
+                msgDiv.innerHTML =
+                    `<div class="chatbot-bubble">${text.replace('<a href="/admin/livechat" target="_blank">', '<button onclick="window.open(\'/admin/livechat\', \'_blank\')">').replace('</a>', '</button>')}</div>`;
             } else {
                 msgDiv.innerHTML = `<div class="chatbot-bubble">${escapeHtml(text)}</div>`;
             }
@@ -444,7 +450,7 @@
         }
 
         function escapeHtml(text) {
-            return text.replace(/[&<>"']/g, function (m) {
+            return text.replace(/[&<>"']/g, function(m) {
                 return ({
                     '&': '&amp;',
                     '<': '&lt;',
@@ -455,7 +461,7 @@
             });
         }
 
-        document.getElementById('chatbotInput').addEventListener('keydown', function (e) {
+        document.getElementById('chatbotInput').addEventListener('keydown', function(e) {
             if (e.key === 'Enter') sendMessagee(e);
         });
 

@@ -953,7 +953,7 @@
                                         </div>
                                         <div class="flex-grow-1">
                                             <div class="fw-bold">{{ $log['action'] }}</div>
-                                            <div class="text-muted small">{{ $log['description'] }}</div>
+                                            {{-- <div class="text-muted small">{{ $log['description'] }}</div> --}}
                                             <div class="text-muted small">
                                                 <i class="fas fa-user"></i> {{ $log['user'] ?? 'System' }} | 
                                                 <i class="fas fa-clock"></i> {{ $log['timestamp'] }}

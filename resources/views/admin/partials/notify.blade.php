@@ -73,21 +73,23 @@
     <span class="chat-label">Chat 24/7</span>
 
     <!-- 🔴 Badge số lượng chưa đọc -->
-    <span id="unreadBadge" style="position:absolute; top:-4px; right:-4px; background:red; color:white;
+    <span id="unreadBadge"
+        style="position:absolute; top:-4px; right:-4px; background:red; color:white;
         font-size:12px; font-weight:bold; border-radius:50%; padding:3px 6px;
         display:none;">0</span>
 </div>
 <script>
-function redirectToChat() {
-    const liveChatIcon = document.getElementById('liveChatIcon');
-    liveChatIcon.classList.add('shake');
-    setTimeout(() => {
-        window.location.href = '/chat';
-    }, 500);
-}
+    function redirectToChat() {
+        const liveChatIcon = document.getElementById('liveChatIcon');
+        liveChatIcon.classList.add('shake');
+        setTimeout(() => {
+            window.location.href = '/admin/livechat';
+        }, 500);
+    }
 </script>
 
 </body>
+
 </html> -->
 @push('scripts')
     <script src="https://js.pusher.com/8.4.0/pusher.min.js"></script>
@@ -103,7 +105,11 @@ function redirectToChat() {
         const pusher = new Pusher('1ebdf458c75dbaeac749', {
             cluster: 'ap1',
             authEndpoint: '/chat/auth',
-            auth: { headers: { 'X-CSRF-TOKEN': token } }
+            auth: {
+                headers: {
+                    'X-CSRF-TOKEN': token
+                }
+            }
         });
 
 
@@ -121,6 +127,7 @@ function redirectToChat() {
             const days = Math.floor(hours / 24);
             return `${days} days ago`;
         }
+
         function updateAllTimes() {
             document.querySelectorAll('.notif-item').forEach(el => {
                 const ts = Number(el.dataset.createdAt);
@@ -150,12 +157,12 @@ function redirectToChat() {
                     'message_created': 'text-info',
                     'error': 'text-danger',
                     'default': 'text-muted'
-                }[type];
+                } [type];
 
                 // ✅ Thời gian hiện tại (sửa đúng vị trí)
-                const createdAt = data.created_at
-                    ? new Date(data.created_at)
-                    : new Date();
+                const createdAt = data.created_at ?
+                    new Date(data.created_at) :
+                    new Date();
                 a.dataset.createdAt = createdAt.getTime();
 
                 const humanTime = timeAgo(createdAt);
@@ -174,7 +181,7 @@ function redirectToChat() {
 
                 notifList.prepend(a);
                 // 🛠️ Gắn lại sự kiện click
-                a.addEventListener('click', function () {
+                a.addEventListener('click', function() {
                     const id = this.dataset.id;
                     if (!id) return;
 
@@ -206,9 +213,9 @@ function redirectToChat() {
         }
 
         // Lắng nghe sự kiện tài khoản mới
-        channelNotif.bind('user.created', function (data) {
+        channelNotif.bind('user.created', function(data) {
             toastr.success('Email: ' + data.email, 'Tài khoản mới: ' + data.name);
-            toastr.options.onclick = function () {
+            toastr.options.onclick = function() {
                 window.location.href = data.url;
             };
             appendNotification({
@@ -220,12 +227,12 @@ function redirectToChat() {
         });
 
         // Lắng nghe sự kiện đơn hàng mới
-        channelNotif.bind('order.created', function (data) {
+        channelNotif.bind('order.created', function(data) {
             toastr.info(
                 'Khách hàng: ' + data.user + '<br>Đơn hàng #' + data.order_id,
                 'Đơn hàng mới'
             );
-            toastr.options.onclick = function () {
+            toastr.options.onclick = function() {
                 window.location.href = data.url;
             };
             appendNotification({
@@ -236,12 +243,12 @@ function redirectToChat() {
             });
         });
         // Lắng nghe sự kiện chat mới
-        channelNotif.bind('message.created', function (data) {
+        channelNotif.bind('message.created', function(data) {
             toastr.info(
                 data.user_name + ' vừa gửi: "' + data.message + '"',
                 'Tin nhắn mới'
             );
-            toastr.options.onclick = function () {
+            toastr.options.onclick = function() {
                 window.location.href = data.url;
             };
             appendNotification({
@@ -253,28 +260,29 @@ function redirectToChat() {
         });
 
         // Lắng nghe sự kiện yêu cầu hoàn hàng mới
-        channelNotif.bind('return.created', function (data) {
+        channelNotif.bind('return.created', function(data) {
             toastr.warning(
                 'Khách hàng: ' + data.user + '<br>Đơn hàng: ' + data.order_code + '<br>Lý do: ' + data.reason,
                 'Yêu cầu hoàn hàng mới'
             );
-            toastr.options.onclick = function () {
+            toastr.options.onclick = function() {
                 window.location.href = data.url;
             };
             appendNotification({
                 type: 'return_created',
                 title: 'Yêu cầu hoàn hàng',
-                message: 'Khách hàng ' + data.user + ' vừa gửi yêu cầu hoàn hàng cho đơn ' + data.order_code + '.',
+                message: 'Khách hàng ' + data.user + ' vừa gửi yêu cầu hoàn hàng cho đơn ' + data
+                    .order_code + '.',
                 url: data.url
             });
         });
         // Lắng nghe sự kiện liên hệ mới
-        channelNotif.bind('contact.submitted', function (data) {
+        channelNotif.bind('contact.submitted', function(data) {
             toastr.info(
                 'Email: ' + data.email + '<br>Nội dung: ' + data.message,
                 'Yêu cầu hỗ trợ từ ' + data.name
             );
-            toastr.options.onclick = function () {
+            toastr.options.onclick = function() {
                 window.location.href = data.url;
             };
             appendNotification({
@@ -285,14 +293,15 @@ function redirectToChat() {
             });
         });
 
-        document.addEventListener('DOMContentLoaded', function () {
-            document.querySelectorAll('.notif-item').forEach(function (el) {
-                el.addEventListener('click', function (e) {
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.notif-item').forEach(function(el) {
+                el.addEventListener('click', function(e) {
                     const id = this.dataset.id;
                     fetch(`/notifications/read/${id}`, {
                         method: 'POST',
                         headers: {
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                            'X-CSRF-TOKEN': document.querySelector(
+                                'meta[name="csrf-token"]').content,
                             'Accept': 'application/json'
                         }
                     }).then(res => {
@@ -315,7 +324,7 @@ function redirectToChat() {
         });
 
         // Xử lý sự kiện click cho nút "Đánh dấu tất cả đã đọc"
-        document.getElementById('mark-all-read')?.addEventListener('click', function () {
+        document.getElementById('mark-all-read')?.addEventListener('click', function() {
             fetch(`/notifications/read-all`, {
                 method: 'POST',
                 headers: {
@@ -348,14 +357,16 @@ function redirectToChat() {
             if (!otherId) return;
 
             fetch('/fetchMessages', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': token,
-                    'Accept': 'application/json'
-                },
-                body: JSON.stringify({ id: otherId })
-            })
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': token,
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        id: otherId
+                    })
+                })
                 .then(r => r.json())
                 .then(json => {
                     const body = document.querySelector('.messages');
@@ -364,6 +375,5 @@ function redirectToChat() {
                 })
                 .catch(console.error);
         });
-
     </script>
 @endpush

@@ -22,7 +22,7 @@ class HomeController
             ->orderBy('order')
             ->get();
 
-        // Lấy sản phẩm theo nhóm 3 sản phẩm một hàng
+        // Lấy sản phẩm theo nhóm 3 sản phẩm lượt view cao xuống thấp
         $mostViewedProducts = Product::where('status', 'active')
             ->with(['variants' => function ($query) {
                 $query->orderByDesc('is_default');

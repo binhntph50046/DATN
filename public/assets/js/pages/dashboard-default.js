@@ -239,7 +239,14 @@ function floatchart() {
         stroke: { curve: 'smooth', width: 3 },
         markers: { size: 4 },
         dataLabels: { enabled: false },
-        tooltip: { y: { formatter: val => val + " SP" } }
+        tooltip: { y: { formatter: val => val + " Sản phẩm" } },
+        yaxis: {
+          labels: {
+            formatter: function (val) {
+              return parseInt(val); // bỏ .0
+            }
+          }
+        }
       };
     } else if (monthlyByYear) {
       // Chế độ tất cả các năm
@@ -254,7 +261,14 @@ function floatchart() {
         stroke: { curve: 'smooth', width: 3 },
         markers: { size: 4 },
         dataLabels: { enabled: false },
-        tooltip: { y: { formatter: val => val + " SP" } }
+        tooltip: { y: { formatter: val => val + " Sản phẩm" } },
+        yaxis: {
+          labels: {
+            formatter: function (val) {
+              return parseInt(val);
+            }
+          }
+        }
       };
     }
 
@@ -278,7 +292,14 @@ function floatchart() {
 
       series: [{ name: "Sản phẩm đã bán", data: totals }],
       xaxis: { categories: years },
-      tooltip: { y: { formatter: val => val + " SP" } }
+      tooltip: { y: { formatter: val => val + " Sản phẩm" } },
+      yaxis: {
+        labels: {
+          formatter: function (val) {
+            return parseInt(val);
+          }
+        }
+      }
     };
 
     new ApexCharts(document.querySelector('#sold-chart-year'), yearOptions).render();

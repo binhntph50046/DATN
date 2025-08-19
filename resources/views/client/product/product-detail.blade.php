@@ -605,6 +605,8 @@
             /* Đảm bảo luôn chiếm 2 dòng chiều cao */
             line-height: 1.3em;
             max-height: 2.6em;
+            text-align: left !important;
+
         }
 
         #thumbnailsRow .col-3 {

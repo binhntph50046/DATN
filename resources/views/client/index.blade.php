@@ -858,6 +858,7 @@
         /* Số dòng tối đa */
         -webkit-box-orient: vertical;
         white-space: normal;
+            text-align: center; 
     }
 
     .product-price-and-rating {

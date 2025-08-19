@@ -25,13 +25,13 @@
         }
 
         .header {
-            background-color: #ffffff;
+            background-color: #000000;
             text-align: center;
             padding: 10px;
         }
 
         .header img {
-            max-width: 95px;
+            max-width: 115px;
             height: auto;
         }
 
@@ -109,7 +109,7 @@
 <body>
     <div class="container">
         <div class="header">
-            <img src="{{ asset('images/iphone.png') }}" alt="Apple Logo">
+            <img src="{{ $message->embed(public_path('images/logo/apple-removebg-preview.png')) }}" alt="Apple Logo">
         </div>
         <div class="content">
             <h1>Khôi phục mật khẩu tài khoản</h1>
@@ -125,7 +125,7 @@
         <div class="footer">
             <p>
                 Apple Store | 123, Trần Phú, Hoàn Kiếm, Hà Nội<br>
-                Email: <a href="mailto:baoanh1742005@gmail.com">baoanh1742005@gmail.com</a> | Hotline: <a
+                Email: <a href="mailto:applestore05082005@gmail.com">applestore05082005@gmail.com</a> | Hotline: <a
                     href="tel:0368706552">0368706552</a>
             </p>
             <p>Email này được gửi tự động, xin vui lòng không phản hồi trực tiếp. Hỗ trợ 24/7 tại [đường dẫn hỗ trợ nếu

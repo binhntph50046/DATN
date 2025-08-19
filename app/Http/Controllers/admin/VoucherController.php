@@ -4,6 +4,7 @@ namespace App\Http\Controllers\admin;
 
 use App\Models\Voucher;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 
 class VoucherController
@@ -67,7 +68,7 @@ class VoucherController
      */
     public function store(Request $request)
     {
-        $data = $request->validate([
+        $validator  = Validator::make($request->all(),[
             'code' => 'required|string|unique:vouchers,code',
             'type' => 'required|in:fixed,percentage',
             'value' => 'required|numeric|min:0',
@@ -111,7 +112,19 @@ class VoucherController
             'description.max' => 'Mô tả không được vượt quá 255 ký tự.',
         ]);
 
-        Voucher::create($data);
+        $validator->after(function ($validator) use ($request) {
+            if ($request->type === 'percentage' && $request->value > 25) {
+                $validator->errors()->add('value', 'Giảm giá phần trăm không được vượt quá 25%.');
+            }
+
+            if ($request->type === 'fixed' && $request->min_order_amount !== null) {
+                if ($request->value > $request->min_order_amount) {
+                    $validator->errors()->add('value', 'Giảm giá cố định không được lớn hơn giá trị đơn hàng tối thiểu.');
+                }
+            }
+        });
+
+        Voucher::create($validator->validated());
         return redirect()->route('admin.vouchers.index')->with('success', 'Voucher đã được tạo thành công.');
     }
 
@@ -136,7 +149,7 @@ class VoucherController
      */
     public function update(Request $request, Voucher $voucher)
     {
-        $data = $request->validate([
+        $validator = Validator::make($request->all(), [
             'min_order_amount' => 'nullable|numeric|min:0',
             'expires_at' => 'required|date|after_or_equal:today',
             'usage_limit' => 'integer|min:0',
@@ -161,7 +174,20 @@ class VoucherController
 
             'description.max' => 'Mô tả không được vượt quá 255 ký tự.',
         ]);
-        $voucher->update($data);
+
+        $validator->after(function ($validator) use ($request) {
+            if ($request->type === 'percentage' && $request->value > 25) {
+                $validator->errors()->add('value', 'Giảm giá phần trăm không được vượt quá 25%.');
+            }
+
+            if ($request->type === 'fixed' && $request->min_order_amount !== null) {
+                if ($request->value > $request->min_order_amount) {
+                    $validator->errors()->add('value', 'Giảm giá cố định không được lớn hơn giá trị đơn hàng tối thiểu.');
+                }
+            }
+        });
+
+        $voucher->update($validator->validated());
         return redirect()->route('admin.vouchers.index')->with('success', 'Voucher đã được cập nhật thành công.');
     }
 

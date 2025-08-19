@@ -199,8 +199,10 @@ class DashboardController
         $monthLabel = Carbon::now()->translatedFormat('F Y'); // Ví dụ: "Tháng Tám 2025"
 
         // So sánh sản phẩm đã bán ra giữa các tháng/năm 
-        // Lấy các năm có đơn hàng
+        // Lấy các năm có đơn hàng (chỉ lấy đơn đã hoàn tất + đã thanh toán)
         $years = OrderItem::join('orders', 'order_items.order_id', '=', 'orders.id')
+            ->where('orders.status', 'completed')
+            ->where('orders.payment_status', 'paid')
             ->selectRaw('YEAR(orders.created_at) as year')
             ->distinct()
             ->orderBy('year', 'desc')
@@ -214,6 +216,8 @@ class DashboardController
             $monthlySold = OrderItem::join('orders', 'order_items.order_id', '=', 'orders.id')
                 ->selectRaw('MONTH(orders.created_at) as month, SUM(order_items.quantity) as total')
                 ->whereYear('orders.created_at', $selectedYear)
+                ->where('orders.status', 'completed')
+                ->where('orders.payment_status', 'paid')
                 ->groupBy('month')
                 ->pluck('total', 'month')
                 ->toArray();
@@ -225,6 +229,8 @@ class DashboardController
                 $data = OrderItem::join('orders', 'order_items.order_id', '=', 'orders.id')
                     ->selectRaw('MONTH(orders.created_at) as month, SUM(order_items.quantity) as total')
                     ->whereYear('orders.created_at', $year)
+                    ->where('orders.status', 'completed')
+                    ->where('orders.payment_status', 'paid')
                     ->groupBy('month')
                     ->pluck('total', 'month')
                     ->toArray();
@@ -236,9 +242,12 @@ class DashboardController
         // Dữ liệu năm
         $yearlySold = OrderItem::join('orders', 'order_items.order_id', '=', 'orders.id')
             ->selectRaw('YEAR(orders.created_at) as year, SUM(order_items.quantity) as total')
+            ->where('orders.status', 'completed')
+            ->where('orders.payment_status', 'paid')
             ->groupBy('year')
             ->pluck('total', 'year')
             ->toArray();
+
 
         return view('admin.dashboard', compact(
             'totalProductViews',

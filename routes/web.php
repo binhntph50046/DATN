@@ -66,9 +66,9 @@ use App\Http\Controllers\auth\GoogleController;
 use App\Http\Controllers\auth\ForgotPasswordController;
 use App\Http\Controllers\auth\ResetPasswordController;
 use App\Http\Controllers\client\ProductReviewController;
-
+use App\Models\User;
 use App\Notifications\AdminDatabaseNotification;
-
+use Illuminate\Support\Facades\Auth;
 
 /*
 |--------------------------------------------------------------------------
@@ -243,10 +243,20 @@ Route::get('/email/verify', function () {
 })->middleware('auth')->name('verification.notice');
 
 // Khi user click link xác minh trong email
-Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
-    $request->fulfill();
-    return redirect('/'); // Hoặc redirect tới dashboard
-})->middleware(['auth', 'signed'])->name('verification.verify');
+Route::get('/email/verify/{id}/{hash}', function ($id, $hash) {
+    $user = User::findOrFail($id);
+
+    // Nếu chưa xác minh thì cập nhật
+    if (is_null($user->email_verified_at)) {
+        $user->email_verified_at = now();
+        $user->save();
+    }
+
+    // (Tuỳ chọn) đăng nhập luôn user sau khi xác minh
+    Auth::login($user);
+
+    return redirect('/')->with('success', 'Xác minh email thành công!');
+})->middleware(['signed'])->name('verification.verify');
 
 // Gửi lại email xác minh
 Route::post('/email/verification-notification', function (Request $request) {

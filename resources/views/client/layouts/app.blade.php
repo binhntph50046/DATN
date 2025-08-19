@@ -7,7 +7,7 @@
     <meta name="author" content="Untree.co">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="app-url" content="{{ url('/') }}">
-    <link rel="shortcut icon" href="/images/iphone.png">
+    <link rel="shortcut icon" href="/images/logo/iphone.png">
 
     <meta name="description" content="">
     <meta name="keywords" content="bootstrap, ecommerce, iphone">
@@ -25,6 +25,8 @@
     <!-- Slick Slider CSS -->
     <link href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick-theme.css" rel="stylesheet">
+    <!-- Shop Card Styles (dùng chung hiệu ứng hover product-card) -->
+    <link href="{{ asset('css/shop-custom.css') }}" rel="stylesheet">
 
     <!-- CSS riêng từ view -->
     @yield('styles')

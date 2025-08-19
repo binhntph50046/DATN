@@ -56,7 +56,7 @@
 
                     <div class="dropdown-menu dropdown-notification dropdown-menu-end pc-h-dropdown">
                         <div class="dropdown-header d-flex align-items-center justify-content-between">
-                            <h5 class="m-0">Message</h5>
+                            <h5 class="m-0">Thống báo</h5>
                             <div class="text-end px-3 pb-2">
                                 <button class="btn btn-sm btn-link" id="mark-all-read">Đánh dấu tất cả đã đọc</button>
                             </div>
@@ -112,7 +112,7 @@
 
                         <div class="dropdown-divider"></div>
                         <div class="text-center py-2">
-                            <a href="{{ route('admin.notify.index') }}" class="link-primary">View all</a>
+                            <a href="{{ route('admin.notify.index') }}" class="link-primary">Xem tất cả</a>
                         </div>
                     </div>
                 </li>

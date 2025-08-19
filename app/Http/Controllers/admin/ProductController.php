@@ -16,6 +16,7 @@ use App\Http\Requests\admin\StoreProductRequest;
 use App\Models\Specification;
 use App\Http\Requests\admin\UpdateProductRequest;
 use Illuminate\Support\Facades\Auth;
+use App\Events\ProductCreated;
 
 class ProductController
 {
@@ -36,9 +37,7 @@ class ProductController
         if (request('status')) {
             $query->where('status', request('status'));
         }
-
-        $products = $query->latest()->paginate(10);
-
+        $products = $query->orderBy('created_at', 'desc')->paginate(10);
         $categories = Category::where('type', 1)->get();
         $trashedCount = Product::onlyTrashed()->count();
 
@@ -105,6 +104,10 @@ class ProductController
 
             // Đảm bảo có ít nhất một biến thể mặc định
             $this->ensureDefaultVariant($product);
+
+            // Broadcast event cho realtime
+            $product->load(['category', 'variants', 'reviews']);
+            event(new ProductCreated($product));
 
             DB::commit();
             return redirect()->route('admin.products.index')->with('success', 'Sản phẩm đã được tạo thành công!');

@@ -307,7 +307,8 @@
                 <!-- Thân dưới -->
                 <ellipse cx="19" cy="33" rx="9" ry="3" fill="#E6E6F0" />
                 <!-- Thân chính -->
-                <rect x="6" y="10" width="26" height="16" rx="8" fill="#fff" stroke="#E6E6F0" stroke-width="2" />
+                <rect x="6" y="10" width="26" height="16" rx="8" fill="#fff" stroke="#E6E6F0"
+                    stroke-width="2" />
                 <!-- Mặt đen -->
                 <rect x="10" y="13" width="18" height="10" rx="5" fill="#181A2A" />
                 <!-- Mắt trái -->
@@ -317,9 +318,11 @@
                 <!-- Miệng cười -->
                 <path d="M16.5 21c1 1 4 1 5 0" stroke="#fff" stroke-width="1.2" stroke-linecap="round" />
                 <!-- Tai trái -->
-                <ellipse cx="6" cy="18" rx="2" ry="2.5" fill="#fff" stroke="#E6E6F0" stroke-width="1" />
+                <ellipse cx="6" cy="18" rx="2" ry="2.5" fill="#fff" stroke="#E6E6F0"
+                    stroke-width="1" />
                 <!-- Tai phải -->
-                <ellipse cx="32" cy="18" rx="2" ry="2.5" fill="#fff" stroke="#E6E6F0" stroke-width="1" />
+                <ellipse cx="32" cy="18" rx="2" ry="2.5" fill="#fff" stroke="#E6E6F0"
+                    stroke-width="1" />
                 <!-- 2 Ăng-ten -->
                 <rect x="17.2" y="5" width="1.6" height="6" rx="0.8" fill="#fff" />
                 <rect x="19.2" y="5" width="1.6" height="6" rx="0.8" fill="#fff" />
@@ -331,8 +334,10 @@
         <!-- Icon close (dấu X) -->
         <span class="icon-close">
             <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
-                <line x1="6" y1="6" x2="22" y2="22" stroke="white" stroke-width="3" stroke-linecap="round" />
-                <line x1="22" y1="6" x2="6" y2="22" stroke="white" stroke-width="3" stroke-linecap="round" />
+                <line x1="6" y1="6" x2="22" y2="22" stroke="white" stroke-width="3"
+                    stroke-linecap="round" />
+                <line x1="22" y1="6" x2="6" y2="22" stroke="white" stroke-width="3"
+                    stroke-linecap="round" />
             </svg>
         </span>
     </div>
@@ -406,14 +411,16 @@
                 typingDots.textContent = '.'.repeat(dotCount);
             }, 400);
 
-            fetch('{{ route("chatbot.ask") }}', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                },
-                body: JSON.stringify({ text: msg })
-            })
+            fetch('{{ route('chatbot.ask') }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    },
+                    body: JSON.stringify({
+                        text: msg
+                    })
+                })
                 .then(res => res.json())
                 .then(data => {
                     clearInterval(dotsInterval);
@@ -435,7 +442,8 @@
             msgDiv.className = 'chatbot-message ' + sender;
             // Kiểm tra và thay thế link bằng nút nếu cần
             if (text.includes('<a href="/chat"')) {
-                msgDiv.innerHTML = `<div class="chatbot-bubble">${text.replace('<a href="/chat" target="_blank">', '<button onclick="window.open(\'/chat\', \'_blank\')">').replace('</a>', '</button>')}</div>`;
+                msgDiv.innerHTML =
+                    `<div class="chatbot-bubble">${text.replace('<a href="/chat" target="_blank">', '<button onclick="window.open(\'/chat\', \'_blank\')">').replace('</a>', '</button>')}</div>`;
             } else {
                 msgDiv.innerHTML = `<div class="chatbot-bubble">${escapeHtml(text)}</div>`;
             }
@@ -444,7 +452,7 @@
         }
 
         function escapeHtml(text) {
-            return text.replace(/[&<>"']/g, function (m) {
+            return text.replace(/[&<>"']/g, function(m) {
                 return ({
                     '&': '&amp;',
                     '<': '&lt;',
@@ -455,7 +463,7 @@
             });
         }
 
-        document.getElementById('chatbotInput').addEventListener('keydown', function (e) {
+        document.getElementById('chatbotInput').addEventListener('keydown', function(e) {
             if (e.key === 'Enter') sendMessagee(e);
         });
 
@@ -472,85 +480,89 @@
 <script src="https://js.pusher.com/8.4.0/pusher.min.js"></script>
 
 <script>
-  // 0. Kiểm tra script có chạy không
-  console.log('[Debug] Chat badge script start');
+    // 0. Kiểm tra script có chạy không
+    console.log('[Debug] Chat badge script start');
 
-  // 1. Đọc CSRF & user-id
-  const userIdMeta = document.head.querySelector('meta[name="user-id"]');
-  const csrfMeta   = document.head.querySelector('meta[name="csrf-token"]');
-  console.log('[Debug] user-id meta:', userIdMeta, 'csrf meta:', csrfMeta);
-  const userId = userIdMeta ? userIdMeta.content : null;
-  const badge  = document.getElementById('unreadBadge');
-  console.log('[Debug] userId:', userId, 'badge element:', badge);
+    // 1. Đọc CSRF & user-id
+    const userIdMeta = document.head.querySelector('meta[name="user-id"]');
+    const csrfMeta = document.head.querySelector('meta[name="csrf-token"]');
+    console.log('[Debug] user-id meta:', userIdMeta, 'csrf meta:', csrfMeta);
+    const userId = userIdMeta ? userIdMeta.content : null;
+    const badge = document.getElementById('unreadBadge');
+    console.log('[Debug] userId:', userId, 'badge element:', badge);
 
-  if (!userId || !badge) {
-    console.warn('[Debug] Missing userId or badge element, aborting.');
-  } else {
-    // 2. Hàm cập nhật badge
-    function updateBadge(count) {
-      console.log('[Debug] updateBadge(', count, ')');
-      if (count > 0) {
-        badge.textContent = count;
-        badge.style.display = 'inline-block';
-      } else {
-        badge.style.display = 'none';
-      }
-    }
-
-    // 3. Lấy count ban đầu
-    console.log('[Debug] Fetching initial unread count');
-    fetch('/chat/unread-count', {
-      headers: { 'X-CSRF-TOKEN': csrfMeta.content }
-    })
-      .then(res => {
-        console.log('[Debug] /chat/unread-count response status:', res.status);
-        return res.json();
-      })
-      .then(data => {
-        console.log('[Debug] initial unread data:', data);
-        if (data.unread != null) updateBadge(data.unread);
-      })
-      .catch(err => console.error('[Debug] fetch unread-count error:', err));
-
-    // 4. Cấu hình Pusher + Echo
-    console.log('[Debug] Initializing Echo');
-    window.Pusher.logToConsole = true; // bật debug Pusher
-    window.Echo = new window.Echo.constructor({
-      broadcaster: 'pusher',
-      key: '{{ env("PUSHER_APP_KEY") }}',
-      cluster: '{{ env("PUSHER_APP_CLUSTER") }}',
-      forceTLS: true,
-      encrypted: true,
-    });
-
-    // 5. Lắng nghe realtime
-    const channelName = `chat.${userId}`;
-    console.log('[Debug] Subscribing to channel:', channelName);
-    window.Echo.private(channelName)
-      .listen('MessageSent', e => {
-        console.log('[Debug] Received MessageSent event:', e);
-        if (e.message.to_id == userId) {
-          const cur = parseInt(badge.textContent || '0', 10) + 1;
-          console.log('[Debug] Increment badge to:', cur);
-          updateBadge(cur);
+    if (!userId || !badge) {
+        console.warn('[Debug] Missing userId or badge element, aborting.');
+    } else {
+        // 2. Hàm cập nhật badge
+        function updateBadge(count) {
+            console.log('[Debug] updateBadge(', count, ')');
+            if (count > 0) {
+                badge.textContent = count;
+                badge.style.display = 'inline-block';
+            } else {
+                badge.style.display = 'none';
+            }
         }
-      })
-      .error(err => console.error('[Debug] Echo subscription error:', err));
 
-    // 6. Khi click icon, mark seen và reset badge
-    document.getElementById('liveChatIcon').addEventListener('click', () => {
-      console.log('[Debug] liveChatIcon clicked, marking seen');
-      fetch('/chat/mark-seen', {
-        method: 'POST',
-        headers: { 'X-CSRF-TOKEN': csrfMeta.content }
-      })
-        .then(res => {
-          console.log('[Debug] mark-seen response status:', res.status);
-          updateBadge(0);
-        })
-        .catch(err => console.error('[Debug] mark-seen error:', err));
-    });
-  }
+        // 3. Lấy count ban đầu
+        console.log('[Debug] Fetching initial unread count');
+        fetch('/chat/unread-count', {
+                headers: {
+                    'X-CSRF-TOKEN': csrfMeta.content
+                }
+            })
+            .then(res => {
+                console.log('[Debug] /chat/unread-count response status:', res.status);
+                return res.json();
+            })
+            .then(data => {
+                console.log('[Debug] initial unread data:', data);
+                if (data.unread != null) updateBadge(data.unread);
+            })
+            .catch(err => console.error('[Debug] fetch unread-count error:', err));
+
+        // 4. Cấu hình Pusher + Echo
+        console.log('[Debug] Initializing Echo');
+        window.Pusher.logToConsole = true; // bật debug Pusher
+        window.Echo = new window.Echo.constructor({
+            broadcaster: 'pusher',
+            key: '{{ env('PUSHER_APP_KEY') }}',
+            cluster: '{{ env('PUSHER_APP_CLUSTER') }}',
+            forceTLS: true,
+            encrypted: true,
+        });
+
+        // 5. Lắng nghe realtime
+        const channelName = `chat.${userId}`;
+        console.log('[Debug] Subscribing to channel:', channelName);
+        window.Echo.private(channelName)
+            .listen('MessageSent', e => {
+                console.log('[Debug] Received MessageSent event:', e);
+                if (e.message.to_id == userId) {
+                    const cur = parseInt(badge.textContent || '0', 10) + 1;
+                    console.log('[Debug] Increment badge to:', cur);
+                    updateBadge(cur);
+                }
+            })
+            .error(err => console.error('[Debug] Echo subscription error:', err));
+
+        // 6. Khi click icon, mark seen và reset badge
+        document.getElementById('liveChatIcon').addEventListener('click', () => {
+            console.log('[Debug] liveChatIcon clicked, marking seen');
+            fetch('/chat/mark-seen', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': csrfMeta.content
+                    }
+                })
+                .then(res => {
+                    console.log('[Debug] mark-seen response status:', res.status);
+                    updateBadge(0);
+                })
+                .catch(err => console.error('[Debug] mark-seen error:', err));
+        });
+    }
 </script> -->
 
 </body>

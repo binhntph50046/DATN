@@ -95,9 +95,8 @@
                     <div class="product-slider">
                         @foreach ($mostViewedProducts as $product)
                             <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="{{ $loop->iteration * 100 }}">
-                                <a class="product-item" href="{{ route('product.detail', $product->slug) }}"
-                                    onclick="incrementView('{{ $product->id }}')" data-product-id="{{ $product->id }}">
-                                    <div class="product-thumbnail text-center">
+                                <div class="product-card">
+                                    <div class="product-media">
                                         @php
                                             $images = getImagesArray($product->images);
                                             if (empty($images) && $product->variants->isNotEmpty()) {
@@ -109,39 +108,58 @@
                                                 $mainImage = 'uploads/products/' . $mainImage;
                                             }
                                         @endphp
-
-                                        <img src="{{ asset($mainImage) }}" class="img-fluid mx-auto"
-                                            alt="{{ $product->name }}" style="max-height: 200px; object-fit: contain;">
-                                    </div>
-                                    <h3 class="product-title text-center">{{ $product->name }}</h3>
-                                    <div class="product-price-and-rating text-center">
-                                        @if ($product->variants->isNotEmpty())
-                                            @php
-                                                $variant = $product->variants->first();
-                                            @endphp
-                                            @if ($variant->discount_price)
-                                                <strong
-                                                    class="product-price text-decoration-line-through text-muted">{{ number_format($variant->selling_price) }}đ</strong>
-                                                <strong
-                                                    class="product-price text-danger ms-2">{{ number_format($variant->discount_price) }}đ</strong>
+                                        <a href="{{ route('product.detail', $product->slug) }}" class="d-block w-100 h-100 text-center"
+                                            onclick="incrementView('{{ $product->id }}')" data-product-id="{{ $product->id }}">
+                                            <img src="{{ asset($mainImage) }}" class="product-img" alt="{{ $product->name }}">
+                                        </a>
+                                        <div class="product-tools">
+                                            <span class="tool-btn" title="So sánh"
+                                                onclick="event.preventDefault(); addToCompare('{{ $product->id }}', '{{ $product->name }}', '{{ $product->category_id }}')">
+                                                <i class="fa-solid fa-code-compare"></i>
+                                            </span>
+                                            @auth
+                                                <span class="tool-btn icon-heart icon-add-to-wishlist {{ in_array($product->id, $wishlistProductIds) ? 'in-wishlist' : '' }}"
+                                                    onclick="event.preventDefault(); toggleWishlist('{{ $product->id }}', '{{ route('wishlist.toggle', $product) }}', this)"
+                                                    title="{{ in_array($product->id, $wishlistProductIds) ? 'Xóa khỏi yêu thích' : 'Thêm vào yêu thích' }}">
+                                                    <i class="fas fa-heart"></i>
+                                                </span>
                                             @else
-                                                <strong
-                                                    class="product-price">{{ number_format($variant->selling_price) }}đ</strong>
+                                                <span class="tool-btn icon-heart icon-add-to-wishlist"
+                                                    onclick="event.preventDefault(); showLoginPrompt()"
+                                                    title="Đăng nhập để thêm vào yêu thích">
+                                                    <i class="fas fa-heart"></i>
+                                                </span>
+                                            @endauth
+                                            <span class="tool-btn" title="Xem nhanh"
+                                                onclick="event.preventDefault(); showQuickView({{ $product->id }})">
+                                                <i class="fas fa-eye"></i>
+                                            </span>
+                                    </div>
+                                    </div>
+                                    <div class="product-body">
+                                        <a href="{{ route('product.detail', $product->slug) }}" class="text-decoration-none">
+                                            <h3 class="product-title mb-1">{{ $product->name }}</h3>
+                                        </a>
+                                        <div class="product-price-row">
+                                        @if ($product->variants->isNotEmpty())
+                                                @php $variant = $product->variants->first(); @endphp
+                                            @if ($variant->discount_price)
+                                                    <strong class="product-price">{{ number_format($variant->discount_price) }}đ</strong>
+                                                    <span class="old-price"><del>{{ number_format($variant->selling_price) }}đ</del></span>
+                                            @else
+                                                    <strong class="product-price">{{ number_format($variant->selling_price) }}đ</strong>
                                             @endif
                                         @endif
+                                        </div>
                                         @php
-                                            // Lấy các biến thể đã được đánh giá
                                             $ratedVariants = $product->variants->filter(function ($variant) {
                                                 return isset($variant->reviews_count)
                                                     ? $variant->reviews_count > 0
                                                     : $variant->reviews && $variant->reviews->count() > 0;
                                             });
-
-                                            // Tính trung bình đánh giá các biến thể đã được đánh giá
                                             $avgRating = null;
                                             if ($ratedVariants->count() > 0) {
                                                 $avgRating = $ratedVariants->avg(function ($variant) {
-                                                    // Nếu đã eager load avg_rating từ controller thì dùng luôn
                                                     return isset($variant->avg_rating)
                                                         ? $variant->avg_rating
                                                         : ($variant->reviews
@@ -151,7 +169,8 @@
                                             }
                                             $avgRating = $avgRating ? round($avgRating, 1) : 5;
                                         @endphp
-                                        <div class="product-rating d-flex justify-content-center align-items-center">
+                                        <div class="product-rating-row">
+                                            <div class="stars">
                                             @for ($i = 1; $i <= 5; $i++)
                                                 @if ($i <= floor($avgRating))
                                                     <i class="fas fa-star text-warning"></i>
@@ -161,40 +180,11 @@
                                                     <i class="far fa-star text-warning"></i>
                                                 @endif
                                             @endfor
-                                            <span class="sold-count">({{ number_format($product->sold_count ?? 0) }} đã
-                                                bán)</span>
                                         </div>
+                                            <span class="sold-count">({{ number_format($product->sold_count ?? 0) }} đã bán)</span>
                                     </div>
-                                    <div class="product-icons">
-                                        <span class="icon-compare"
-                                            onclick="event.preventDefault(); addToCompare('{{ $product->id }}', '{{ $product->name }}', '{{ $product->category_id }}')"
-                                            title="Thêm vào so sánh">
-                                            <i class="fa-solid fa-code-compare"></i>
-                                        </span>
-                                        @auth
-                                            <form action="{{ route('wishlist.toggle', $product) }}" method="POST"
-                                                style="display: none;" id="wishlist-form-{{ $product->id }}">
-                                                @csrf
-                                                <input type="hidden" name="product_name" value="{{ $product->name }}">
-                                            </form>
-                                            <span
-                                                class="icon-heart icon-add-to-wishlist {{ in_array($product->id, $wishlistProductIds) ? 'in-wishlist' : '' }}"
-                                                onclick="event.preventDefault(); toggleWishlist('{{ $product->id }}', '{{ route('wishlist.toggle', $product) }}', this)"
-                                                title="{{ in_array($product->id, $wishlistProductIds) ? 'Xóa khỏi yêu thích' : 'Thêm vào yêu thích' }}">
-                                                <i class="fas fa-heart"></i>
-                                            </span>
-                                        @else
-                                            <span class="icon-heart icon-add-to-wishlist"
-                                                onclick="event.preventDefault(); showLoginPrompt()"
-                                                title="Đăng nhập để thêm vào yêu thích">
-                                                <i class="fas fa-heart"></i>
-                                            </span>
-                                        @endauth
-                                        <span class="icon-quick-view"
-                                            onclick="event.preventDefault(); showQuickView({{ $product->id }})"><i
-                                                class="fas fa-eye"></i></span>
                                     </div>
-                                </a>
+                                </div>
                             </div>
                         @endforeach
                     </div>
@@ -249,10 +239,8 @@
                     <div class="product-slider">
                         @foreach ($latestProducts as $product)
                             <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="{{ $loop->iteration * 100 }}">
-                                <a class="product-item" href="{{ route('product.detail', $product->slug) }}"
-                                    onclick="incrementView('{{ $product->id }}')"
-                                    data-product-id="{{ $product->id }}">
-                                    <div class="product-thumbnail text-center">
+                                <div class="product-card">
+                                    <div class="product-media">
                                         @php
                                             $images = getImagesArray($product->images);
                                             if (empty($images) && $product->variants->isNotEmpty()) {
@@ -264,40 +252,58 @@
                                                 $mainImage = 'uploads/products/' . $mainImage;
                                             }
                                         @endphp
-
-                                        <img src="{{ asset($mainImage) }}" class="img-fluid mx-auto"
-                                            alt="{{ $product->name }}" style="max-height: 200px; object-fit: contain;">
-                                    </div>
-                                    <h3 class="product-title text-center" style="height: 33px;line-height: 21px">
-                                        {{ $product->name }}</h3>
-                                    <div class="product-price-and-rating text-center">
-                                        @if ($product->variants->isNotEmpty())
-                                            @php
-                                                $variant = $product->variants->first();
-                                            @endphp
-                                            @if ($variant->discount_price)
-                                                <strong
-                                                    class="product-price text-decoration-line-through text-muted">{{ number_format($variant->selling_price) }}đ</strong>
-                                                <strong
-                                                    class="product-price text-danger ms-2">{{ number_format($variant->discount_price) }}đ</strong>
+                                        <a class="d-block w-100 h-100 text-center" href="{{ route('product.detail', $product->slug) }}"
+                                            onclick="incrementView('{{ $product->id }}')" data-product-id="{{ $product->id }}">
+                                            <img src="{{ asset($mainImage) }}" class="product-img" alt="{{ $product->name }}">
+                                        </a>
+                                        <div class="product-tools">
+                                            <span class="tool-btn" title="So sánh"
+                                                onclick="event.preventDefault(); addToCompare('{{ $product->id }}', '{{ $product->name }}', '{{ $product->category_id }}')">
+                                                <i class="fa-solid fa-code-compare"></i>
+                                            </span>
+                                            @auth
+                                                <span class="tool-btn icon-heart icon-add-to-wishlist {{ in_array($product->id, $wishlistProductIds) ? 'in-wishlist' : '' }}"
+                                                    onclick="event.preventDefault(); toggleWishlist('{{ $product->id }}', '{{ route('wishlist.toggle', $product) }}', this)"
+                                                    title="{{ in_array($product->id, $wishlistProductIds) ? 'Xóa khỏi yêu thích' : 'Thêm vào yêu thích' }}">
+                                                    <i class="fas fa-heart"></i>
+                                                </span>
                                             @else
-                                                <strong
-                                                    class="product-price">{{ number_format($variant->selling_price) }}đ</strong>
+                                                <span class="tool-btn icon-heart icon-add-to-wishlist"
+                                                    onclick="event.preventDefault(); showLoginPrompt()"
+                                                    title="Đăng nhập để thêm vào yêu thích">
+                                                    <i class="fas fa-heart"></i>
+                                                </span>
+                                            @endauth
+                                            <span class="tool-btn" title="Xem nhanh"
+                                                onclick="event.preventDefault(); showQuickView({{ $product->id }})">
+                                                <i class="fas fa-eye"></i>
+                                            </span>
+                                    </div>
+                                    </div>
+                                    <div class="product-body">
+                                        <a href="{{ route('product.detail', $product->slug) }}" class="text-decoration-none">
+                                            <h3 class="product-title mb-1" style="height: 33px;line-height: 21px">{{ $product->name }}</h3>
+                                        </a>
+                                        <div class="product-price-row">
+                                        @if ($product->variants->isNotEmpty())
+                                                @php $variant = $product->variants->first(); @endphp
+                                            @if ($variant->discount_price)
+                                                    <strong class="product-price">{{ number_format($variant->discount_price) }}đ</strong>
+                                                    <span class="old-price"><del>{{ number_format($variant->selling_price) }}đ</del></span>
+                                            @else
+                                                    <strong class="product-price">{{ number_format($variant->selling_price) }}đ</strong>
                                             @endif
                                         @endif
+                                        </div>
                                         @php
-                                            // Lấy các biến thể đã được đánh giá
                                             $ratedVariants = $product->variants->filter(function ($variant) {
                                                 return isset($variant->reviews_count)
                                                     ? $variant->reviews_count > 0
                                                     : $variant->reviews && $variant->reviews->count() > 0;
                                             });
-
-                                            // Tính trung bình đánh giá các biến thể đã được đánh giá
                                             $avgRating = null;
                                             if ($ratedVariants->count() > 0) {
                                                 $avgRating = $ratedVariants->avg(function ($variant) {
-                                                    // Nếu đã eager load avg_rating từ controller thì dùng luôn
                                                     return isset($variant->avg_rating)
                                                         ? $variant->avg_rating
                                                         : ($variant->reviews
@@ -307,7 +313,8 @@
                                             }
                                             $avgRating = $avgRating ? round($avgRating, 1) : 5;
                                         @endphp
-                                        <div class="product-rating d-flex justify-content-center align-items-center">
+                                        <div class="product-rating-row">
+                                            <div class="stars">
                                             @for ($i = 1; $i <= 5; $i++)
                                                 @if ($i <= floor($avgRating))
                                                     <i class="fas fa-star text-warning"></i>
@@ -317,40 +324,11 @@
                                                     <i class="far fa-star text-warning"></i>
                                                 @endif
                                             @endfor
-                                            <span class="sold-count">({{ number_format($product->sold_count ?? 0) }} đã
-                                                bán)</span>
                                         </div>
+                                            <span class="sold-count">({{ number_format($product->sold_count ?? 0) }} đã bán)</span>
                                     </div>
-                                    <div class="product-icons">
-                                        <span class="icon-compare"
-                                            onclick="event.preventDefault(); addToCompare('{{ $product->id }}', '{{ $product->name }}', '{{ $product->category_id }}')"
-                                            title="Thêm vào so sánh">
-                                            <i class="fa-solid fa-code-compare"></i>
-                                        </span>
-                                        @auth
-                                            <form action="{{ route('wishlist.toggle', $product) }}" method="POST"
-                                                style="display: none;" id="wishlist-form-{{ $product->id }}">
-                                                @csrf
-                                                <input type="hidden" name="product_name" value="{{ $product->name }}">
-                                            </form>
-                                            <span
-                                                class="icon-heart icon-add-to-wishlist {{ in_array($product->id, $wishlistProductIds) ? 'in-wishlist' : '' }}"
-                                                onclick="event.preventDefault(); toggleWishlist('{{ $product->id }}', '{{ route('wishlist.toggle', $product) }}', this)"
-                                                title="{{ in_array($product->id, $wishlistProductIds) ? 'Xóa khỏi yêu thích' : 'Thêm vào yêu thích' }}">
-                                                <i class="fas fa-heart"></i>
-                                            </span>
-                                        @else
-                                            <span class="icon-heart icon-add-to-wishlist"
-                                                onclick="event.preventDefault(); showLoginPrompt()"
-                                                title="Đăng nhập để thêm vào yêu thích">
-                                                <i class="fas fa-heart"></i>
-                                            </span>
-                                        @endauth
-                                        <span class="icon-quick-view"
-                                            onclick="event.preventDefault(); showQuickView({{ $product->id }})"><i
-                                                class="fas fa-eye"></i></span>
                                     </div>
-                                </a>
+                                </div>
                             </div>
                         @endforeach
                     </div>

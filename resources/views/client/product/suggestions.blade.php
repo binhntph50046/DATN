@@ -21,11 +21,12 @@
 
                     <div class="row row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-5 row-cols-xl-6 g-3">
                         @foreach ($products as $product)
-                            <div class="col" data-aos="fade-up" ... data-aos-delay="{{ $loop->iteration * 100 }}">
-                                <a class="product-item d-block text-decoration-none"
-                                    href="{{ route('product.detail', $product->slug) }}"
-                                    onclick="incrementView('{{ $product->id }}')">
-                                    <div class="product-thumbnail text-center mb-2">
+                            <div class="col" data-aos="fade-up" data-aos-delay="{{ $loop->iteration * 100 }}">
+                                <div class="product-card">
+                                    <div class="product-media">
+                                        <a href="{{ route('product.detail', $product->slug) }}"
+                                            class="d-block w-100 h-100 text-center"
+                                            onclick="incrementView('{{ $product->id }}')" data-product-id="{{ $product->id }}">
                                         @php
                                             $defaultImage = asset('uploads/default/default.jpg');
                                             $variantImage = null;
@@ -50,37 +51,59 @@
 
                                             $variant = $defaultVariant;
                                         @endphp
+                                            <img src="{{ $variantImage ?? $defaultImage }}" class="product-img"
+                                                alt="{{ $product->name }}">
+                                        </a>
 
-                                        <img src="{{ $variantImage ?? $defaultImage }}" class="img-fluid mx-auto"
-                                            alt="{{ $product->name }}" style="max-height: 200px; object-fit: contain;">
+                                        <div class="product-tools">
+                                            <span class="tool-btn" title="Thêm vào so sánh"
+                                                onclick="event.preventDefault(); addToCompare('{{ $product->id }}', '{{ $product->name }}', '{{ $product->category_id }}')">
+                                                <i class="fa-solid fa-code-compare"></i>
+                                            </span>
+                                            @auth
+                                                <span
+                                                    class="tool-btn icon-heart icon-add-to-wishlist {{ in_array($product->id, $wishlistProductIds ?? []) ? 'in-wishlist' : '' }}"
+                                                    title="{{ in_array($product->id, $wishlistProductIds ?? []) ? 'Xóa khỏi yêu thích' : 'Thêm vào yêu thích' }}"
+                                                    onclick="event.preventDefault(); toggleWishlist('{{ $product->id }}', '{{ route('wishlist.toggle', $product) }}', this)">
+                                                    <i class="fas fa-heart"></i>
+                                                </span>
+                                            @else
+                                                <span class="tool-btn icon-heart icon-add-to-wishlist"
+                                                    title="Đăng nhập để thêm vào yêu thích"
+                                                    onclick="event.preventDefault(); showLoginPrompt()">
+                                                    <i class="fas fa-heart"></i>
+                                                </span>
+                                            @endauth
+                                            <span class="tool-btn" title="Xem nhanh"
+                                                onclick="event.preventDefault(); showQuickView({{ $product->id }})">
+                                                <i class="fas fa-eye"></i>
+                                            </span>
+                                        </div>
                                     </div>
 
-                                    <h6 class="product-title text-center text-dark"
-                                        style="height: 37px;line-height: 22px">{{ $product->name }}</h6>
+                                    <div class="product-body">
+                                        <a href="{{ route('product.detail', $product->slug) }}" class="text-decoration-none">
+                                            <h3 class="product-title mb-1">{{ $product->name }}</h3>
+                                        </a>
 
-                                    <div class="product-price-and-rating text-center">
+                                        <div class="product-price-row">
                                         @if ($variant)
                                             @if ($variant->discount_price)
-                                                <strong class="product-price text-decoration-line-through text-muted">
-                                                    {{ number_format($variant->selling_price) }}đ
-                                                </strong>
-                                                <strong class="product-price text-danger ms-2">
-                                                    {{ number_format($variant->discount_price) }}đ
-                                                </strong>
+                                                    <strong class="product-price">{{ number_format($variant->discount_price) }}đ</strong>
+                                                    <span class="old-price"><del>{{ number_format($variant->selling_price) }}đ</del></span>
                                             @else
-                                                <strong class="product-price">
-                                                    {{ number_format($variant->selling_price) }}đ
-                                                </strong>
+                                                    <strong class="product-price">{{ number_format($variant->selling_price) }}đ</strong>
+                                                @endif
                                             @endif
-                                        @endif
+                                        </div>
 
-                                        <div
-                                            class="product-rating d-flex justify-content-center align-items-center mt-1">
+                                        <div class="product-rating-row d-flex align-items-center justify-content-center">
                                             @php
                                                 $rating = $product->reviews->avg('rating') ?? 0;
                                                 $fullStars = floor($rating);
                                                 $halfStar = $rating - $fullStars >= 0.5;
                                             @endphp
+                                            <div class="stars">
                                             @if ($rating == 0)
                                                 @for ($i = 1; $i <= 5; $i++)
                                                     <i class="fas fa-star"></i>
@@ -96,36 +119,10 @@
                                                     @endif
                                                 @endfor
                                             @endif
-                                            {{-- <span style="font-size: 0.75rem;">({{ number_format($product->views) }} lượt xem)</span> --}}
+                                            </div>
                                         </div>
                                     </div>
-
-                                    <div class="product-icons d-flex justify-content-center mt-2 gap-2">
-                                        <span class="icon-add-to-cart"><i class="fas fa-cart-plus"></i></span>
-                                        @auth
-                                            <form action="{{ route('wishlist.toggle', $product) }}" method="POST"
-                                                style="display: none;" id="wishlist-form-{{ $product->id }}">
-                                                @csrf
-                                                <input type="hidden" name="product_name" value="{{ $product->name }}">
-                                            </form>
-                                            <span
-                                                class="icon-heart icon-add-to-wishlist {{ in_array($product->id, $wishlistProductIds ?? []) ? 'in-wishlist' : '' }}"
-                                                onclick="event.preventDefault(); toggleWishlist('{{ $product->id }}', '{{ route('wishlist.toggle', $product) }}', this)"
-                                                title="{{ in_array($product->id, $wishlistProductIds ?? []) ? 'Xóa khỏi yêu thích' : 'Thêm vào yêu thích' }}">
-                                                <i class="fas fa-heart"></i>
-                                            </span>
-                                        @else
-                                            <span class="icon-heart icon-add-to-wishlist"
-                                                onclick="event.preventDefault(); showLoginPrompt()"
-                                                title="Đăng nhập để thêm vào yêu thích">
-                                                <i class="fas fa-heart"></i>
-                                            </span>
-                                        @endauth
-                                        <span class="icon-quick-view"
-                                            onclick="event.preventDefault(); showQuickView({{ $product->id }})"><i
-                                                class="fas fa-eye"></i></span>
                                     </div>
-                                </a>
                             </div>
                         @endforeach
                     </div>
@@ -143,64 +140,169 @@
         .product-slider::-webkit-scrollbar {
             display: none;
         }
-
-        .product-item {
-            scroll-snap-align: start;
-            color: #212529 !important;
-            /* Màu đen Bootstrap */
-            background: #fff;
-            border-radius: 16px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-            padding: 18px 10px 16px 10px;
-            min-height: 320px;
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-start;
-            align-items: stretch;
-            transition: box-shadow 0.2s;
-            height: 100%;
-        }
-
-        .product-item:hover {
-            color: #000 !important;
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.10);
-        }
-
-        .product-thumbnail {
-            min-height: 120px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .product-title {
-            min-height: 40px;
-            max-height: 44px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            margin-bottom: 8px;
-        }
-
-        .product-price-and-rating {
-            min-height: 48px;
-            margin-bottom: 4px;
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-end;
-            align-items: center;
-        }
-
-        .product-price {
-            font-size: 1.1rem;
-            font-weight: 600;
-            display: block;
-            line-height: 1.2;
-        }
-
-        .product-rating {
-            min-height: 22px;
-        }
     </style>
+
+    <script>
+        // Fallback Toast
+        if (typeof window.showToast !== 'function') {
+            window.showToast = function(message, type = 'success') {
+                if (typeof Swal !== 'undefined') {
+                    const Toast = Swal.mixin({
+                        toast: true,
+                        position: 'top-end',
+                        showConfirmButton: false,
+                        timer: 3000,
+                        timerProgressBar: true,
+                        didOpen: (toast) => {
+                            toast.addEventListener('mouseenter', Swal.stopTimer)
+                            toast.addEventListener('mouseleave', Swal.resumeTimer)
+                        }
+                    });
+                    Toast.fire({ icon: type, title: message });
+                } else {
+                    alert(message);
+                }
+            }
+        }
+
+        // Fallback Wishlist
+        if (typeof window.toggleWishlist !== 'function') {
+            window.toggleWishlist = async function(productId, url) {
+                try {
+                    const csrfEl = document.querySelector('meta[name="csrf-token"]');
+                    const csrf = csrfEl ? csrfEl.getAttribute('content') : null;
+                    if (!csrf) return showToast('Thiếu CSRF token', 'error');
+
+                    const res = await fetch(url, {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': csrf,
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ product_id: productId })
+                    });
+                    const data = await res.json();
+                    if (res.ok && data) {
+                        showToast(data.message || 'Đã cập nhật yêu thích', data.type || 'success');
+                        const icons = document.querySelectorAll(`.icon-heart[onclick*="toggleWishlist('${productId}'"]`);
+                        icons.forEach(icon => {
+                            if (data.in_wishlist) {
+                                icon.classList.add('in-wishlist');
+                                icon.title = 'Xóa khỏi yêu thích';
+                            } else {
+                                icon.classList.remove('in-wishlist');
+                                icon.title = 'Thêm vào yêu thích';
+                            }
+                        });
+                    } else {
+                        showToast(data?.message || 'Có lỗi xảy ra', 'error');
+                    }
+                } catch (e) {
+                    showToast('Có lỗi xảy ra khi xử lý yêu cầu', 'error');
+                }
+            }
+        }
+
+        // Fallback Compare
+        if (typeof window.compareSelected === 'undefined') window.compareSelected = [];
+        if (typeof window.compareNames === 'undefined') window.compareNames = [];
+        if (typeof window.compareCategory === 'undefined') window.compareCategory = null;
+
+        if (typeof window.addToCompare !== 'function') {
+            window.addToCompare = function(productId, productName, categoryId) {
+                const isAlready = compareSelected.includes(productId);
+                if (isAlready) {
+                    const idx = compareSelected.indexOf(productId);
+                    compareSelected.splice(idx, 1);
+                    compareNames.splice(idx, 1);
+                    showToast('Đã bỏ chọn ' + productName + ' khỏi so sánh', 'info');
+                    if (compareSelected.length === 0) compareCategory = null;
+                } else {
+                    if (compareSelected.length >= 4) return showToast('Chỉ được chọn tối đa 4 sản phẩm!', 'error');
+                    if (compareSelected.length > 0 && compareCategory != categoryId) {
+                        return showToast('Vui lòng chỉ chọn sản phẩm cùng danh mục!', 'error');
+                    }
+                    compareSelected.push(productId);
+                    compareNames.push(productName);
+                    if (compareSelected.length === 1) compareCategory = categoryId;
+                    showToast('Đã thêm ' + productName + ' vào so sánh', 'success');
+                }
+                if (typeof updateCompareButton === 'function') updateCompareButton();
+            }
+        }
+
+        // Fallback Quick View
+        if (typeof window.showQuickView !== 'function') {
+            window.showQuickView = function(productId) {
+                // Điều hướng đến link trong thẻ a gần nhất bên trong card
+                try {
+                    const tool = event && event.currentTarget ? event.currentTarget : null;
+                    const card = tool ? tool.closest('.product-card') : null;
+                    const link = card ? card.querySelector('a[href]') : null;
+                    if (link) window.location.href = link.getAttribute('href');
+                } catch (e) {
+                    // Bỏ qua
+                }
+            }
+        }
+
+        if (typeof window.showLoginPrompt !== 'function') {
+            window.showLoginPrompt = function() {
+                showToast('Vui lòng đăng nhập để thêm vào yêu thích', 'warning');
+            }
+        }
+
+        // Inject Compare Button + fallback handlers
+        if (typeof window.updateCompareButton !== 'function') {
+            window.updateCompareButton = function() {
+                const button = document.getElementById('compareButton');
+                const count = document.getElementById('compareCount');
+                const text = document.getElementById('compareButtonText');
+                if (!button || !count || !text) return;
+                if (compareSelected.length > 0) {
+                    button.style.display = 'block';
+                    count.textContent = compareSelected.length;
+                    if (compareSelected.length >= 2) {
+                        text.textContent = 'So sánh ngay';
+                        button.style.background = '#28a745';
+                    } else {
+                        text.textContent = 'Chọn thêm sản phẩm';
+                        button.style.background = '#007bff';
+                    }
+                } else {
+                    button.style.display = 'none';
+                }
+            }
+        }
+
+        if (typeof window.goToCompare !== 'function') {
+            window.goToCompare = function() {
+                if (compareSelected.length >= 2 && compareSelected.length <= 4) {
+                    const form = document.createElement('form');
+                    form.method = 'GET';
+                    form.action = '{{ route('compare.index') }}';
+                    const productsInput = document.createElement('input');
+                    productsInput.type = 'hidden';
+                    productsInput.name = 'products';
+                    productsInput.value = compareSelected.join(',');
+                    form.appendChild(productsInput);
+                    document.body.appendChild(form);
+                    form.submit();
+                } else {
+                    showToast('Vui lòng chọn từ 2 đến 4 sản phẩm để so sánh!', 'error');
+                }
+            }
+        }
+
+        (function ensureCompareButton() {
+            if (!document.getElementById('compareButton')) {
+                const div = document.createElement('div');
+                div.id = 'compareButton';
+                div.setAttribute('onclick', 'goToCompare()');
+                div.style.cssText = 'display:none; position:fixed; bottom:20px; left:50%; transform:translateX(-50%); z-index:9999; background:#007bff; color:white; padding:15px 25px; border-radius:25px; box-shadow:0 4px 12px rgba(0,123,255,0.3); cursor:pointer; transition:all 0.3s ease;';
+                div.innerHTML = '<i class="fa-solid fa-code-compare me-2"></i> <span id="compareButtonText">So sánh ngay</span> <span id="compareCount" class="badge bg-light text-dark ms-2">0</span>';
+                document.body.appendChild(div);
+            }
+        })();
+    </script>

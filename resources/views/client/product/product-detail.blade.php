@@ -12,8 +12,8 @@
                 <div class="col-lg-6 mb-5">
                     <div class="product-gallery">
                         <div class="main-image mb-4 position-relative">
-                            <button id="prevImageBtn" class="image-nav-btn" style="display:none;"
-                                onclick="showPrevImage()"><i class="fas fa-chevron-left"></i></button>
+                            <button id="prevImageBtn" class="image-nav-btn" style="display:none;" onclick="showPrevImage()"><i
+                                    class="fas fa-chevron-left"></i></button>
                             @php
                                 // Helper function to safely handle both JSON strings and arrays
                                 function getImagesArray($images)
@@ -80,8 +80,8 @@
                                 <i class="fas fa-boxes me-2"></i>
                                 <span class="info-label">Tồn kho:</span>
                                 <span class="info-value" id="productStock">
-                                    @if($defaultVariant)
-                                        @if($defaultVariant->stock > 0)
+                                    @if ($defaultVariant)
+                                        @if ($defaultVariant->stock > 0)
                                             <span class="text-success">{{ $defaultVariant->stock }} sản phẩm</span>
                                         @else
                                             <span class="text-danger">Hết hàng</span>
@@ -95,7 +95,8 @@
                                 <i class="fas fa-shopping-cart me-2"></i>
                                 <span class="info-label">Đã bán:</span>
                                 <span class="info-value">
-                                    <span class="text-primary" id="soldQuantity">{{ number_format($totalSold) }} sản phẩm</span>
+                                    <span class="text-primary" id="soldQuantity">{{ number_format($totalSold) }} sản
+                                        phẩm</span>
                                 </span>
                             </div>
                         </div>
@@ -113,209 +114,208 @@
                                 <span class="info-value">{{ $product->warranty_months ?? 'N/A' }} tháng</span>
                             </div>
                         </div>
-                        </div>
+                    </div>
 
-                        <!-- Dynamic Attribute Variants (Color, Storage, ...) -->
-                        @php
-                            // Gom nhóm các thuộc tính theo loại (Color, Storage, ...)
-                            $attributeGroups = [];
-                            $seenValues = []; // Mảng để theo dõi các giá trị đã xuất hiện
+                    <!-- Dynamic Attribute Variants (Color, Storage, ...) -->
+                    @php
+                        // Gom nhóm các thuộc tính theo loại (Color, Storage, ...)
+                        $attributeGroups = [];
+                        $seenValues = []; // Mảng để theo dõi các giá trị đã xuất hiện
 
-                            foreach ($product->variants as $variant) {
-                                // Bỏ qua các biến thể đã bị xóa mềm
-                                if ($variant->deleted_at !== null) {
-                                    continue;
-                                }
-                                foreach ($variant->combinations as $combination) {
-                                    $typeName = $combination->attributeValue->attributeType->name ?? null;
-                                    if ($typeName) {
-                                        $values = is_array($combination->attributeValue->value)
-                                            ? $combination->attributeValue->value
-                                            : json_decode($combination->attributeValue->value, true);
-                                        $hexes = is_array($combination->attributeValue->hex)
-                                            ? $combination->attributeValue->hex
-                                            : json_decode($combination->attributeValue->hex, true);
+                        foreach ($product->variants as $variant) {
+                            // Bỏ qua các biến thể đã bị xóa mềm
+                            if ($variant->deleted_at !== null) {
+                                continue;
+                            }
+                            foreach ($variant->combinations as $combination) {
+                                $typeName = $combination->attributeValue->attributeType->name ?? null;
+                                if ($typeName) {
+                                    $values = is_array($combination->attributeValue->value)
+                                        ? $combination->attributeValue->value
+                                        : json_decode($combination->attributeValue->value, true);
+                                    $hexes = is_array($combination->attributeValue->hex)
+                                        ? $combination->attributeValue->hex
+                                        : json_decode($combination->attributeValue->hex, true);
 
-                                        // Tạo key duy nhất cho mỗi giá trị
-                                        $valueKey = $typeName . '_' . ($values[0] ?? '');
+                                    // Tạo key duy nhất cho mỗi giá trị
+                                    $valueKey = $typeName . '_' . ($values[0] ?? '');
 
-                                        // Chỉ thêm vào nếu chưa có giá trị này
-                                        if (!isset($seenValues[$valueKey])) {
-                                            $attributeGroups[$typeName][] = [
-                                                'values' => $values,
-                                                'hexes' => $hexes,
-                                                'variant_id' => $variant->id,
-                                                'is_default' => $variant->is_default,
-                                            ];
-                                            $seenValues[$valueKey] = true;
-                                        }
+                                    // Chỉ thêm vào nếu chưa có giá trị này
+                                    if (!isset($seenValues[$valueKey])) {
+                                        $attributeGroups[$typeName][] = [
+                                            'values' => $values,
+                                            'hexes' => $hexes,
+                                            'variant_id' => $variant->id,
+                                            'is_default' => $variant->is_default,
+                                        ];
+                                        $seenValues[$valueKey] = true;
                                     }
                                 }
                             }
-                        @endphp
-                        @foreach ($attributeGroups as $typeName => $group)
-                            @php
-                                $hasHex = false;
-                                foreach ($group as $item) {
-                                    if (!empty($item['hexes'][0])) {
-                                        $hasHex = true;
-                                        break;
-                                    }
+                        }
+                    @endphp
+                    @foreach ($attributeGroups as $typeName => $group)
+                        @php
+                            $hasHex = false;
+                            foreach ($group as $item) {
+                                if (!empty($item['hexes'][0])) {
+                                    $hasHex = true;
+                                    break;
                                 }
-                                $defaultItem = collect($group)->first(fn($item) => $item['is_default']) ?? $group[0];
-                                $defaultValue = $defaultItem['values'][0] ?? '';
-                            @endphp
-                            <div class="variant-group mb-4">
-                                <label class="form-label">
-                                    {{ ucfirst($typeName) }}
-                                    @if ($hasHex)
-                                        : <span id="selected-{{ $typeName }}-value"
-                                            class="ms-2 badge bg-light text-dark border">{{ $defaultValue }}</span>
-                                    @endif
-                                </label>
-                                <div class="variant-options mt-2 d-flex gap-3">
-                                    @if ($hasHex)
-                                        @foreach ($group as $item)
-                                            @php
-                                                $value = $item['values'][0] ?? '';
-                                                $hex = $item['hexes'][0] ?? null;
-                                            @endphp
-                                            <div class="color-option {{ $item['is_default'] ? 'active' : '' }}"
-                                                title="{{ $value }}" data-color="{{ $value }}"
-                                                data-variant-id="{{ $item['variant_id'] }}"
-                                                data-attr-type="{{ $typeName }}"
-                                                onclick="selectVariant({{ $item['variant_id'] }}, '{{ addslashes($value) }}', '{{ $typeName }}', this)"
-                                                style="background-color: {{ $hex ? $hex : '#f8f9fa' }}; border-radius: 50%; width: 40px; height: 40px; border: 2px solid #ddd; box-shadow: 0 2px 8px rgba(0,0,0,0.15); display: inline-block; cursor: pointer;">
-                                            </div>
-                                        @endforeach
-                                    @else
+                            }
+                            $defaultItem = collect($group)->first(fn($item) => $item['is_default']) ?? $group[0];
+                            $defaultValue = $defaultItem['values'][0] ?? '';
+                        @endphp
+                        <div class="variant-group mb-4">
+                            <label class="form-label">
+                                {{ ucfirst($typeName) }}
+                                @if ($hasHex)
+                                    : <span id="selected-{{ $typeName }}-value"
+                                        class="ms-2 badge bg-light text-dark border">{{ $defaultValue }}</span>
+                                @endif
+                            </label>
+                            <div class="variant-options mt-2 d-flex gap-3">
+                                @if ($hasHex)
+                                    @foreach ($group as $item)
                                         @php
-                                            $uniqueValues = [];
-                                            $uniqueItems = [];
-                                            foreach ($group as $item) {
-                                                $value = $item['values'][0] ?? '';
-                                                if (!in_array($value, $uniqueValues)) {
-                                                    $uniqueValues[] = $value;
-                                                    $uniqueItems[] = $item;
+                                            $value = $item['values'][0] ?? '';
+                                            $hex = $item['hexes'][0] ?? null;
+                                        @endphp
+                                        <div class="color-option {{ $item['is_default'] ? 'active' : '' }}"
+                                            title="{{ $value }}" data-color="{{ $value }}"
+                                            data-variant-id="{{ $item['variant_id'] }}"
+                                            data-attr-type="{{ $typeName }}"
+                                            onclick="selectVariant({{ $item['variant_id'] }}, '{{ addslashes($value) }}', '{{ $typeName }}', this)"
+                                            style="background-color: {{ $hex ? $hex : '#f8f9fa' }}; border-radius: 50%; width: 40px; height: 40px; border: 2px solid #ddd; box-shadow: 0 2px 8px rgba(0,0,0,0.15); display: inline-block; cursor: pointer;">
+                                        </div>
+                                    @endforeach
+                                @else
+                                    @php
+                                        $uniqueValues = [];
+                                        $uniqueItems = [];
+                                        foreach ($group as $item) {
+                                            $value = $item['values'][0] ?? '';
+                                            if (!in_array($value, $uniqueValues)) {
+                                                $uniqueValues[] = $value;
+                                                $uniqueItems[] = $item;
+                                            }
+                                        }
+                                    @endphp
+                                    @foreach ($uniqueItems as $item)
+                                        @php
+                                            $value = $item['values'][0] ?? '';
+                                            // Kiểm tra active đúng với thuộc tính của biến thể mặc định
+                                            $isActive = false;
+                                            if ($defaultVariant) {
+                                                foreach ($defaultVariant->combinations as $comb) {
+                                                    if (
+                                                        ($comb->attributeValue->attributeType->name ?? '') ===
+                                                            $typeName &&
+                                                        ($comb->attributeValue->value[0] ?? '') === $value
+                                                    ) {
+                                                        $isActive = true;
+                                                        break;
+                                                    }
                                                 }
                                             }
                                         @endphp
-                                        @foreach ($uniqueItems as $item)
-                                            @php
-                                                $value = $item['values'][0] ?? '';
-                                                // Kiểm tra active đúng với thuộc tính của biến thể mặc định
-                                                $isActive = false;
-                                                if ($defaultVariant) {
-                                                    foreach ($defaultVariant->combinations as $comb) {
-                                                        if (
-                                                            ($comb->attributeValue->attributeType->name ?? '') ===
-                                                                $typeName &&
-                                                            ($comb->attributeValue->value[0] ?? '') === $value
-                                                        ) {
-                                                            $isActive = true;
-                                                            break;
-                                                        }
-                                                    }
-                                                }
-                                            @endphp
-                                            <button type="button" class="storage-btn {{ $isActive ? 'active' : '' }}"
-                                                data-variant-id="{{ $item['variant_id'] }}"
-                                                data-attr-type="{{ $typeName }}"
-                                                onclick="selectVariant({{ $item['variant_id'] }}, '{{ addslashes($value) }}', '{{ $typeName }}', this)">
-                                                {{ $value }}
-                                            </button>
-                                        @endforeach
-                                    @endif
-                                </div>
-                            </div>
-                        @endforeach
-
-                        <!-- Quantity Selector -->
-                        <div class="quantity-selector mb-4">
-                            <label class="form-label">Quantity:</label>
-                            <div class="quantity-control">
-                                <button class="quantity-btn minus">-</button>
-                                <input type="number" id="quantity" class="form-control" value="1" min="1"
-                                    readonly>
-                                <button class="quantity-btn plus">+</button>
+                                        <button type="button" class="storage-btn {{ $isActive ? 'active' : '' }}"
+                                            data-variant-id="{{ $item['variant_id'] }}"
+                                            data-attr-type="{{ $typeName }}"
+                                            onclick="selectVariant({{ $item['variant_id'] }}, '{{ addslashes($value) }}', '{{ $typeName }}', this)">
+                                            {{ $value }}
+                                        </button>
+                                    @endforeach
+                                @endif
                             </div>
                         </div>
+                    @endforeach
 
-                        <!-- Action Buttons -->
-                        <div class="product-actions mb-4">
-                            <button class="btn btn-primary" id="buyNowBtn">
-                                <i class="fas fa-bolt me-2"></i>Mua ngay
+                    <!-- Quantity Selector -->
+                    <div class="quantity-selector mb-4">
+                        <label class="form-label">Quantity:</label>
+                        <div class="quantity-control">
+                            <button class="quantity-btn minus">-</button>
+                            <input type="number" id="quantity" class="form-control" value="1" min="1"
+                                readonly>
+                            <button class="quantity-btn plus">+</button>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="product-actions mb-4">
+                        <button class="btn btn-primary" id="buyNowBtn">
+                            <i class="fas fa-bolt me-2"></i>Mua ngay
+                        </button>
+                        <form action="{{ route('cart.add') }}" method="POST" style="display: inline;" id="addToCartForm">
+                            @csrf
+                            <input type="hidden" name="product_id" value="{{ $product->id }}">
+                            <input type="hidden" name="variant_id" id="selectedVariantId" value="">
+                            <input type="hidden" name="quantity" id="cartQuantity" value="1">
+                            <button type="submit" class="btn btn-outline-primary" id="addToCartBtn">
+                                <i class="fas fa-cart-plus me-2"></i> Thêm vào giỏ hàng
                             </button>
-                            <form action="{{ route('cart.add') }}" method="POST" style="display: inline;"
-                                id="addToCartForm">
-                                @csrf
-                                <input type="hidden" name="product_id" value="{{ $product->id }}">
-                                <input type="hidden" name="variant_id" id="selectedVariantId" value="">
-                                <input type="hidden" name="quantity" id="cartQuantity" value="1">
-                                <button type="submit" class="btn btn-outline-primary" id="addToCartBtn">
-                                    <i class="fas fa-cart-plus me-2"></i> Thêm vào giỏ hàng
-                                </button>
-                            </form>
-                        </div>
+                        </form>
                     </div>
                 </div>
             </div>
-            <!-- Tabs Section (bên dưới chi tiết sản phẩm) -->
-            <hr>
-            <div class="container mt-5">
-                <div class="d-flex justify-content-center mb-4" style="gap: 18px;">
-                    <button class="tab-btn-custom active" id="tab-desc-btn" onclick="showTab('desc')">Mô tả</button>
-                    <button class="tab-btn-custom" id="tab-spec-btn" onclick="showTab('spec')">Thông số kỹ thuật</button>
-                </div>
-                <div id="tab-desc" class="tab-content" style="display: block;">
-                    <div class="card">
-                        <div class="card-body position-relative">
-                            <div id="product-content" class="collapsed-content position-relative">
-                                {!! $product->content !!}
-                                <div class="content-overlay" id="content-overlay"></div>
-                            </div>
-                            <div class="d-flex justify-content-center mt-3">
-                                <button id="toggle-content-btn" class="btn tab-btn-custom active btn-sm">Xem thêm<i
-                                        class="fas fa-chevron-down ms-2"></i></button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-
-                <div id="tab-spec" class="tab-content" style="display: none;">
-                    <div class="card">
-                        <div class="card-body">
-                            <table class="table mb-0">
-                                <thead>
-                                    <tr>
-                                        <th colspan="2" class="bg-light fw-bold">Cấu hình & Bộ nhớ</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @if ($product->specifications && $product->specifications->isNotEmpty())
-                                        @foreach ($product->specifications as $spec)
-                                            @if ($spec->specification)
-                                                <tr>
-                                                    <td class="text-secondary" style="width: 220px;">
-                                                        {{ $spec->specification->name }}</td>
-                                                    <td>{{ $spec->value }}</td>
-                                                </tr>
-                                            @endif
-                                        @endforeach
-                                    @else
-                                        <tr>
-                                            <td colspan="2">Chưa có thông số kỹ thuật.</td>
-                                        </tr>
-                                    @endif
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            @include('client.product.suggestions', ['suggestions' => $suggestions]);
         </div>
+        <!-- Tabs Section (bên dưới chi tiết sản phẩm) -->
+        <hr>
+        <div class="container mt-5">
+            <div class="d-flex justify-content-center mb-4" style="gap: 18px;">
+                <button class="tab-btn-custom active" id="tab-desc-btn" onclick="showTab('desc')">Mô tả</button>
+                <button class="tab-btn-custom" id="tab-spec-btn" onclick="showTab('spec')">Thông số kỹ thuật</button>
+            </div>
+            <div id="tab-desc" class="tab-content" style="display: block;">
+                <div class="card">
+                    <div class="card-body position-relative">
+                        <div id="product-content" class="collapsed-content position-relative">
+                            {!! $product->content !!}
+                            <div class="content-overlay" id="content-overlay"></div>
+                        </div>
+                        <div class="d-flex justify-content-center mt-3">
+                            <button id="toggle-content-btn" class="btn tab-btn-custom active btn-sm">Xem thêm<i
+                                    class="fas fa-chevron-down ms-2"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div id="tab-spec" class="tab-content" style="display: none;">
+                <div class="card">
+                    <div class="card-body">
+                        <table class="table mb-0">
+                            <thead>
+                                <tr>
+                                    <th colspan="2" class="bg-light fw-bold">Cấu hình & Bộ nhớ</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if ($product->specifications && $product->specifications->isNotEmpty())
+                                    @foreach ($product->specifications as $spec)
+                                        @if ($spec->specification)
+                                            <tr>
+                                                <td class="text-secondary" style="width: 220px;">
+                                                    {{ $spec->specification->name }}</td>
+                                                <td>{{ $spec->value }}</td>
+                                            </tr>
+                                        @endif
+                                    @endforeach
+                                @else
+                                    <tr>
+                                        <td colspan="2">Chưa có thông số kỹ thuật.</td>
+                                    </tr>
+                                @endif
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        @include('client.product.suggestions', ['suggestions' => $suggestions]);
+    </div>
     </div>
     <!-- End Product Detail Section -->
 
@@ -593,6 +593,20 @@
             scroll-behavior: smooth;
         }
 
+        .product-title {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            /* Hiển thị tối đa 2 dòng */
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            word-break: break-word;
+            min-height: 2.6em;
+            /* Đảm bảo luôn chiếm 2 dòng chiều cao */
+            line-height: 1.3em;
+            max-height: 2.6em;
+        }
+
         #thumbnailsRow .col-3 {
             flex: 0 0 auto;
             width: 80px;
@@ -610,7 +624,7 @@
         }
     </style>
 
-    @section('scripts')
+@section('scripts')
     <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
@@ -641,7 +655,7 @@
             });
 
             // Handle session flash messages
-            @if(session('success'))
+            @if (session('success'))
                 Toast.fire({
                     icon: 'success',
                     title: 'Thành công',
@@ -649,7 +663,7 @@
                 });
             @endif
 
-            @if(session('error'))
+            @if (session('error'))
                 Toast.fire({
                     icon: 'error',
                     title: 'Lỗi',
@@ -697,9 +711,7 @@
                         $attrMap = [];
                         foreach ($variant->combinations as $comb) {
                             $typeName = $comb->attributeValue->attributeType->name ?? '';
-                            $value = is_array($comb->attributeValue->value)
-                                ? ($comb->attributeValue->value[0] ?? '')
-                                : (json_decode($comb->attributeValue->value, true)[0] ?? '');
+                            $value = is_array($comb->attributeValue->value) ? $comb->attributeValue->value[0] ?? '' : json_decode($comb->attributeValue->value, true)[0] ?? '';
                             if ($typeName !== '') {
                                 $attrMap[$typeName] = $value;
                             }
@@ -722,7 +734,9 @@
                 }
             });
             // Sắp xếp tên thuộc tính theo alpha để đồng bộ với key ánh xạ phía trên
-            sortedTypes = [...requiredTypes].sort((a, b) => a.localeCompare(b, undefined, {sensitivity: 'base'}));
+            sortedTypes = [...requiredTypes].sort((a, b) => a.localeCompare(b, undefined, {
+                sensitivity: 'base'
+            }));
 
             // Khởi tạo giá trị mặc định
             @if ($defaultVariant)
@@ -878,12 +892,12 @@
             if (soldQuantityElement) {
                 const currentVariantId = document.getElementById('selectedVariantId').value;
                 let soldCount = totalSold; // Mặc định hiển thị tổng số đã bán
-                
+
                 // Nếu có dữ liệu đã bán theo variant và variant hiện tại có dữ liệu
                 if (currentVariantId && variantSoldData[currentVariantId]) {
                     soldCount = variantSoldData[currentVariantId];
                 }
-                
+
                 soldQuantityElement.textContent = new Intl.NumberFormat('vi-VN').format(soldCount) + ' sản phẩm';
             }
         }
@@ -893,7 +907,8 @@
             if (!stockEl || !variantId || !variantData[variantId]) return;
             const stock = variantData[variantId].stock;
             if (stock > 0) {
-                stockEl.innerHTML = '<span class="text-success">' + new Intl.NumberFormat('vi-VN').format(stock) + ' sản phẩm</span>';
+                stockEl.innerHTML = '<span class="text-success">' + new Intl.NumberFormat('vi-VN').format(stock) +
+                    ' sản phẩm</span>';
             } else {
                 stockEl.innerHTML = '<span class="text-danger">Hết hàng</span>';
             }
@@ -1194,11 +1209,11 @@
                 flex-direction: column;
                 gap: 0.5rem;
             }
-            
+
             .info-item {
                 min-width: auto;
             }
         }
     </style>
-    @endsection
+@endsection
 @endsection

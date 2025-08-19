@@ -28,10 +28,14 @@
             <div class="filter-section mb-5">
                 <div class="row">
                     <div class="col-lg-3 col-md-4">
-                        <!-- Clear Filters -->
-                        <div class="filter-actions mb-3">
-                            <button type="button" class="btn btn-clear-filter w-100" onclick="clearFilters()">
-                                <i class="fas fa-times"></i> Xóa bộ lọc
+                        <!-- Filter Actions -->
+                        <div class="filter-actions mb-3 d-flex justify-content-between align-items-center">
+                            <button type="button" class="btn btn-clear-filter" style="flex: 1; margin-right: 10px;"
+                                onclick="clearFilters()">
+                                <i class="fas fa-times"></i> Xóa
+                            </button>
+                            <button type="button" class="btn btn-primary" style="flex: 1;" onclick="applyFilters()">
+                                <i class="fas fa-filter"></i> Lọc
                             </button>
                         </div>
                         <!-- Price Filter -->
@@ -283,25 +287,8 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
         $(document).ready(function() {
-            setupFilters();
+            // No need to call setupFilters() since we're not binding change events anymore
         });
-
-        function setupFilters() {
-            // Handle dynamic filter changes
-            $('input[name^="filters["]').on('change', function() {
-                applyFilters();
-            });
-
-            // Handle sort change
-            $('#sortSelect').on('change', function() {
-                applyFilters();
-            });
-
-            // Handle price range inputs
-            $('input[name="min_price"], input[name="max_price"]').on('blur', function() {
-                applyFilters();
-            });
-        }
 
         function applyFilters() {
             const formData = new FormData();

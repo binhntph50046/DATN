@@ -350,9 +350,10 @@
         </svg>
         <span class="chat-label">Chat 24/7</span>
         <!-- 🔴 Badge số lượng chưa đọc -->
-        <!-- <span id="unreadBadge" style="position:absolute; top:-4px; right:-4px; background:red; color:white;
+        <span id="unreadBadge"
+            style="position:absolute; top:-4px; right:-4px; background:red; color:white;
                     font-size:12px; font-weight:bold; border-radius:50%; padding:3px 6px;
-                    display:none;">0</span> -->
+                    display:none;">0</span>
     </div>
 
     <!-- Khung chat -->
@@ -436,32 +437,126 @@
             return false;
         }
 
+        // function appendMessage(sender, text) {
+        //     const messages = document.getElementById('chatbotMessages');
+        //     const msgDiv = document.createElement('div');
+        //     msgDiv.className = 'chatbot-message ' + sender;
+        //     // Kiểm tra và thay thế link bằng nút nếu cần
+        //     if (text.includes('<a href="/chat"')) {
+        //         msgDiv.innerHTML = `<div class="chatbot-bubble">${text.replace('<a href="/chat" target="_blank">', '<button onclick="window.open(\'/chat\', \'_blank\')">').replace('</a>', '</button>')}</div>`;
+        //     } else {
+        //         msgDiv.innerHTML = `<div class="chatbot-bubble">${escapeHtml(text)}</div>`;
+        //     }
+        //     messages.appendChild(msgDiv);
+        //     messages.scrollTop = messages.scrollHeight;
+        // }
+
+        // function escapeHtml(text) {
+        //     return text.replace(/[&<>"']/g, function (m) {
+        //         return ({
+        //             '&': '&amp;',
+        //             '<': '&lt;',
+        //             '>': '&gt;',
+        //             '"': '&quot;',
+        //             "'": '&#039;'
+        //         })[m];
+        //     });
+        // }
+
+        // ========== Thêm hàm sanitizeHTML (an toàn hơn innerHTML thô) ==========
+        function sanitizeHTML(html) {
+            // Chỉ cho phép các thẻ và attribute này
+            const allowedTags = {
+                'A': ['href', 'target', 'rel'],
+                'UL': [],
+                'OL': [],
+                'LI': [],
+                'BR': [],
+                'STRONG': [],
+                'B': [],
+                'EM': [],
+                'I': [],
+                'P': [],
+                'SPAN': []
+            };
+
+            const doc = new DOMParser().parseFromString(html, 'text/html');
+
+            function clean(node) {
+                // Duyệt children trước khi thao tác để tránh bỏ sót
+                const children = Array.from(node.childNodes);
+                for (const child of children) clean(child);
+
+                if (childIsElement(node)) {
+                    const name = node.nodeName.toUpperCase();
+                    if (!allowedTags[name]) {
+                        // Tháo thẻ nhưng giữ children (unwrap)
+                        const parent = node.parentNode;
+                        while (node.firstChild) parent.insertBefore(node.firstChild, node);
+                        parent.removeChild(node);
+                        return;
+                    }
+                    // Lọc attributes chỉ giữ những thuộc tính được phép
+                    const allowedAttrs = allowedTags[name];
+                    Array.from(node.attributes).forEach(attr => {
+                        if (!allowedAttrs.includes(attr.name)) node.removeAttribute(attr.name);
+                    });
+
+                    // Với thẻ <a>, kiểm tra href và ép target+rel
+                    if (name === 'A') {
+                        const href = node.getAttribute('href') || '';
+                        // chỉ cho phép /... , http(s):// và mailto:
+                        if (!/^\/|^https?:\/\/|^mailto:/i.test(href)) {
+                            node.removeAttribute('href');
+                        } else {
+                            node.setAttribute('target', '_blank');
+                            node.setAttribute('rel', 'noopener noreferrer');
+                        }
+                    }
+                }
+            }
+
+            function childIsElement(n) {
+                return n && n.nodeType === Node.ELEMENT_NODE;
+            }
+
+            // Dọn dẹp body
+            Array.from(doc.body.childNodes).forEach(clean);
+            return doc.body.innerHTML;
+        }
+
+        // ========== Thay thế appendMessage + escapeHtml ==========
+
         function appendMessage(sender, text) {
             const messages = document.getElementById('chatbotMessages');
             const msgDiv = document.createElement('div');
             msgDiv.className = 'chatbot-message ' + sender;
-            // Kiểm tra và thay thế link bằng nút nếu cần
-            if (text.includes('<a href="/chat"')) {
-                msgDiv.innerHTML =
-                    `<div class="chatbot-bubble">${text.replace('<a href="/chat" target="_blank">', '<button onclick="window.open(\'/chat\', \'_blank\')">').replace('</a>', '</button>')}</div>`;
+
+            const bubble = document.createElement('div');
+            bubble.className = 'chatbot-bubble';
+
+            if (sender === 'bot') {
+                // Nếu có dấu <...> khả nghi -> coi là HTML do server tạo ra
+                if (/<[a-z][\s\S]*>/i.test(text)) {
+                    // sanitize trước khi chèn
+                    const safe = sanitizeHTML(text);
+                    bubble.innerHTML = safe;
+                } else {
+                    // plain text
+                    bubble.textContent = text;
+                }
             } else {
-                msgDiv.innerHTML = `<div class="chatbot-bubble">${escapeHtml(text)}</div>`;
+                // user: luôn escape -> dùng textContent
+                bubble.textContent = text;
             }
+
+            msgDiv.appendChild(bubble);
             messages.appendChild(msgDiv);
             messages.scrollTop = messages.scrollHeight;
         }
 
-        function escapeHtml(text) {
-            return text.replace(/[&<>"']/g, function(m) {
-                return ({
-                    '&': '&amp;',
-                    '<': '&lt;',
-                    '>': '&gt;',
-                    '"': '&quot;',
-                    "'": '&#039;'
-                })[m];
-            });
-        }
+        // Bạn có thể xóa hàm escapeHtml cũ hoặc để lại cho tham khảo — không còn dùng nữa.
+
 
         document.getElementById('chatbotInput').addEventListener('keydown', function(e) {
             if (e.key === 'Enter') sendMessagee(e);

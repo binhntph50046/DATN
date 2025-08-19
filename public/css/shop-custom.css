@@ -515,10 +515,6 @@
     flex-direction: column;
 }
 
-.product-title {
-    text-align: center;
-}
-
 .product-category-chip {
     display: flex;
     justify-content: center;

@@ -14,21 +14,26 @@
             <input class="forgot-password-input @error('email') is-invalid @enderror" name="email" type="text"
                 value="{{ $email }}" readonly>
             @error('email')
-                <div class="invalid-feedback">
+                <div class="invalid-feedback" style="text-align: center">
                     {{ $message }}
                 </div>
             @enderror
 
             <input class="forgot-password-input form-control @error('password') is-invalid @enderror" name="password"
-                type="password" placeholder="New Password">
+                type="password" placeholder="Mật khẩu mới">
             @error('password')
-                <div class="invalid-feedback">
+                <div class="invalid-feedback" style="text-align: center">
                     {{ $message }}
                 </div>
             @enderror
 
             <input class="forgot-password-input form-control" name="password_confirmation" type="password"
-                placeholder="Confirm New Password">
+                placeholder="Xác nhận mật khẩu">
+            @error('password_confirmation')
+                <div class="invalid-feedback" style="text-align: center">
+                    {{ $message }}
+                </div>
+            @enderror
 
             <button type="submit">Đặt lại mật khẩu</button>
             <a href="{{ route('login') }}" id="back-to-login">Quay lại đăng nhập</a>

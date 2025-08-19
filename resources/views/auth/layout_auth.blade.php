@@ -1,123 +1,64 @@
-<style>
-    .custom-alert {
-        display: flex;
-        align-items: center;
-        background-color: #fff;
-        border-left: 5px solid;
-        border-radius: 4px;
-        padding: 16px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-        margin: 10px auto;
-        width: 360px;
-        position: relative;
-        animation: slideIn 0.3s ease;
-    }
-
-    .custom-alert .icon {
-        font-size: 20px;
-        margin-right: 12px;
-    }
-
-    .custom-alert .content {
-        flex-grow: 1;
-    }
-
-    .custom-alert .content strong {
-        display: block;
-        font-weight: bold;
-        color: #333;
-    }
-
-    .custom-alert .content p {
-        margin: 0;
-        color: #666;
-    }
-
-    .custom-alert .close {
-        font-size: 38px;
-        cursor: pointer;
-        color: #333;
-        margin-left: 10px;
-        margin-top: -32px;
-    }
-
-    .custom-alert.success {
-        border-color: #28a745;
-        background-color: #ffffff;
-    }
-
-    .custom-alert.success .icon {
-        color: #28a745;
-    }
-
-    .custom-alert.error {
-        border-color: #dc3545;
-        background-color: #ffffff;
-    }
-
-    .custom-alert.error .icon {
-        color: #dc3545;
-    }
-
-    @keyframes slideIn {
-        from {
-            transform: translateY(-10px);
-            opacity: 0;
-        }
-
-        to {
-            transform: translateY(0);
-            opacity: 1;
-        }
-    }
-
-    .custom-alert {
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        z-index: 9999;
-    }
-</style>
-
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="shortcut icon" href="/images/iphone.png">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="{{ asset('public_auth/style.css') }}">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>@yield('title')</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ asset('public_auth/style.css') }}">
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
 </head>
 
 <body>
-    @if (session('success'))
-        <div class="custom-alert success" id="success-alert">
-            <div class="icon"><i class="fas fa-check-circle"></i></div>
-            <div class="content">
-                <strong>SUCCESS</strong>
-                <p>{{ session('success') }}</p>
-            </div>
-            <div class="close" onclick="this.parentElement.style.display='none';">&times;</div>
-        </div>
-    @endif
-
-    @if (session('error'))
-        <div class="custom-alert error" id="error-alert">
-            <div class="icon"><i class="fas fa-times-circle"></i></div>
-            <div class="content">
-                <strong>ERROR</strong>
-                <p>{{ session('error') }}</p>
-            </div>
-            <div class="close" onclick="this.parentElement.style.display='none';">&times;</div>
-        </div>
-    @endif
-
     @yield('content')
 
     <script src="{{ asset('public_auth/script.js') }}"></script>
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Custom styling cho SweetAlert2
+            const Toast = Swal.mixin({
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true,
+                didOpen: (toast) => {
+                    toast.addEventListener('mouseenter', Swal.stopTimer)
+                    toast.addEventListener('mouseleave', Swal.resumeTimer)
+                }
+            });
+
+            // Handle session flash messages
+            @if(session('success'))
+                Toast.fire({
+                    icon: 'success',
+                    title: 'Thành công',
+                    text: '{{ session('success') }}'
+                });
+            @endif
+
+            @if(session('error'))
+                Toast.fire({
+                    icon: 'error',
+                    title: 'Lỗi',
+                    text: '{{ session('error') }}'
+                });
+            @endif
+
+            @if(session('warning'))
+                Toast.fire({
+                    icon: 'warning',
+                    title: 'Cảnh báo',
+                    text: '{{ session('warning') }}'
+                });
+            @endif
+        });
+    </script>
 </body>
 
 </html>

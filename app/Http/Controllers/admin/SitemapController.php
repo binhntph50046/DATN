@@ -14,7 +14,7 @@ class SitemapController
 {
     public function __construct()
     {
-        // Set timezone to Asia/Ho_Chi_Minh
+        // Đặt múi giờ cho Asia/Ho_Chi_Minh
         date_default_timezone_set('Asia/Ho_Chi_Minh');
     }
 
@@ -28,13 +28,13 @@ class SitemapController
         $sitemap = '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
         $sitemap .= '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' . "\n";
 
-        // Add homepage
+        // Thêm trang chủ
         $sitemap .= $this->addUrl(url('/'), '1.0', 'daily');
 
-        // Add shop page
+        // Thêm trang cửa hàng
         $sitemap .= $this->addUrl(url('/shop'), '0.9', 'daily');
 
-        // Add products
+        // Thêm sản phẩm
         $products = Product::where('status', 'active')->get();
         foreach ($products as $product) {
             $sitemap .= $this->addUrl(
@@ -45,7 +45,7 @@ class SitemapController
             );
         }
 
-        // Add product variants
+        // Thêm biến thể sản phẩm
         $variants = ProductVariant::where('status', 'active')->get();
         foreach ($variants as $variant) {
             $product = Product::find($variant->product_id);
@@ -59,7 +59,7 @@ class SitemapController
             }
         }
 
-        // Add categories
+            // Thêm danh mục
         $categories = Category::where('status', 'active')->where('type', 1)->get();
         foreach ($categories as $category) {
             $sitemap .= $this->addUrl(
@@ -81,7 +81,7 @@ class SitemapController
             );
         }
 
-        // Add other static pages
+        // Thêm các trang tĩnh khác
         $sitemap .= $this->addUrl(url('/about'), '0.7', 'monthly');
         $sitemap .= $this->addUrl(url('/contact'), '0.7', 'monthly');
         $sitemap .= $this->addUrl(url('/faq'), '0.6', 'monthly');
@@ -90,7 +90,7 @@ class SitemapController
 
         $sitemap .= '</urlset>';
 
-        // Save sitemap with proper XML header
+        // Lưu sitemap với định dạng XML chính xác
         $response = Response::make($sitemap, 200);
         $response->header('Content-Type', 'application/xml');
         File::put(public_path('sitemap.xml'), $response->getContent());
@@ -103,7 +103,7 @@ class SitemapController
         $url = str_replace('&', '&amp;', $url);
         
         if ($lastmod) {
-            // Convert to Vietnam timezone
+            // Chuyển đổi sang múi giờ Việt Nam
             $lastmod = Carbon::parse($lastmod)->setTimezone('Asia/Ho_Chi_Minh');
         } else {
             $lastmod = Carbon::now()->setTimezone('Asia/Ho_Chi_Minh');

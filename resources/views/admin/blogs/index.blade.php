@@ -1,6 +1,6 @@
 @extends('admin.layouts.app')
 
-@section('title', 'List Blogs')
+@section('title', 'Quản lý bài viết')
 
 <style>
     .custom-shadow {
@@ -20,11 +20,11 @@
                     <div class="row align-items-center">
                         <div class="col-md-12">
                             <div class="page-header-title">
-                                <h5 class="m-b-10">Blogs</h5>
+                                <h5 class="m-b-10">Bài viết</h5>
                             </div>
                             <ul class="breadcrumb">
-                                <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Home</a></li>
-                                <li class="breadcrumb-item" aria-current="page">Blogs</li>
+                                <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Trang Chủ</a></li>
+                                <li class="breadcrumb-item" aria-current="page">Bài viết</li>
                             </ul>
                         </div>
                     </div>
@@ -37,13 +37,13 @@
                 <div class="col-12">
                     <div class="card">
                         <div class="card-header d-flex justify-content-between align-items-center">
-                            <h5>Blogs List</h5>
+                            <h5>Danh sách bài viết</h5>
                             <div>
                                 <a href="{{ route('admin.blogs.trash') }}" class="btn btn-danger btn-sm rounded-3">
-                                    <i class="ti ti-trash"></i> Trash
+                                    <i class="ti ti-trash"></i> Thùng rác
                                 </a>
                                 <a href="{{ route('admin.blogs.create') }}" class="btn btn-primary btn-sm rounded-3">
-                                    <i class="ti ti-plus"></i> Add New Blog
+                                    <i class="ti ti-plus"></i> Thêm bài viết mới
                                 </a>
                             </div>
                         </div>
@@ -55,13 +55,13 @@
                             @endif
 
                             <!-- Bộ lọc tìm kiếm -->
-                            <div class="card custom-shadow mb-4">
+                            <div class="card shadow-sm mb-4">
                                 <div class="card-body">
                                     <form action="{{ route('admin.blogs.index') }}" method="GET" class="row g-3">
                                         <div class="col-md-4">
-                                            <label for="category_id" class="form-label mb-1">Category</label>
-                                            <select name="category_id" id="category_id" class="form-select form-select-sm">
-                                                <option value="">-- all --</option>
+                                            <label for="category_id" class="form-label mb-1">Danh mục</label>
+                                            <select name="category_id" id="category_id" class="form-select">
+                                                <option value="">-- Tất cả --</option>
                                                 @foreach ($categories as $category)
                                                     <option value="{{ $category->id }}"
                                                         {{ request('category_id') == $category->id ? 'selected' : '' }}>
@@ -71,9 +71,9 @@
                                             </select>
                                         </div>
                                         <div class="col-md-4">
-                                            <label for="author_id" class="form-label mb-1">Author</label>
-                                            <select name="author_id" id="author_id" class="form-select form-select-sm">
-                                                <option value="">-- all --</option>
+                                            <label for="author_id" class="form-label mb-1">Tác giả</label>
+                                            <select name="author_id" id="author_id" class="form-select">
+                                                <option value="">-- Tất cả --</option>
                                                 @foreach ($authors as $author)
                                                     <option value="{{ $author->id }}"
                                                         {{ request('author_id') == $author->id ? 'selected' : '' }}>
@@ -84,8 +84,8 @@
                                         </div>
                                           
                                     <div class="col-md-4 d-flex align-items-end">
-                                        <button type="submit" class="btn btn-primary btn-sm  me-2">Filter</button>
-                                        <a href="{{ route('admin.blogs.index') }}" class="btn btn-secondary btn-sm ">Reset</a>
+                                        <button type="submit" class="btn btn-primary me-2">Lọc</button>
+                                        <a href="{{ route('admin.blogs.index') }}" class="btn btn-secondary">Đặt lại</a>
                                     </div>
                                     </form>
 
@@ -98,12 +98,12 @@
                                     <thead>
                                         <tr>
                                             <th>STT</th>
-                                            <th>Title</th>
-                                            <th>Image</th>
-                                            <th>Category</th>
-                                            <th>Author</th>
-                                            <th>Status</th>
-                                            <th class="text-center">Action</th>
+                                            <th>Tiêu đề</th>
+                                            <th>Hình ảnh</th>
+                                            <th>Danh mục</th>
+                                            <th>Tác giả</th>
+                                            <th>Trạng thái</th>
+                                            <th class="text-center">Hành động</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -122,7 +122,8 @@
                                                         <img src="{{ $url }}" alt="{{ $blog->title }}"
                                                             style="width:80px;height:50px;object-fit:cover;">
                                                     @else
-                                                        <span>Không có</span>
+                                                        <img src="{{ asset('uploads/default/default.jpg') }}" alt="No image"
+                                                            style="width:80px;height:50px;object-fit:cover;">
                                                     @endif
                                                 </td>
                                                 <td>{{ $blog->category->name ?? 'Chưa có' }}</td>
@@ -130,7 +131,7 @@
                                                 <td>
                                                     <span
                                                         class="badge {{ $blog->status == 'inactive' ? 'bg-danger' : 'bg-success' }}">
-                                                        {{ $blog->status ?? 'Lỗi trạng thái' }}
+                                                        {{ $blog->status == 'inactive' ? 'Không hoạt động' : 'Hoạt động' }}
                                                     </span>
                                                 </td>
                                                 <td class="text-center">
@@ -144,7 +145,7 @@
                                                     </a>
                                                     <form action="{{ route('admin.blogs.destroy', $blog->id) }}"
                                                         method="POST" class="d-inline"
-                                                        onsubmit="return confirm('Are you sure?')">
+                                                        onsubmit="return confirm('Bạn có chắc chắn muốn xóa bài viết này?')">
                                                         @csrf
                                                         @method('DELETE')
                                                         <button type="submit" class="btn btn-danger btn-sm rounded-3">

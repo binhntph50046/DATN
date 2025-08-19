@@ -2,6 +2,7 @@
 
 @section('title', 'Trang chủ - Apple Store')
 
+
 @section('banner')
     <!-- Start Hero Section -->
     <div id="heroCarousel" class="carousel slide" data-bs-ride="carousel">
@@ -23,9 +24,10 @@
                                     <h1>{{ $banner->title }}</h1>
                                     <p class="mb-4">{{ $banner->description }}</p>
                                     <p class="d-flex align-items-center gap-2">
-                                        <a href="{{ $banner->link ?? '#' }}"
-                                            class="btn btn-secondary text-nowrap me-2 d-inline-block">Shop Now</a>
-                                        <a href="#" class="btn btn-white-outline d-inline-block">Explore</a>
+                                        <a href="{{ route('shop') }}"
+                                            class="btn btn-secondary text-nowrap me-2 d-inline-block">Mua ngay</a>
+                                        <a href="{{ route('blog') }}" class="btn btn-white-outline d-inline-block">Khám
+                                            phá</a>
                                     </p>
                                 </div>
                             </div>
@@ -93,9 +95,8 @@
                     <div class="product-slider">
                         @foreach ($mostViewedProducts as $product)
                             <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="{{ $loop->iteration * 100 }}">
-                                <a class="product-item" href="{{ route('product.detail', $product->slug) }}"
-                                    onclick="incrementView('{{ $product->id }}')" data-product-id="{{ $product->id }}">
-                                    <div class="product-thumbnail text-center">
+                                <div class="product-card">
+                                    <div class="product-media">
                                         @php
                                             $images = getImagesArray($product->images);
                                             if (empty($images) && $product->variants->isNotEmpty()) {
@@ -107,65 +108,83 @@
                                                 $mainImage = 'uploads/products/' . $mainImage;
                                             }
                                         @endphp
-
-                                        <img src="{{ asset($mainImage) }}" class="img-fluid mx-auto"
-                                            alt="{{ $product->name }}" style="max-height: 200px; object-fit: contain;">
-                                    </div>
-                                    <h3 class="product-title text-center">{{ $product->name }}</h3>
-                                    <div class="product-price-and-rating text-center">
-                                        @if ($product->variants->isNotEmpty())
-                                            @php
-                                                $variant = $product->variants->first();
-                                            @endphp
-                                            @if ($variant->discount_price)
-                                                <strong
-                                                    class="product-price text-decoration-line-through text-muted">{{ number_format($variant->selling_price) }}đ</strong>
-                                                <strong
-                                                    class="product-price text-danger ms-2">{{ number_format($variant->discount_price) }}đ</strong>
+                                        <a href="{{ route('product.detail', $product->slug) }}" class="d-block w-100 h-100 text-center"
+                                            onclick="incrementView('{{ $product->id }}')" data-product-id="{{ $product->id }}">
+                                            <img src="{{ asset($mainImage) }}" class="product-img" alt="{{ $product->name }}">
+                                        </a>
+                                        <div class="product-tools">
+                                            <span class="tool-btn" title="So sánh"
+                                                onclick="event.preventDefault(); addToCompare('{{ $product->id }}', '{{ $product->name }}', '{{ $product->category_id }}')">
+                                                <i class="fa-solid fa-code-compare"></i>
+                                            </span>
+                                            @auth
+                                                <span class="tool-btn icon-heart icon-add-to-wishlist {{ in_array($product->id, $wishlistProductIds) ? 'in-wishlist' : '' }}"
+                                                    onclick="event.preventDefault(); toggleWishlist('{{ $product->id }}', '{{ route('wishlist.toggle', $product) }}', this)"
+                                                    title="{{ in_array($product->id, $wishlistProductIds) ? 'Xóa khỏi yêu thích' : 'Thêm vào yêu thích' }}">
+                                                    <i class="fas fa-heart"></i>
+                                                </span>
                                             @else
-                                                <strong
-                                                    class="product-price">{{ number_format($variant->selling_price) }}đ</strong>
+                                                <span class="tool-btn icon-heart icon-add-to-wishlist"
+                                                    onclick="event.preventDefault(); showLoginPrompt()"
+                                                    title="Đăng nhập để thêm vào yêu thích">
+                                                    <i class="fas fa-heart"></i>
+                                                </span>
+                                            @endauth
+                                            <span class="tool-btn" title="Xem nhanh"
+                                                onclick="event.preventDefault(); showQuickView({{ $product->id }})">
+                                                <i class="fas fa-eye"></i>
+                                            </span>
+                                    </div>
+                                    </div>
+                                    <div class="product-body">
+                                        <a href="{{ route('product.detail', $product->slug) }}" class="text-decoration-none">
+                                            <h3 class="product-title mb-1">{{ $product->name }}</h3>
+                                        </a>
+                                        <div class="product-price-row">
+                                        @if ($product->variants->isNotEmpty())
+                                                @php $variant = $product->variants->first(); @endphp
+                                            @if ($variant->discount_price)
+                                                    <strong class="product-price">{{ number_format($variant->discount_price) }}đ</strong>
+                                                    <span class="old-price"><del>{{ number_format($variant->selling_price) }}đ</del></span>
+                                            @else
+                                                    <strong class="product-price">{{ number_format($variant->selling_price) }}đ</strong>
                                             @endif
                                         @endif
-                                        <div class="product-rating d-flex justify-content-center align-items-center">
-                                            <i class="fas fa-star"></i>
-                                            <i class="fas fa-star"></i>
-                                            <i class="fas fa-star"></i>
-                                            <i class="fas fa-star"></i>
-                                            <i class="fas fa-star"></i>
-                                            <span>({{ number_format($product->views) }} views)</span>
                                         </div>
+                                        @php
+                                            $ratedVariants = $product->variants->filter(function ($variant) {
+                                                return isset($variant->reviews_count)
+                                                    ? $variant->reviews_count > 0
+                                                    : $variant->reviews && $variant->reviews->count() > 0;
+                                            });
+                                            $avgRating = null;
+                                            if ($ratedVariants->count() > 0) {
+                                                $avgRating = $ratedVariants->avg(function ($variant) {
+                                                    return isset($variant->avg_rating)
+                                                        ? $variant->avg_rating
+                                                        : ($variant->reviews
+                                                            ? $variant->reviews->avg('rating')
+                                                            : 0);
+                                                });
+                                            }
+                                            $avgRating = $avgRating ? round($avgRating, 1) : 5;
+                                        @endphp
+                                        <div class="product-rating-row">
+                                            <div class="stars">
+                                            @for ($i = 1; $i <= 5; $i++)
+                                                @if ($i <= floor($avgRating))
+                                                    <i class="fas fa-star text-warning"></i>
+                                                @elseif ($i - $avgRating < 1)
+                                                    <i class="fas fa-star-half-alt text-warning"></i>
+                                                @else
+                                                    <i class="far fa-star text-warning"></i>
+                                                @endif
+                                            @endfor
+                                        </div>
+                                            <span class="sold-count">({{ number_format($product->sold_count ?? 0) }} đã bán)</span>
                                     </div>
-                                    <div class="product-icons">
-                                        <span class="icon-compare"
-                                            onclick="event.preventDefault(); addToCompare('{{ $product->id }}', '{{ $product->name }}', '{{ $product->category_id }}')"
-                                            title="Thêm vào so sánh">
-                                            <i class="fa-solid fa-code-compare"></i>
-                                        </span>
-                                        @auth
-                                            <form action="{{ route('wishlist.toggle', $product) }}" method="POST"
-                                                style="display: none;" id="wishlist-form-{{ $product->id }}">
-                                                @csrf
-                                                <input type="hidden" name="product_name" value="{{ $product->name }}">
-                                            </form>
-                                            <span
-                                                class="icon-heart icon-add-to-wishlist {{ in_array($product->id, $wishlistProductIds) ? 'in-wishlist' : '' }}"
-                                                onclick="event.preventDefault(); toggleWishlist('{{ $product->id }}', '{{ route('wishlist.toggle', $product) }}', this)"
-                                                title="{{ in_array($product->id, $wishlistProductIds) ? 'Xóa khỏi yêu thích' : 'Thêm vào yêu thích' }}">
-                                                <i class="fas fa-heart"></i>
-                                            </span>
-                                        @else
-                                            <span class="icon-heart icon-add-to-wishlist"
-                                                onclick="event.preventDefault(); showLoginPrompt()"
-                                                title="Đăng nhập để thêm vào yêu thích">
-                                                <i class="fas fa-heart"></i>
-                                            </span>
-                                        @endauth
-                                        <span class="icon-quick-view"
-                                            onclick="event.preventDefault(); showQuickView({{ $product->id }})"><i
-                                                class="fas fa-eye"></i></span>
                                     </div>
-                                </a>
+                                </div>
                             </div>
                         @endforeach
                     </div>
@@ -173,7 +192,7 @@
 
                 <div class="col-lg-4">
                     <div class="popular-content" data-aos="fade-left" data-aos-delay="400">
-                        <h2 class="section-title">Sản Phẩm Bán Chạy Nhất</h2>
+                        <h2 class="section-title">Sản Phẩm Thịnh Hành</h2>
                         <p class="mb-4">Khám phá những thiết bị Apple được ưa chuộng nhất hiện nay – nơi hội tụ đỉnh cao
                             công nghệ và thiết kế tinh tế. Đáp ứng mọi nhu cầu từ giải trí đến công việc.</p>
 
@@ -220,10 +239,8 @@
                     <div class="product-slider">
                         @foreach ($latestProducts as $product)
                             <div class="col-md-4 mb-4" data-aos="fade-up" data-aos-delay="{{ $loop->iteration * 100 }}">
-                                <a class="product-item" href="{{ route('product.detail', $product->slug) }}"
-                                    onclick="incrementView('{{ $product->id }}')"
-                                    data-product-id="{{ $product->id }}">
-                                    <div class="product-thumbnail text-center">
+                                <div class="product-card">
+                                    <div class="product-media">
                                         @php
                                             $images = getImagesArray($product->images);
                                             if (empty($images) && $product->variants->isNotEmpty()) {
@@ -235,65 +252,83 @@
                                                 $mainImage = 'uploads/products/' . $mainImage;
                                             }
                                         @endphp
-
-                                        <img src="{{ asset($mainImage) }}" class="img-fluid mx-auto"
-                                            alt="{{ $product->name }}" style="max-height: 200px; object-fit: contain;">
-                                    </div>
-                                    <h3 class="product-title text-center">{{ $product->name }}</h3>
-                                    <div class="product-price-and-rating text-center">
-                                        @if ($product->variants->isNotEmpty())
-                                            @php
-                                                $variant = $product->variants->first();
-                                            @endphp
-                                            @if ($variant->discount_price)
-                                                <strong
-                                                    class="product-price text-decoration-line-through text-muted">{{ number_format($variant->selling_price) }}đ</strong>
-                                                <strong
-                                                    class="product-price text-danger ms-2">{{ number_format($variant->discount_price) }}đ</strong>
+                                        <a class="d-block w-100 h-100 text-center" href="{{ route('product.detail', $product->slug) }}"
+                                            onclick="incrementView('{{ $product->id }}')" data-product-id="{{ $product->id }}">
+                                            <img src="{{ asset($mainImage) }}" class="product-img" alt="{{ $product->name }}">
+                                        </a>
+                                        <div class="product-tools">
+                                            <span class="tool-btn" title="So sánh"
+                                                onclick="event.preventDefault(); addToCompare('{{ $product->id }}', '{{ $product->name }}', '{{ $product->category_id }}')">
+                                                <i class="fa-solid fa-code-compare"></i>
+                                            </span>
+                                            @auth
+                                                <span class="tool-btn icon-heart icon-add-to-wishlist {{ in_array($product->id, $wishlistProductIds) ? 'in-wishlist' : '' }}"
+                                                    onclick="event.preventDefault(); toggleWishlist('{{ $product->id }}', '{{ route('wishlist.toggle', $product) }}', this)"
+                                                    title="{{ in_array($product->id, $wishlistProductIds) ? 'Xóa khỏi yêu thích' : 'Thêm vào yêu thích' }}">
+                                                    <i class="fas fa-heart"></i>
+                                                </span>
                                             @else
-                                                <strong
-                                                    class="product-price">{{ number_format($variant->selling_price) }}đ</strong>
+                                                <span class="tool-btn icon-heart icon-add-to-wishlist"
+                                                    onclick="event.preventDefault(); showLoginPrompt()"
+                                                    title="Đăng nhập để thêm vào yêu thích">
+                                                    <i class="fas fa-heart"></i>
+                                                </span>
+                                            @endauth
+                                            <span class="tool-btn" title="Xem nhanh"
+                                                onclick="event.preventDefault(); showQuickView({{ $product->id }})">
+                                                <i class="fas fa-eye"></i>
+                                            </span>
+                                    </div>
+                                    </div>
+                                    <div class="product-body">
+                                        <a href="{{ route('product.detail', $product->slug) }}" class="text-decoration-none">
+                                            <h3 class="product-title mb-1" style="height: 33px;line-height: 21px">{{ $product->name }}</h3>
+                                        </a>
+                                        <div class="product-price-row">
+                                        @if ($product->variants->isNotEmpty())
+                                                @php $variant = $product->variants->first(); @endphp
+                                            @if ($variant->discount_price)
+                                                    <strong class="product-price">{{ number_format($variant->discount_price) }}đ</strong>
+                                                    <span class="old-price"><del>{{ number_format($variant->selling_price) }}đ</del></span>
+                                            @else
+                                                    <strong class="product-price">{{ number_format($variant->selling_price) }}đ</strong>
                                             @endif
                                         @endif
-                                        <div class="product-rating d-flex justify-content-center align-items-center">
-                                            <i class="fas fa-star"></i>
-                                            <i class="fas fa-star"></i>
-                                            <i class="fas fa-star"></i>
-                                            <i class="fas fa-star"></i>
-                                            <i class="fas fa-star"></i>
-                                            <span>({{ number_format($product->views) }} views)</span>
                                         </div>
+                                        @php
+                                            $ratedVariants = $product->variants->filter(function ($variant) {
+                                                return isset($variant->reviews_count)
+                                                    ? $variant->reviews_count > 0
+                                                    : $variant->reviews && $variant->reviews->count() > 0;
+                                            });
+                                            $avgRating = null;
+                                            if ($ratedVariants->count() > 0) {
+                                                $avgRating = $ratedVariants->avg(function ($variant) {
+                                                    return isset($variant->avg_rating)
+                                                        ? $variant->avg_rating
+                                                        : ($variant->reviews
+                                                            ? $variant->reviews->avg('rating')
+                                                            : 0);
+                                                });
+                                            }
+                                            $avgRating = $avgRating ? round($avgRating, 1) : 5;
+                                        @endphp
+                                        <div class="product-rating-row">
+                                            <div class="stars">
+                                            @for ($i = 1; $i <= 5; $i++)
+                                                @if ($i <= floor($avgRating))
+                                                    <i class="fas fa-star text-warning"></i>
+                                                @elseif ($i - $avgRating < 1)
+                                                    <i class="fas fa-star-half-alt text-warning"></i>
+                                                @else
+                                                    <i class="far fa-star text-warning"></i>
+                                                @endif
+                                            @endfor
+                                        </div>
+                                            <span class="sold-count">({{ number_format($product->sold_count ?? 0) }} đã bán)</span>
                                     </div>
-                                    <div class="product-icons">
-                                        <span class="icon-compare"
-                                            onclick="event.preventDefault(); addToCompare('{{ $product->id }}', '{{ $product->name }}', '{{ $product->category_id }}')"
-                                            title="Thêm vào so sánh">
-                                            <i class="fa-solid fa-code-compare"></i>
-                                        </span>
-                                        @auth
-                                            <form action="{{ route('wishlist.toggle', $product) }}" method="POST"
-                                                style="display: none;" id="wishlist-form-{{ $product->id }}">
-                                                @csrf
-                                                <input type="hidden" name="product_name" value="{{ $product->name }}">
-                                            </form>
-                                            <span
-                                                class="icon-heart icon-add-to-wishlist {{ in_array($product->id, $wishlistProductIds) ? 'in-wishlist' : '' }}"
-                                                onclick="event.preventDefault(); toggleWishlist('{{ $product->id }}', '{{ route('wishlist.toggle', $product) }}', this)"
-                                                title="{{ in_array($product->id, $wishlistProductIds) ? 'Xóa khỏi yêu thích' : 'Thêm vào yêu thích' }}">
-                                                <i class="fas fa-heart"></i>
-                                            </span>
-                                        @else
-                                            <span class="icon-heart icon-add-to-wishlist"
-                                                onclick="event.preventDefault(); showLoginPrompt()"
-                                                title="Đăng nhập để thêm vào yêu thích">
-                                                <i class="fas fa-heart"></i>
-                                            </span>
-                                        @endauth
-                                        <span class="icon-quick-view"
-                                            onclick="event.preventDefault(); showQuickView({{ $product->id }})"><i
-                                                class="fas fa-eye"></i></span>
                                     </div>
-                                </a>
+                                </div>
                             </div>
                         @endforeach
                     </div>
@@ -371,85 +406,99 @@
     <!-- End Why Choose Us Section -->
 
     <!-- Start Testimonial Slider -->
-    <div class="testimonial-section" data-aos="fade-up">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-7 mx-auto text-center" data-aos="fade-up">
-                    <h2 class="section-title">Testimonials</h2>
+    @if ($topRatedVariants->count() > 0)
+        <section class="top-rated-products py-5" data-aos="fade-up">
+            <div class="container">
+                <div class="text-center mb-4">
+                    <h2 class="section-title">Các Đánh Giá Của Sản Phẩm</h2>
                 </div>
-            </div>
+                <div class="position-relative">
+                    <div class="top-rated-slider py-2">
+                        @php
+                            if (!function_exists('getImagesArray')) {
+                                function getImagesArray($images)
+                                {
+                                    if (is_array($images)) {
+                                        return $images;
+                                    }
+                                    if (is_string($images)) {
+                                        $decoded = json_decode($images, true);
+                                        return is_array($decoded) ? $decoded : [];
+                                    }
+                                    return [];
+                                }
+                            }
+                        @endphp
 
-            <div class="row justify-content-center">
-                <div class="col-lg-12" data-aos="fade-up" data-aos-delay="100">
-                    <div class="testimonial-slider-wrap text-center">
-                        <div id="testimonial-nav">
-                            <span class="prev" data-controls="prev"><span class="fa fa-chevron-left"></span></span>
-                            <span class="next" data-controls="next"><span class="fa fa-chevron-right"></span></span>
-                        </div>
+                        @foreach ($topRatedVariants as $variant)
+                            @php
+                                $images = getImagesArray($variant->images);
+                                $imageUrl = !empty($images[0]) ? $images[0] : 'uploads/default/default.jpg';
+                            @endphp
 
-                        <div class="testimonial-slider">
-                            <div class="item">
-                                <div class="row justify-content-center">
-                                    <div class="col-lg-8 mx-auto">
-                                        <div class="testimonial-block text-center d-flex justify-content-center">
-                                            <div class="author-info col-lg-4">
-                                                <div class="author-pic">
-                                                    <img src="images/person-1.png" alt="Maria Jones" class="img-fluid">
-                                                </div>
-                                                <h3 class="font-weight-bold">Maria Jones</h3>
-                                                <span class="position d-block mb-3">CEO, Co-Founder, XYZ Inc.</span>
-                                            </div>
-                                            <blockquote class="mb-5 col-lg-8">
-                                                <p>"Donec facilisis quam ut purus rutrum lobortis. Donec vitae
-                                                    odio quis nisl dapibus malesuada. Nullam ac aliquet velit. Aliquam
-                                                    vulputate velit imperdiet dolor tempor tristique. Pellentesque
-                                                    habitant morbi tristique senectus et netus et malesuada fames ac
-                                                    turpis egestas. Integer convallis volutpat dui quis
-                                                    scelerisque."</p>
-                                            </blockquote>
+                            <div class="product-card py-1 px-4">
+                                <div class="border p-4 h-100 text-center bg-white"
+                                    style="border-radius: 8px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.21);">
+                                    <img src="{{ asset($imageUrl) }}" alt="{{ $variant->product->name }}"
+                                        class="img-fluid mb-3"
+                                        style="height: 220px; object-fit: contain; display: inline-block; margin: 0 auto;">
+                                    <small class="text-muted d-block mb-2"> {{ $variant->name }}</small>
+                                    @if ($variant->reviews_count > 0)
+                                        <div class="text-warning fw-bold mb-2">
+                                            {{ number_format($variant->avg_rating, 1) }} ★
+                                            <small class="text-secondary">({{ $variant->reviews_count }} đánh giá)</small>
                                         </div>
-                                    </div>
+                                    @else
+                                        <small class="text-muted">Chưa có đánh giá</small>
+                                    @endif
                                 </div>
                             </div>
-                            <!-- Thêm các item khác nếu cần -->
-                        </div>
+                        @endforeach
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
+        </section>
+    @endif
     <!-- End Testimonial Slider -->
 
     <!-- Start Blog Section -->
-    <div class="blog-section" data-aos="fade-up">
-        <div class="container">
-            <div class="row mb-5">
-                <div class="col-md-6" data-aos="fade-right">
-                    <h2 class="section-title">Recent Blog</h2>
-                </div>
-                <div class="col-md-6 text-start text-md-end" data-aos="fade-left">
-                    <a href="#" class="more">View All Posts</a>
-                </div>
-            </div>
-
-            <div class="row">
-                <div class="col-12 col-sm-6 col-md-4 mb-4 mb-md-0" data-aos="fade-up" data-aos-delay="100">
-                    <div class="post-entry">
-                        <a href="#" class="post-thumbnail"><img src="images/post-1.jpg" alt="Image"
-                                class="img-fluid"></a>
-                        <div class="post-content-entry">
-                            <h3><a href="#">First Time Home Owner Ideas</a></h3>
-                            <div class="meta">
-                                <span>by <a href="#">Kristin Watson</a></span> <span>on <a href="#">Dec 19,
-                                        2021</a></span>
-                            </div>
-                        </div>
+    @if ($latestBlogs->count() > 0)
+        <div class="blog-section" data-aos="fade-up">
+            <div class="container">
+                <div class="row mb-5">
+                    <div class="col-md-6" data-aos="fade-right">
+                        <h2 class="section-title">Bài viết gần đây</h2>
+                    </div>
+                    <div class="col-md-6 text-start text-md-end" data-aos="fade-left">
+                        <a href="{{ route('blog') }}" class="more">Xem tất cả</a>
                     </div>
                 </div>
-                <!-- Thêm các item khác nếu cần -->
+
+                <div class="row">
+                    @foreach ($latestBlogs as $blog)
+                        <div class="col-12 col-sm-6 col-md-4 mb-4 mb-md-0" data-aos="fade-up"
+                            data-aos-delay="{{ $loop->iteration * 100 }}">
+                            <div class="post-entry">
+                                <a href="{{ route('blog.show', $blog->slug) }}" class="post-thumbnail">
+                                    <img src="{{ asset($blog->image ?? 'uploads/default/default.jpg') }}"
+                                        alt="{{ $blog->title }}" class="img-fluid">
+                                </a>
+                                <div class="post-content-entry">
+                                    <h3 style="height: 33px;line-height: 21px"><a
+                                            href="{{ route('blog.show', $blog->slug) }}">{{ Str::limit($blog->title, 90) }}</a>
+                                    </h3>
+                                    <div class="meta">
+                                        <span>{{ $blog->created_at->diffForHumans() }}</span>
+                                        {{-- <span>on <a href="#">{{ $blog->created_at->format('M d, Y') }}</a></span> --}}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
             </div>
         </div>
-    </div>
+    @endif
     <!-- End Blog Section -->
 
     <!-- Nút FAB và Panel Chat -->
@@ -480,30 +529,29 @@
 
     <!-- JavaScript for Wishlist and Quick View -->
     <script>
-        function showCustomAlert(message, type = 'success') {
-            const alertId = 'custom-alert-' + Date.now();
-            const icon = type === 'success' ? 'fa-check-circle' : 'fa-times-circle';
-            const alertDiv = document.createElement('div');
-            alertDiv.className = `custom-alert ${type}`;
-            alertDiv.id = alertId;
-            alertDiv.innerHTML = `
-                <div class="icon"><i class="fas ${icon}"></i></div>
-                <div class="content">
-                    <strong>${type.toUpperCase()}</strong>
-                    <p>${message}</p>
-                </div>
-                <div class="close" onclick="this.parentElement.style.display='none';">×</div>
-            `;
-            document.body.appendChild(alertDiv);
-            setTimeout(() => {
-                alertDiv.style.display = 'none';
-            }, 3000);
+        function showToast(message, type = 'success') {
+            const Toast = Swal.mixin({
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true,
+                didOpen: (toast) => {
+                    toast.addEventListener('mouseenter', Swal.stopTimer)
+                    toast.addEventListener('mouseleave', Swal.resumeTimer)
+                }
+            });
+
+            Toast.fire({
+                icon: type,
+                title: message
+            });
         }
 
         async function toggleWishlist(productId, url, iconElement) {
             const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
             if (!csrfToken) {
-                showCustomAlert('Lỗi hệ thống, vui lòng thử lại!', 'error');
+                showToast('Lỗi hệ thống, vui lòng thử lại!', 'error');
                 return;
             }
             try {
@@ -520,7 +568,7 @@
                 });
                 const data = await response.json();
                 if (data.status) {
-                    showCustomAlert(data.message, data.type);
+                    showToast(data.message, data.type);
                     if (data.type === 'success') {
                         const allHeartIcons = document.querySelectorAll(
                             `.icon-heart[onclick*="toggleWishlist('${productId}'"]`);
@@ -535,18 +583,101 @@
                         });
                     }
                 } else {
-                    showCustomAlert(data.message || 'Đã xảy ra lỗi, vui lòng thử lại!', 'error');
+                    showToast(data.message || 'Đã xảy ra lỗi, vui lòng thử lại!', 'error');
                 }
             } catch (error) {
-                showCustomAlert('Đã xảy ra lỗi: ' + (error.message || 'Unknown error'), 'error');
+                showToast('Đã xảy ra lỗi: ' + (error.message || 'Unknown error'), 'error');
             }
         }
 
         function showLoginPrompt() {
-            showCustomAlert('Vui lòng đăng nhập để thêm sản phẩm vào danh sách yêu thích.', 'error');
+            showToast('Vui lòng đăng nhập để thêm sản phẩm vào danh sách yêu thích.', 'error');
         }
 
-        // ... (các hàm quick view, buy now, add to cart, increment view giữ nguyên như trước)
+        let compareSelected = [];
+        let compareNames = [];
+        let compareCategory = null;
+
+        function addToCompare(productId, productName, categoryId) {
+            const isAlreadySelected = compareSelected.includes(productId);
+
+            if (isAlreadySelected) {
+                // Remove product
+                const index = compareSelected.indexOf(productId);
+                compareSelected.splice(index, 1);
+                compareNames.splice(index, 1);
+                showToast('Đã bỏ chọn ' + productName + ' khỏi so sánh', 'info');
+
+                // If the list becomes empty, reset the category
+                if (compareSelected.length === 0) {
+                    compareCategory = null;
+                }
+            } else {
+                // Add product
+                if (compareSelected.length >= 4) {
+                    showToast('Chỉ được chọn tối đa 4 sản phẩm để so sánh!', 'error');
+                    return;
+                }
+
+                // Check category
+                if (compareSelected.length > 0 && compareCategory != categoryId) {
+                    showToast('Vui lòng chỉ chọn các sản phẩm trong cùng một danh mục!', 'error');
+                    return;
+                }
+
+                compareSelected.push(productId);
+                compareNames.push(productName);
+
+                // Set category if it's the first product being added
+                if (compareSelected.length === 1) {
+                    compareCategory = categoryId;
+                }
+                showToast('Đã thêm ' + productName + ' vào so sánh', 'success');
+            }
+
+            // Cập nhật hiển thị nút so sánh
+            updateCompareButton();
+        }
+
+        function updateCompareButton() {
+            const button = document.getElementById('compareButton');
+            const count = document.getElementById('compareCount');
+            const text = document.getElementById('compareButtonText');
+
+            if (compareSelected.length > 0) {
+                button.style.display = 'block';
+                count.textContent = compareSelected.length;
+                if (compareSelected.length >= 2) {
+                    text.textContent = 'So sánh ngay';
+                    button.style.background = '#28a745';
+                } else {
+                    text.textContent = 'Chọn thêm sản phẩm';
+                    button.style.background = '#007bff';
+                }
+            } else {
+                button.style.display = 'none';
+            }
+        }
+
+        function goToCompare() {
+            if (compareSelected.length >= 2 && compareSelected.length <= 4) {
+                // Tạo form ẩn và submit
+                const form = document.createElement('form');
+                form.method = 'GET';
+                form.action = '{{ route('compare.index') }}';
+
+                const productsInput = document.createElement('input');
+                productsInput.type = 'hidden';
+                productsInput.name = 'products';
+                productsInput.value = compareSelected.join(',');
+                form.appendChild(productsInput);
+
+                document.body.appendChild(form);
+                form.submit();
+            } else {
+                showToast('Vui lòng chọn từ 2 đến 4 sản phẩm để so sánh!', 'error');
+            }
+        }
     </script>
 
     <!-- CSRF Meta Tag -->
@@ -567,9 +698,11 @@
     </script>
 
 @section('scripts')
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         $(document).ready(function() {
-            $('.product-slider, .latest-products-slider').slick({
+            $('.product-slider, .latest-products-slider, .top-rated-slider').slick({
                 dots: true,
                 infinite: true,
                 speed: 300,
@@ -595,6 +728,69 @@
                 ]
             });
         });
+
+        // Hàm hiển thị toast message
+        function showToast(message, type = 'success') {
+            const Toast = Swal.mixin({
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true,
+                didOpen: (toast) => {
+                    toast.addEventListener('mouseenter', Swal.stopTimer)
+                    toast.addEventListener('mouseleave', Swal.resumeTimer)
+                }
+            });
+
+            Toast.fire({
+                icon: type,
+                title: message
+            });
+        }
+
+        // Hàm xử lý thêm/xóa yêu thích
+        async function toggleWishlist(productId, url, iconElement) {
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    // Hiển thị thông báo
+                    showToast(data.message, data.type || 'success');
+
+                    // Cập nhật trạng thái icon
+                    const allHeartIcons = document.querySelectorAll(
+                        `.icon-heart[onclick*="toggleWishlist('${productId}'"]`);
+                    allHeartIcons.forEach(icon => {
+                        if (data.in_wishlist) {
+                            icon.classList.add('in-wishlist');
+                            icon.title = 'Xóa khỏi yêu thích';
+                        } else {
+                            icon.classList.remove('in-wishlist');
+                            icon.title = 'Thêm vào yêu thích';
+                        }
+                    });
+                } else {
+                    showToast(data.message || 'Có lỗi xảy ra', 'error');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showToast('Có lỗi xảy ra khi xử lý yêu cầu', 'error');
+            }
+        }
+
+        function showLoginPrompt() {
+            showToast('Vui lòng đăng nhập để thêm sản phẩm vào danh sách yêu thích', 'warning');
+        }
     </script>
 @endsection
 
@@ -652,6 +848,17 @@
         font-size: 1.1rem;
         margin: 10px 0;
         color: #333;
+        min-height: 44px;
+        max-height: 44px;
+        line-height: 22px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        /* Số dòng tối đa */
+        -webkit-box-orient: vertical;
+        white-space: normal;
+            text-align: center; 
     }
 
     .product-price-and-rating {
@@ -869,9 +1076,41 @@
             font-size: 1.5rem;
         }
 
-        .ai-advice .lead {
-            font-size: 1rem;
-        }
+
+    }
+
+    .author-pic img {
+        border-radius: 8px;
+    }
+
+    /* Custom styles cho Toast notifications */
+    .swal2-toast {
+        max-width: 300px !important;
+        font-size: 0.875rem !important;
+    }
+
+    .swal2-toast .swal2-title {
+        font-size: 1rem !important;
+        margin: 0.5em 1em !important;
+    }
+
+    .swal2-toast .swal2-content {
+        font-size: 0.875rem !important;
+    }
+
+    .swal2-toast .swal2-icon {
+        width: 2em !important;
+        height: 2em !important;
+        margin: 0.5em !important;
+    }
+
+    .swal2-toast .swal2-icon .swal2-icon-content {
+        font-size: 1.5em !important;
+    }
+
+    .swal2-toast .swal2-success-ring {
+        width: 2em !important;
+        height: 2em !important;
     }
 </style>
 
@@ -902,7 +1141,7 @@
             const index = compareSelected.indexOf(productId);
             compareSelected.splice(index, 1);
             compareNames.splice(index, 1);
-            showCustomAlert('Đã bỏ chọn ' + productName + ' khỏi so sánh', 'info');
+            showToast('Đã bỏ chọn ' + productName + ' khỏi so sánh', 'info');
 
             // If the list becomes empty, reset the category
             if (compareSelected.length === 0) {
@@ -911,13 +1150,13 @@
         } else {
             // Add product
             if (compareSelected.length >= 4) {
-                showCustomAlert('Chỉ được chọn tối đa 4 sản phẩm để so sánh!', 'error');
+                showToast('Chỉ được chọn tối đa 4 sản phẩm để so sánh!', 'error');
                 return;
             }
 
             // Check category
             if (compareSelected.length > 0 && compareCategory != categoryId) {
-                showCustomAlert('Vui lòng chỉ chọn các sản phẩm trong cùng một danh mục!', 'error');
+                showToast('Vui lòng chỉ chọn các sản phẩm trong cùng một danh mục!', 'error');
                 return;
             }
 
@@ -928,7 +1167,7 @@
             if (compareSelected.length === 1) {
                 compareCategory = categoryId;
             }
-            showCustomAlert('Đã thêm ' + productName + ' vào so sánh', 'success');
+            showToast('Đã thêm ' + productName + ' vào so sánh', 'success');
         }
 
         // Cập nhật hiển thị nút so sánh
@@ -971,7 +1210,7 @@
             document.body.appendChild(form);
             form.submit();
         } else {
-            showCustomAlert('Vui lòng chọn từ 2 đến 4 sản phẩm để so sánh!', 'error');
+            showToast('Vui lòng chọn từ 2 đến 4 sản phẩm để so sánh!', 'error');
         }
     }
 
@@ -980,11 +1219,12 @@
 
 <!-- Nút So sánh nổi -->
 <div id="compareButton"
-    style="display:none; position:fixed; bottom:80px; right:30px; z-index:9999; background:#007bff; color:white; padding:15px 25px; border-radius:25px; box-shadow:0 4px 12px rgba(0,123,255,0.3); cursor:pointer; transition:all 0.3s ease;"
+    style="display:none; position:fixed; bottom:20px; left:50%; transform:translateX(-50%); z-index:9999; background:#007bff; color:white; padding:15px 25px; border-radius:25px; box-shadow:0 4px 12px rgba(0,123,255,0.3); cursor:pointer; transition:all 0.3s ease;"
     onclick="goToCompare()">
     <i class="fa-solid fa-code-compare me-2"></i>
     <span id="compareButtonText">So sánh ngay</span>
     <span id="compareCount" class="badge bg-light text-dark ms-2">0</span>
 </div>
+
 
 @endsection

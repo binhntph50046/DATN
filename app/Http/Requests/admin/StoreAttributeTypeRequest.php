@@ -24,11 +24,14 @@ class StoreAttributeTypeRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'name.required' => 'The attribute type name is required.',
-            'category_ids.required' => 'Please select at least one category.',
-            'category_ids.*.exists' => 'One or more selected categories are invalid.',
-            'status.required' => 'The status field is required.',
-            'status.in' => 'The status must be either active or inactive.'
+            'name.required' => 'Tên loại thuộc tính là bắt buộc.',
+            'name.string' => 'Tên loại thuộc tính phải là chuỗi.',
+            'name.max' => 'Tên loại thuộc tính không được vượt quá 255 ký tự.',
+            'category_ids.required' => 'Vui lòng chọn ít nhất một danh mục.',
+            'category_ids.array' => 'Danh mục phải là một mảng.',
+            'category_ids.*.exists' => 'Một hoặc nhiều danh mục được chọn không hợp lệ.',
+            'status.required' => 'Trạng thái là bắt buộc.',
+            'status.in' => 'Trạng thái phải là hoạt động hoặc không hoạt động.'
         ];
     }
 }

@@ -1,12 +1,10 @@
 <?php
 
 namespace App\Http\Controllers\client;
-
-use App\Http\Controllers\Controller;
 use App\Models\Order;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Models\ResendInvoiceRequest;
+use Illuminate\Support\Facades\Log;
 use App\Models\ProductReview;
 
 class OrderController
@@ -20,7 +18,6 @@ class OrderController
             // Người dùng chưa đăng nhập
             return view('client.order.guest_tracking');
         }
-
         if ($request->has('status') && $request->status != null) {
             $query->where('status', $request->status);
         }
@@ -36,28 +33,78 @@ class OrderController
 
     public function cancel(Request $request, $id)
     {
-        $request->validate([
-            'cancellation_reason' => 'required|string|max:255'
-        ]);
+        try {
+            $request->validate([
+                'cancellation_reason' => 'required|string|max:255'
+            ]);
 
-        $order = Order::where('user_id', Auth::id())->findOrFail($id);
+            $order = Order::where('user_id', Auth::id())->with('items.product')->findOrFail($id);
 
-        // Chỉ cho phép hủy đơn hàng ở trạng thái pending hoặc confirmed
-        if (!in_array($order->status, ['pending', 'confirmed'])) {
-            return redirect()->back()->with('error', 'Không thể hủy đơn hàng ở trạng thái này!');
+            // Chỉ cho phép hủy đơn hàng ở trạng thái pending hoặc confirmed
+            if (!in_array($order->status, ['pending', 'confirmed'])) {
+                if ($request->ajax()) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Không thể hủy đơn hàng ở trạng thái này!'
+                    ], 400);
+                }
+                return redirect()->back()->with('error', 'Không thể hủy đơn hàng ở trạng thái này!');
+            }
+
+            // Nếu đơn hàng đã thanh toán qua VNPay
+            if ($order->payment_method === 'vnpay' && $order->is_paid) {
+                if ($request->ajax()) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Đơn hàng đã được thanh toán qua VNPay. Vui lòng liên hệ với chúng tôi qua hotline hoặc email để được hỗ trợ hoàn tiền.'
+                    ], 400);
+                }
+                return redirect()->back()->with('warning', 'Đơn hàng đã được thanh toán qua VNPay. Vui lòng liên hệ với chúng tôi qua hotline hoặc email để được hỗ trợ hoàn tiền.');
+            }
+
+            $oldStatus = $order->status;
+            $order->update([
+                'status' => 'cancelled',
+                'cancel_reason' => $request->cancellation_reason
+            ]);
+
+            // Hoàn trả stock cho các sản phẩm trong đơn hàng bị hủy
+            foreach ($order->items as $item) {
+                // Chỉ hoàn trả stock nếu đơn hàng đã được xác nhận hoặc đang giao (đã bị trừ stock)
+                if (in_array($oldStatus, ['confirmed', 'preparing', 'shipping', 'delivered'])) {
+                    // Hoàn trả stock cho variant nếu có
+                    if ($item->product_variant_id) {
+                        $variant = \App\Models\ProductVariant::find($item->product_variant_id);
+                        if ($variant) {
+                            $variant->increment('stock', $item->quantity);
+                        }
+                    }
+                    
+                    // Giảm total_sold cho sản phẩm
+                    $product = $item->product;
+                    if ($product) {
+                        $product->safeDecrementTotalSold($item->quantity);
+                    }
+                }
+            }
+
+            if ($request->ajax()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Đã hủy đơn hàng thành công!'
+                ]);
+            }
+            return redirect()->back()->with('success', 'Đã hủy đơn hàng thành công!');
+            
+        } catch (\Exception $e) {
+            if ($request->ajax()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Có lỗi xảy ra khi hủy đơn hàng'
+                ], 500);
+            }
+            return redirect()->back()->with('error', 'Có lỗi xảy ra khi hủy đơn hàng');
         }
-
-        // Nếu đơn hàng đã thanh toán qua VNPay
-        if ($order->payment_method === 'vnpay' && $order->is_paid) {
-            return redirect()->back()->with('warning', 'Đơn hàng đã được thanh toán qua VNPay. Vui lòng liên hệ với chúng tôi qua hotline hoặc email để được hỗ trợ hoàn tiền.');
-        }
-
-        $order->update([
-            'status' => 'cancelled',
-            'cancel_reason' => $request->cancellation_reason
-        ]);
-
-        return redirect()->back()->with('success', 'Đã hủy đơn hàng thành công!');
     }
 
     public function guestTracking(Request $request)
@@ -78,5 +125,83 @@ class OrderController
 
         // Nếu không có order_code, hiển thị form tra cứu
         return view('client.order.guest_tracking');
+    }
+
+    /**
+     * Client xác nhận đã nhận hàng
+     */
+    public function confirmReceived(Request $request, $id)
+    {
+        try {
+            Log::info('Confirm received request', [
+                'order_id' => $id,
+                'user_id' => Auth::id(),
+                'request_data' => $request->all()
+            ]);
+
+            $order = Order::where('user_id', Auth::id())->with('items.product')->findOrFail($id);
+
+            Log::info('Order found', [
+                'order_id' => $order->id,
+                'current_status' => $order->status,
+                'user_id' => $order->user_id
+            ]);
+
+            // Chỉ cho phép xác nhận khi đơn hàng ở trạng thái 'delivered'
+            if ($order->status !== 'delivered') {
+                Log::warning('Invalid status for confirmation', [
+                    'order_id' => $order->id,
+                    'current_status' => $order->status,
+                    'expected_status' => 'delivered'
+                ]);
+                
+                if ($request->ajax()) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Chỉ có thể xác nhận đã nhận hàng khi đơn hàng đã được giao!'
+                    ], 400);
+                }
+                return redirect()->back()->with('error', 'Chỉ có thể xác nhận đã nhận hàng khi đơn hàng đã được giao!');
+            }
+
+            // Cập nhật trạng thái thành 'completed'
+            $oldStatus = $order->status;
+            $order->update([
+                'status' => 'completed',
+                'payment_status' => 'paid'
+            ]);
+            // Chỉ cập nhật khi chuyển từ trạng thái khác sang completed
+            if ($oldStatus !== 'completed') {
+                foreach ($order->items as $item) {
+                    $product = $item->product;
+                    if ($product) {
+                        $product->safeIncrementTotalSold($item->quantity);
+                    }
+                }
+            }
+
+
+            if ($request->ajax()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Đã xác nhận nhận hàng thành công!'
+                ]);
+            }
+            return redirect()->back()->with('success', 'Đã xác nhận nhận hàng thành công!');
+            
+        } catch (\Exception $e) {
+            Log::error('Error confirming received order', [
+                'order_id' => $id,
+                'error' => $e->getMessage()
+            ]);
+            
+            if ($request->ajax()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Có lỗi xảy ra khi xác nhận nhận hàng'
+                ], 500);
+            }
+            return redirect()->back()->with('error', 'Có lỗi xảy ra khi xác nhận nhận hàng');
+        }
     }
 }

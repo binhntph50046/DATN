@@ -51,10 +51,28 @@ class CategoryController
             'icon' => 'nullable|string|max:255'
         ]);
 
+        // Kiểm tra trùng tên với danh mục đã xóa mềm
+        $existing = Category::withTrashed()
+            ->where('slug', Str::slug($request->name))
+            ->where('type', $request->type)
+            ->first();
+
+        if ($existing) {
+            if ($existing->trashed()) {
+                return redirect()->back()->withInput()->withErrors([
+                    'name' => 'Tên danh mục này đang ở trong thùng rác. Vui lòng khôi phục hoặc chọn tên khác.'
+                ]);
+            } else {
+                return redirect()->back()->withInput()->withErrors([
+                    'name' => 'Tên danh mục này đã tồn tại.'
+                ]);
+            }
+        }
+
         $data = $request->all();
         $data['slug'] = Str::slug($request->name);
 
-        // Handle image upload
+        // Xử lý tải lên hình ảnh
         if ($request->hasFile('image')) {
             $image = $request->file('image');
             $imageName = time() . '_' . $image->getClientOriginalName();
@@ -75,7 +93,7 @@ class CategoryController
         Category::create($data);
 
         return redirect()->route('admin.categories.index')
-            ->with('success', 'Category created successfully.');
+            ->with('success', 'Danh mục được tạo thành công.');
     }
 
     public function show(string $id)
@@ -108,9 +126,9 @@ class CategoryController
         $data = $request->all();
         $data['slug'] = Str::slug($request->name);
 
-        // Handle image upload
+        // Xử lý tải lên hình ảnh
         if ($request->hasFile('image')) {
-            // Delete old image if exists
+            // Xóa hình ảnh cũ nếu tồn tại
             if ($category->image && file_exists(public_path($category->image))) {
                 unlink(public_path($category->image));
             }
@@ -129,7 +147,7 @@ class CategoryController
         }
 
         return redirect()->route('admin.categories.index')
-            ->with('success', 'Category updated successfully.');
+            ->with('success', 'Danh mục được cập nhật thành công.');
     }
 
     private function updateChildrenStatus($category, $status)
@@ -151,7 +169,7 @@ class CategoryController
         $this->deleteRecursive($category);
 
         return redirect()->route('admin.categories.index')
-            ->with('success', 'Category and all its subcategories deleted successfully.');
+            ->with('success', 'Danh mục và tất cả các danh mục con của nó đã được xóa thành công.');
     }
 
     private function deleteRecursive($category)
@@ -165,19 +183,33 @@ class CategoryController
 
     public function trash()
     {
-        $categories = Category::onlyTrashed()->with('parent')->paginate(10);
+        $categories = Category::onlyTrashed()->with(['parent', 'children'])->paginate(10);
         return view('admin.categories.trash', compact('categories'));
     }
 
     public function restore(string $id)
     {
-        $category = Category::onlyTrashed()->findOrFail($id);
+        // Tìm cả bản ghi đã xóa mềm lẫn chưa
+        $category = Category::withTrashed()->findOrFail($id);
 
+        // Nếu là danh mục con và cha đang bị soft-delete
+        if ($category->parent_id) {
+            $parent = Category::withTrashed()->find($category->parent_id);
+            if ($parent && $parent->trashed()) {
+                return redirect()
+                    ->route('admin.categories.trash')
+                    ->with('error', 'Vui lòng khôi phục danh mục cha trước khi khôi phục danh mục con.');
+            }
+        }
+
+        // Nếu không có vấn đề gì, tiến hành khôi phục đệ quy
         $this->restoreRecursive($category);
 
-        return redirect()->route('admin.categories.trash')
-            ->with('success', 'Category and all its subcategories restored successfully.');
+        return redirect()
+            ->route('admin.categories.trash')
+            ->with('success', 'Danh mục và tất cả danh mục con đã được khôi phục thành công.');
     }
+
 
     private function restoreRecursive($category)
     {
@@ -231,7 +263,7 @@ class CategoryController
             }
         }
 
-        return back()->with('success', 'Category order updated successfully!');
+        return back()->with('success', 'Thứ tự danh mục đã được cập nhật thành công!');
     }
 
     public function getSpecifications(Category $category)

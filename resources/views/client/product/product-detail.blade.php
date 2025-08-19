@@ -1,42 +1,23 @@
 @extends('client.layouts.app')
-
+@section('title', 'Chi tiết sản phẩm')
 @section('content')
 
     <!-- Start Product Detail Section -->
-    <div class="untree_co-section product-section" style="margin-top: 70px">
-        
-        <div class="container">
-            <!-- Hiển thị thông báo -->
-            @if (session('success'))
-        <div class="custom-alert success" id="success-alert">
-            <div class="icon"><i class="fas fa-check-circle"></i></div>
-            <div class="content">
-                <strong>SUCCESS</strong>
-                <p>{{ session('success') }}</p>
-            </div>
-            <div class="close" onclick="this.parentElement.style.display='none';">&times;</div>
-        </div>
-    @endif
+    <div class="untree_co-section product-section" style="margin-top: 70px;padding-bottom: 0px">
 
-    @if (session('error'))
-        <div class="custom-alert error" id="error-alert">
-            <div class="icon"><i class="fas fa-times-circle"></i></div>
-            <div class="content">
-                <strong>ERROR</strong>
-                <p>{{ session('error') }}</p>
-            </div>
-            <div class="close" onclick="this.parentElement.style.display='none';">&times;</div>
-        </div>
-    @endif
+        <div class="container">
+            <!-- Bỏ phần thông báo cũ -->
             <div class="row">
                 <!-- Product Images -->
                 <div class="col-lg-6 mb-5">
                     <div class="product-gallery">
                         <div class="main-image mb-4 position-relative">
-                            <button id="prevImageBtn" class="image-nav-btn" style="display:none;" onclick="showPrevImage()"><i class="fas fa-chevron-left"></i></button>
+                            <button id="prevImageBtn" class="image-nav-btn" style="display:none;" onclick="showPrevImage()"><i
+                                    class="fas fa-chevron-left"></i></button>
                             @php
                                 // Helper function to safely handle both JSON strings and arrays
-                                function getImagesArray($images) {
+                                function getImagesArray($images)
+                                {
                                     if (is_array($images)) {
                                         return $images;
                                     }
@@ -66,12 +47,18 @@
                             @endphp
                             <img src="{{ asset($mainImage) }}" class="img-fluid" alt="{{ $product->name }}"
                                 id="mainProductImage">
-                            <button id="nextImageBtn" class="image-nav-btn" style="display:none;" onclick="showNextImage()"><i class="fas fa-chevron-right"></i></button>
+                            <button id="nextImageBtn" class="image-nav-btn" style="display:none;"
+                                onclick="showNextImage()"><i class="fas fa-chevron-right"></i></button>
                         </div>
                         <div class="thumbnail-slider position-relative">
-                            <button id="thumbPrevBtn" class="image-nav-btn" style="left:0;top:50%;transform:translateY(-50%);" onclick="scrollThumbnails(-1)"><i class="fas fa-chevron-left"></i></button>
-                            <div class="row flex-nowrap overflow-auto" id="thumbnailsRow" style="scroll-behavior:smooth; margin:0 48px;"></div>
-                            <button id="thumbNextBtn" class="image-nav-btn" style="right:0;top:50%;transform:translateY(-50%);" onclick="scrollThumbnails(1)"><i class="fas fa-chevron-right"></i></button>
+                            <button id="thumbPrevBtn" class="image-nav-btn"
+                                style="left:0;top:50%;transform:translateY(-50%);" onclick="scrollThumbnails(-1)"><i
+                                    class="fas fa-chevron-left"></i></button>
+                            <div class="row flex-nowrap overflow-auto" id="thumbnailsRow"
+                                style="scroll-behavior:smooth; margin:0 48px;"></div>
+                            <button id="thumbNextBtn" class="image-nav-btn"
+                                style="right:0;top:50%;transform:translateY(-50%);" onclick="scrollThumbnails(1)"><i
+                                    class="fas fa-chevron-right"></i></button>
                         </div>
                     </div>
                 </div>
@@ -87,298 +74,289 @@
                                 VNĐ</span>
                         </div>
 
-                        <!-- Category -->
-                        <div class="product-category mb-3">
-                            <strong>Category:</strong> {{ $product->category ? $product->category->name : 'N/A' }}
+                        <!-- Product Info Row 1: Stock & Sold -->
+                        <div class="product-info-row mb-3">
+                            <div class="info-item">
+                                <i class="fas fa-boxes me-2"></i>
+                                <span class="info-label">Tồn kho:</span>
+                                <span class="info-value" id="productStock">
+                                    @if ($defaultVariant)
+                                        @if ($defaultVariant->stock > 0)
+                                            <span class="text-success">{{ $defaultVariant->stock }} sản phẩm</span>
+                                        @else
+                                            <span class="text-danger">Hết hàng</span>
+                                        @endif
+                                    @else
+                                        <span class="text-warning">Đang cập nhật</span>
+                                    @endif
+                                </span>
+                            </div>
+                            <div class="info-item sold-info" title="Số lượng sản phẩm đã được bán thành công">
+                                <i class="fas fa-shopping-cart me-2"></i>
+                                <span class="info-label">Đã bán:</span>
+                                <span class="info-value">
+                                    <span class="text-primary" id="soldQuantity">{{ number_format($totalSold) }} sản
+                                        phẩm</span>
+                                </span>
+                            </div>
                         </div>
 
-                        <!-- Warranty -->
-                        <div class="product-warranty mb-3">
-                            <strong>Warranty:</strong> {{ $product->warranty_months ?? 'N/A' }} months
+                        <!-- Product Info Row 2: Category & Warranty -->
+                        <div class="product-info-row mb-3">
+                            <div class="info-item">
+                                <i class="fas fa-tag me-2"></i>
+                                <span class="info-label">Danh mục:</span>
+                                <span class="info-value">{{ $product->category ? $product->category->name : 'N/A' }}</span>
+                            </div>
+                            <div class="info-item">
+                                <i class="fas fa-shield-alt me-2"></i>
+                                <span class="info-label">Bảo hành:</span>
+                                <span class="info-value">{{ $product->warranty_months ?? 'N/A' }} tháng</span>
+                            </div>
                         </div>
+                    </div>
 
-                        <!-- Dynamic Attribute Variants (Color, Storage, ...) -->
-                        @php
-                            // Gom nhóm các thuộc tính theo loại (Color, Storage, ...)
-                            $attributeGroups = [];
-                            $seenValues = []; // Mảng để theo dõi các giá trị đã xuất hiện
-                            
-                            foreach ($product->variants as $variant) {
-                                // Bỏ qua các biến thể đã bị xóa mềm
-                                if ($variant->deleted_at !== null) {
-                                    continue;
-                                }
-                                foreach ($variant->combinations as $combination) {
-                                    $typeName = $combination->attributeValue->attributeType->name ?? null;
-                                    if ($typeName) {
-                                        $values = is_array($combination->attributeValue->value)
-                                            ? $combination->attributeValue->value
-                                            : json_decode($combination->attributeValue->value, true);
-                                        $hexes = is_array($combination->attributeValue->hex)
-                                            ? $combination->attributeValue->hex
-                                            : json_decode($combination->attributeValue->hex, true);
-                                        
-                                        // Tạo key duy nhất cho mỗi giá trị
-                                        $valueKey = $typeName . '_' . ($values[0] ?? '');
-                                        
-                                        // Chỉ thêm vào nếu chưa có giá trị này
-                                        if (!isset($seenValues[$valueKey])) {
-                                            $attributeGroups[$typeName][] = [
-                                                'values' => $values,
-                                                'hexes' => $hexes,
-                                                'variant_id' => $variant->id,
-                                                'is_default' => $variant->is_default,
-                                            ];
-                                            $seenValues[$valueKey] = true;
-                                        }
+                    <!-- Dynamic Attribute Variants (Color, Storage, ...) -->
+                    @php
+                        // Gom nhóm các thuộc tính theo loại (Color, Storage, ...)
+                        $attributeGroups = [];
+                        $seenValues = []; // Mảng để theo dõi các giá trị đã xuất hiện
+
+                        foreach ($product->variants as $variant) {
+                            // Bỏ qua các biến thể đã bị xóa mềm
+                            if ($variant->deleted_at !== null) {
+                                continue;
+                            }
+                            foreach ($variant->combinations as $combination) {
+                                $typeName = $combination->attributeValue->attributeType->name ?? null;
+                                if ($typeName) {
+                                    $values = is_array($combination->attributeValue->value)
+                                        ? $combination->attributeValue->value
+                                        : json_decode($combination->attributeValue->value, true);
+                                    $hexes = is_array($combination->attributeValue->hex)
+                                        ? $combination->attributeValue->hex
+                                        : json_decode($combination->attributeValue->hex, true);
+
+                                    // Tạo key duy nhất cho mỗi giá trị
+                                    $valueKey = $typeName . '_' . ($values[0] ?? '');
+
+                                    // Chỉ thêm vào nếu chưa có giá trị này
+                                    if (!isset($seenValues[$valueKey])) {
+                                        $attributeGroups[$typeName][] = [
+                                            'values' => $values,
+                                            'hexes' => $hexes,
+                                            'variant_id' => $variant->id,
+                                            'is_default' => $variant->is_default,
+                                        ];
+                                        $seenValues[$valueKey] = true;
                                     }
                                 }
                             }
-                        @endphp
-                        @foreach ($attributeGroups as $typeName => $group)
-                            @php
-                                $hasHex = false;
-                                foreach ($group as $item) {
-                                    if (!empty($item['hexes'][0])) {
-                                        $hasHex = true;
-                                        break;
-                                    }
+                        }
+                    @endphp
+                    @foreach ($attributeGroups as $typeName => $group)
+                        @php
+                            $hasHex = false;
+                            foreach ($group as $item) {
+                                if (!empty($item['hexes'][0])) {
+                                    $hasHex = true;
+                                    break;
                                 }
-                                $defaultItem = collect($group)->first(fn($item) => $item['is_default']) ?? $group[0];
-                                $defaultValue = $defaultItem['values'][0] ?? '';
-                            @endphp
-                            <div class="variant-group mb-4">
-                                <label class="form-label">
-                                    {{ ucfirst($typeName) }}
-                                    @if ($hasHex)
-                                        : <span id="selected-{{ $typeName }}-value"
-                                            class="ms-2 badge bg-light text-dark border">{{ $defaultValue }}</span>
-                                    @endif
-                                </label>
-                                <div class="variant-options mt-2 d-flex gap-3">
-                                    @if ($hasHex)
-                                        @foreach ($group as $item)
-                                            @php
-                                                $value = $item['values'][0] ?? '';
-                                                $hex = $item['hexes'][0] ?? null;
-                                            @endphp
-                                            <div class="color-option {{ $item['is_default'] ? 'active' : '' }}"
-                                                title="{{ $value }}" data-color="{{ $value }}"
-                                                data-variant-id="{{ $item['variant_id'] }}"
-                                                data-attr-type="{{ $typeName }}"
-                                                onclick="selectVariant({{ $item['variant_id'] }}, '{{ addslashes($value) }}', '{{ $typeName }}', this)"
-                                                style="background-color: {{ $hex ? $hex : '#f8f9fa' }}; border-radius: 50%; width: 40px; height: 40px; border: 2px solid #ddd; box-shadow: 0 2px 8px rgba(0,0,0,0.15); display: inline-block; cursor: pointer;">
-                                            </div>
-                                        @endforeach
-                                    @else
+                            }
+                            $defaultItem = collect($group)->first(fn($item) => $item['is_default']) ?? $group[0];
+                            $defaultValue = $defaultItem['values'][0] ?? '';
+                        @endphp
+                        <div class="variant-group mb-4">
+                            <label class="form-label">
+                                {{ ucfirst($typeName) }}
+                                @if ($hasHex)
+                                    : <span id="selected-{{ $typeName }}-value"
+                                        class="ms-2 badge bg-light text-dark border">{{ $defaultValue }}</span>
+                                @endif
+                            </label>
+                            <div class="variant-options mt-2 d-flex gap-3">
+                                @if ($hasHex)
+                                    @foreach ($group as $item)
                                         @php
-                                            $uniqueValues = [];
-                                            $uniqueItems = [];
-                                            foreach ($group as $item) {
-                                                $value = $item['values'][0] ?? '';
-                                                if (!in_array($value, $uniqueValues)) {
-                                                    $uniqueValues[] = $value;
-                                                    $uniqueItems[] = $item;
+                                            $value = $item['values'][0] ?? '';
+                                            $hex = $item['hexes'][0] ?? null;
+                                        @endphp
+                                        <div class="color-option {{ $item['is_default'] ? 'active' : '' }}"
+                                            title="{{ $value }}" data-color="{{ $value }}"
+                                            data-variant-id="{{ $item['variant_id'] }}"
+                                            data-attr-type="{{ $typeName }}"
+                                            onclick="selectVariant({{ $item['variant_id'] }}, '{{ addslashes($value) }}', '{{ $typeName }}', this)"
+                                            style="background-color: {{ $hex ? $hex : '#f8f9fa' }}; border-radius: 50%; width: 40px; height: 40px; border: 2px solid #ddd; box-shadow: 0 2px 8px rgba(0,0,0,0.15); display: inline-block; cursor: pointer;">
+                                        </div>
+                                    @endforeach
+                                @else
+                                    @php
+                                        $uniqueValues = [];
+                                        $uniqueItems = [];
+                                        foreach ($group as $item) {
+                                            $value = $item['values'][0] ?? '';
+                                            if (!in_array($value, $uniqueValues)) {
+                                                $uniqueValues[] = $value;
+                                                $uniqueItems[] = $item;
+                                            }
+                                        }
+                                    @endphp
+                                    @foreach ($uniqueItems as $item)
+                                        @php
+                                            $value = $item['values'][0] ?? '';
+                                            // Kiểm tra active đúng với thuộc tính của biến thể mặc định
+                                            $isActive = false;
+                                            if ($defaultVariant) {
+                                                foreach ($defaultVariant->combinations as $comb) {
+                                                    if (
+                                                        ($comb->attributeValue->attributeType->name ?? '') ===
+                                                            $typeName &&
+                                                        ($comb->attributeValue->value[0] ?? '') === $value
+                                                    ) {
+                                                        $isActive = true;
+                                                        break;
+                                                    }
                                                 }
                                             }
                                         @endphp
-                                        @foreach ($uniqueItems as $item)
-                                            @php
-                                                $value = $item['values'][0] ?? '';
-                                                // Kiểm tra active đúng với thuộc tính của biến thể mặc định
-                                                $isActive = false;
-                                                if ($defaultVariant) {
-                                                    foreach ($defaultVariant->combinations as $comb) {
-                                                        if (
-                                                            ($comb->attributeValue->attributeType->name ?? '') ===
-                                                                $typeName &&
-                                                            ($comb->attributeValue->value[0] ?? '') === $value
-                                                        ) {
-                                                            $isActive = true;
-                                                            break;
-                                                        }
-                                                    }
-                                                }
-                                            @endphp
-                                            <button type="button" class="storage-btn {{ $isActive ? 'active' : '' }}"
-                                                data-variant-id="{{ $item['variant_id'] }}"
-                                                data-attr-type="{{ $typeName }}"
-                                                onclick="selectVariant({{ $item['variant_id'] }}, '{{ addslashes($value) }}', '{{ $typeName }}', this)">
-                                                {{ $value }}
-                                            </button>
-                                        @endforeach
-                                    @endif
-                                </div>
-                            </div>
-                        @endforeach
-
-                        <!-- Quantity Selector -->
-                        <div class="quantity-selector mb-4">
-                            <label class="form-label">Quantity:</label>
-                            <div class="quantity-control">
-                                <button class="quantity-btn minus">-</button>
-                                <input type="number" id="quantity" class="form-control" value="1" min="1"
-                                    readonly>
-                                <button class="quantity-btn plus">+</button>
+                                        <button type="button" class="storage-btn {{ $isActive ? 'active' : '' }}"
+                                            data-variant-id="{{ $item['variant_id'] }}"
+                                            data-attr-type="{{ $typeName }}"
+                                            onclick="selectVariant({{ $item['variant_id'] }}, '{{ addslashes($value) }}', '{{ $typeName }}', this)">
+                                            {{ $value }}
+                                        </button>
+                                    @endforeach
+                                @endif
                             </div>
                         </div>
+                    @endforeach
 
-                        <!-- Action Buttons -->
-                        <div class="product-actions mb-4">
-                            <button class="btn btn-primary" id="buyNowBtn">
-                                <i class="fas fa-bolt me-2"></i>Buy Now
+                    <!-- Quantity Selector -->
+                    <div class="quantity-selector mb-4">
+                        <label class="form-label">Quantity:</label>
+                        <div class="quantity-control">
+                            <button class="quantity-btn minus">-</button>
+                            <input type="number" id="quantity" class="form-control" value="1" min="1"
+                                readonly>
+                            <button class="quantity-btn plus">+</button>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="product-actions mb-4">
+                        <button class="btn btn-primary" id="buyNowBtn">
+                            <i class="fas fa-bolt me-2"></i>Mua ngay
+                        </button>
+                        <form action="{{ route('cart.add') }}" method="POST" style="display: inline;" id="addToCartForm">
+                            @csrf
+                            <input type="hidden" name="product_id" value="{{ $product->id }}">
+                            <input type="hidden" name="variant_id" id="selectedVariantId" value="">
+                            <input type="hidden" name="quantity" id="cartQuantity" value="1">
+                            <button type="submit" class="btn btn-outline-primary" id="addToCartBtn">
+                                <i class="fas fa-cart-plus me-2"></i> Thêm vào giỏ hàng
                             </button>
-                            <form action="{{ route('cart.add') }}" method="POST" style="display: inline;"
-                                id="addToCartForm">
-                                @csrf
-                                <input type="hidden" name="product_id" value="{{ $product->id }}">
-                                <input type="hidden" name="variant_id" id="selectedVariantId" value="">
-                                <input type="hidden" name="quantity" id="cartQuantity" value="1">
-                                <button type="submit" class="btn btn-outline-primary" id="addToCartBtn">
-                                    <i class="fas fa-cart-plus me-2"></i>Add to Cart
-                                </button>
-                            </form>
-                        </div>
+                        </form>
                     </div>
                 </div>
             </div>
-            <!-- Tabs Section (bên dưới chi tiết sản phẩm) -->
-            <div class="container mt-5">
-                <div class="d-flex justify-content-center mb-4" style="gap: 18px;">
-                    <button class="tab-btn-custom active" id="tab-desc-btn" onclick="showTab('desc')">Mô tả</button>
-                    <button class="tab-btn-custom" id="tab-spec-btn" onclick="showTab('spec')">Thông số kỹ thuật</button>
-                    <button class="tab-btn-custom" id="tab-review-btn" onclick="showTab('review')">Đánh giá sản
-                        phẩm</button>
-                </div>
-                <div id="tab-desc" class="tab-content" style="display: block;">
-                    <div class="card">
-                        <div class="card-body">
-                            {!! $product->content !!}
-                        </div>
-                    </div>
-                </div>
-                <div id="tab-spec" class="tab-content" style="display: none;">
-                    <div class="card">
-                        <div class="card-body p-0">
-                            <table class="table mb-0">
-                                <thead>
-                                    <tr>
-                                        <th colspan="2" class="bg-light fw-bold">Cấu hình & Bộ nhớ</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @if ($product->specifications && $product->specifications->isNotEmpty())
-                                        @foreach ($product->specifications as $spec)
-                                            @if($spec->specification)
-                                                <tr>
-                                                    <td class="text-secondary" style="width: 220px;">
-                                                        {{ $spec->specification->name }}</td>
-                                                    <td>{{ $spec->value }}</td>
-                                                </tr>
-                                            @endif
-                                        @endforeach
-                                    @else
-                                        <tr>
-                                            <td colspan="2">Chưa có thông số kỹ thuật.</td>
-                                        </tr>
-                                    @endif
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-                <div id="tab-review" class="tab-content" style="display: none;">
-                    <div class="card">
-                        <div class="card-body">
-                            <em>Chức năng đánh giá sản phẩm sẽ sớm ra mắt.</em>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            @include('client.product.suggestions', ['suggestions' => $suggestions]);
         </div>
+        <!-- Tabs Section (bên dưới chi tiết sản phẩm) -->
+        <hr>
+        <div class="container mt-5">
+            <div class="d-flex justify-content-center mb-4" style="gap: 18px;">
+                <button class="tab-btn-custom active" id="tab-desc-btn" onclick="showTab('desc')">Mô tả</button>
+                <button class="tab-btn-custom" id="tab-spec-btn" onclick="showTab('spec')">Thông số kỹ thuật</button>
+            </div>
+            <div id="tab-desc" class="tab-content" style="display: block;">
+                <div class="card">
+                    <div class="card-body position-relative">
+                        <div id="product-content" class="collapsed-content position-relative">
+                            {!! $product->content !!}
+                            <div class="content-overlay" id="content-overlay"></div>
+                        </div>
+                        <div class="d-flex justify-content-center mt-3">
+                            <button id="toggle-content-btn" class="btn tab-btn-custom active btn-sm">Xem thêm<i
+                                    class="fas fa-chevron-down ms-2"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div id="tab-spec" class="tab-content" style="display: none;">
+                <div class="card">
+                    <div class="card-body">
+                        <table class="table mb-0">
+                            <thead>
+                                <tr>
+                                    <th colspan="2" class="bg-light fw-bold">Cấu hình & Bộ nhớ</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if ($product->specifications && $product->specifications->isNotEmpty())
+                                    @foreach ($product->specifications as $spec)
+                                        @if ($spec->specification)
+                                            <tr>
+                                                <td class="text-secondary" style="width: 220px;">
+                                                    {{ $spec->specification->name }}</td>
+                                                <td>{{ $spec->value }}</td>
+                                            </tr>
+                                        @endif
+                                    @endforeach
+                                @else
+                                    <tr>
+                                        <td colspan="2">Chưa có thông số kỹ thuật.</td>
+                                    </tr>
+                                @endif
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        @include('client.product.suggestions', ['suggestions' => $suggestions]);
+    </div>
     </div>
     <!-- End Product Detail Section -->
 
     <style>
-         .custom-alert {
-        display: flex;
-        align-items: center;
-        background-color: #fff;
-        border-left: 5px solid;
-        border-radius: 4px;
-        padding: 16px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-        margin: 10px auto;
-        width: 360px;
-        position: relative;
-        animation: slideIn 0.3s ease;
-    }
-
-    .custom-alert .icon {
-        font-size: 20px;
-        margin-right: 12px;
-    }
-
-    .custom-alert .content {
-        flex-grow: 1;
-    }
-
-    .custom-alert .content strong {
-        display: block;
-        font-weight: bold;
-        color: #333;
-    }
-
-    .custom-alert .content p {
-        margin: 0;
-        color: #666;
-    }
-
-    .custom-alert .close {
-        font-size: 38px;
-        cursor: pointer;
-        color: #333;
-        margin-left: 10px;
-        margin-top: -32px;
-    }
-
-    .custom-alert.success {
-        border-color: #28a745;
-        background-color: #ffffff;
-    }
-
-    .custom-alert.success .icon {
-        color: #28a745;
-    }
-
-    .custom-alert.error {
-        border-color: #dc3545;
-        background-color: #ffffff;
-    }
-
-    .custom-alert.error .icon {
-        color: #dc3545;
-    }
-
-    @keyframes slideIn {
-        from {
-            transform: translateY(-10px);
-            opacity: 0;
+        .collapsed-content {
+            max-height: 380px;
+            overflow: hidden;
+            position: relative;
+            transition: max-height 0.5s ease;
         }
 
-        to {
-            transform: translateY(0);
-            opacity: 1;
+        .expanded-content {
+            max-height: none;
         }
-    }
 
-    .custom-alert {
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        z-index: 9999;
-    }
+        /* Overlay gradient phía dưới */
+        .content-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 160px;
+            background: linear-gradient(to bottom, rgba(255, 255, 255, 0), #fff);
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .card-body img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 0 auto;
+        }
+
+        #toggle-content-btn {
+            display: inline-block;
+            margin: 0 auto;
+            position: relative;
+            z-index: 2;
+            /* Đảm bảo nút nằm trên overlay */
+        }
 
         .color-variants {
             margin-bottom: 2rem;
@@ -507,32 +485,28 @@
         }
 
         .tab-btn-custom {
-            border: 2px solid #0d6efd;
-            background: #fff;
-            color: #0d6efd;
+            padding: 9px 26px;
+            font-size: 16px;
             font-weight: 500;
-            border-radius: 24px;
-            padding: 12px 40px;
-            font-size: 1.1rem;
-            transition: all 0.2s;
-            outline: none;
-            box-shadow: 0 2px 8px rgba(13, 110, 253, 0.08);
-            margin-bottom: 0;
+            color: #3b5d50;
+            background-color: #f0f0f5;
+            border: 1px solid #d0d0e0;
+            border-radius: 999px;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
         }
 
-        .tab-btn-custom:hover,
-        .tab-btn-custom:focus {
-            background: #e6f0ff;
-            color: #0a58ca;
-            border-color: #0a58ca;
-            box-shadow: 0 4px 16px rgba(13, 110, 253, 0.12);
+        .tab-btn-custom:hover {
+            background-color: #e2e6f3;
+            color: #0d1b5c;
+            border-color: #b0b6d1;
         }
 
         .tab-btn-custom.active {
-            background: #0d6efd;
+            background-color: #3b5d50;
             color: #fff;
-            border-color: #0d6efd;
-            box-shadow: 0 2px 8px rgba(13, 110, 253, 0.18);
+            border-color: #3b5d50;
+            box-shadow: 0 4px 10px rgba(26, 35, 126, 0.2);
         }
 
         .table th,
@@ -547,7 +521,7 @@
         .image-nav-btn {
             width: 48px;
             height: 48px;
-            background: rgba(0,0,0,0.18);
+            background: rgba(0, 0, 0, 0.18);
             border: none;
             border-radius: 50%;
             color: #fff;
@@ -560,20 +534,32 @@
             align-items: center;
             justify-content: center;
             transition: background 0.2s;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
         }
+
         .image-nav-btn:hover {
-            background: rgba(0,0,0,0.35);
+            background: rgba(0, 0, 0, 0.35);
         }
-        #prevImageBtn { left: 12px; }
-        #nextImageBtn { right: 12px; }
-        .thumbnail-slider { position: relative; }
-        #thumbPrevBtn, #thumbNextBtn {
+
+        #prevImageBtn {
+            left: 12px;
+        }
+
+        #nextImageBtn {
+            right: 12px;
+        }
+
+        .thumbnail-slider {
+            position: relative;
+        }
+
+        #thumbPrevBtn,
+        #thumbNextBtn {
             top: 50%;
             transform: translateY(-50%);
             position: absolute;
             z-index: 2;
-            background: rgba(0,0,0,0.18);
+            background: rgba(0, 0, 0, 0.18);
             color: #fff;
             border: none;
             border-radius: 50%;
@@ -585,9 +571,20 @@
             justify-content: center;
             transition: background 0.2s;
         }
-        #thumbPrevBtn { left: 0; }
-        #thumbNextBtn { right: 0; }
-        #thumbPrevBtn:hover, #thumbNextBtn:hover { background: rgba(0,0,0,0.35); }
+
+        #thumbPrevBtn {
+            left: 0;
+        }
+
+        #thumbNextBtn {
+            right: 0;
+        }
+
+        #thumbPrevBtn:hover,
+        #thumbNextBtn:hover {
+            background: rgba(0, 0, 0, 0.35);
+        }
+
         #thumbnailsRow {
             margin: 0 48px;
             overflow-x: auto;
@@ -595,34 +592,87 @@
             white-space: nowrap;
             scroll-behavior: smooth;
         }
-        #thumbnailsRow .col-3 { flex: 0 0 auto; width: 80px; max-width: 80px; padding: 0 4px; }
-        #thumbnailsRow img.thumbnail { border-radius: 8px; border: 2px solid transparent; }
-        #thumbnailsRow img.thumbnail.active { border: 2px solid #007bff; }
+
+        .product-title {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            /* Hiển thị tối đa 2 dòng */
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            word-break: break-word;
+            min-height: 2.6em;
+            /* Đảm bảo luôn chiếm 2 dòng chiều cao */
+            line-height: 1.3em;
+            max-height: 2.6em;
+            text-align: left !important;
+
+        }
+
+        #thumbnailsRow .col-3 {
+            flex: 0 0 auto;
+            width: 80px;
+            max-width: 80px;
+            padding: 0 4px;
+        }
+
+        #thumbnailsRow img.thumbnail {
+            border-radius: 8px;
+            border: 2px solid transparent;
+        }
+
+        #thumbnailsRow img.thumbnail.active {
+            border: 2px solid #007bff;
+        }
     </style>
 
+@section('scripts')
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
-
-function hideAlert(alertId) {
-    const alert = document.getElementById(alertId);
-    if (alert) {
-        setTimeout(() => {
-            alert.style.display = 'none';
-        }, 3000);
-    }
-}
-
-hideAlert('success-alert');
-hideAlert('error-alert');
         // Khai báo biến toàn cục
         let selectedValues = {};
         let selectedVariants = {};
         let variantData = {};
         let attributeToVariant = {};
         let requiredTypes = [];
+        let sortedTypes = [];
         let currentImageIndex = 0;
         let currentImages = @json($images);
+        let totalSold = {{ $totalSold }};
+        let variantSoldData = @json($variantSoldData);
 
         document.addEventListener('DOMContentLoaded', function() {
+            // Custom styling cho SweetAlert2
+            const Toast = Swal.mixin({
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true,
+                didOpen: (toast) => {
+                    toast.addEventListener('mouseenter', Swal.stopTimer)
+                    toast.addEventListener('mouseleave', Swal.resumeTimer)
+                }
+            });
+
+            // Handle session flash messages
+            @if (session('success'))
+                Toast.fire({
+                    icon: 'success',
+                    title: 'Thành công',
+                    text: '{{ session('success') }}'
+                });
+            @endif
+
+            @if (session('error'))
+                Toast.fire({
+                    icon: 'error',
+                    title: 'Lỗi',
+                    text: '{{ session('error') }}'
+                });
+            @endif
+
             // Quantity controls
             const quantityInput = document.getElementById('quantity');
             const minusBtn = document.querySelector('.quantity-btn.minus');
@@ -643,29 +693,37 @@ hideAlert('error-alert');
                 quantityInput.value = currentValue + 1;
                 document.getElementById('cartQuantity').value = quantityInput.value;
             });
-
             // Khởi tạo dữ liệu biến thể
             @foreach ($product->variants as $variant)
                 @if ($variant->deleted_at === null)
-                variantData[{{ $variant->id }}] = {
-                    images: {!! json_encode(getImagesArray($variant->images)) !!},
-                    price: {{ $variant->selling_price }}
-                };
+                    variantData[{{ $variant->id }}] = {
+                        images: {!! json_encode(getImagesArray($variant->images)) !!},
+                        price: {{ $variant->selling_price }},
+                        stock: {{ $variant->stock }}
+                    };
                 @endif
             @endforeach
+
+
 
             // Khởi tạo mapping attribute -> variant
             @foreach ($product->variants as $variant)
                 @if ($variant->deleted_at === null)
-                @php
-                    $attrValues = [];
-                    foreach ($variant->combinations as $comb) {
-                        $value = is_array($comb->attributeValue->value) ? $comb->attributeValue->value[0] : json_decode($comb->attributeValue->value, true)[0] ?? '';
-                        $attrValues[] = $value;
-                    }
-                    $key = implode('|', $attrValues);
-                @endphp
-                attributeToVariant["{{ $key }}"] = {{ $variant->id }};
+                    @php
+                        $attrMap = [];
+                        foreach ($variant->combinations as $comb) {
+                            $typeName = $comb->attributeValue->attributeType->name ?? '';
+                            $value = is_array($comb->attributeValue->value) ? $comb->attributeValue->value[0] ?? '' : json_decode($comb->attributeValue->value, true)[0] ?? '';
+                            if ($typeName !== '') {
+                                $attrMap[$typeName] = $value;
+                            }
+                        }
+                        if (!empty($attrMap)) {
+                            ksort($attrMap, SORT_NATURAL | SORT_FLAG_CASE);
+                        }
+                        $key = implode('|', $attrMap);
+                    @endphp
+                    attributeToVariant["{{ $key }}"] = {{ $variant->id }};
                 @endif
             @endforeach
 
@@ -677,6 +735,10 @@ hideAlert('error-alert');
                     requiredTypes.push(typeName);
                 }
             });
+            // Sắp xếp tên thuộc tính theo alpha để đồng bộ với key ánh xạ phía trên
+            sortedTypes = [...requiredTypes].sort((a, b) => a.localeCompare(b, undefined, {
+                sensitivity: 'base'
+            }));
 
             // Khởi tạo giá trị mặc định
             @if ($defaultVariant)
@@ -689,10 +751,15 @@ hideAlert('error-alert');
                     selectedVariants["{{ $typeName }}"] = {{ $defaultVariant->id }};
                 @endforeach
                 document.getElementById('selectedVariantId').value = {{ $defaultVariant->id }};
+                // Cập nhật tồn kho ban đầu theo biến thể mặc định
+                updateStockDisplay({{ $defaultVariant->id }});
             @endif
 
             // Khởi tạo thumbnails
             updateThumbnails(@json($allImages));
+
+            // Cập nhật hiển thị số lượng đã bán ban đầu
+            updateSoldDisplay();
 
             // Add event listeners for buttons
             addToCartBtn.addEventListener('click', function(e) {
@@ -701,19 +768,75 @@ hideAlert('error-alert');
                 if (!variantId) {
                     return false;
                 }
+
+                // Kiểm tra số lượng tồn kho
+                const quantity = parseInt(quantityInput.value) || 1;
+                if (variantData[variantId].stock < 1) {
+                    Toast.fire({
+                        icon: 'error',
+                        title: 'Lỗi',
+                        text: '⚠️ Hết số lượng tồn kho!'
+                    });
+                    return false;
+                }
+
+                if (variantData[variantId].stock < quantity) {
+                    Toast.fire({
+                        icon: 'error',
+                        title: 'Lỗi',
+                        text: '⚠️ Số lượng trong kho không đủ!'
+                    });
+                    return false;
+                }
+
                 document.getElementById('selectedVariantId').value = variantId;
                 document.getElementById('addToCartForm').submit();
             });
 
             buyNowBtn.addEventListener('click', function(e) {
+                e.preventDefault();
                 const variantId = getSelectedVariantId();
                 if (!variantId) {
-                    e.preventDefault();
                     return false;
                 }
+
+                // Kiểm tra số lượng tồn kho
                 const quantity = parseInt(quantityInput.value) || 1;
+                if (variantData[variantId].stock < 1) {
+                    Toast.fire({
+                        icon: 'error',
+                        title: 'Lỗi',
+                        text: '⚠️ Hết số lượng tồn kho!'
+                    });
+                    return false;
+                }
+
+                if (variantData[variantId].stock < quantity) {
+                    Toast.fire({
+                        icon: 'error',
+                        title: 'Lỗi',
+                        text: '⚠️ Số lượng trong kho không đủ!'
+                    });
+                    return false;
+                }
+
+                // Kiểm tra xem user đã đăng nhập chưa
+                // @guest
+                //     Toast.fire({
+                //         icon: 'info',
+                //         title: 'Thông báo',
+                //         text: 'Vui lòng đăng nhập để tiếp tục mua hàng!'
+                //     }).then((result) => {
+                //         if (result.isConfirmed) {
+                //             window.location.href = '{{ route('login') }}';
+                //         }
+                //     });
+                //     return false;
+                // @endguest
+
                 const mainImage = document.getElementById('mainProductImage').src;
-                window.location.href = '/checkout?variant_id=' + variantId + '&quantity=' + quantity + '&image=' + encodeURIComponent(mainImage);
+                window.location.href = '/checkout?variant_id=' + variantId + '&quantity=' + quantity +
+                    '&image=' + encodeURIComponent(mainImage);
             });
         });
 
@@ -726,7 +849,7 @@ hideAlert('error-alert');
 
             // Remove active class from all elements of this type
             document.querySelectorAll('[data-attr-type="' + typeName + '"]').forEach(opt => opt.classList.remove('active'));
-            
+
             // Add active to current
             el.classList.add('active');
 
@@ -740,41 +863,79 @@ hideAlert('error-alert');
             selectedVariants[matchedType] = variantId;
 
             // Find matching variant
-            let key = requiredTypes.map(type => selectedValues[type] || '').join('|');
+            let key = sortedTypes.map(type => selectedValues[type] || '').join('|');
             let matchedVariantId = attributeToVariant[key];
 
             // Update images and price if valid variant found
             if (matchedVariantId && variantData[matchedVariantId]) {
                 // Cập nhật giá
-                document.getElementById('productPrice').textContent = 
+                document.getElementById('productPrice').textContent =
                     new Intl.NumberFormat('vi-VN').format(variantData[matchedVariantId].price) + ' VNĐ';
-                
+
                 // Cập nhật ảnh chính và thumbnails
                 if (variantData[matchedVariantId].images && variantData[matchedVariantId].images.length > 0) {
                     updateThumbnails(variantData[matchedVariantId].images);
-                    document.getElementById('mainProductImage').src = '{{ asset('') }}' + variantData[matchedVariantId].images[0];
+                    document.getElementById('mainProductImage').src = '{{ asset('') }}' + variantData[matchedVariantId]
+                        .images[0];
                 }
-                
+
                 // Cập nhật variant_id cho form
                 document.getElementById('selectedVariantId').value = matchedVariantId;
+
+                // Cập nhật hiển thị số lượng đã bán (giữ nguyên vì là tổng của sản phẩm)
+                updateSoldDisplay();
+                // Cập nhật tồn kho theo biến thể
+                updateStockDisplay(matchedVariantId);
+            }
+        }
+
+        function updateSoldDisplay() {
+            const soldQuantityElement = document.getElementById('soldQuantity');
+            if (soldQuantityElement) {
+                const currentVariantId = document.getElementById('selectedVariantId').value;
+                let soldCount = totalSold; // Mặc định hiển thị tổng số đã bán
+
+                // Nếu có dữ liệu đã bán theo variant và variant hiện tại có dữ liệu
+                if (currentVariantId && variantSoldData[currentVariantId]) {
+                    soldCount = variantSoldData[currentVariantId];
+                }
+
+                soldQuantityElement.textContent = new Intl.NumberFormat('vi-VN').format(soldCount) + ' sản phẩm';
+            }
+        }
+
+        function updateStockDisplay(variantId) {
+            const stockEl = document.getElementById('productStock');
+            if (!stockEl || !variantId || !variantData[variantId]) return;
+            const stock = variantData[variantId].stock;
+            if (stock > 0) {
+                stockEl.innerHTML = '<span class="text-success">' + new Intl.NumberFormat('vi-VN').format(stock) +
+                    ' sản phẩm</span>';
+            } else {
+                stockEl.innerHTML = '<span class="text-danger">Hết hàng</span>';
             }
         }
 
         function selectAllAttributesOfVariant(variantId) {
             const variants = @json($product->variants);
             const selectedVariant = variants.find(v => v.id === variantId);
-            
+
             if (selectedVariant) {
                 // Reset all active states
                 document.querySelectorAll('.color-option, .storage-btn').forEach(el => el.classList.remove('active'));
 
                 selectedVariant.combinations.forEach(comb => {
                     const typeName = comb.attribute_value.attribute_type.name.trim();
-                    const matchedType = requiredTypes.find(t => t.toLowerCase() === typeName.toLowerCase()) || typeName;
-                    
+                    const matchedType = requiredTypes.find(t => t.toLowerCase() === typeName.toLowerCase()) ||
+                        typeName;
+
                     let value = comb.attribute_value.value;
                     if (typeof value === 'string') {
-                        try { value = JSON.parse(value); } catch { value = [value]; }
+                        try {
+                            value = JSON.parse(value);
+                        } catch {
+                            value = [value];
+                        }
                     }
                     value = Array.isArray(value) ? value[0] : value;
 
@@ -796,24 +957,30 @@ hideAlert('error-alert');
                 // Update images and price
                 if (variantData[variantId]) {
                     // Cập nhật giá
-                    document.getElementById('productPrice').textContent = 
+                    document.getElementById('productPrice').textContent =
                         new Intl.NumberFormat('vi-VN').format(variantData[variantId].price) + ' VNĐ';
-                    
+
                     // Cập nhật ảnh chính và thumbnails
                     if (variantData[variantId].images && variantData[variantId].images.length > 0) {
                         updateThumbnails(variantData[variantId].images);
-                        document.getElementById('mainProductImage').src = '{{ asset('') }}' + variantData[variantId].images[0];
+                        document.getElementById('mainProductImage').src = '{{ asset('') }}' + variantData[variantId]
+                            .images[0];
                     }
-                    
+
                     // Cập nhật variant_id cho form
                     document.getElementById('selectedVariantId').value = variantId;
+
+                    // Cập nhật hiển thị số lượng đã bán
+                    updateSoldDisplay();
+                    // Cập nhật tồn kho theo biến thể
+                    updateStockDisplay(variantId);
                 }
             }
         }
 
         function getSelectedVariantId() {
             let missingTypes = [];
-            let key = requiredTypes.map(type => {
+            let key = sortedTypes.map(type => {
                 if (!selectedValues[type]) {
                     missingTypes.push(type);
                     return '';
@@ -822,13 +989,21 @@ hideAlert('error-alert');
             }).join('|');
 
             if (missingTypes.length > 0) {
-                alert('Vui lòng chọn các thuộc tính sau: ' + missingTypes.join(', '));
+                Toast.fire({
+                    icon: 'warning',
+                    title: 'Cảnh báo',
+                    text: 'Vui lòng chọn các thuộc tính sau: ' + missingTypes.join(', ')
+                });
                 return null;
             }
 
             const variantId = attributeToVariant[key] || null;
             if (!variantId) {
-                alert('Không tìm thấy biến thể phù hợp với lựa chọn của bạn!');
+                Toast.fire({
+                    icon: 'error',
+                    title: 'Lỗi',
+                    text: 'Không tìm thấy biến thể phù hợp với lựa chọn của bạn!'
+                });
             }
             return variantId;
         }
@@ -836,7 +1011,10 @@ hideAlert('error-alert');
         function scrollThumbnails(direction) {
             const row = document.getElementById('thumbnailsRow');
             const scrollAmount = 120; // px mỗi lần cuộn
-            row.scrollBy({ left: direction * scrollAmount, behavior: 'smooth' });
+            row.scrollBy({
+                left: direction * scrollAmount,
+                behavior: 'smooth'
+            });
         }
 
         function updateThumbnails(images) {
@@ -875,9 +1053,9 @@ hideAlert('error-alert');
         }
 
         function updateImageNavButtons() {
-            document.getElementById('prevImageBtn').style.display = 
+            document.getElementById('prevImageBtn').style.display =
                 (currentImages.length > 1 && currentImageIndex > 0) ? '' : 'none';
-            document.getElementById('nextImageBtn').style.display = 
+            document.getElementById('nextImageBtn').style.display =
                 (currentImages.length > 1 && currentImageIndex < currentImages.length - 1) ? '' : 'none';
         }
 
@@ -898,16 +1076,146 @@ hideAlert('error-alert');
             document.querySelectorAll('.tab-content').forEach(content => {
                 content.style.display = 'none';
             });
-            
+
             // Bỏ active khỏi tất cả các tab button
             document.querySelectorAll('.tab-btn-custom').forEach(btn => {
                 btn.classList.remove('active');
             });
-            
+
             // Hiển thị tab được chọn
             document.getElementById('tab-' + tab).style.display = 'block';
             // Active tab button tương ứng
             document.getElementById('tab-' + tab + '-btn').classList.add('active');
         }
+
+        // rút gọn mô tả
+        document.addEventListener('DOMContentLoaded', function() {
+            const content = document.getElementById('product-content');
+            const toggleBtn = document.getElementById('toggle-content-btn');
+            const overlay = document.getElementById('content-overlay');
+
+            toggleBtn.addEventListener('click', function() {
+                const isCollapsed = content.classList.contains('collapsed-content');
+
+                content.classList.toggle('collapsed-content');
+                content.classList.toggle('expanded-content');
+
+                // Ẩn hoặc hiện overlay
+                overlay.style.display = isCollapsed ? 'none' : 'block';
+
+                // Đổi nội dung nút
+                toggleBtn.innerHTML = isCollapsed ?
+                    'Thu gọn <i class="fas fa-chevron-up ms-2"></i>' :
+                    'Xem thêm <i class="fas fa-chevron-down ms-2"></i>';
+            });
+        });
     </script>
+
+    <style>
+        /* Custom styles cho Toast notifications */
+        .swal2-toast {
+            max-width: 300px !important;
+            font-size: 0.875rem !important;
+        }
+
+        .swal2-toast .swal2-title {
+            font-size: 1rem !important;
+            margin: 0.5em 1em !important;
+        }
+
+        .swal2-toast .swal2-content {
+            font-size: 0.875rem !important;
+        }
+
+        .swal2-toast .swal2-icon {
+            width: 2em !important;
+            height: 2em !important;
+            margin: 0.5em !important;
+        }
+
+        .swal2-toast .swal2-icon .swal2-icon-content {
+            font-size: 1.5em !important;
+        }
+
+        .swal2-toast .swal2-success-ring {
+            width: 2em !important;
+            height: 2em !important;
+        }
+
+        /* Styling cho layout thông tin sản phẩm gọn gàng */
+        .product-info-row {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .info-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 8px 12px;
+            background-color: #f8f9fa;
+            border-radius: 6px;
+            border-left: 3px solid #dee2e6;
+            transition: all 0.3s ease;
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .info-item:hover {
+            background-color: #e9ecef;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .info-item.sold-info {
+            border-left-color: #007bff;
+            cursor: help;
+        }
+
+        .info-item.sold-info:hover {
+            background-color: #e3f2fd;
+            box-shadow: 0 2px 8px rgba(0, 123, 255, 0.15);
+        }
+
+        .info-item i {
+            color: #6c757d;
+            font-size: 1rem;
+            width: 16px;
+            text-align: center;
+        }
+
+        .info-item.sold-info i {
+            color: #007bff;
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: #495057;
+            font-size: 0.9rem;
+        }
+
+        .info-value {
+            font-weight: 500;
+            color: #212529;
+        }
+
+        .info-value .text-primary {
+            color: #007bff !important;
+            font-weight: 600;
+        }
+
+        /* Responsive cho mobile */
+        @media (max-width: 768px) {
+            .product-info-row {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            .info-item {
+                min-width: auto;
+            }
+        }
+    </style>
+@endsection
 @endsection

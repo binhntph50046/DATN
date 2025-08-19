@@ -1,3 +1,26 @@
+<style>
+    #notif-badge {
+        right: -15px;
+        font-size: 10px;
+        padding: 3px;
+        width: 20px;
+    }
+
+    .pc-header .pc-head-link {
+        margin: 0 4px;
+        position: relative;
+        font-weight: 500;
+        padding: 0;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 54px;
+        height: 54px;
+        border-radius: 4px;
+        color: var(--pc-header-color);
+        overflow: hidden;
+    }
+</style>
 <header class="pc-header">
     <div class="header-wrapper"> <!-- [Mobile Media Block] start -->
         <div class="me-auto pc-mob-drp">
@@ -13,27 +36,7 @@
                         <i class="ti ti-menu-2"></i>
                     </a>
                 </li>
-                <li class="dropdown pc-h-item d-inline-flex d-md-none">
-                    <a class="pc-head-link dropdown-toggle arrow-none m-0" data-bs-toggle="dropdown" href="#"
-                        role="button" aria-haspopup="false" aria-expanded="false">
-                        <i class="ti ti-search"></i>
-                    </a>
-                    <div class="dropdown-menu pc-h-dropdown drp-search">
-                        <form class="px-3">
-                            <div class="form-group mb-0 d-flex align-items-center">
-                                <i data-feather="search"></i>
-                                <input type="search" class="form-control border-0 shadow-none"
-                                    placeholder="Search here. . .">
-                            </div>
-                        </form>
-                    </div>
-                </li>
-                <li class="pc-h-item d-none d-md-inline-flex">
-                    <form class="header-search">
-                        <i data-feather="search" class="icon-search"></i>
-                        <input type="search" class="form-control" placeholder="Search here. . .">
-                    </form>
-                </li>
+
             </ul>
         </div>
         <!-- [Mobile Media Block end] -->
@@ -41,84 +44,79 @@
             <ul class="list-unstyled">
                 <li class="dropdown pc-h-item">
                     <a class="pc-head-link dropdown-toggle arrow-none me-0" data-bs-toggle="dropdown" href="#"
-                        role="button" aria-haspopup="false" aria-expanded="false">
-                        <i class="ti ti-bell"></i>
+                        role="button" aria-haspopup="true" aria-expanded="false">
+                        <span class="position-relative d-inline-block">
+                            <i class="ti ti-bell" style="font-size: 23px;"></i>
+                            <span id="notif-badge"
+                                class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger {{ Auth::user()->unreadNotifications->count() == 0 ? 'd-none' : '' }}">
+                                {{ Auth::user()->unreadNotifications->count() }}
+                            </span>
+                        </span>
                     </a>
-                    </content>
-                    </create_file>
 
                     <div class="dropdown-menu dropdown-notification dropdown-menu-end pc-h-dropdown">
                         <div class="dropdown-header d-flex align-items-center justify-content-between">
-                            <h5 class="m-0">Message</h5>
-                            <a href="#!" class="pc-head-link bg-transparent"><i
-                                    class="ti ti-x text-danger"></i></a>
-                        </div>
-                        <div class="dropdown-divider"></div>
-                        <div class="dropdown-header px-0 text-wrap header-notification-scroll position-relative"
-                            style="max-height: calc(100vh - 215px)">
-                            <div class="list-group list-group-flush w-100">
-                                <a class="list-group-item list-group-item-action">
-                                    <div class="d-flex">
-                                        <div class="flex-shrink-0">
-                                            <img src="assets/images/user/avatar-2.jpg" alt="user-image"
-                                                class="user-avtar">
-                                        </div>
-                                        <div class="flex-grow-1 ms-1">
-                                            <span class="float-end text-muted">3:00 AM</span>
-                                            <p class="text-body mb-1">It's <b>Cristina danny's</b> birthday today.
-                                            </p>
-                                            <span class="text-muted">2 min ago</span>
-                                        </div>
-                                    </div>
-                                </a>
-                                <a class="list-group-item list-group-item-action">
-                                    <div class="d-flex">
-                                        <div class="flex-shrink-0">
-                                            <img src="assets/images/user/avatar-1.jpg" alt="user-image"
-                                                class="user-avtar">
-                                        </div>
-                                        <div class="flex-grow-1 ms-1">
-                                            <span class="float-end text-muted">6:00 PM</span>
-                                            <p class="text-body mb-1"><b>Aida Burg</b> commented your post.</p>
-                                            <span class="text-muted">5 August</span>
-                                        </div>
-                                    </div>
-                                </a>
-                                <a class="list-group-item list-group-item-action">
-                                    <div class="d-flex">
-                                        <div class="flex-shrink-0">
-                                            <img src="assets/images/user/avatar-3.jpg" alt="user-image"
-                                                class="user-avtar">
-                                        </div>
-                                        <div class="flex-grow-1 ms-1">
-                                            <span class="float-end text-muted">2:45 PM</span>
-                                            <p class="text-body mb-1"><b>There was a failure to your setup.</b></p>
-                                            <span class="text-muted">7 hours ago</span>
-                                        </div>
-                                    </div>
-                                </a>
-                                <a class="list-group-item list-group-item-action">
-                                    <div class="d-flex">
-                                        <div class="flex-shrink-0">
-                                            <img src="assets/images/user/avatar-4.jpg" alt="user-image"
-                                                class="user-avtar">
-                                        </div>
-                                        <div class="flex-grow-1 ms-1">
-                                            <span class="float-end text-muted">9:10 PM</span>
-                                            <p class="text-body mb-1"><b>Cristina Danny </b> invited to join <b>
-                                                    Meeting.</b></p>
-                                            <span class="text-muted">Daily scrum meeting time</span>
-                                        </div>
-                                    </div>
-                                </a>
+                            <h5 class="m-0">Thống báo</h5>
+                            <div class="text-end px-3 pb-2">
+                                <button class="btn btn-sm btn-link" id="mark-all-read">Đánh dấu tất cả đã đọc</button>
                             </div>
                         </div>
+
+
+                        <div class="dropdown-divider"></div>
+
+                        <div class="dropdown-header px-0 text-wrap header-notification-scroll position-relative"
+                            style="max-height: calc(100vh - 215px)">
+                            <div class="list-group list-group-flush w-100" id="notif-list">
+                                {{-- Load từ DB --}}
+                                @foreach(Auth::user()->notifications->take(5) as $notification)
+                                    @php
+                                        $isUnread = is_null($notification->read_at);
+                                    @endphp
+                                    <a href="{{ $notification->data['url'] ?? '#' }}"
+                                        class="list-group-item list-group-item-action notif-item"
+                                        data-id="{{ $notification->id }}">
+                                        <div class="d-flex justify-content-between">
+                                            <div>
+                                                @php
+                                                    $isUnread = is_null($notification->read_at);
+                                                    $type = $notification->data['type'] ?? 'default';
+
+                                                    $typeColor = match ($type) {
+                                                        'user_created' => 'text-success',
+                                                        'order_created' => 'text-info',
+                                                        'return_created' => 'text-warning',
+                                                        'contact_submitted' => 'text-warning',
+                                                        'message_created' => 'text-info',
+                                                        'error' => 'text-danger',
+                                                        default => 'text-muted',
+                                                    };
+                                                @endphp
+                                                <b
+                                                    class="{{ $typeColor }}">{{ $notification->data['title'] ?? 'Thông báo' }}</b><br>
+                                                <small>{{ $notification->data['user_name']}} {{ $notification->data['message'] }}</small>
+                                                <small
+                                                    class="text-muted d-block mt-1">{{ $notification->created_at->diffForHumans() }}</small>
+                                            </div>
+                                            <div>
+                                                @if($isUnread)
+                                                    <span class="badge bg-success">Mới</span>
+                                                @endif
+                                            </div>
+                                        </div>
+                                    </a>
+                                @endforeach
+
+                            </div>
+                        </div>
+
                         <div class="dropdown-divider"></div>
                         <div class="text-center py-2">
-                            <a href="#!" class="link-primary">View all</a>
+                            <a href="{{ route('admin.notify.index') }}" class="link-primary">Xem tất cả</a>
                         </div>
                     </div>
                 </li>
+
                 <li class="dropdown pc-h-item header-user-profile">
                     <a class="pc-head-link dropdown-toggle arrow-none me-0" data-bs-toggle="dropdown" href="#"
                         role="button" aria-haspopup="false" data-bs-auto-close="outside" aria-expanded="false">
@@ -134,86 +132,57 @@
                             <div class="d-flex mb-1">
                                 <div class="flex-shrink-0">
                                     @if (Auth::user()->avatar)
-                                        <img src="{{ asset(Auth::user()->avatar) }}" alt="user-image"
-                                            class="user-avtar">
+                                        <img src="{{ asset(Auth::user()->avatar) }}" alt="user-image" class="user-avtar">
                                     @else
-                                        <img src="/assets/images/user/avatar-2.jpg" alt="user-image"
-                                            class="user-avtar">
+                                        <img src="/assets/images/user/avatar-2.jpg" alt="user-image" class="user-avtar">
                                     @endif
                                 </div>
                                 <div class="flex-grow-1 ms-3">
                                     <h6 class="mb-1">{{ Auth::user()->name }}</h6>
                                     <span>{{ Auth::user()->email }}</span>
                                 </div>
-                                {{-- <a href="#!" class="pc-head-link bg-transparent"><i
-                                        class="ti ti-power text-danger"></i></a> --}}
                             </div>
                         </div>
-                        <ul class="nav drp-tabs nav-fill nav-tabs" id="mydrpTab" role="tablist">
+                        <hr style="border: 1px solid #a8a8a8; margin: 0 0 7px 0;">
+                        {{-- <ul class="nav drp-tabs nav-fill nav-tabs" id="mydrpTab" role="tablist">
                             <li class="nav-item" role="presentation">
                                 <button class="nav-link active" id="drp-t1" data-bs-toggle="tab"
-                                    data-bs-target="#drp-tab-1" type="button" role="tab"
-                                    aria-controls="drp-tab-1" aria-selected="true"><i class="ti ti-user"></i>
-                                    Profile</button>
+                                    data-bs-target="#drp-tab-1" type="button" role="tab" aria-controls="drp-tab-1"
+                                    aria-selected="true"><i class="ti ti-user"></i>
+                                    Hồ sơ</button>
                             </li>
                             <li class="nav-item" role="presentation">
-                                <button class="nav-link" id="drp-t2" data-bs-toggle="tab"
-                                    data-bs-target="#drp-tab-2" type="button" role="tab"
-                                    aria-controls="drp-tab-2" aria-selected="false"><i class="ti ti-settings"></i>
+                                <button class="nav-link" id="drp-t2" data-bs-toggle="tab" data-bs-target="#drp-tab-2"
+                                    type="button" role="tab" aria-controls="drp-tab-2" aria-selected="false"><i
+                                        class="ti ti-settings"></i>
                                     Setting</button>
                             </li>
-                        </ul>
+                        </ul> --}}
                         <div class="tab-content" id="mysrpTabContent">
                             <div class="tab-pane fade show active" id="drp-tab-1" role="tabpanel"
                                 aria-labelledby="drp-t1" tabindex="0">
                                 <a href="{{ route('admin.profile.index') }}" class="dropdown-item">
                                     <i class="ti ti-user"></i>
-                                    <span>View Profile</span>
+                                    <span>Xem thông tin</span>
                                 </a>
                                 <a href="{{ route('admin.profile.password') }}" class="dropdown-item">
                                     <i class="ti ti-lock"></i>
                                     <span>Đổi mật khẩu</span>
                                 </a>
-                                <a href="#!" class="dropdown-item">
-                                    <i class="ti ti-clipboard-list"></i>
-                                    <span>Billing</span>
-                                </a>
                                 <a href="{{ route('home') }}" class="dropdown-item">
                                     <i class="ti ti-home"></i>
-                                    <span>Back to Client</span>
+                                    <span>Quay lại trang chủ</span>
                                 </a>
                                 <form action="{{ route('logout') }}" method="POST" class="m-0 p-0">
                                     @csrf
                                     <button type="submit"
                                         class="dropdown-item w-100 text-start bg-transparent border-0">
                                         <i class="ti ti-power"></i>
-                                        <span>Logout</span>
+                                        <span>Đăng xuất</span>
                                     </button>
                                 </form>
                             </div>
-                            <div class="tab-pane fade" id="drp-tab-2" role="tabpanel" aria-labelledby="drp-t2"
-                                tabindex="0">
-                                <a href="#!" class="dropdown-item">
-                                    <i class="ti ti-help"></i>
-                                    <span>Support</span>
-                                </a>
-                                <a href="#!" class="dropdown-item">
-                                    <i class="ti ti-user"></i>
-                                    <span>Account Settings</span>
-                                </a>
-                                <a href="#!" class="dropdown-item">
-                                    <i class="ti ti-lock"></i>
-                                    <span>Privacy Center</span>
-                                </a>
-                                <a href="#!" class="dropdown-item">
-                                    <i class="ti ti-messages"></i>
-                                    <span>Feedback</span>
-                                </a>
-                                <a href="#!" class="dropdown-item">
-                                    <i class="ti ti-list"></i>
-                                    <span>History</span>
-                                </a>
-                            </div>
+
                         </div>
                     </div>
                 </li>
@@ -221,3 +190,4 @@
         </div>
     </div>
 </header>
+@include('admin.partials.notify')

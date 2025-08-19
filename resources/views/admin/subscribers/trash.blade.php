@@ -1,5 +1,5 @@
 @extends('admin.layouts.app')
-@section('title', 'Trash Subscriber')
+@section('title', 'Thùng rác đăng ký')
 
 <style>
     .custom-shadow {
@@ -25,12 +25,12 @@
                 <div class="row align-items-center">
                     <div class="col-md-12">
                         <div class="page-header-title">
-                            <h5 class="m-b-10">Trash - Deleted Subscribers</h5>
+                            <h5 class="m-b-10">Thùng rác đăng ký</h5>
                         </div>
                         <ul class="breadcrumb">
-                            <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Home</a></li>
-                            <li class="breadcrumb-item"><a href="{{ route('admin.subscribers.index') }}">Subscribers</a></li>
-                            <li class="breadcrumb-item" aria-current="page">Trash</li>
+                            <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Trang chủ</a></li>
+                            <li class="breadcrumb-item"><a href="{{ route('admin.subscribers.index') }}">Người đăng ký</a></li>
+                            <li class="breadcrumb-item" aria-current="page">Thùng rác</li>
                         </ul>
                     </div>
                 </div>
@@ -41,9 +41,9 @@
             <div class="col-12">
                 <div class="card">
                     <div class="card-header d-flex justify-content-between align-items-center">
-                        <h5>Deleted Subscribers</h5>
+                        <h5>Xóa</h5>
                         <a href="{{ route('admin.subscribers.index') }}" class="btn btn-secondary btn-sm rounded-3">
-                            <i class="ti ti-arrow-left"></i> Back to List
+                            <i class="ti ti-arrow-left"></i> Quay lại danh sách
                         </a>
                     </div>
                     <div class="card-body">
@@ -56,12 +56,12 @@
                             <table class="table table-hover table-borderless">
                                 <thead>
                                     <tr>
-                                <th>ID</th>
-                                <th>Name</th>
+                                <th>STT</th>
+                                <th>Tên</th>
                                 <th>Email</th>
-                                <th>Subscribed At</th>
-                                <th>Deleted At</th>
-                                <th class="text-center">Actions</th>
+                                <th>Thời gian đăng ký</th>
+                                <th>Thời gian xóa</th>
+                                <th class="text-center">Hành động</th>
                             </tr>
                                 </thead>
                                 <tbody>
@@ -77,14 +77,14 @@
                                                 @csrf
                                                 @method('PATCH')
                                                 <button type="submit" class="btn btn-success btn-sm rounded-3 me-2">    
-                                                    <i class="ti ti-restore"></i> Restore
+                                                    <i class="ti ti-restore"></i> Khôi phục
                                                 </button>
                                             </form>
                                         </td>
                                     </tr>
                                     @empty
                                     <tr>
-                                        <td colspan="7" class="text-center">No deleted subscribers found.</td>
+                                        <td colspan="7" class="text-center">Không có dữ liệu</td>
                                     </tr>
                                     @endforelse
                                 </tbody>

@@ -42,23 +42,36 @@ class ProductSuggestionService
         $keyword = SearchHistory::where('user_id', $userId)->latest()->value('keyword');
 
         if (!$keyword) {
-            return collect(); // Không có từ khóa => trả về collection rỗng
+            return collect(); // Không có từ khóa
         }
 
-        return Product::where('name', 'like', "%$keyword%")
+        // Lấy ID các sản phẩm khớp từ khóa
+        $matchedProductIds = Product::where('name', 'like', "%$keyword%")
             ->orWhere('description', 'like', "%$keyword%")
-            ->limit(6)->get();
+            ->pluck('id');
+
+        // Lấy category của các sản phẩm đã tìm
+        $categoryIds = Product::whereIn('id', $matchedProductIds)->pluck('category_id');
+
+        // Trả về sản phẩm cùng danh mục, nhưng không trùng với sản phẩm tìm
+        return Product::whereIn('category_id', $categoryIds)
+            ->whereNotIn('id', $matchedProductIds)
+            ->limit(6)
+            ->get();
     }
+
 
     public function suggestTrendingThisWeek()
     {
-        // Lấy các variant_id được mua nhiều nhất trong tuần
-        $variantIds = DB::table('order_details')
-            ->whereBetween('created_at', [now()->subDays(7), now()])
-            ->select('variant_id', DB::raw('SUM(quantity) as total'))
-            ->groupBy('variant_id')
+        $variantIds = DB::table('order_items')
+            ->join('orders', 'order_items.order_id', '=', 'orders.id')
+            ->where('orders.status', 'completed') // ✅ chỉ lấy đơn đã hoàn thành
+            ->whereBetween('order_items.created_at', [now()->subDays(7), now()])
+            ->select('order_items.product_variant_id', DB::raw('SUM(order_items.quantity) as total'))
+            ->groupBy('order_items.product_variant_id')
             ->orderByDesc('total')
-            ->pluck('variant_id');
+            ->pluck('order_items.product_variant_id');
+
 
         // Truy ngược từ variant_id → product_id
         $productIds = DB::table('product_variants')
@@ -77,6 +90,17 @@ class ProductSuggestionService
             'by_search' => $this->suggestBySearchHistory($userId),
             'trending' => $this->suggestTrendingThisWeek(),
         ];
+    }
+    public function getUniqueSuggestions(Product $product, $userId = null)
+    {
+        $all = collect([
+            $this->suggestByPrice($product),
+            $this->suggestByViewHistory($userId),
+            $this->suggestBySearchHistory($userId),
+            $this->suggestTrendingThisWeek(),
+        ])->flatten();
+
+        return $all->unique('id')->values()->take(6); // Loại trùng theo id
     }
 }
 // This service class provides methods to suggest products based on various criteria such as price, view history, search history, and trending products.

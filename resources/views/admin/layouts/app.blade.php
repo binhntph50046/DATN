@@ -15,8 +15,9 @@
         content="Mantis, Dashboard UI Kit, Bootstrap 5, Admin Template, Admin Dashboard, CRM, CMS, Bootstrap Admin Template">
     <meta name="author" content="CodedThemes">
 
+    @stack('styles')
     <!-- [Favicon] icon -->
-    <link rel="icon" href="{{ asset('/images/iphone.png') }}" type="image/x-icon">
+    <link rel="icon" href="{{ asset('/images/logo/iphone.png') }}" type="image/x-icon">
     <!-- [Google Font] Family -->
     <link rel="stylesheet"
         href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700&display=swap"
@@ -34,7 +35,8 @@
     <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}" id="main-style-link">
     <link rel="stylesheet" href="{{ asset('assets/css/style-preset.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/custom-sidebar.css') }}">
-
+    <link rel="stylesheet" href="{{ asset('css/custom.css') }}">
+ 
 </head>
 <!-- [Head] end -->
 
@@ -61,6 +63,12 @@
     @yield('content')
     <!-- [ Main Content ] end -->
 
+
+    {{-- Livechat --}}
+    @include('admin.partials.icon-chat')
+    @include('admin.partials.notify')
+    {{-- Livechat end --}}
+
     <!-- [ Footer Content ] start -->
     @include('admin.partials.footer')
     <!-- [ Footer Content ] end -->
@@ -71,6 +79,11 @@
     <!-- [Page Specific JS] end -->
     <!-- Required Js -->
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <!-- Pusher -->
+    <script src="https://js.pusher.com/8.4.0/pusher.min.js"></script>
+    
     <script src="{{ asset('assets/js/plugins/popper.min.js') }}"></script>
     <script src="{{ asset('assets/js/plugins/simplebar.min.js') }}"></script>
     <script src="{{ asset('assets/js/plugins/bootstrap.min.js') }}"></script>
@@ -79,10 +92,18 @@
     <script src="{{ asset('assets/js/plugins/feather.min.js') }}"></script>
     <script src="{{ asset('assets/js/custom-sidebar.js') }}"></script>
 
+     {{-- @vite(['resources/js/app.js','resources/js/noti.js']) --}}
+
+    
+    <script src="https://cdn.jsdelivr.net/npm/laravel-echo/dist/echo.iife.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/socket.io-client@4.7.2/dist/socket.io.min.js"></script>
+    
+
     @stack('scripts')
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ckeditor/4.9.2/ckeditor.js"
         integrity="sha512-OF6VwfoBrM/wE3gt0I/lTh1ElROdq3etwAquhEm2YI45Um4ird+0ZFX1IwuBDBRufdXBuYoBb0mqXrmUA2VnOA=="
-        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+        crossorigin="anonymous" referrerpolicy="no-referrer">
+    </script>
     <script>
         $(document).ready(function() {
             CKEDITOR.replaceAll('snettech-editor');

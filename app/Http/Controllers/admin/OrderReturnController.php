@@ -5,56 +5,91 @@ namespace App\Http\Controllers\admin;
 use Illuminate\Routing\Controller;
 use Illuminate\Http\Request;
 use App\Models\OrderReturn;
+use App\Models\ProductVariant;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use App\Events\OrderStatusUpdated;
+
 class OrderReturnController extends Controller
 {
-    /**
-     * Hiển thị danh sách yêu cầu hoàn hàng
-     */
+    // Hiển thị danh sách yêu cầu hoàn hàng
     public function index()
     {
         // Lấy tất cả yêu cầu hoàn hàng, mới nhất lên đầu
         $returns = OrderReturn::with(['order', 'user', 'admin'])->latest()->paginate(20);
         return view('admin.order_returns.index', compact('returns'));
     }
-
-    /**
-     * Hiển thị chi tiết một yêu cầu hoàn hàng
-     */
+    // Hiển thị chi tiết một yêu cầu hoàn hàng
     public function show($id)
     {
         $return = OrderReturn::with(['order', 'user', 'admin'])->findOrFail($id);
         return view('admin.order_returns.show', compact('return'));
     }
-
-    /**
-     * Duyệt yêu cầu hoàn hàng
-     */
+    // Duyệt yêu cầu hoàn hàng
     public function approve(Request $request, $id)
     {
-        $return = \App\Models\OrderReturn::with('items.orderItem.product')->findOrFail($id);
+        $request->validate([
+            'refund_proof_image' => 'required|image|max:2048', // Validate hình ảnh, max 2MB
+            'refund_note' => 'nullable|string|max:500',
+        ]);
+
+        $return = OrderReturn::with(['items.orderItem.product', 'items.orderItem.variant'])->findOrFail($id);
+
+        // Upload hình ảnh chứng từ
+        if ($request->hasFile('refund_proof_image')) {
+            $image = $request->file('refund_proof_image');
+            $imageName = time() . '_' . $return->id . '.' . $image->getClientOriginalExtension();
+            $image->move(public_path('uploads/returns'), $imageName);
+            $return->refund_proof_image = 'uploads/returns/' . $imageName;
+        }
+
+        // Lưu ghi chú hoàn tiền
+        if ($request->filled('refund_note')) {
+            $return->refund_note = $request->refund_note;
+        }
 
         // Tính tổng tiền hoàn lại
         $refundAmount = 0;
         $restockArr = $request->input('restock', []);
+        
         foreach ($return->items as $item) {
             $refundAmount += $item->orderItem->price * $item->quantity;
-            $restock = isset($restockArr[$item->id]);
+            $restock = isset($restockArr[$item->id]) && $restockArr[$item->id] == '1';
             $item->restock = $restock;
             $item->save();
+            
             if ($restock) {
-                $item->orderItem->product->increment('stock', $item->quantity);
+                // Cộng lại stock cho variant tương ứng
+                if ($item->orderItem->variant) {
+                    $variant = $item->orderItem->variant;
+                    $variant->increment('stock', $item->quantity);
+                } else {
+                    // Fallback: cộng lại stock cho sản phẩm nếu không có variant
+                    $item->orderItem->product->increment('stock', $item->quantity);
+                }
             }
         }
 
         // Cập nhật trạng thái hoàn hàng
+        $oldStatus = $return->status;
         $return->update([
             'status' => 'approved',
             'admin_id' => Auth::id(),
             'processed_at' => now(),
+            'refunded_at' => now(), // Thêm thời gian hoàn tiền
+            'refund_amount' => $refundAmount, // Thêm số tiền hoàn trả
         ]);
-        event(new OrderStatusUpdated($return->order));
+
+        // Giảm total_sold cho các sản phẩm bị hoàn
+        // Chỉ giảm khi chuyển từ trạng thái khác sang approved
+        if ($oldStatus !== 'approved') {
+            foreach ($return->items as $item) {
+                $product = $item->orderItem->product;
+                if ($product) {
+                    $product->safeDecrementTotalSold($item->quantity);
+                }
+            }
+        }
 
         // Cập nhật số tiền đã hoàn vào đơn hàng
         $order = $return->order;
@@ -71,6 +106,7 @@ class OrderReturnController extends Controller
                 }
             }
         }
+
         if ($totalReturnedQty >= $totalOrderQty) {
             $order->status = 'returned';
         } elseif ($totalReturnedQty > 0) {
@@ -78,16 +114,39 @@ class OrderReturnController extends Controller
         }
         $order->save();
 
-       
+        // Gửi sự kiện sau khi đã cập nhật trạng thái đơn hàng
+        event(new OrderStatusUpdated($order));
 
-        return redirect()->route('admin.order-returns.index')->with('success', 'Đã duyệt yêu cầu hoàn hàng. Đã hoàn lại ' . number_format($refundAmount) . ' VNĐ cho khách.');
+        return redirect()->route('admin.order-returns.index')
+            ->with('success', 'Đã duyệt yêu cầu hoàn hàng và lưu chứng từ hoàn tiền. Đã hoàn lại ' . number_format($refundAmount) . ' VNĐ cho khách.');
     }
-    /**
-     * Từ chối yêu cầu hoàn hàng
-     */
+    // Từ chối yêu cầu hoàn hàng
     public function reject($id)
     {
-        $return = OrderReturn::findOrFail($id);
+        $return = OrderReturn::with(['items.orderItem.product', 'items.orderItem.variant'])->findOrFail($id);
+        
+        // Nếu đang từ trạng thái approved sang rejected, tăng lại total_sold và trừ lại stock
+        $oldStatus = $return->status;
+        if ($oldStatus === 'approved') {
+            foreach ($return->items as $item) {
+                $product = $item->orderItem->product;
+                if ($product) {
+                    $product->safeIncrementTotalSold($item->quantity);
+                }
+                
+                // Trừ lại stock nếu trước đó đã cộng lại (restock = true)
+                if ($item->restock) {
+                    if ($item->orderItem->variant) {
+                        $variant = $item->orderItem->variant;
+                        $variant->decrement('stock', $item->quantity);
+                    } else {
+                        // Fallback: trừ lại stock cho sản phẩm nếu không có variant
+                        $item->orderItem->product->decrement('stock', $item->quantity);
+                    }
+                }
+            }
+        }
+        
         $return->update([
             'status' => 'rejected',
             'admin_id' => Auth::id(),

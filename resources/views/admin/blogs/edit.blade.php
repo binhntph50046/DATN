@@ -1,6 +1,6 @@
 @extends('admin.layouts.app')
 
-@section('title', 'Edit Blog')
+@section('title', 'Chỉnh sửa Bài Viết')
 
 <style>
     .custom-shadow {
@@ -54,9 +54,9 @@
                                 <h5 class="m-b-10">Chỉnh sửa bài viết</h5>
                             </div>
                             <ul class="breadcrumb">
-                                <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Home</a></li>
-                                <li class="breadcrumb-item"><a href="{{ route('admin.blogs.index') }}">Blogs</a></li>
-                                <li class="breadcrumb-item active" aria-current="page">Edit</li>
+                                <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Trang Chủ</a></li>
+                                <li class="breadcrumb-item"><a href="{{ route('admin.blogs.index') }}">Bài Viết</a></li>
+                                <li class="breadcrumb-item active" aria-current="page">Chỉnh sửa</li>
                             </ul>
                         </div>
                     </div>
@@ -78,7 +78,7 @@
                                 <div class="row">
                                     <div class="col-md-8">
                                         <div class="form-group mb-3">
-                                            <label for="title" class="form-label">Title</label>
+                                            <label for="title" class="form-label">Tiêu đề</label>
                                             <input type="text" name="title" id="title"
                                                 value="{{ old('title', $blog->title) }}"
                                                 class="form-control @error('title') is-invalid @enderror">
@@ -88,7 +88,7 @@
                                         </div>
 
                                         <div class="form-group mb-3">
-                                            <label for="content" class="form-label">Content</label>
+                                            <label for="content" class="form-label">Nội dung</label>
                                             <textarea name="content" id="content" rows="10"
                                                 class="snettech-editor form-control @error('content') is-invalid @enderror">{{ old('content', $blog->content) }}</textarea>
                                             @error('content')
@@ -99,7 +99,7 @@
 
                                     <div class="col-md-4">
                                         <div class="form-group mb-3">
-                                            <label for="category_id" class="form-label">Type</label>
+                                            <label for="category_id" class="form-label">Loại</label>
                                             <select name="category_id" id="category_id"
                                                 class="form-select @error('category_id') is-invalid @enderror">
                                                 <option value="">-- Chọn danh mục --</option>
@@ -116,7 +116,7 @@
                                         </div>
 
                                         <div class="form-group mb-3">
-                                            <label for="image" class="form-label">Avatar</label>
+                                            <label for="image" class="form-label">Hình ảnh</label>
 
                                             {{-- Chỉ hiện khung preview khi đã có ảnh --}}
                                             @if ($blog->image)
@@ -139,16 +139,16 @@
                                         </div>
 
                                         <div class="form-group mb-3">
-                                            <label for="status" class="form-label">Status</label>
+                                            <label for="status" class="form-label">Trạng thái</label>
                                             <select name="status" id="status"
                                                 class="form-select @error('status') is-invalid @enderror">
                                                 <option value="active"
                                                     {{ old('status', $blog->status) == 'active' ? 'selected' : '' }}>
-                                                    Active
+                                                    Hoạt động
                                                 </option>
                                                 <option value="inactive"
                                                     {{ old('status', $blog->status) == 'inactive' ? 'selected' : '' }}>
-                                                    Inactive
+                                                    Không hoạt động
                                                 </option>
                                             </select>
                                             @error('status')
@@ -156,10 +156,10 @@
                                             @enderror
                                         </div>
                                         <div class="form-group mb-3">
-                                            <label for="author_id" class="form-label">Author</label>
+                                            <label for="author_id" class="form-label">Tác giả</label>
                                             <select name="author_id" id="author_id"
                                                 class="form-select @error('author_id') is-invalid @enderror">
-                                                <option value="">Select Author</option>
+                                                <option value="">Chọn Tác Giả</option>
                                                 @foreach ($authors as $author)
                                                     <option value="{{ $author->id }}"
                                                         {{ old('author_id', $blog->author_id) == $author->id ? 'selected' : '' }}>
@@ -175,9 +175,9 @@
                                 </div>
 
                                 <div class="d-flex justify-content-end">
-                                    <button type="submit" class="btn btn-primary">Update</button>
-                                    <a href="{{ route('admin.blogs.index') }}" class="btn btn-secondary ms-2">Back to
-                                        list</a>
+                                    <button type="submit" class="btn btn-primary">Cập nhật</button>
+                                    <a href="{{ route('admin.blogs.index') }}" class="btn btn-secondary ms-2">Quay lại
+                                        danh sách</a>
                                 </div>
                             </form>
                         </div>

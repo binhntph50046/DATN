@@ -14,7 +14,7 @@
                             <h5 class="m-b-10">Thùng rác - Thông số kỹ thuật</h5>
                         </div>
                         <ul class="breadcrumb">
-                            <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Home</a></li>
+                            <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Trang chủ</a></li>
                             <li class="breadcrumb-item"><a href="{{ route('admin.specifications.index') }}">Thông số kỹ thuật</a></li>
                             <li class="breadcrumb-item" aria-current="page">Thùng rác</li>
                         </ul>
@@ -41,7 +41,7 @@
                             <table class="table table-hover">
                                 <thead>
                                     <tr>
-                                        <th>ID</th>
+                                        <th>STT</th>
                                         <th>Tên</th>
                                         <th>Danh mục</th>
                                         <th>Mô tả</th>
@@ -55,7 +55,7 @@
                                         <tr>
                                             <td>{{ $specification->id }}</td>
                                             <td>{{ $specification->name }}</td>
-                                            <td>{{ $specification->category ? $specification->category->name : 'N/A' }}</td>
+                                            <td>{{ $specification->category ? $specification->category->name : 'Không có' }}</td>
                                             <td>{{ Str::limit($specification->description, 50) }}</td>
                                             <td>
                                                 <span class="badge bg-{{ $specification->status == 'active' ? 'success' : 'danger' }}">

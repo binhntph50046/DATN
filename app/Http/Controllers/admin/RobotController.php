@@ -96,7 +96,7 @@ class RobotController
 
     protected function validatePath($path)
     {
-        // Path must start with /
+        // Đường dẫn phải bắt đầu bằng /
         if (!str_starts_with($path, '/')) {
             return false;
         }
@@ -106,7 +106,7 @@ class RobotController
             return false;
         }
 
-        // Path should only contain valid URL characters
+        // Đường dẫn chỉ được chứa ký tự URL hợp lệ
         if (!preg_match('/^[\/\-_.a-zA-Z0-9*]+$/', $path)) {
             return false;
         }
@@ -167,26 +167,26 @@ class RobotController
             }
         }
 
-        // Create backup before making changes
+        // Tạo backup trước khi thay đổi
         $backupPath = $this->createBackup();
 
-        // Build robots.txt content
+        // Xây dựng nội dung robots.txt
         $content = "User-agent: " . $request->user_agent . "\n\n";
 
-        // Add Allow rules
+        // Thêm quy tắc Allow
         foreach ($allowRules as $rule) {
             $content .= "Allow: " . $rule . "\n";
         }
 
-        // Add Disallow rules
+        // Thêm quy tắc Disallow
         foreach ($disallowRules as $rule) {
             $content .= "Disallow: " . $rule . "\n";
         }
 
-        // Add Sitemap
+        // Thêm Sitemap
         $content .= "\nSitemap: " . $request->sitemap . "\n";
 
-        // Save to robots.txt
+        // Lưu vào robots.txt
         File::put(public_path('robots.txt'), $content);
 
         $message = 'Nội dung robots.txt đã được cập nhật thành công!';

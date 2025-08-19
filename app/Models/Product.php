@@ -15,7 +15,7 @@ class Product extends Model
     protected $fillable = [
         'name', 'slug', 'description', 'content', 'category_id',
         'warranty_months', 'is_featured', 'status', 
-        'views'
+        'views', 'total_sold'
     ];
 
     protected $casts = [
@@ -44,6 +44,11 @@ class Product extends Model
     public function reviews()
     {
         return $this->hasMany(ProductReview::class);
+    }
+
+    public function activities()
+    {
+        return $this->hasMany(ProductActivity::class)->latest();
     }
 
     public function defaultVariant()
@@ -116,5 +121,38 @@ class Product extends Model
     public function getVariantImageAttribute()
     {
         return $this->default_variant_image;
+    }
+
+    /**
+     * Cập nhật total_sold một cách an toàn, tránh giá trị âm
+     */
+    public function safeUpdateTotalSold($quantity, $operation = 'increment')
+    {
+        $currentTotalSold = $this->total_sold ?? 0;
+        
+        if ($operation === 'increment') {
+            $newTotalSold = $currentTotalSold + $quantity;
+        } else {
+            $newTotalSold = max(0, $currentTotalSold - $quantity);
+        }
+        
+        $this->update(['total_sold' => $newTotalSold]);
+        return $this;
+    }
+
+    /**
+     * Tăng total_sold một cách an toàn
+     */
+    public function safeIncrementTotalSold($quantity = 1)
+    {
+        return $this->safeUpdateTotalSold($quantity, 'increment');
+    }
+
+    /**
+     * Giảm total_sold một cách an toàn
+     */
+    public function safeDecrementTotalSold($quantity = 1)
+    {
+        return $this->safeUpdateTotalSold($quantity, 'decrement');
     }
 }

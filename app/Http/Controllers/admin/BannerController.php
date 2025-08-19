@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 class BannerController
 {
     /**
-     * Display a listing of the resource.
+     * Hiển thị danh sách tài nguyên.
      */
     public function index()
     {
@@ -19,7 +19,7 @@ class BannerController
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Hiển thị form để tạo tài nguyên mới.
      */
     public function create()
     {
@@ -29,7 +29,7 @@ class BannerController
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Lưu trữ tài nguyên mới được tạo.
      */
     public function store(Request $request)
     {
@@ -40,6 +40,20 @@ class BannerController
             'status' => 'required|in:active,inactive',
             'description' => 'nullable|string|max:255',
             'link' => 'nullable|url',
+        ], [
+            'title.required' => 'Tiêu đề là bắt buộc.',
+            'title.max' => 'Tiêu đề không được vượt quá 255 ký tự.',
+
+            'image.required' => 'Vui lòng chọn hình ảnh.',
+            'image.image' => 'Tệp phải là hình ảnh.',
+            'image.mimes' => 'Hình ảnh phải có định dạng: jpeg, png, jpg, gif.',
+
+            'status.required' => 'Vui lòng chọn trạng thái.',
+            'status.in' => 'Trạng thái không hợp lệ.',
+
+            'description.max' => 'Mô tả không được vượt quá 255 ký tự.',
+
+            'link.url' => 'Đường dẫn không hợp lệ.',
         ]);
 
         // Tính toán giá trị order cho banner mới
@@ -84,11 +98,11 @@ class BannerController
         $banner->save();
 
         // Chuyển hướng và thông báo thành công
-        return redirect()->route('admin.banners.index')->with('success', 'Banner created successfully');
+        return redirect()->route('admin.banners.index')->with('success', 'Banner đã được tạo thành công');
     }
 
     /**
-     * Display the specified resource.
+     * Hiển thị tài nguyên được chỉ định.
      */
     public function show(Banner $banner)
     {
@@ -96,7 +110,7 @@ class BannerController
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * Hiển thị form để chỉnh sửa tài nguyên được chỉ định.
      */
     public function edit(Banner $banner)
     {
@@ -105,7 +119,7 @@ class BannerController
     }
 
     /**
-     * Update the specified resource in storage.
+     * Cập nhật tài nguyên được chỉ định.
      */
     public function update(Request $request, Banner $banner)
     {
@@ -115,6 +129,19 @@ class BannerController
             'description' => 'nullable|string|max:255',
             'status' => 'required|in:active,inactive',
             'link' => 'nullable|url',
+        ], [
+            'title.required' => 'Tiêu đề là bắt buộc.',
+            'title.max' => 'Tiêu đề không được vượt quá 255 ký tự.',
+
+            'image.image' => 'Tệp phải là hình ảnh.',
+            'image.mimes' => 'Hình ảnh phải có định dạng: jpeg, png, jpg, gif.',
+
+            'description.max' => 'Mô tả không được vượt quá 255 ký tự.',
+
+            'status.required' => 'Vui lòng chọn trạng thái.',
+            'status.in' => 'Trạng thái không hợp lệ.',
+
+            'link.url' => 'Đường dẫn không hợp lệ.',
         ]);
 
         $banner->title = $request->title;
@@ -145,11 +172,11 @@ class BannerController
 
         $banner->save();
 
-        return redirect()->route('admin.banners.index')->with('success', 'Banner updated successfully');
+        return redirect()->route('admin.banners.index')->with('success', 'Banner đã được cập nhật thành công');
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Xóa tài nguyên được chỉ định.
      */
     public function destroy(Banner $banner)
     {
@@ -160,7 +187,7 @@ class BannerController
 
         $banner->delete();
 
-        return redirect()->route('admin.banners.index')->with('success', 'Successfully deleted');
+        return redirect()->route('admin.banners.index')->with('success', 'Banner đã được xóa thành công');
     }
     public function moveUp(Banner $banner)
     {
@@ -174,7 +201,7 @@ class BannerController
             $prevBanner->save();
         }
 
-        return redirect()->route('admin.banners.index')->with('success', 'Successfully moved up');
+        return redirect()->route('admin.banners.index')->with('success', 'Di chuyển lên thành công');
     }
 
     public function moveDown(Banner $banner)
@@ -189,7 +216,7 @@ class BannerController
             $nextBanner->save();
         }
 
-        return redirect()->route('admin.banners.index')->with('success', 'Successfully moved down');
+        return redirect()->route('admin.banners.index')->with('success', 'Di chuyển xuống thành công');
     }
     public function updateOrder(Request $request)
     {

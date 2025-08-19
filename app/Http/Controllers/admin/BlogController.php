@@ -16,11 +16,7 @@ class BlogController
     //
     public function index(Request $request)
     {
-        // Lấy tất cả blog có trạng thái active, kèm quan hệ category và author
-        $blogs = Blog::with(['category', 'author'])
-            ->latest()
-            ->get();
-
+        // Lấy query blog kèm quan hệ category và author
         $query = Blog::with(['category', 'author']);
 
         // Lọc theo danh mục
@@ -28,7 +24,7 @@ class BlogController
             $query->where('category_id', $request->category_id);
         }
 
-        // Lọc theo tác giả
+        // Lọc theo tác giả (chỉ admin hoặc staff)
         if ($request->filled('author_id')) {
             $query->where('author_id', $request->author_id);
         }
@@ -37,7 +33,10 @@ class BlogController
 
         // Lấy dữ liệu dropdown
         $categories = Category::where('type', 2)->get();
-        $authors = User::all(); // Hoặc lọc theo role nếu cần (VD: ->where('role', 'author'))
+        // Chỉ lấy user có role admin hoặc staff qua bảng trung gian roles
+        $authors = User::whereHas('roles', function($q) {
+            $q->whereIn('name', ['admin', 'staff']);
+        })->get();
 
         return view('admin.blogs.index', compact('blogs', 'categories', 'authors'));
     }
@@ -45,7 +44,10 @@ class BlogController
     public function create()
     {
         $categories = Category::where('type', 2)->get();
-        $authors = User::all();
+        // Lấy user có role admin hoặc staff qua bảng trung gian
+        $authors = User::whereHas('roles', function($q) {
+            $q->whereIn('name', ['admin', 'staff']);
+        })->get();
         return view('admin.blogs.create', compact('categories','authors'));
     }
 
@@ -81,7 +83,7 @@ class BlogController
         // }
 
 
-        // Handle image upload to public/uploads/blogs
+        // Xử lý tải lên hình ảnh vào public/uploads/blogs
         $imagePath = null;
         if ($request->hasFile('image')) {
             $file       = $request->file('image');
@@ -110,7 +112,7 @@ class BlogController
         ]);
 
         return redirect()->route('admin.blogs.index')
-            ->with('success', 'The article has been created successfully.!');
+            ->with('success', 'Tạo Thành công bài viết!');
     }
     public function show(Blog $blog)
     {
@@ -119,8 +121,11 @@ class BlogController
     }
     public function edit(Blog $blog)
     {
-        $categories = Category::all();
-        $authors = User::all();
+        $categories = Category::where('type', 2)->get();
+        // Chỉ lấy user có role admin hoặc staff qua bảng trung gian roles
+        $authors = User::whereHas('roles', function($q) {
+            $q->whereIn('name', ['admin', 'staff']);
+        })->get();
         return view('admin.blogs.edit', compact('blog', 'categories','authors'));
     }
 
@@ -135,9 +140,9 @@ class BlogController
             'author_id'   => 'required',
         ]);
 
-        // Handle new image upload if provided
+        // Xử lý tải lên hình ảnh mới nếu được cung cấp
         if ($request->hasFile('image')) {
-            // Optionally delete old image here
+            // Tùy chọn xóa hình ảnh cũ ở đây
             $file     = $request->file('image');
             $filename = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
             $destPath = public_path('uploads/blogs');
@@ -148,7 +153,7 @@ class BlogController
             $data['image'] = 'uploads/blogs/' . $filename;
         }
 
-        // Update slug if title changed
+        // Cập nhật slug nếu tiêu đề thay đổi
         if ($data['title'] !== $blog->title) {
             $data['slug'] = Str::slug($data['title']);
         }
@@ -156,7 +161,7 @@ class BlogController
         $blog->update($data);
 
         return redirect()->route('admin.blogs.index')
-            ->with('success', 'The article has been updated successfully.!');
+            ->with('success', 'Bài viết đã được cập nhật thành công!');
     }
 
     public function destroy(Blog $blog)
@@ -171,13 +176,13 @@ class BlogController
 
         return redirect()
             ->route('admin.blogs.index')
-            ->with('success', 'The post has been successfully soft deleted!');
+            ->with('success', 'Bài viết đã được xóa thành công!');
     }
 
     public function trash()
     {
         $blogs = Blog::onlyTrashed()->with('category', 'author')->paginate(12);
-        return view('admin.blogs.trash', compact('blogs'));
+        return view('admin.blogs.trash', data: compact('blogs'));
     }
 
     /**
@@ -189,7 +194,7 @@ class BlogController
         $blog->restore();
 
         return redirect()->route('admin.blogs.index')
-            ->with('success', 'Post restored successfully!');
+            ->with('success', 'Khôi phục bài viết thành công!');
     }
 
     /**

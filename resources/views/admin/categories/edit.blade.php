@@ -1,4 +1,5 @@
 @extends('admin.layouts.app')
+@section('title', 'Sửa danh mục')
 
 @section('content')
 <div class="pc-container">
@@ -9,12 +10,12 @@
                 <div class="row align-items-center">
                     <div class="col-md-12">
                         <div class="page-header-title">
-                            <h5 class="m-b-10">Edit Category</h5>
+                            <h5 class="m-b-10">Sửa danh mục</h5>
                         </div>
                         <ul class="breadcrumb">
-                            <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Home</a></li>
-                            <li class="breadcrumb-item"><a href="{{ route('admin.categories.index') }}">Categories</a></li>
-                            <li class="breadcrumb-item" aria-current="page">Edit</li>
+                            <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Trang chủ</a></li>
+                            <li class="breadcrumb-item"><a href="{{ route('admin.categories.index') }}">Danh mục</a></li>
+                            <li class="breadcrumb-item" aria-current="page">Sửa</li>
                         </ul>
                     </div>
                 </div>
@@ -36,7 +37,7 @@
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="mb-3">
-                                        <label for="name" class="form-label">Name</label>
+                                        <label for="name" class="form-label">Tên danh mục</label>
                                         <input type="text" class="form-control @error('name') is-invalid @enderror" id="name" name="name" value="{{ old('name', $category->name) }}">
                                         @error('name')
                                             <div class="invalid-feedback">{{ $message }}</div>
@@ -45,9 +46,9 @@
                                 </div>
                                 <div class="col-md-6">
                                     <div class="mb-3">
-                                        <label for="parent_id" class="form-label">Parent Category</label>
+                                        <label for="parent_id" class="form-label">Danh mục cha</label>
                                         <select class="form-select @error('parent_id') is-invalid @enderror" id="parent_id" name="parent_id">
-                                            <option value="">-- No Parent --</option>
+                                            <option value="">-- Không có --</option>
                                             @foreach($categories as $cat)
                                                 <option value="{{ $cat->id }}" {{ old('parent_id', $category->parent_id) == $cat->id ? 'selected' : '' }}>
                                                     {{ $cat->name }}
@@ -64,10 +65,10 @@
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="mb-3">
-                                        <label for="type" class="form-label">Type</label>
+                                        <label for="type" class="form-label">Kiểu danh mục</label>
                                         <select class="form-select @error('type') is-invalid @enderror" id="type" name="type">
-                                            <option value="1" {{ old('type', $category->type) == 1 ? 'selected' : '' }}>Product Category</option>
-                                            <option value="2" {{ old('type', $category->type) == 2 ? 'selected' : '' }}>Post Category</option>
+                                            <option value="1" {{ old('type', $category->type) == 1 ? 'selected' : '' }}>Danh mục sản phẩm</option>
+                                            <option value="2" {{ old('type', $category->type) == 2 ? 'selected' : '' }}>Danh mục bài viết</option>
                                         </select>
                                         @error('type')
                                             <div class="invalid-feedback">{{ $message }}</div>
@@ -76,10 +77,10 @@
                                 </div>
                                 <div class="col-md-6">
                                     <div class="mb-3">
-                                        <label for="status" class="form-label">Status</label>
+                                        <label for="status" class="form-label">Trạng thái</label>
                                         <select class="form-select @error('status') is-invalid @enderror" id="status" name="status">
-                                            <option value="active" {{ old('status', $category->status) == 'active' ? 'selected' : '' }}>Active</option>
-                                            <option value="inactive" {{ old('status', $category->status) == 'inactive' ? 'selected' : '' }}>Inactive</option>
+                                            <option value="active" {{ old('status', $category->status) == 'active' ? 'selected' : '' }}>Hoạt động</option>
+                                            <option value="inactive" {{ old('status', $category->status) == 'inactive' ? 'selected' : '' }}>Ngừng hoạt động</option>
                                         </select>   
                                         @error('status')
                                             <div class="invalid-feedback">{{ $message }}</div>
@@ -110,13 +111,13 @@
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="mb-3">
-                                        <label for="image" class="form-label">Current Image</label>
+                                        <label for="image" class="form-label">Ảnh hiện tại</label>
                                         @if($category->image)
                                             <div class="mt-0">
                                                 <img src="{{ asset($category->image) }}" alt="{{ $category->name }}" class="img-thumbnail" style="max-height: 100px;">
                                             </div>
                                         @endif
-                                        <label for="image" class="form-label">Image New</label>
+                                        <label for="image" class="form-label">Ảnh mới</label>
                                         <input type="file" class="form-control @error('image') is-invalid @enderror" id="image" name="image">
                                         @error('image')
                                             <div class="invalid-feedback">{{ $message }}</div>
@@ -126,8 +127,8 @@
                             </div>
 
                             <div class="mb-3">
-                                <button type="submit" class="btn btn-primary">Update Category</button>
-                                <a href="{{ route('admin.categories.index') }}" class="btn btn-secondary">Back</a>
+                                <button type="submit" class="btn btn-primary">Cập nhật danh mục</button>
+                                <a href="{{ route('admin.categories.index') }}" class="btn btn-secondary">Quay lại</a>
                             </div>
                         </form>
                     </div>

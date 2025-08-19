@@ -17,7 +17,7 @@ body {
   line-height: 28px;
   color: #343434;
   font-size: 14px;
-  background-color: #eff2f1;
+  background-color: #f4f4f4;
 }
 
 a:hover {
@@ -790,10 +790,11 @@ a.more {
 }
 
 .blog-section .post-entry .post-content-entry h3 {
-  font-size: 16px;
+  font-size: 15px;
   margin-bottom: 10px;
   font-weight: 600;
   line-height: 1.4;
+  height: 40px;
 }
 
 .blog-section .post-entry .post-content-entry h3 a {
@@ -1861,11 +1862,6 @@ textarea {
   box-shadow: none;
 }
 
-/* Products Grid */
-.product-section {
-  padding: 7rem 0;
-}
-
 .product-section .product-item {
   /* text-align: center; */
   text-decoration: none;
@@ -2030,7 +2026,7 @@ textarea {
 /* Most Popular Products Section */
 .most-popular-section {
   padding: 4rem 0px 0px 0px;
-  background: #eff2f1;
+  background: #f4f4f4;
 }
 
 .most-popular-section .product-item {
@@ -2043,6 +2039,7 @@ textarea {
   position: relative;
   cursor: pointer;
   transition: all 0.3s ease;
+  margin-top: 5px;
 }
 
 .most-popular-section .product-item:hover {
@@ -2067,7 +2064,7 @@ textarea {
 }
 
 .most-popular-section .product-item:hover .product-thumbnail {
-  top: -25px;
+  top: -7px;
 }
 
 .most-popular-section .product-thumbnail {
@@ -2084,6 +2081,8 @@ textarea {
   font-size: 16px;
   color: #2f2f2f;
   margin-bottom: 10px;
+  height: 33px;
+  line-height: 21px;
 }
 
 .most-popular-section .product-price {
@@ -2158,7 +2157,7 @@ textarea {
 
 .most-popular-section .popular-content {
   padding: 30px;
-  background: #f8f9fa;
+  background: #ffffff;
   border-radius: 10px;
   height: 100%;
 }
@@ -2270,8 +2269,8 @@ textarea {
 
 /* Shop Banner */
 .shop-banner {
-  background: url('https://www.homecredit.vn/static/cdf3446968e365f4f8fbc9266010e77a/ab7c8/mua_tra_gop_iphone_16_banner_74273b74f0.webp');
-  padding: 9rem 0;
+  background: url('https://www.itoucheg.com/storage/2024/09/Web-banner.png');
+  padding: 8rem 0;
   position: relative;
   overflow: hidden;
   margin-top: 120px;

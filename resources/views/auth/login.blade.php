@@ -4,7 +4,7 @@
 
 @section('content')
     <div style="position: absolute; top: 20px; left: 20px;">
-        <a href="{{ url('/') }}" class="text-dark text-decoration-none" title="Về trang chủ">
+        <a href="{{ url('/') }}" class="text-dark text-decoration-none" style="text-decoration: none; color: black" title="Về trang chủ">
             <i class="fa-solid fa-right-from-bracket"></i> Về trang chủ
         </a>
     </div>
@@ -20,7 +20,7 @@
                             class="fa-brands fa-facebook-f"></i></a>
                 </div>
                 <span>hoặc sử dụng mật khẩu email của bạn</span>
-                <input type="email" name="email" placeholder="Email"
+                <input type="text" name="email" placeholder="Email"
                     class="form-control @error('email') is-invalid @enderror" value="{{ old('email') }}">
                 @error('email')
                     <div class="invalid-feedback">{{ $message }}</div>
@@ -47,7 +47,7 @@
                 <div class="toggle-panel toggle-right">
                     <h1>Chào mừng trở lại!</h1>
                     <p>Đăng ký thông tin cá nhân của bạn để sử dụng tất cả các tính năng của trang web</p>
-                    <button class="hidden" id="register"><a href="{{ route('register') }}" class="text-white">Đăng
+                    <button class="hidden" id="register"><a href="{{ route('register') }}" style="color: white" class="text-white">Đăng
                             kí</a></button>
                 </div>
             </div>

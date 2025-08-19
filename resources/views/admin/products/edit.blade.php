@@ -1,5 +1,5 @@
 @extends('admin.layouts.app')
-@section('title', 'Chỉnh Sửa Sản Phẩm')
+@section('title', 'Sửa sản phẩm')
 
 <style>
     .custom-shadow {
@@ -671,11 +671,11 @@
                     const variantNameInput = variantRow.find('input[name$="[name]"]');
                     const variantSlugInput = variantRow.find('input[name$="[slug]"]');
                     const variantTitle = variantRow.find('h6');
-                    
+
                     // Get the original variant suffix (the part after product name)
                     let originalName = variantNameInput.val() || '';
                     let variantSuffix = '';
-                    
+
                     // Extract suffix from original name if it exists
                     if (originalName && originalName !== productName) {
                         // Try to find the suffix after the product name
@@ -690,7 +690,7 @@
                             }
                         }
                     }
-                    
+
                     // If no suffix found, try to extract from the current title
                     if (!variantSuffix) {
                         const currentTitle = variantTitle.text();
@@ -701,18 +701,19 @@
                             }
                         }
                     }
-                    
+
                     // Create new variant name
-                    const newVariantName = variantSuffix ? `${productName} - ${variantSuffix}` : productName;
-                    
+                    const newVariantName = variantSuffix ? `${productName} - ${variantSuffix}` :
+                    productName;
+
                     // Check if the name actually changed
                     if (variantNameInput.val() !== newVariantName) {
                         hasUpdatedVariants = true;
                     }
-                    
+
                     // Update the inputs
                     variantNameInput.val(newVariantName);
-                    
+
                     // Generate new slug
                     const newSlug = newVariantName
                         .toLowerCase()
@@ -720,9 +721,9 @@
                         .replace(/[\u0300-\u036f]/g, '')
                         .replace(/[^a-z0-9]+/g, '-')
                         .replace(/^-+|-+$/g, '');
-                    
+
                     variantSlugInput.val(newSlug);
-                    
+
                     // Update the display title with a subtle animation
                     variantTitle.fadeOut(150, function() {
                         $(this).text(`Biến Thể ${index + 1}: ${newVariantName}`).fadeIn(150);
@@ -739,7 +740,7 @@
             function showNotification(message, type = 'info') {
                 // Remove existing notifications
                 $('.variant-update-notification').remove();
-                
+
                 const notification = $(`
                     <div class="variant-update-notification alert alert-${type === 'info' ? 'info' : 'success'} alert-dismissible fade show" 
                          style="position: fixed; top: 20px; right: 20px; z-index: 9999; max-width: 300px;">
@@ -747,9 +748,9 @@
                         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                     </div>
                 `);
-                
+
                 $('body').append(notification);
-                
+
                 // Auto remove after 3 seconds
                 setTimeout(() => {
                     notification.fadeOut(300, function() {
@@ -785,7 +786,8 @@
                     // Xác định các giá trị bị loại bỏ
                     const removedValues = oldValues.filter(val => !newValues.includes(val));
 
-                    console.log('oldValues:', oldValues, 'newValues:', newValues, 'removedValues:', removedValues);
+                    console.log('oldValues:', oldValues, 'newValues:', newValues, 'removedValues:',
+                        removedValues);
 
                     // Lưu các biến thể bị ảnh hưởng để xóa mềm
                     const variantsToDelete = [];
@@ -797,13 +799,15 @@
                             'input[name^="variants"][name*="[attributes]"][name*="[selected_values]"]'
                         ).each(function() {
                             const attrValue = $(this).val();
-                            let attrValuesArr = String(attrValue).split(',').map(v => v.trim());
+                            let attrValuesArr = String(attrValue).split(',').map(v => v
+                                .trim());
                             allAttrValues.push(attrValuesArr);
                             if (attrValuesArr.some(val => removedValues.includes(val))) {
                                 shouldDelete = true;
                             }
                         });
-                        console.log('Biến thể', idx, 'có các giá trị thuộc tính:', allAttrValues, '| removedValues:', removedValues);
+                        console.log('Biến thể', idx, 'có các giá trị thuộc tính:', allAttrValues,
+                            '| removedValues:', removedValues);
                         if (shouldDelete) {
                             const variantId = $(this).find('input[name$="[id]"]').val();
                             const variantName = $(this).find('input[name$="[name]"]').val();
@@ -905,13 +909,15 @@
                 selects.forEach((select, idx) => {
                     if (select && select.value) {
                         const valueSelect = valueSelects[idx];
-                        if (valueSelect && $(valueSelect).val() && $(valueSelect).val().length > 0) {
-                            const selectedValues = Array.from(valueSelect.selectedOptions).map(opt => ({
-                                id: parseInt(opt.value),
-                                value: opt.text,
-                                attribute_type_id: parseInt(select.value),
-                                hex: opt.getAttribute('data-hex')
-                            }));
+                        if (valueSelect && $(valueSelect).val() && $(valueSelect).val().length >
+                            0) {
+                            const selectedValues = Array.from(valueSelect.selectedOptions).map(
+                                opt => ({
+                                    id: parseInt(opt.value),
+                                    value: opt.text,
+                                    attribute_type_id: parseInt(select.value),
+                                    hex: opt.getAttribute('data-hex')
+                                }));
                             if (selectedValues.length > 0) {
                                 attributeData.push({
                                     attribute_type_id: parseInt(select.value),
@@ -932,88 +938,97 @@
 
                 // Gửi AJAX check duplicate trước khi tạo
                 fetch("{{ route('admin.products.checkDuplicateVariants') }}", {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value
-                    },
-                    body: JSON.stringify({
-                        product_id: productId,
-                        variant_combinations: variantCombinations
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value
+                        },
+                        body: JSON.stringify({
+                            product_id: productId,
+                            variant_combinations: variantCombinations
+                        })
                     })
-                })
-                .then(res => res.json())
-                .then(data => {
-                    if (data.duplicates && data.duplicates.length > 0) {
-                        // Có biến thể trùng, hiển thị thông báo chi tiết
-                        let html = `<div id="duplicate-variant-alert" class="alert alert-danger mt-3">`;
-                        html += `<strong>Phát hiện biến thể trùng:</strong><ul>`;
-                        data.duplicates.forEach(dup => {
-                            html += `<li>Biến thể <b>${dup.index + 1}</b> (${dup.combination.join(' - ')}) ` +
-                                `đã tồn tại với tên: <b>${dup.variant_name}</b> ` +
-                                (dup.is_soft_deleted ? '<span class="badge bg-warning text-dark">(Đã xóa mềm)</span>' : '<span class="badge bg-success">(Đang hoạt động)</span>') +
-                                `</li>`;
-                        });
-                        html += `</ul>Vui lòng vào phần Quản lý biến thể để chỉnh sửa biến thể đã có hoặc tạo biến thể mới không trùng.</div>`;
-                        // Thêm vào trước variantsContainer
-                        const variantsContainer = document.getElementById('variantsContainer');
-                        variantsContainer.insertAdjacentHTML('beforebegin', html);
-                        // Không tạo biến thể
-                        return;
-                    }
-                    // Nếu không trùng, tiếp tục luồng tạo biến thể như cũ
-                    // ... existing code ...
-                    // Check if there are existing variants
-                    if ($('#variantsContainer .variant-row').length > 0) {
-                        const confirmMessage = 'CẢNH BÁO: Tạo biến thể mới sẽ:\n\n' +
-                            '1. Xóa tất cả biến thể hiện tại\n' +
-                            '2. Xóa tất cả hình ảnh của các biến thể\n' +
-                            '3. Tạo lại biến thể mới dựa trên các thuộc tính đã chọn\n\n' +
-                            'Bạn có chắc chắn muốn tiếp tục?';
-                        if (!confirm(confirmMessage)) {
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.duplicates && data.duplicates.length > 0) {
+                            // Có biến thể trùng, hiển thị thông báo chi tiết
+                            let html =
+                                `<div id="duplicate-variant-alert" class="alert alert-danger mt-3">`;
+                            html += `<strong>Phát hiện biến thể trùng:</strong><ul>`;
+                            data.duplicates.forEach(dup => {
+                                html +=
+                                    `<li>Biến thể <b>${dup.index + 1}</b> (${dup.combination.join(' - ')}) ` +
+                                    `đã tồn tại với tên: <b>${dup.variant_name}</b> ` +
+                                    (dup.is_soft_deleted ?
+                                        '<span class="badge bg-warning text-dark">(Đã xóa mềm)</span>' :
+                                        '<span class="badge bg-success">(Đang hoạt động)</span>'
+                                        ) +
+                                    `</li>`;
+                            });
+                            html +=
+                                `</ul>Vui lòng vào phần Quản lý biến thể để chỉnh sửa biến thể đã có hoặc tạo biến thể mới không trùng.</div>`;
+                            // Thêm vào trước variantsContainer
+                            const variantsContainer = document.getElementById('variantsContainer');
+                            variantsContainer.insertAdjacentHTML('beforebegin', html);
+                            // Không tạo biến thể
                             return;
                         }
-                        // Store existing variants for deletion
-                        const variantsToDelete = [];
-                        $('#variantsContainer .variant-row input[name$="[id]"]').each(function() {
-                            if (this.value) {
-                                variantsToDelete.push(this.value);
+                        // Nếu không trùng, tiếp tục luồng tạo biến thể như cũ
+                        // ... existing code ...
+                        // Check if there are existing variants
+                        if ($('#variantsContainer .variant-row').length > 0) {
+                            const confirmMessage = 'CẢNH BÁO: Tạo biến thể mới sẽ:\n\n' +
+                                '1. Xóa tất cả biến thể hiện tại\n' +
+                                '2. Xóa tất cả hình ảnh của các biến thể\n' +
+                                '3. Tạo lại biến thể mới dựa trên các thuộc tính đã chọn\n\n' +
+                                'Bạn có chắc chắn muốn tiếp tục?';
+                            if (!confirm(confirmMessage)) {
+                                return;
                             }
+                            // Store existing variants for deletion
+                            const variantsToDelete = [];
+                            $('#variantsContainer .variant-row input[name$="[id]"]').each(function() {
+                                if (this.value) {
+                                    variantsToDelete.push(this.value);
+                                }
+                            });
+                            $('#variants_to_delete').val(JSON.stringify(variantsToDelete));
+                            // Store images for deletion
+                            const imagesToDelete = [];
+                            $('#variantsContainer .image-preview-wrapper img').each(function() {
+                                const imgSrc = $(this).attr('src');
+                                const relativePath = imgSrc.includes('/uploads/') ?
+                                    imgSrc.split('/uploads/')[1] :
+                                    imgSrc.split('/').slice(-3).join('/');
+                                imagesToDelete.push('uploads/' + relativePath);
+                            });
+                            $('#images_to_delete').val(JSON.stringify(imagesToDelete));
+                        }
+                        // Clear and regenerate variants
+                        const variantsContainer = document.getElementById('variantsContainer');
+                        const productName = document.getElementById('name').value;
+                        variantsContainer.innerHTML = '';
+                        combinations.forEach((combination, index) => {
+                            console.log('Render variant', index, 'combination:', combination);
+                            const variantValues = combination.map(item => item.value).filter(
+                                Boolean);
+                            const variantName = productName + (variantValues.length > 0 ?
+                                ' - ' + variantValues.join(' - ') : '');
+                            const variantSlug = variantName
+                                .toLowerCase()
+                                .normalize('NFD')
+                                .replace(/[^a-z0-9]+/g, '-')
+                                .replace(/^-+|-+$/g, '');
+                            const variantHtml = generateVariantHtml(index, variantName,
+                                variantSlug, combination);
+                            variantsContainer.insertAdjacentHTML('beforeend', variantHtml);
                         });
-                        $('#variants_to_delete').val(JSON.stringify(variantsToDelete));
-                        // Store images for deletion
-                        const imagesToDelete = [];
-                        $('#variantsContainer .image-preview-wrapper img').each(function() {
-                            const imgSrc = $(this).attr('src');
-                            const relativePath = imgSrc.includes('/uploads/') ?
-                                imgSrc.split('/uploads/')[1] :
-                                imgSrc.split('/').slice(-3).join('/');
-                            imagesToDelete.push('uploads/' + relativePath);
-                        });
-                        $('#images_to_delete').val(JSON.stringify(imagesToDelete));
-                    }
-                    // Clear and regenerate variants
-                    const variantsContainer = document.getElementById('variantsContainer');
-                    const productName = document.getElementById('name').value;
-                    variantsContainer.innerHTML = '';
-                    combinations.forEach((combination, index) => {
-                        console.log('Render variant', index, 'combination:', combination);
-                        const variantValues = combination.map(item => item.value).filter(Boolean);
-                        const variantName = productName + (variantValues.length > 0 ? ' - ' + variantValues.join(' - ') : '');
-                        const variantSlug = variantName
-                            .toLowerCase()
-                            .normalize('NFD')
-                            .replace(/[^a-z0-9]+/g, '-')
-                            .replace(/^-+|-+$/g, '');
-                        const variantHtml = generateVariantHtml(index, variantName, variantSlug, combination);
-                        variantsContainer.insertAdjacentHTML('beforeend', variantHtml);
+                        initializeVariantListeners();
+                    })
+                    .catch(err => {
+                        alert('Lỗi kiểm tra biến thể trùng!');
+                        console.error(err);
                     });
-                    initializeVariantListeners();
-                })
-                .catch(err => {
-                    alert('Lỗi kiểm tra biến thể trùng!');
-                    console.error(err);
-                });
             });
 
             function generateVariantHtml(index, variantName, variantSlug, combination) {
@@ -1152,10 +1167,10 @@
                             // Uncheck all other default toggles
                             document.querySelectorAll('.default-variant-toggle').forEach((cb,
                                 idx) => {
-                                    if (idx !== index) {
-                                        cb.checked = false;
-                                    }
-                                });
+                                if (idx !== index) {
+                                    cb.checked = false;
+                                }
+                            });
                         } else {
                             // If unchecking, ensure at least one variant is default
                             const otherCheckboxes = Array.from(document.querySelectorAll(

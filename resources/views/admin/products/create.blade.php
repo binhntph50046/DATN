@@ -1,5 +1,5 @@
 @extends('admin.layouts.app')
-@section('title', 'Create Product')
+@section('title', 'Tạo sản phẩm mới')
 
 <style>
     .custom-shadow {
@@ -369,15 +369,21 @@
                                                     </div>
                                                     @if (isset($variant['attributes']) && is_array($variant['attributes']))
                                                         @foreach ($variant['attributes'] as $attrIdx => $attr)
+                                                            {{-- Thêm dòng này để luôn có attribute_type_id --}}
                                                             <input type="hidden"
                                                                 name="variants[{{ $index }}][attributes][{{ $attrIdx }}][attribute_type_id]"
-                                                                value="{{ $attr['attribute_type_id'] }}">
-                                                            <input type="hidden"
-                                                                name="variants[{{ $index }}][attributes][{{ $attrIdx }}][value]"
-                                                                value="{{ $attr['value'] ?? '' }}">
-                                                            <input type="hidden"
-                                                                name="variants[{{ $index }}][attributes][{{ $attrIdx }}][hex]"
-                                                                value="{{ $attr['hex'] ?? '' }}">
+                                                                value="{{ $attr['attribute_type_id'] ?? '' }}">
+                                                            @if (isset($attr['selected_values']) && is_array($attr['selected_values']))
+                                                                @foreach ($attr['selected_values'] as $sv)
+                                                                    <input type="hidden"
+                                                                        name="variants[{{ $index }}][attributes][{{ $attrIdx }}][selected_values][]"
+                                                                        value="{{ $sv }}">
+                                                                @endforeach
+                                                            @else
+                                                                <input type="hidden"
+                                                                    name="variants[{{ $index }}][attributes][{{ $attrIdx }}][selected_values][]"
+                                                                    value="{{ $attr['selected_values'] ?? '' }}">
+                                                            @endif
                                                         @endforeach
                                                     @endif
                                                 </div>
@@ -721,7 +727,7 @@
             // Kiểm tra trùng lặp thuộc tính
             const attributeType0 = document.getElementById('attribute_type_0');
             const attributeType1 = document.getElementById('attribute_type_1');
-            
+
             if (attributeType0.value && attributeType1.value && attributeType0.value === attributeType1.value) {
                 alert('Không được chọn trùng loại thuộc tính!');
                 return;
@@ -790,7 +796,7 @@
                     if (!attrValue || !attrValue.id) return '';
                     return `
                         <input type="hidden" name="variants[${index}][attributes][${attrIdx}][attribute_type_id]" value="${attrValue.attribute_type_id}">
-                        <input type="hidden" name="variants[${index}][attributes][${attrIdx}][selected_values]" value="${attrValue.id}">
+                        <input type="hidden" name="variants[${index}][attributes][${attrIdx}][selected_values][]" value="${attrValue.id}">
                     `;
                 }).join('');
 

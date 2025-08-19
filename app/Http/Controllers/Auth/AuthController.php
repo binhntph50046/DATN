@@ -2,13 +2,20 @@
 
 namespace App\Http\Controllers\auth;
 
+use App\Mail\VerifyEmailCustom;
 use App\Models\User;
+use Carbon\Carbon;
+use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\URL;
+use App\Events\UserCreated;
+use App\Notifications\AdminDatabaseNotification;
 
 class AuthController
 {
@@ -27,9 +34,18 @@ class AuthController
             'dob' => 'required|date',
             'gender' => 'required|in:male,female,other',
         ], [
-            'email.unique' => 'Email already exists',
-            'dob.required' => 'Date of birth is required',
-            'gender.in' => 'Gender must be Male or Female or Other',
+            'name.required' => 'Vui lòng nhập họ tên.',
+            'email.required' => 'Vui lòng nhập email.',
+            'email.email' => 'Email không đúng định dạng.',
+            'email.unique' => 'Email đã tồn tại.',
+            'password.required' => 'Vui lòng nhập mật khẩu.',
+            'password.min' => 'Mật khẩu phải có ít nhất 6 ký tự.',
+            'address.required' => 'Vui lòng nhập địa chỉ.',
+            'phone.required' => 'Vui lòng nhập số điện thoại.',
+            'dob.required' => 'Vui lòng chọn ngày sinh.',
+            'dob.date' => 'Ngày sinh không hợp lệ.',
+            'gender.required' => 'Vui lòng chọn giới tính.',
+            'gender.in' => 'Giới tính phải là Nam, Nữ hoặc Khác.',
         ]);
 
         $user = User::create([
@@ -44,7 +60,39 @@ class AuthController
 
         $user->assignRole('user');
 
-        return redirect('/login')->with('success', 'Register successfully!');
+        // Tự động login người dùng
+        // Auth::login($user);
+
+        // Tạo link xác minh thủ công
+        $verificationUrl = URL::temporarySignedRoute(
+            'verification.verify',
+            Carbon::now()->addMinutes(60),
+            [
+                'id' => $user->id,
+                'hash' => sha1($user->email),
+            ]
+        );
+
+        // Gửi email xác minh
+        Mail::to($user->email)->send(new VerifyEmailCustom($user, $verificationUrl));
+
+        // Gửi event realtime
+        event(new UserCreated($user));
+
+        // Gửi notification vào database cho tất cả admin
+        $admins = User::role('admin')->get();
+        foreach ($admins as $admin) {
+            $admin->notify(new AdminDatabaseNotification([
+                'type' => 'user_created',
+                'title' => 'Tài khoản mới',
+                'message' => $user->name . ' vừa đăng ký.',
+                'user_id' => $user->id,
+                'url' => route('admin.users.index'), // link đến trang quản lý người dùng
+                'created_at' => now(),
+            ]));
+        }
+
+        return redirect('/login')->with('success', 'Đăng ký thành công. Vui lòng kiểm tra email để xác minh tài khoản!');
     }
     public function showLoginForm()
     {
@@ -55,8 +103,14 @@ class AuthController
     {
         $credentials = $request->validate([
             'email' => 'required|email',
-            'password' => 'required',
+            'password' => 'required|min:6',
+        ], [
+            'email.required' => 'Vui lòng nhập email.',
+            'email.email' => 'Email không hợp lệ.',
+            'password.required' => 'Vui lòng nhập mật khẩu.',
+            'password.min' => 'Mật khẩu phải có ít nhất 6 ký tự.',
         ]);
+
 
         $remember = $request->filled('remember');
 
@@ -65,21 +119,20 @@ class AuthController
 
             $user = Auth::user();
 
-            $user->last_login = now();
-            $user->save();
+            // Cập nhật last_login
+            $user->update(['last_login' => now()]);
 
-            $hasAccess = $user->roles()->whereIn('name', ['admin', 'staff'])->exists();
+            $hasAccess = $user->hasRole(['admin', 'staff']);
 
             if ($hasAccess) {
                 return redirect()->intended('/admin');
             } else {
-                return redirect()->intended('/');
+                return redirect()->intended('/')->with('success', 'Đăng nhập thành công!');
             }
         }
 
         return back()->withErrors([
-            'email' => 'Incorrect login information.',
-            'password' => 'Password is not correct.',
+            'email' => 'Email hoặc mật khẩu không đúng.',
         ])->withInput();
     }
 
@@ -88,6 +141,6 @@ class AuthController
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
-        return redirect('/login');
+        return redirect('/');
     }
 }

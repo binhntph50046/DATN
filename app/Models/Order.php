@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\OrderItem;
 use App\Models\OrderReturn;
+use App\Models\OrderAddress;
 
 class Order extends Model
 {
@@ -65,6 +66,11 @@ class Order extends Model
         return $this->hasMany(OrderReturn::class);
     }
 
+    public function orderAddress()
+    {
+        return $this->hasOne(OrderAddress::class);
+    }
+
     // Scopes
     public function scopePending($query)
     {
@@ -87,9 +93,11 @@ class Order extends Model
     {
         $statuses = [
             'pending' => 'Chờ xử lý',
+            'pending_approval' => 'Chờ duyệt số lượng lớn',
             'confirmed' => 'Đã xác nhận',
             'preparing' => 'Đang chuẩn bị',
             'shipping' => 'Đang giao hàng',
+            'delivered' => 'Đã giao',
             'completed' => 'Đã hoàn thành',
             'cancelled' => 'Đã hủy',
             'returned' => 'Đã hoàn đơn',
@@ -130,8 +138,12 @@ class Order extends Model
         parent::boot();
 
         static::creating(function ($order) {
-            // Tạo mã đơn hàng theo format: ORD + YYYYMMDD + 4 số ngẫu nhiên
-            $order->order_code = 'DH' . str_pad(mt_rand(1, 9999), 4, '0', STR_PAD_LEFT);
+            // Tạo mã đơn hàng ngẫu nhiên và đảm bảo không trùng lặp
+            do {
+                $orderCode = 'DH' . str_pad(mt_rand(1, 999999), 6, '0', STR_PAD_LEFT);
+            } while (static::where('order_code', $orderCode)->exists());
+            
+            $order->order_code = $orderCode;
         });
     }
 

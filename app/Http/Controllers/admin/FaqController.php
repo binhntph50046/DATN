@@ -39,7 +39,7 @@ class FaqController
         ]);
 
         Faq::create($request->all());
-        return redirect()->route('admin.faqs.index')->with('success', 'FAQ created successfully.');
+        return redirect()->route('admin.faqs.index')->with('success', 'FAQ đã được tạo thành công.');
     }
 
     public function show(Faq $faq)
@@ -62,13 +62,13 @@ class FaqController
         ]);
 
         $faq->update($request->all());
-        return redirect()->route('admin.faqs.index')->with('success', 'FAQ updated successfully.');
+        return redirect()->route('admin.faqs.index')->with('success', 'FAQ đã được cập nhật thành công.');
     }
 
     public function destroy(Faq $faq)
     {
         $faq->delete();
-        return redirect()->route('admin.faqs.index')->with('success', 'FAQ deleted successfully.');
+        return redirect()->route('admin.faqs.index')->with('success', 'FAQ đã được xóa thành công.');
     }
 
     public function trash()
@@ -81,13 +81,13 @@ class FaqController
     {
         $faq = Faq::withTrashed()->findOrFail($id);
         $faq->restore();
-        return redirect()->route('admin.faqs.index')->with('success', 'FAQ restored successfully.');
+        return redirect()->route('admin.faqs.index')->with('success', 'FAQ đã được khôi phục thành công.');
     }
 
     public function forceDelete($id)
     {
         $faq = Faq::withTrashed()->findOrFail($id);
         $faq->forceDelete();
-        return redirect()->route('admin.faqs.trash')->with('success', 'FAQ permanently deleted.');
+        return redirect()->route('admin.faqs.trash')->with('success', 'FAQ đã được xóa vĩnh viễn.');
     }
 }

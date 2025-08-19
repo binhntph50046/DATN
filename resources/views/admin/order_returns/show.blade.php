@@ -1,4 +1,5 @@
 @extends('admin.layouts.app')
+@section('title', 'Yêu cầu hoàn hàng')
 @section('content')
 <div class="container py-4">
     <div class="row justify-content-center">
@@ -48,32 +49,22 @@
                         </div>
                     </div>
                     <hr>
+                   
                     <div class="mb-3">
-                        <span class="fw-bold"><i class="fas fa-boxes me-1"></i>Sản phẩm hoàn:</span>
-                        <ul class="list-group list-group-flush">
-                            @foreach($return->items as $item)
-                                <li class="list-group-item d-flex align-items-center px-0" style="background: transparent; border: none;">
-                                    <span class="me-2"><i class="fas fa-cube text-primary"></i></span>
-                                    <span class="flex-grow-1">{{ $item->orderItem->product->name }} - SL: {{ $item->quantity }}</span>
-                                    @if($return->status == 'pending')
-                                        <label class="ms-2">
-                                            <input type="checkbox" name="restock[{{ $item->id }}]" value="1" checked>
-                                            <span class="badge bg-info text-dark">Cộng lại kho</span>
-                                        </label>
-                                    @else
-                                        @if($item->restock)
-                                            <span class="badge bg-success ms-2">Đã cộng kho</span>
-                                        @else
-                                            <span class="badge bg-secondary ms-2">Không cộng kho</span>
-                                        @endif
-                                    @endif
-                                </li>
-                            @endforeach
-                        </ul>
+                        <span class="fw-bold"><i class="fas fa-video me-1"></i>Video hoàn hàng:</span>
+                        @if($return->proof_video)
+                            <video src="{{ asset($return->proof_video) }}" controls style="max-width: 250px; max-height: 250px; object-fit: cover;"></video>
+                        @else
+                            <span class="text-muted">Không có</span>
+                        @endif
                     </div>
                     <div class="mb-3">
                         <span class="fw-bold"><i class="fas fa-comment-dots me-1"></i>Lý do hoàn hàng:</span>
                         <div class="alert alert-secondary mt-2 mb-0" style="white-space: pre-line;">{{ $return->reason }}</div>
+                    </div>
+                    <div class="mb-3">
+                        <span class="fw-bold"><i class="fas fa-university me-1"></i>Thông tin tài khoản ngân hàng:</span>
+                        <div class="alert alert-info mt-2 mb-0" style="white-space: pre-line;">{{ $return->bank_info }}</div>
                     </div>
                     <div class="d-flex justify-content-between">
                         <a href="{{ route('admin.order-returns.index') }}" class="btn btn-outline-secondary">
@@ -84,15 +75,106 @@
                                 @csrf
                                 <button type="submit" class="btn btn-danger"><i class="fas fa-times me-1"></i>Từ chối</button>
                             </form>
-                            <form action="{{ route('admin.order-returns.approve', $return->id) }}" method="POST" class="d-inline ms-2">
+                            <form action="{{ route('admin.order-returns.approve', $return->id) }}" method="POST" class="d-inline ms-2" enctype="multipart/form-data">
                                 @csrf
-                                <button type="submit" class="btn btn-success"><i class="fas fa-check me-1"></i>Duyệt</button>
+                                <div class="modal fade" id="approveModal" tabindex="-1" aria-labelledby="approveModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="approveModalLabel">Duyệt hoàn đơn</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <div class="mb-3">
+                                                    <label for="refund_proof_image" class="form-label">Hình ảnh chứng từ hoàn tiền <span class="text-danger">*</span></label>
+                                                    <input type="file" class="form-control" id="refund_proof_image" name="refund_proof_image" accept="image/*" required>
+                                                    <div class="form-text">Vui lòng tải lên hình ảnh chứng từ chuyển khoản/hoàn tiền</div>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label for="refund_note" class="form-label">Ghi chú hoàn tiền</label>
+                                                    <textarea class="form-control" id="refund_note" name="refund_note" rows="3" placeholder="Nhập ghi chú về việc hoàn tiền (nếu có)"></textarea>
+                                                </div>
+                                                <div class="mb-3">
+                                                    <label class="form-label">Tùy chọn cộng lại kho:</label>
+                                                    <div class="mb-2">
+                                                        <button type="button" class="btn btn-sm btn-outline-primary me-2" onclick="selectAllRestock()">
+                                                            <i class="fas fa-check-square"></i> Chọn tất cả
+                                                        </button>
+                                                        <button type="button" class="btn btn-sm btn-outline-secondary" onclick="deselectAllRestock()">
+                                                            <i class="fas fa-square"></i> Bỏ chọn tất cả
+                                                        </button>
+                                                    </div>
+                                                    <div class="border rounded p-3">
+                                                        @foreach($return->items as $item)
+                                                            <div class="form-check mb-2">
+                                                                <input class="form-check-input restock-checkbox" type="checkbox" name="restock[{{ $item->id }}]" value="1" id="restock_{{ $item->id }}">
+                                                                <label class="form-check-label" for="restock_{{ $item->id }}">
+                                                                    <strong>{{ $item->orderItem->product->name }}</strong> - SL: {{ $item->quantity }}
+                                                                    @if($item->orderItem->variant)
+                                                                        <br><small class="text-muted">Variant: {{ $item->orderItem->variant->name }}</small>
+                                                                    @endif
+                                                                </label>
+                                                            </div>
+                                                        @endforeach
+                                                    </div>
+                                                    <div class="form-text">
+                                                        <i class="fas fa-info-circle text-info"></i> 
+                                                        Chọn các sản phẩm cần cộng lại vào kho. Nếu không chọn, sản phẩm sẽ không được cộng lại kho.
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                                                <button type="submit" class="btn btn-success"><i class="fas fa-check me-1"></i>Xác nhận duyệt</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#approveModal">
+                                    <i class="fas fa-check me-1"></i>Duyệt
+                                </button>
                             </form>
                         @endif
                     </div>
+
+                    @if($return->status == 'approved' || $return->status == 'refunded')
+                    <div class="mt-4">
+                        <h5 class="mb-3"><i class="fas fa-receipt me-1"></i>Thông tin hoàn tiền</h5>
+                        <div class="card bg-light">
+                            <div class="card-body">
+                                @if($return->refund_proof_image)
+                                    <div class="mb-3">
+                                        <label class="fw-bold mb-2">Chứng từ hoàn tiền:</label>
+                                        <img src="{{ asset($return->refund_proof_image) }}" alt="Chứng từ hoàn tiền" class="img-fluid rounded" style="max-height: 300px;">
+                                    </div>
+                                @endif
+                                @if($return->refund_note)
+                                    <div>
+                                        <label class="fw-bold mb-2">Ghi chú hoàn tiền:</label>
+                                        <p class="mb-0">{{ $return->refund_note }}</p>
+                                    </div>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+                    @endif
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<script>
+function selectAllRestock() {
+    document.querySelectorAll('.restock-checkbox').forEach(checkbox => {
+        checkbox.checked = true;
+    });
+}
+
+function deselectAllRestock() {
+    document.querySelectorAll('.restock-checkbox').forEach(checkbox => {
+        checkbox.checked = false;
+    });
+}
+</script>
 @endsection 

@@ -26,19 +26,18 @@ class FacebookController
                 ['email' => $fbUser->getEmail()],
                 [
                     'name' => $fbUser->getName(),
-                    'password' => bcrypt(Str::random(16)),
+                    'password' => null,
                     'provider' => 'facebook',
                     'provider_id' => $fbUser->getId(),
                     'email_verified_at' => now(),
                     'avatar' => $fbUser->getAvatar(),
                 ]
             );
-            
-            if (!$user->provider || !$user->provider_id) {
-                $user->update([
-                    'provider' => 'facebook',
-                    'provider_id' => $fbUser->getId(),
-                ]);
+
+            if ($user->wasRecentlyCreated) {
+                $user->assignRole('user');
+                return redirect()->route('login')
+                    ->with('success', 'Đăng ký bằng Facebook thành công! Vui lòng đăng nhập.');
             }
 
             Auth::login($user);
@@ -46,15 +45,13 @@ class FacebookController
             $user->last_login = now();
             $user->save();
 
-            $user->assignRole('user');
             $hasAccess = $user->roles()->whereIn('name', ['admin', 'staff'])->exists();
 
             if ($hasAccess) {
                 return redirect('/admin');
             } else {
-                return redirect('/');
-            }            
-
+                return redirect('/')->with('success', 'Đăng nhập Facebook thành công!');
+            }
         } catch (\Exception $e) {
             return redirect()->route('login')->with('error', 'Đăng nhập Facebook thất bại: ' . $e->getMessage());
         }

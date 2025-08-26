@@ -838,9 +838,9 @@
             if (product.rating && product.rating > 0) {
                 ratingStars = generateStars(product.rating);
             } else {
-                // Show 5 empty stars for new products
+                // Use solid gray stars if outline set isn't loaded
                 for (let i = 1; i <= 5; i++) {
-                    ratingStars += '<i class="far fa-star"></i>';
+                    ratingStars += '<i class="fas fa-star" style="color: #d1d5db;"></i>';
                 }
             }
 
@@ -877,7 +877,7 @@
                             <div class="stars">
                                 ${ratingStars}
                             </div>
-                            <span class="sold-count">(0 đã bán)</span>
+                            <span class="sold-count">(${product.sold_count || 0} đã bán)</span>
                         </div>
                     </div>
                 </div>
@@ -903,8 +903,20 @@
         }
 
         function generateStars(rating) {
-            // Always return 5 filled stars regardless of rating
-            return '<i class="fas fa-star" style="color: #f5a524;"></i>'.repeat(5);
+            const full = Math.floor(rating);
+            const half = (rating - full) >= 0.5;
+            let html = '';
+            for (let i = 1; i <= 5; i++) {
+                if (i <= full) {
+                    html += '<i class="fas fa-star" style="color: #f5a524;"></i>';
+                } else if (half && i === full + 1) {
+                    html += '<i class="fas fa-star-half-alt" style="color: #f5a524;"></i>';
+                } else {
+                    // Solid gray star for empty to avoid missing outline set
+                    html += '<i class="fas fa-star" style="color: #d1d5db;"></i>';
+                }
+            }
+            return html;
         }
     </script>
 

@@ -975,7 +975,7 @@ textarea.form-control {
                                     </div>
                                     <div class="total-row" id="voucher-discount-row" style="display: none;">
                                         <span>Giảm giá</span>
-                                        <span class="discount">-<span id="voucher-discount-amount">0</span> VNĐ</span>
+                                        <span class="discount" style="position: absolute; right: 25px;">-<span id="voucher-discount-amount">0</span> VNĐ</span>
                                     </div>
                                     <div class="total-row">
                                         <span>Phí vận chuyển</span>

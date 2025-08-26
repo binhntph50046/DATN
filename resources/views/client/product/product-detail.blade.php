@@ -233,7 +233,7 @@
 
                     <!-- Quantity Selector -->
                     <div class="quantity-selector mb-4">
-                        <label class="form-label">Quantity:</label>
+                        <label class="form-label">Số lượng:</label>
                         <div class="quantity-control">
                             <button class="quantity-btn minus">-</button>
                             <input type="number" id="quantity" class="form-control" value="1" min="1"

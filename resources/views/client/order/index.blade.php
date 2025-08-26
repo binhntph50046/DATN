@@ -152,7 +152,7 @@
                     @forelse($orders as $order)
                         <tr data-order-id="{{ $order->id }}" data-status="{{ $order->status }}" data-created-at="{{ $order->created_at->format('Y-m-d\\TH:i:sP') }}">
                             <td>
-                                <span class="order-number">#{{ $order->id }}</span>
+                                <span class="order-number">#{{ $order->order_code }}</span>
                             </td>
                             <td>
                                 <div class="d-flex align-items-center">

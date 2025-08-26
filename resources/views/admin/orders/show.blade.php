@@ -158,7 +158,7 @@
                                     <form method="POST" action="{{ route('admin.orders.updateStatus', $order->id) }}" class="d-flex gap-2 align-items-center">
                                         @csrf
                                         @method('PUT')
-                                        <select name="status" id="order-status" class="form-select" style="max-width: 150px; height: 38px;">
+                                        <select name="status" id="order-status" class="form-select" style="max-width: 140px; height: 45px;">
                                             <option value="pending" {{ $order->status == 'pending' ? 'selected' : '' }}>Chờ xử lý</option>
                                             <option value="confirmed" {{ $order->status == 'confirmed' ? 'selected' : '' }}>Đã xác nhận</option>
                                             <option value="preparing" {{ $order->status == 'preparing' ? 'selected' : '' }}>Đang chuẩn bị</option>

@@ -126,31 +126,16 @@
             <div class="filter-section mb-5">
                 <div class="row">
                     <div class="col-lg-3 col-md-4">
-                        <!-- Clear Filters -->
-                        <div class="filter-actions mb-3">
-                            <button type="button" class="btn btn-clear-filter w-100" onclick="clearFilters()">
-                                <i class="fas fa-times"></i> Xóa bộ lọc
+                        <!-- Filter Actions -->
+                        <div class="filter-actions mb-3 d-flex justify-content-between align-items-center">
+                            <button type="button" class="btn btn-clear-filter" style="flex: 1; margin-right: 10px;"
+                                onclick="clearFilters()">
+                                <i class="fas fa-times"></i> Xóa
+                            </button>
+                            <button type="button" class="btn btn-primary" style="flex: 1;" onclick="applyFilters()">
+                                <i class="fas fa-filter"></i> Lọc
                             </button>
                         </div>
-                        <!-- Category Filter -->
-                        {{-- @if ($filterData['categories']->count() > 0)
-                            <div class="filter-group mb-3">
-                                <h6 class="filter-title">Danh mục ({{ $filterData['categories']->count() }})</h6>
-                                <div class="filter-options">
-                                    @foreach ($filterData['categories'] as $category)
-                                        <div class="form-check">
-                                            <input class="form-check-input" type="checkbox" name="category_slug[]"
-                                                id="category_{{ $loop->index }}" value="{{ $category->slug }}"
-                                                {{ in_array($category->slug, $appliedFilters['category_slug'] ?? []) ? 'checked' : '' }}>
-                                            <label class="form-check-label" for="category_{{ $loop->index }}">
-                                                {{ $category->name }} ({{ $category->products_count }})
-                                            </label>
-                                        </div>
-                                    @endforeach
-                                </div>
-                            </div>
-                        @endif --}}
-
                         <!-- Price Filter -->
                         <div class="filter-group mb-3">
                             <h6 class="filter-title">Khoảng giá</h6>
@@ -172,13 +157,13 @@
                         @foreach ($filterData['dynamicFilters'] as $filterId => $filter)
                             <div class="filter-group mb-3">
                                 <h6 class="filter-title d-flex align-items-center" style="cursor:pointer"
-                                    data-filter-target="#filterCollapse{{ $filterId }}"
-                                    data-filter-id="{{ $filterId }}">
+                                    data-bs-toggle="collapse" data-bs-target="#filterCollapse{{ $filterId }}"
+                                    aria-expanded="false" aria-controls="filterCollapse{{ $filterId }}">
                                     {{ $filter['name'] }} ({{ $filter['count'] }})
                                     <span class="ms-auto filter-arrow" style="transition:0.3s;"><i
                                             class="fas fa-chevron-down"></i></span>
                                 </h6>
-                                <div class="filter-content" id="filterCollapse{{ $filterId }}">
+                                <div class="collapse" id="filterCollapse{{ $filterId }}">
                                     @if ($filter['type'] === 'color')
                                         <div class="color-options">
                                             @foreach ($filter['values'] as $value)
@@ -334,9 +319,6 @@
                                                     class="text-decoration-none">
                                                     <h3 class="product-title mb-1">{{ $product->name }}</h3>
                                                 </a>
-                                                {{-- <div class="product-category-chip mb-2">
-                                                    <span>{{ $product->category->name ?? 'N/A' }}</span>
-                                                </div> --}}
 
                                                 <div class="product-price-row">
                                                     @if ($product->variants->isNotEmpty())
@@ -360,22 +342,9 @@
                                                         $halfStar = $rating - $fullStars >= 0.5;
                                                     @endphp
                                                     <div class="stars">
-                                                        @if ($product->reviews->count() == 0)
-                                                            {{-- Nếu chưa có đánh giá, luôn hiện 5 sao vàng --}}
-                                                            @for ($i = 1; $i <= 5; $i++)
-                                                                <i class="fas fa-star"></i>
-                                                            @endfor
-                                                        @else
-                                                            @for ($i = 1; $i <= 5; $i++)
-                                                                @if ($i <= $fullStars)
-                                                                    <i class="fas fa-star"></i>
-                                                                @elseif($i == $fullStars + 1 && $halfStar)
-                                                                    <i class="fas fa-star-half-alt"></i>
-                                                                @else
-                                                                    <i class="far fa-star"></i>
-                                                                @endif
-                                                            @endfor
-                                                        @endif
+                                                        @for ($i = 1; $i <= 5; $i++)
+                                                            <i class="fas fa-star" style="color: #f5a524;"></i>
+                                                        @endfor
                                                     </div>
                                                     <span
                                                         class="sold-count">({{ number_format($product->sold_count ?? 0) }}
@@ -443,20 +412,42 @@
                 ]
             });
 
-            // Filter form handling
+            // Setup filter functionality
             setupFilters();
+
+            // Automatically expand collapse sections with selected filters
+            @foreach ($filterData['dynamicFilters'] as $filterId => $filter)
+                @if (!empty($appliedFilters['filters'][$filterId]))
+                    $('#filterCollapse{{ $filterId }}').collapse('show');
+                    $('#filterCollapse{{ $filterId }}').prev('.filter-title').find('.filter-arrow i')
+                        .removeClass('fa-chevron-down').addClass('fa-chevron-up');
+                @endif
+            @endforeach
+
+            // Update chevron icon on collapse toggle
+            $('.filter-title').on('click', function() {
+                const $icon = $(this).find('.filter-arrow i');
+                const isExpanded = $(this).attr('aria-expanded') === 'true';
+                if (isExpanded) {
+                    $icon.removeClass('fa-chevron-down').addClass('fa-chevron-up');
+                } else {
+                    $icon.removeClass('fa-chevron-up').addClass('fa-chevron-down');
+                }
+            });
 
             // Initialize realtime product updates
             initializeRealtimeProducts();
 
-            // Prevent any auto-hide of filters
-            setInterval(function() {
-                $('.filter-group .filter-content.show').each(function() {
-                    if (!$(this).is(':visible') || $(this).css('max-height') === '0px') {
-                        $(this).show().css('max-height', '1000px');
-                    }
-                });
-            }, 500);
+            // Update chevron icons when collapse state changes
+            $('.filter-group .collapse').on('show.bs.collapse', function() {
+                $(this).prev('.filter-title').find('.filter-arrow i')
+                    .removeClass('fa-chevron-down').addClass('fa-chevron-up');
+            });
+
+            $('.filter-group .collapse').on('hide.bs.collapse', function() {
+                $(this).prev('.filter-title').find('.filter-arrow i')
+                    .removeClass('fa-chevron-up').addClass('fa-chevron-down');
+            });
         });
 
         function setupFilters() {
@@ -474,37 +465,12 @@
             $('input[name="min_price"], input[name="max_price"]').on('blur', function() {
                 applyFilters();
             });
-
-            // Custom filter collapse handling
-            $('.filter-title').on('click', function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-                const target = $(this).data('filter-target');
-                const content = $(target);
-                
-                if (content.hasClass('show')) {
-                    content.removeClass('show');
-                    $(this).find('.filter-arrow i').removeClass('fa-chevron-up').addClass('fa-chevron-down');
-                } else {
-                    content.addClass('show');
-                    $(this).find('.filter-arrow i').removeClass('fa-chevron-down').addClass('fa-chevron-up');
-                }
-            });
-
-            // Initialize filter states based on applied filters
-            initializeFilterStates();
         }
 
-        function initializeFilterStates() {
-            // Check if any filters are applied and expand those sections
-            $('.filter-group').each(function() {
-                const filterId = $(this).find('.filter-title').data('filter-target');
-                const hasCheckedInputs = $(this).find('input:checked').length > 0;
-                
-                if (hasCheckedInputs) {
-                    $(filterId).addClass('show');
-                    $(this).find('.filter-arrow i').removeClass('fa-chevron-down').addClass('fa-chevron-up');
-                }
+        function setupFilters() {
+            // Handle sort change - auto apply
+            $('#sortSelect').on('change', function() {
+                applyFilters();
             });
 
             // Initialize color filter states
@@ -512,17 +478,68 @@
                 const label = $(this).next('.color-label');
                 label.addClass('selected');
             });
+
+            // Track filter changes
+            trackFilterChanges();
+        }
+
+        function trackFilterChanges() {
+            // Store initial state
+            const initialFilters = getCurrentFilterState();
+            
+            // Monitor changes
+            $('input[name^="filters["], input[name="min_price"], input[name="max_price"]').on('change', function() {
+                const currentFilters = getCurrentFilterState();
+                const hasChanges = JSON.stringify(initialFilters) !== JSON.stringify(currentFilters);
+                
+                const filterBtn = $('.filter-actions .btn-primary');
+                if (hasChanges) {
+                    filterBtn.addClass('has-changes').text('Lọc (' + getChangedFilterCount() + ')');
+                } else {
+                    filterBtn.removeClass('has-changes').text('Lọc');
+                }
+            });
+        }
+
+        function getCurrentFilterState() {
+            const state = {};
+            
+            // Get checkbox filters
+            $('input[name^="filters["]').each(function() {
+                const name = $(this).attr('name');
+                if (!state[name]) state[name] = [];
+                if ($(this).is(':checked')) {
+                    state[name].push($(this).val());
+                }
+            });
+            
+            // Get price filters
+            const minPrice = $('input[name="min_price"]').val();
+            const maxPrice = $('input[name="max_price"]').val();
+            if (minPrice) state.min_price = minPrice;
+            if (maxPrice) state.max_price = maxPrice;
+            
+            return state;
+        }
+
+        function getChangedFilterCount() {
+            let count = 0;
+            
+            // Count checked checkboxes
+            $('input[name^="filters["]:checked').each(function() {
+                count++;
+            });
+            
+            // Count price filters
+            if ($('input[name="min_price"]').val()) count++;
+            if ($('input[name="max_price"]').val()) count++;
+            
+            return count;
         }
 
         // Apply filters
         function applyFilters() {
             const formData = new FormData();
-
-            // Get category filters by slug
-            const categoryInputs = document.querySelectorAll('input[name="category_slug[]"]:checked');
-            categoryInputs.forEach(input => {
-                formData.append('category_slug[]', input.value);
-            });
 
             // Get all dynamic filters
             const filterInputs = document.querySelectorAll('input[name^="filters["]');
@@ -548,6 +565,15 @@
         }
 
         function clearFilters() {
+            // Reset all filters
+            $('input[name^="filters["]').prop('checked', false);
+            $('input[name="min_price"], input[name="max_price"]').val('');
+            $('.color-label').removeClass('selected');
+            
+            // Reset filter button
+            $('.filter-actions .btn-primary').removeClass('has-changes').text('Lọc');
+            
+            // Redirect to clean URL
             window.location.href = '{{ route('shop') }}';
         }
 
@@ -564,10 +590,8 @@
                 labelElement.classList.add('selected');
             }
             
-            // Apply filters after a short delay
-            setTimeout(() => {
-                applyFilters();
-            }, 100);
+            // Trigger change event to update filter button
+            $(checkbox).trigger('change');
         }
 
         // Compare feature (ported from homepage)
@@ -716,8 +740,8 @@
         // Realtime product updates
         function initializeRealtimeProducts() {
             // Initialize Pusher
-            const pusher = new Pusher('{{ env("PUSHER_APP_KEY") }}', {
-                cluster: '{{ env("PUSHER_APP_CLUSTER") }}',
+            const pusher = new Pusher('{{ env('PUSHER_APP_KEY') }}', {
+                cluster: '{{ env('PUSHER_APP_CLUSTER') }}',
                 encrypted: true
             });
 
@@ -727,10 +751,10 @@
             // Listen for new product events
             channel.bind('product.created', function(data) {
                 console.log('New product received:', data);
-                
+
                 // Show notification
                 showNewProductNotification(data);
-                
+
                 // Add product to grid if on first page
                 addProductToGrid(data);
             });
@@ -755,7 +779,7 @@
                 transition: transform 0.3s ease;
                 cursor: pointer;
             `;
-            
+
             notification.innerHTML = `
                 <div style="display: flex; align-items: center; gap: 10px;">
                     <img src="${product.image}" alt="${product.name}" style="width: 40px; height: 40px; object-fit: cover; border-radius: 5px;">
@@ -766,14 +790,14 @@
                     </div>
                 </div>
             `;
-            
+
             document.body.appendChild(notification);
-            
+
             // Animate in
             setTimeout(() => {
                 notification.style.transform = 'translateX(0)';
             }, 100);
-            
+
             // Auto remove after 5 seconds
             setTimeout(() => {
                 notification.style.transform = 'translateX(100%)';
@@ -783,36 +807,45 @@
                     }
                 }, 300);
             }, 5000);
-            
+
             // Click to go to product
             notification.addEventListener('click', () => {
                 window.location.href = product.url;
             });
         }
 
-        function addProductToGrid(product) {
+                function addProductToGrid(product) {
             // Only add to grid if we're on the first page and no filters are applied
             const urlParams = new URLSearchParams(window.location.search);
-            const hasFilters = urlParams.has('category_slug') || 
-                             urlParams.has('min_price') || 
-                             urlParams.has('max_price') || 
-                             urlParams.has('filters') ||
-                             urlParams.has('page') && urlParams.get('page') !== '1';
-            
+            const hasFilters = urlParams.has('category_slug') ||
+                urlParams.has('min_price') ||
+                urlParams.has('max_price') ||
+                urlParams.has('filters') ||
+                urlParams.has('page') && urlParams.get('page') !== '1';
+
             if (hasFilters) return;
-            
+
             const productGrid = document.querySelector('.product-grid');
             if (!productGrid) return;
-            
+
             // Create new product card
             const productCard = document.createElement('div');
             productCard.className = 'col-lg-4 col-md-6 mb-4';
             productCard.style.animation = 'slideInFromTop 0.5s ease';
-            
-            const ratingStars = generateStars(product.rating);
-            
+
+            // Generate rating stars - if no rating, show 5 empty stars
+            let ratingStars = '';
+            if (product.rating && product.rating > 0) {
+                ratingStars = generateStars(product.rating);
+            } else {
+                // Show 5 empty stars for new products
+                for (let i = 1; i <= 5; i++) {
+                    ratingStars += '<i class="far fa-star"></i>';
+                }
+            }
+
             productCard.innerHTML = `
-                <div class="product-card">
+                <div class="product-card new-product">
                     <div class="product-media">
                         <a href="${product.url}" class="d-block w-100 h-100 text-center">
                             <img src="${product.image}" class="product-img" alt="${product.name}">
@@ -836,7 +869,7 @@
                         <div class="product-price-row">
                             ${product.discount_price ? 
                                 `<strong class="product-price">${product.discount_price}đ</strong>
-                                 <span class="old-price"><del>${product.price}đ</del></span>` :
+                                    <span class="old-price"><del>${product.price}đ</del></span>` :
                                 `<strong class="product-price">${product.price}đ</strong>`
                             }
                         </div>
@@ -844,39 +877,34 @@
                             <div class="stars">
                                 ${ratingStars}
                             </div>
-                            <span class="views">(${product.views} lượt xem)</span>
+                            <span class="sold-count">(0 đã bán)</span>
                         </div>
                     </div>
                 </div>
             `;
-            
+
             // Add to beginning of grid
             productGrid.insertBefore(productCard, productGrid.firstChild);
-            
+
             // Update product count
             const countElement = document.querySelector('.product-controls h5');
             if (countElement) {
                 const currentCount = parseInt(countElement.textContent.match(/\d+/)[0]);
                 countElement.textContent = `Tất cả sản phẩm (${currentCount + 1})`;
             }
+
+            // Remove highlight after 5 seconds
+            setTimeout(() => {
+                const productCardElement = productCard.querySelector('.product-card');
+                if (productCardElement) {
+                    productCardElement.classList.remove('new-product');
+                }
+            }, 5000);
         }
 
         function generateStars(rating) {
-            const fullStars = Math.floor(rating);
-            const hasHalfStar = rating - fullStars >= 0.5;
-            let stars = '';
-            
-            for (let i = 1; i <= 5; i++) {
-                if (i <= fullStars) {
-                    stars += '<i class="fas fa-star"></i>';
-                } else if (i === fullStars + 1 && hasHalfStar) {
-                    stars += '<i class="fas fa-star-half-alt"></i>';
-                } else {
-                    stars += '<i class="far fa-star"></i>';
-                }
-            }
-            
-            return stars;
+            // Always return 5 filled stars regardless of rating
+            return '<i class="fas fa-star" style="color: #f5a524;"></i>'.repeat(5);
         }
     </script>
 

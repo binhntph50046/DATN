@@ -26,31 +26,32 @@
                                     <div class="product-media">
                                         <a href="{{ route('product.detail', $product->slug) }}"
                                             class="d-block w-100 h-100 text-center"
-                                            onclick="incrementView('{{ $product->id }}')" data-product-id="{{ $product->id }}">
-                                        @php
-                                            $defaultImage = asset('uploads/default/default.jpg');
-                                            $variantImage = null;
-                                            $defaultVariant = $product->variants->first();
+                                            onclick="incrementView('{{ $product->id }}')"
+                                            data-product-id="{{ $product->id }}">
+                                            @php
+                                                $defaultImage = asset('uploads/default/default.jpg');
+                                                $variantImage = null;
+                                                $defaultVariant = $product->variants->first();
 
-                                            if ($defaultVariant && $defaultVariant->images) {
-                                                $images = json_decode($defaultVariant->images, true);
-                                                if (!empty($images[0])) {
-                                                    $variantImage = asset($images[0]);
-                                                }
-                                            }
-
-                                            if (!$variantImage) {
-                                                $otherVariant = $product->variants->skip(1)->first();
-                                                if ($otherVariant && $otherVariant->images) {
-                                                    $images = json_decode($otherVariant->images, true);
+                                                if ($defaultVariant && $defaultVariant->images) {
+                                                    $images = json_decode($defaultVariant->images, true);
                                                     if (!empty($images[0])) {
                                                         $variantImage = asset($images[0]);
                                                     }
                                                 }
-                                            }
 
-                                            $variant = $defaultVariant;
-                                        @endphp
+                                                if (!$variantImage) {
+                                                    $otherVariant = $product->variants->skip(1)->first();
+                                                    if ($otherVariant && $otherVariant->images) {
+                                                        $images = json_decode($otherVariant->images, true);
+                                                        if (!empty($images[0])) {
+                                                            $variantImage = asset($images[0]);
+                                                        }
+                                                    }
+                                                }
+
+                                                $variant = $defaultVariant;
+                                            @endphp
                                             <img src="{{ $variantImage ?? $defaultImage }}" class="product-img"
                                                 alt="{{ $product->name }}">
                                         </a>
@@ -82,47 +83,52 @@
                                     </div>
 
                                     <div class="product-body">
-                                        <a href="{{ route('product.detail', $product->slug) }}" class="text-decoration-none">
+                                        <a href="{{ route('product.detail', $product->slug) }}"
+                                            class="text-decoration-none">
                                             <h3 class="product-title mb-1">{{ $product->name }}</h3>
                                         </a>
 
                                         <div class="product-price-row">
-                                        @if ($variant)
-                                            @if ($variant->discount_price)
-                                                    <strong class="product-price">{{ number_format($variant->discount_price) }}đ</strong>
-                                                    <span class="old-price"><del>{{ number_format($variant->selling_price) }}đ</del></span>
-                                            @else
-                                                    <strong class="product-price">{{ number_format($variant->selling_price) }}đ</strong>
+                                            @if ($variant)
+                                                @if ($variant->discount_price)
+                                                    <strong
+                                                        class="product-price">{{ number_format($variant->discount_price) }}đ</strong>
+                                                    <span
+                                                        class="old-price"><del>{{ number_format($variant->selling_price) }}đ</del></span>
+                                                @else
+                                                    <strong
+                                                        class="product-price">{{ number_format($variant->selling_price) }}đ</strong>
                                                 @endif
                                             @endif
                                         </div>
 
-                                        <div class="product-rating-row d-flex align-items-center justify-content-center">
+                                        <div
+                                            class="product-rating-row d-flex align-items-center justify-content-center">
                                             @php
                                                 $rating = $product->reviews->avg('rating') ?? 0;
                                                 $fullStars = floor($rating);
                                                 $halfStar = $rating - $fullStars >= 0.5;
                                             @endphp
                                             <div class="stars">
-                                            @if ($rating == 0)
-                                                @for ($i = 1; $i <= 5; $i++)
-                                                    <i class="fas fa-star"></i>
-                                                @endfor
-                                            @else
-                                                @for ($i = 1; $i <= 5; $i++)
-                                                    @if ($i <= $fullStars)
+                                                @if ($rating == 0)
+                                                    @for ($i = 1; $i <= 5; $i++)
                                                         <i class="fas fa-star"></i>
-                                                    @elseif($i == $fullStars + 1 && $halfStar)
-                                                        <i class="fas fa-star-half-alt"></i>
-                                                    @else
-                                                        <i class="far fa-star"></i>
-                                                    @endif
-                                                @endfor
-                                            @endif
+                                                    @endfor
+                                                @else
+                                                    @for ($i = 1; $i <= 5; $i++)
+                                                        @if ($i <= $fullStars)
+                                                            <i class="fas fa-star"></i>
+                                                        @elseif($i == $fullStars + 1 && $halfStar)
+                                                            <i class="fas fa-star-half-alt"></i>
+                                                        @else
+                                                            <i class="far fa-star"></i>
+                                                        @endif
+                                                    @endfor
+                                                @endif
                                             </div>
                                         </div>
                                     </div>
-                                    </div>
+                                </div>
                             </div>
                         @endforeach
                     </div>
@@ -158,7 +164,10 @@
                             toast.addEventListener('mouseleave', Swal.resumeTimer)
                         }
                     });
-                    Toast.fire({ icon: type, title: message });
+                    Toast.fire({
+                        icon: type,
+                        title: message
+                    });
                 } else {
                     alert(message);
                 }
@@ -180,12 +189,15 @@
                             'Accept': 'application/json',
                             'Content-Type': 'application/json'
                         },
-                        body: JSON.stringify({ product_id: productId })
+                        body: JSON.stringify({
+                            product_id: productId
+                        })
                     });
                     const data = await res.json();
                     if (res.ok && data) {
                         showToast(data.message || 'Đã cập nhật yêu thích', data.type || 'success');
-                        const icons = document.querySelectorAll(`.icon-heart[onclick*="toggleWishlist('${productId}'"]`);
+                        const icons = document.querySelectorAll(
+                            `.icon-heart[onclick*="toggleWishlist('${productId}'"]`);
                         icons.forEach(icon => {
                             if (data.in_wishlist) {
                                 icon.classList.add('in-wishlist');
@@ -300,9 +312,17 @@
                 const div = document.createElement('div');
                 div.id = 'compareButton';
                 div.setAttribute('onclick', 'goToCompare()');
-                div.style.cssText = 'display:none; position:fixed; bottom:20px; left:50%; transform:translateX(-50%); z-index:9999; background:#007bff; color:white; padding:15px 25px; border-radius:25px; box-shadow:0 4px 12px rgba(0,123,255,0.3); cursor:pointer; transition:all 0.3s ease;';
-                div.innerHTML = '<i class="fa-solid fa-code-compare me-2"></i> <span id="compareButtonText">So sánh ngay</span> <span id="compareCount" class="badge bg-light text-dark ms-2">0</span>';
+                div.style.cssText =
+                    'display:none; position:fixed; bottom:20px; left:50%; transform:translateX(-50%); z-index:9999; background:#007bff; color:white; padding:15px 25px; border-radius:25px; box-shadow:0 4px 12px rgba(0,123,255,0.3); cursor:pointer; transition:all 0.3s ease;';
+                div.innerHTML =
+                    '<i class="fa-solid fa-code-compare me-2"></i> <span id="compareButtonText">So sánh ngay</span> <span id="compareCount" class="badge bg-light text-dark ms-2">0</span>';
                 document.body.appendChild(div);
             }
         })();
     </script>
+
+    <style>
+        .product-card .product-title {
+            text-align: center !important;
+        }
+    </style>

@@ -87,14 +87,13 @@
 .color-checkbox {
     position: absolute;
     opacity: 0;
-    display: none !important;
-    visibility: hidden !important;
-    width: 0 !important;
-    height: 0 !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    border: none !important;
-    clip: rect(0, 0, 0, 0) !important;
+    visibility: hidden;
+    width: 0;
+    height: 0;
+    margin: 0;
+    padding: 0;
+    border: none;
+    clip: rect(0, 0, 0, 0);
 }
 
 .color-label {
@@ -383,6 +382,41 @@
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
+/* Filter button states */
+.filter-actions .btn-primary {
+    background: #007bff;
+    border-color: #007bff;
+}
+
+.filter-actions .btn-primary:hover {
+    background: #0056b3;
+    border-color: #0056b3;
+}
+
+.filter-actions .btn-primary:active {
+    background: #004085;
+    border-color: #004085;
+}
+
+/* Show when filters are changed */
+.filter-actions .btn-primary.has-changes {
+    background: #28a745;
+    border-color: #28a745;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(40, 167, 69, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(40, 167, 69, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(40, 167, 69, 0);
+    }
+}
+
 /* Clear Filter Button */
 .btn-clear-filter {
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -589,6 +623,34 @@
 
 .product-rating-row .stars i {
     color: #f5a524;
+}
+
+.product-rating-row .stars .fas.fa-star {
+    color: #f5a524 !important; /* Màu vàng cam cho sao đầy */
+}
+
+/* Đảm bảo tất cả sao đều có màu vàng cam */
+.product-card .stars i {
+    font-size: 14px;
+    margin-right: 2px;
+    color: #f5a524 !important;
+}
+
+.product-card .stars i:last-child {
+    margin-right: 0;
+}
+
+/* Đảm bảo tất cả sao trong toàn bộ trang đều là sao đầy màu vàng cam */
+.stars i {
+    color: #f5a524 !important;
+}
+
+.stars .far.fa-star {
+    display: none !important; /* Ẩn sao rỗng */
+}
+
+.stars .fas.fa-star-half-alt {
+    display: none !important; /* Ẩn sao nửa */
 }
 
 .product-rating-row .views {
@@ -897,18 +959,19 @@
     opacity: 1 !important;
 }
 
-/* Custom filter content styles */
-.filter-group .filter-content {
-    max-height: 0;
-    overflow: hidden;
-    padding: 0 20px;
-    transition: max-height 0.3s ease, padding 0.3s ease;
+/* Bootstrap collapse styles for filters */
+.filter-group .collapse {
+    padding: 0 20px 16px 20px;
     background: #fff;
+    transition: all 0.3s ease;
 }
 
-.filter-group .filter-content.show {
-    max-height: 1000px;
-    padding: 0 20px 16px 20px;
+.filter-group .collapse:not(.show) {
+    display: none;
+}
+
+.filter-group .collapse.show {
+    display: block;
 }
 
 /* Override ALL external collapse styles */
@@ -959,6 +1022,44 @@
     overflow: visible !important;
 }
 
+/* Animation for new products added via realtime */
+@keyframes slideInFromTop {
+    0% {
+        opacity: 0;
+        transform: translateY(-30px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.slideInFromTop {
+    animation: slideInFromTop 0.5s ease;
+}
+
+/* Highlight new products */
+.product-card.new-product {
+    border: 2px solid #28a745;
+    box-shadow: 0 0 15px rgba(40, 167, 69, 0.3);
+    animation: newProductPulse 2s ease-in-out;
+}
+
+@keyframes newProductPulse {
+    0% {
+        transform: scale(1);
+        box-shadow: 0 0 15px rgba(40, 167, 69, 0.3);
+    }
+    50% {
+        transform: scale(1.02);
+        box-shadow: 0 0 25px rgba(40, 167, 69, 0.5);
+    }
+    100% {
+        transform: scale(1);
+        box-shadow: 0 0 15px rgba(40, 167, 69, 0.3);
+    }
+}
+
 /* Prevent any external interference */
 .filter-group .filter-content {
     position: relative !important;
@@ -985,13 +1086,20 @@
     transition: max-height 0.3s ease, padding 0.3s ease !important;
 }
 
-/* Force filter content to maintain visibility */
-.filter-group .filter-content.show {
+/* Ensure filter collapse works properly */
+.filter-group .collapse {
+    position: relative;
+    z-index: 10;
+}
+
+.filter-group .collapse.show {
     display: block !important;
     visibility: visible !important;
     opacity: 1 !important;
-    max-height: 1000px !important;
-    overflow: visible !important;
-    position: relative !important;
-    z-index: 100 !important;
+}
+
+/* Ensure all filter content elements are visible */
+.filter-group .collapse.show * {
+    visibility: visible !important;
+    opacity: 1 !important;
 }

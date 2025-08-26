@@ -165,8 +165,38 @@
     box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
 }
 
+.form-floating > .form-control.is-invalid {
+    border-color: #dc3545;
+    box-shadow: 0 0 0 2px rgba(220, 53, 69, 0.1);
+}
+
+.form-floating > .form-control.is-invalid:focus {
+    border-color: #dc3545;
+    box-shadow: 0 0 0 2px rgba(220, 53, 69, 0.25);
+}
+
 .form-floating > label {
     padding: 1rem 0.75rem;
+}
+
+/* Error message styling */
+.invalid-feedback {
+    display: block !important;
+    margin-top: 0.25rem;
+}
+
+.invalid-feedback div {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #dc3545;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.invalid-feedback i {
+    font-size: 14px;
+    flex-shrink: 0;
 }
 
 /* Custom Checkbox */
@@ -1056,10 +1086,89 @@ textarea.form-control {
             processOrder();
         });
         
+        // Real-time validation
+        setupRealTimeValidation();
+        
+        function setupRealTimeValidation() {
+            // Các trường cần validate real-time
+            const fieldsToValidate = [
+                'c_fname', 'c_address', 'c_email_address', 'c_phone',
+                'shipping_name', 'shipping_address', 'shipping_phone'
+            ];
+            
+            fieldsToValidate.forEach(fieldId => {
+                const field = document.getElementById(fieldId);
+                if (field) {
+                    field.addEventListener('blur', function() {
+                        validateField(this);
+                    });
+                    
+                    field.addEventListener('input', function() {
+                        // Clear error khi user bắt đầu nhập
+                        if (this.classList.contains('is-invalid')) {
+                            clearFieldError(this);
+                        }
+                    });
+                }
+            });
+        }
+        
+        function validateField(element) {
+            const fieldId = element.id;
+            const value = element.value.trim();
+            
+            // Clear error trước
+            clearFieldError(element);
+            
+            // Validate theo từng loại field
+            switch(fieldId) {
+                case 'c_fname':
+                case 'shipping_name':
+                    if (!value) {
+                        showFieldError(element, 'Họ và tên là bắt buộc');
+                    } else if (value.includes('  ')) {
+                        showFieldError(element, 'Họ và tên không được chứa khoảng trắng liên tiếp');
+                    }
+                    break;
+                    
+                case 'c_address':
+                case 'shipping_address':
+                    if (!value) {
+                        showFieldError(element, 'Địa chỉ là bắt buộc');
+                    } else if (value.includes('  ')) {
+                        showFieldError(element, 'Địa chỉ không được chứa khoảng trắng liên tiếp');
+                    }
+                    break;
+                    
+                case 'c_email_address':
+                case 'shipping_email':
+                    if (value) {
+                        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                        if (!emailRegex.test(value)) {
+                            showFieldError(element, 'Email không hợp lệ');
+                        }
+                    }
+                    break;
+                    
+                case 'c_phone':
+                case 'shipping_phone':
+                    if (value) {
+                        const phoneRegex = /^[0-9]{10,11}$/;
+                        if (!phoneRegex.test(value)) {
+                            showFieldError(element, 'Số điện thoại phải có 10-11 chữ số');
+                        }
+                    }
+                    break;
+            }
+        }
+        
 
         
         function validateForm() {
             let isValid = true;
+            
+            // Xóa tất cả thông báo lỗi cũ
+            clearAllErrors();
             
             // Kiểm tra các trường bắt buộc
             const requiredFields = [
@@ -1090,6 +1199,14 @@ textarea.form-control {
                 isValid = false;
             }
             
+            // Kiểm tra số điện thoại
+            const phoneField = document.getElementById('c_phone');
+            const phoneRegex = /^[0-9]{10,11}$/;
+            if (phoneField.value.trim() && !phoneRegex.test(phoneField.value.trim())) {
+                showFieldError(phoneField, 'Số điện thoại phải có 10-11 chữ số');
+                isValid = false;
+            }
+            
             // Kiểm tra thông tin người nhận nếu có chọn
             const shipToDifferent = document.getElementById('ship_to_different').checked;
             if (shipToDifferent) {
@@ -1111,6 +1228,13 @@ textarea.form-control {
                         clearFieldError(element);
                     }
                 });
+                
+                // Kiểm tra số điện thoại người nhận
+                const shippingPhoneField = document.getElementById('shipping_phone');
+                if (shippingPhoneField.value.trim() && !phoneRegex.test(shippingPhoneField.value.trim())) {
+                    showFieldError(shippingPhoneField, 'Số điện thoại người nhận phải có 10-11 chữ số');
+                    isValid = false;
+                }
             }
             
             return isValid;
@@ -1118,21 +1242,45 @@ textarea.form-control {
         
         function showFieldError(element, message) {
             element.classList.add('is-invalid');
+            element.style.borderColor = '#dc3545';
+            
+            // Tìm hoặc tạo error div
             let errorDiv = element.parentNode.querySelector('.invalid-feedback');
             if (!errorDiv) {
                 errorDiv = document.createElement('div');
                 errorDiv.className = 'invalid-feedback d-block';
                 element.parentNode.appendChild(errorDiv);
             }
-            errorDiv.textContent = message;
+            
+            // Tạo icon và message
+            errorDiv.innerHTML = `
+                <div style="display: flex; align-items: center; gap: 8px; color: #dc3545; font-size: 0.875rem; margin-top: 4px;">
+                    <i class="fas fa-exclamation-circle" style="font-size: 14px;"></i>
+                    <span>${message}</span>
+                </div>
+            `;
         }
         
         function clearFieldError(element) {
             element.classList.remove('is-invalid');
+            element.style.borderColor = '';
             const errorDiv = element.parentNode.querySelector('.invalid-feedback');
             if (errorDiv) {
                 errorDiv.remove();
             }
+        }
+        
+        function clearAllErrors() {
+            // Xóa tất cả thông báo lỗi
+            document.querySelectorAll('.invalid-feedback').forEach(error => {
+                error.remove();
+            });
+            
+            // Xóa trạng thái lỗi của tất cả input
+            document.querySelectorAll('.is-invalid').forEach(input => {
+                input.classList.remove('is-invalid');
+                input.style.borderColor = '';
+            });
         }
         
 
@@ -1307,49 +1455,56 @@ document.addEventListener('DOMContentLoaded', function() {
     // Lấy các trường thông tin người đặt (từ tài khoản)
     const senderFields = document.querySelectorAll('input[name^="c_"]');
     
-    function toggleRecipientFields(isChecked) {
-        recipientInfo.style.display = isChecked ? 'block' : 'none';
-        
-        // Xử lý các trường thông tin người nhận
-        recipientInputs.forEach(input => {
-            if (input.id !== 'shipping_email') { // Email không bắt buộc
-                input.required = isChecked;
-            }
-        });
-        requiredMarks.forEach(mark => {
-            mark.style.display = isChecked ? 'inline' : 'none';
-        });
-        
-        // Xử lý các trường thông tin người đặt (từ tài khoản)
-        senderFields.forEach(field => {
-            if (isChecked) {
-                // Khi chọn địa chỉ khác - làm cho các trường thông tin người đặt chỉ đọc
-                field.readOnly = true;
-                field.style.backgroundColor = '#f8f9fa';
-                field.style.cursor = 'not-allowed';
-                field.classList.add('readonly-field');
-                
-                // Thêm ghi chú nhỏ
-                const note = document.createElement('small');
-                note.className = 'text-muted d-block mt-1';
-                note.textContent = 'Thông tin từ tài khoản - không thể chỉnh sửa khi đặt hàng hộ';
-                note.id = 'sender-note-' + field.id;
-                field.parentNode.appendChild(note);
-            } else {
-                // Khi không chọn địa chỉ khác - cho phép chỉnh sửa
-                field.readOnly = false;
-                field.style.backgroundColor = '';
-                field.style.cursor = '';
-                field.classList.remove('readonly-field');
-                
-                // Xóa ghi chú
-                const note = document.getElementById('sender-note-' + field.id);
-                if (note) {
-                    note.remove();
+            function toggleRecipientFields(isChecked) {
+            recipientInfo.style.display = isChecked ? 'block' : 'none';
+            
+            // Xử lý các trường thông tin người nhận
+            recipientInputs.forEach(input => {
+                if (input.id !== 'shipping_email') { // Email không bắt buộc
+                    input.required = isChecked;
+                    
+                    // Validate ngay khi hiển thị/ẩn
+                    if (isChecked && input.value.trim()) {
+                        validateField(input);
+                    } else if (!isChecked) {
+                        clearFieldError(input);
+                    }
                 }
-            }
-        });
-    }
+            });
+            requiredMarks.forEach(mark => {
+                mark.style.display = isChecked ? 'inline' : 'none';
+            });
+            
+            // Xử lý các trường thông tin người đặt (từ tài khoản)
+            senderFields.forEach(field => {
+                if (isChecked) {
+                    // Khi chọn địa chỉ khác - làm cho các trường thông tin người đặt chỉ đọc
+                    field.readOnly = true;
+                    field.style.backgroundColor = '#f8f9fa';
+                    field.style.cursor = 'not-allowed';
+                    field.classList.add('readonly-field');
+                    
+                    // Thêm ghi chú nhỏ
+                    const note = document.createElement('small');
+                    note.className = 'text-muted d-block mt-1';
+                    note.textContent = 'Thông tin từ tài khoản - không thể chỉnh sửa khi đặt hàng hộ';
+                    note.id = 'sender-note-' + field.id;
+                    field.parentNode.appendChild(note);
+                } else {
+                    // Khi không chọn địa chỉ khác - cho phép chỉnh sửa
+                    field.readOnly = false;
+                    field.style.backgroundColor = '';
+                    field.style.cursor = '';
+                    field.classList.remove('readonly-field');
+                    
+                    // Xóa ghi chú
+                    const note = document.getElementById('sender-note-' + field.id);
+                    if (note) {
+                        note.remove();
+                    }
+                }
+            });
+        }
     
     shipToDifferentCheckbox.addEventListener('change', function() {
         toggleRecipientFields(this.checked);

@@ -17,7 +17,7 @@
 
     @stack('styles')
     <!-- [Favicon] icon -->
-    <link rel="icon" href="{{ asset('/images/iphone.png') }}" type="image/x-icon">
+    <link rel="icon" href="{{ asset('/images/logo/iphone.png') }}" type="image/x-icon">
     <!-- [Google Font] Family -->
     <link rel="stylesheet"
         href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700&display=swap"

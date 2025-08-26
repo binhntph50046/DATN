@@ -93,7 +93,7 @@
                                             'product_id' => '',
                                             'product_variant_id' => '',
                                             'discount' => '',
-                                            'discount_type' => 'percent',
+                                            'discount_type' => 'percentage',
                                             'count' => 1,
                                             'buy_limit' => 1,
                                         ],
@@ -145,8 +145,8 @@
                                                 <label class="form-label">Loại</label>
                                                 <select name="items[{{ $index }}][discount_type]"
                                                     class="form-select @error("items.$index.discount_type") is-invalid @enderror">
-                                                    <option value="percent"
-                                                        {{ $item['discount_type'] == 'percent' ? 'selected' : '' }}>%
+                                                    <option value="percentage"
+                                                        {{ $item['discount_type'] == 'percentage' ? 'selected' : '' }}>%
                                                     </option>
                                                     <option value="fixed"
                                                         {{ $item['discount_type'] == 'fixed' ? 'selected' : '' }}>₫
@@ -269,7 +269,7 @@
                     <div class="col-md-1">
                         <label class="form-label">Loại</label>
                         <select name="items[${itemIndex}][discount_type]" class="form-select">
-                            <option value="percent">%</option>
+                            <option value="percentage">%</option>
                             <option value="fixed">₫</option>
                         </select>
                     </div>

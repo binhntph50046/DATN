@@ -78,7 +78,7 @@ class FlashSaleController
                 if ($item['discount_type'] === 'fixed') {
                     $variant = ProductVariant::find($item['product_variant_id']);
                     if ($variant) {
-                        $maxDiscount = $variant->price * 0.25;
+                        $maxDiscount = $variant->selling_price * 0.25;
                         if ($item['discount'] > $maxDiscount) {
                             return redirect()->back()
                                 ->withInput()

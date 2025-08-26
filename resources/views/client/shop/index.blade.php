@@ -3,6 +3,19 @@
 
 @section('content')
     <link href="{{ asset('css/shop-custom.css') }}" rel="stylesheet">
+    <style>
+        .flash-title {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            /* Số dòng tối đa */
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            min-height: 48px;
+            /* Đảm bảo chiều cao cố định cho 2 dòng (tùy font-size) */
+            line-height: 1.2;
+        }
+    </style>
 
     <div class="shop-banner">
         <div class="container">
@@ -67,9 +80,9 @@
                                                             : $original - $item->discount;
                                                 @endphp
                                                 <div class="flash-price-row">
-                                                    <strong class="flash-price">{{ number_format($discount, 0) }}$</strong>
+                                                    <strong class="flash-price">{{ number_format($discount, 0) }}đ</strong>
                                                     <span
-                                                        class="flash-old"><del>{{ number_format($original, 0) }}$</del></span>
+                                                        class="flash-old"><del>{{ number_format($original, 0) }}đ</del></span>
                                                 </div>
                                             </div>
                                         </div>
@@ -869,7 +882,7 @@
                         <div class="product-price-row">
                             ${product.discount_price ? 
                                 `<strong class="product-price">${product.discount_price}đ</strong>
-                                    <span class="old-price"><del>${product.price}đ</del></span>` :
+                                         <span class="old-price"><del>${product.price}đ</del></span>` :
                                 `<strong class="product-price">${product.price}đ</strong>`
                             }
                         </div>

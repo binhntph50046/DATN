@@ -172,13 +172,13 @@
                         @foreach ($filterData['dynamicFilters'] as $filterId => $filter)
                             <div class="filter-group mb-3">
                                 <h6 class="filter-title d-flex align-items-center" style="cursor:pointer"
-                                    data-bs-toggle="collapse" data-bs-target="#filterCollapse{{ $filterId }}"
-                                    aria-expanded="false" aria-controls="filterCollapse{{ $filterId }}">
+                                    data-filter-target="#filterCollapse{{ $filterId }}"
+                                    data-filter-id="{{ $filterId }}">
                                     {{ $filter['name'] }} ({{ $filter['count'] }})
                                     <span class="ms-auto filter-arrow" style="transition:0.3s;"><i
                                             class="fas fa-chevron-down"></i></span>
                                 </h6>
-                                <div class="collapse" id="filterCollapse{{ $filterId }}">
+                                <div class="filter-content" id="filterCollapse{{ $filterId }}">
                                     @if ($filter['type'] === 'color')
                                         <div class="color-options">
                                             @foreach ($filter['values'] as $value)
@@ -190,7 +190,8 @@
                                                     <label for="filter_{{ $filterId }}_{{ $loop->index }}"
                                                         class="color-label"
                                                         style="background-color: {{ $filter['hexValues'][$value] ?? '#CCCCCC' }}"
-                                                        title="{{ $value }}">
+                                                        title="{{ $value }}"
+                                                        onclick="toggleColorFilter(this, '{{ $value }}', '{{ $filterId }}')">
                                                     </label>
                                                 </div>
                                             @endforeach
@@ -447,6 +448,15 @@
 
             // Initialize realtime product updates
             initializeRealtimeProducts();
+
+            // Prevent any auto-hide of filters
+            setInterval(function() {
+                $('.filter-group .filter-content.show').each(function() {
+                    if (!$(this).is(':visible') || $(this).css('max-height') === '0px') {
+                        $(this).show().css('max-height', '1000px');
+                    }
+                });
+            }, 500);
         });
 
         function setupFilters() {
@@ -463,6 +473,44 @@
             // Handle price range inputs
             $('input[name="min_price"], input[name="max_price"]').on('blur', function() {
                 applyFilters();
+            });
+
+            // Custom filter collapse handling
+            $('.filter-title').on('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                const target = $(this).data('filter-target');
+                const content = $(target);
+                
+                if (content.hasClass('show')) {
+                    content.removeClass('show');
+                    $(this).find('.filter-arrow i').removeClass('fa-chevron-up').addClass('fa-chevron-down');
+                } else {
+                    content.addClass('show');
+                    $(this).find('.filter-arrow i').removeClass('fa-chevron-down').addClass('fa-chevron-up');
+                }
+            });
+
+            // Initialize filter states based on applied filters
+            initializeFilterStates();
+        }
+
+        function initializeFilterStates() {
+            // Check if any filters are applied and expand those sections
+            $('.filter-group').each(function() {
+                const filterId = $(this).find('.filter-title').data('filter-target');
+                const hasCheckedInputs = $(this).find('input:checked').length > 0;
+                
+                if (hasCheckedInputs) {
+                    $(filterId).addClass('show');
+                    $(this).find('.filter-arrow i').removeClass('fa-chevron-down').addClass('fa-chevron-up');
+                }
+            });
+
+            // Initialize color filter states
+            $('.color-checkbox:checked').each(function() {
+                const label = $(this).next('.color-label');
+                label.addClass('selected');
             });
         }
 
@@ -501,6 +549,25 @@
 
         function clearFilters() {
             window.location.href = '{{ route('shop') }}';
+        }
+
+        // Toggle color filter
+        function toggleColorFilter(labelElement, value, filterId) {
+            const checkbox = labelElement.previousElementSibling;
+            const isChecked = checkbox.checked;
+            
+            if (isChecked) {
+                checkbox.checked = false;
+                labelElement.classList.remove('selected');
+            } else {
+                checkbox.checked = true;
+                labelElement.classList.add('selected');
+            }
+            
+            // Apply filters after a short delay
+            setTimeout(() => {
+                applyFilters();
+            }, 100);
         }
 
         // Compare feature (ported from homepage)

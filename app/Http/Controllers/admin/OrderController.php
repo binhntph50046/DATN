@@ -22,22 +22,21 @@ class OrderController extends Controller
     public function index(Request $request)
     {
         $query = Order::query();
-
         if ($request->filled('search')) {
             $search = $request->search;
             $query->where(function ($q) use ($search) {
                 $q->where('shipping_name', 'like', "%$search%")
                     ->orWhere('shipping_email', 'like', "%$search%")
-                    ->orWhere('status', 'like', "%$search%")
-                    ->orWhere('payment_status', 'like', "%$search%")
                     ->orWhere('order_code', 'like', "%$search%");
             });
         }
-
+        
+        // Lọc theo trạng thái đơn hàng
         if ($request->filled('status')) {
             $query->where('status', $request->status);
         }
 
+        // Lọc theo trạng thái thanh toán
         if ($request->filled('payment_status')) {
             $query->where('payment_status', $request->payment_status);
         }
@@ -210,9 +209,6 @@ class OrderController extends Controller
                 // Refresh order model để đảm bảo có dữ liệu mới nhất
                 $order->refresh();
                 event(new OrderStatusUpdated($order));
-                
-                Log::info('Đã gửi sự kiện thành công');
-
             } catch (\Exception $e) {
                 Log::error('Lỗi khi gửi sự kiện', [
                     'order_id' => $order->id,
@@ -240,7 +236,7 @@ class OrderController extends Controller
         try {
             DB::beginTransaction();
             
-            // Get cart items from session if not buying directly
+            // Lấy các sản phẩm trong giỏ hàng
             $cartItems = [];
             if (!isset($variant)) {
                 $cartItems = session()->get('cart', []);
@@ -324,8 +320,8 @@ class OrderController extends Controller
    // Kiểm tra đơn hàng có số lượng lớn không
     private function hasLargeQuantity($order)
     {
-        $maxQuantityPerItem = 10; // Số lượng tối đa cho mỗi sản phẩm
-        $maxTotalQuantity = 20; // Tổng số lượng tối đa cho toàn bộ đơn hàng
+        $maxQuantityPerItem = 10; 
+        $maxTotalQuantity = 20;
         $maxTotalItems = 5; // Số lượng sản phẩm tối đa trong đơn hàng
         
         $totalQuantity = $order->items->sum('quantity');

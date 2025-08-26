@@ -109,7 +109,7 @@ class OrderController
 
     public function guestTracking(Request $request)
     {
-        // Nếu có order_code trong request (người dùng đã tra cứu)
+        // Nếu có order_code trong request 
         if ($request->has('order_code')) {
             $order = Order::where('order_code', $request->order_code)
                 ->where('shipping_email', $request->email)
@@ -118,7 +118,6 @@ class OrderController
             if (!$order) {
                 return redirect()->back()->with('error', 'Không tìm thấy đơn hàng. Vui lòng kiểm tra lại mã đơn hàng và email.');
             }
-
             // Nếu tìm thấy đơn hàng, chuyển đến trang tracking
             return redirect()->route('order.tracking', ['order' => $order->id]);
         }
@@ -126,35 +125,13 @@ class OrderController
         // Nếu không có order_code, hiển thị form tra cứu
         return view('client.order.guest_tracking');
     }
-
-    /**
-     * Client xác nhận đã nhận hàng
-     */
+ // Client xác nhận đã nhận hàng
     public function confirmReceived(Request $request, $id)
     {
         try {
-            Log::info('Confirm received request', [
-                'order_id' => $id,
-                'user_id' => Auth::id(),
-                'request_data' => $request->all()
-            ]);
-
             $order = Order::where('user_id', Auth::id())->with('items.product')->findOrFail($id);
-
-            Log::info('Order found', [
-                'order_id' => $order->id,
-                'current_status' => $order->status,
-                'user_id' => $order->user_id
-            ]);
-
             // Chỉ cho phép xác nhận khi đơn hàng ở trạng thái 'delivered'
-            if ($order->status !== 'delivered') {
-                Log::warning('Invalid status for confirmation', [
-                    'order_id' => $order->id,
-                    'current_status' => $order->status,
-                    'expected_status' => 'delivered'
-                ]);
-                
+            if ($order->status !== 'delivered') {                
                 if ($request->ajax()) {
                     return response()->json([
                         'success' => false,
@@ -179,8 +156,6 @@ class OrderController
                     }
                 }
             }
-
-
             if ($request->ajax()) {
                 return response()->json([
                     'success' => true,
@@ -190,11 +165,6 @@ class OrderController
             return redirect()->back()->with('success', 'Đã xác nhận nhận hàng thành công!');
             
         } catch (\Exception $e) {
-            Log::error('Error confirming received order', [
-                'order_id' => $id,
-                'error' => $e->getMessage()
-            ]);
-            
             if ($request->ajax()) {
                 return response()->json([
                     'success' => false,

@@ -87,6 +87,14 @@
 .color-checkbox {
     position: absolute;
     opacity: 0;
+    display: none !important;
+    visibility: hidden !important;
+    width: 0 !important;
+    height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+    clip: rect(0, 0, 0, 0) !important;
 }
 
 .color-label {
@@ -98,6 +106,7 @@
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
     cursor: pointer;
     transition: all 0.3s ease;
+    position: relative;
 }
 
 .color-checkbox:checked+.color-label {
@@ -106,8 +115,38 @@
     box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
 }
 
+.color-checkbox:checked+.color-label::after {
+    content: '✓';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-size: 12px;
+    font-weight: bold;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
 .color-label:hover {
     transform: scale(1.05);
+}
+
+.color-label.selected {
+    border-color: #007bff;
+    transform: scale(1.1);
+    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
+}
+
+.color-label.selected::after {
+    content: '✓';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-size: 12px;
+    font-weight: bold;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
 }
 
 /* Price Range */
@@ -824,4 +863,135 @@
     .filter-group .collapse {
         padding: 0 12px 12px 12px;
     }
+}
+
+/* Ensure filters stay visible */
+.filter-section {
+    position: relative;
+    z-index: 10;
+}
+
+.filter-group {
+    position: relative;
+    z-index: 5;
+}
+
+/* Prevent any auto-hide animations */
+.filter-group .collapse,
+.filter-group .collapse.show {
+    animation: none !important;
+    transition: max-height 0.3s ease !important;
+}
+
+/* Ensure filter content is always visible when expanded */
+.filter-group .collapse.show {
+    visibility: visible !important;
+    opacity: 1 !important;
+    display: block !important;
+    max-height: 1000px !important;
+}
+
+/* Additional safety measures */
+.filter-group .collapse.show * {
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+/* Custom filter content styles */
+.filter-group .filter-content {
+    max-height: 0;
+    overflow: hidden;
+    padding: 0 20px;
+    transition: max-height 0.3s ease, padding 0.3s ease;
+    background: #fff;
+}
+
+.filter-group .filter-content.show {
+    max-height: 1000px;
+    padding: 0 20px 16px 20px;
+}
+
+/* Override ALL external collapse styles */
+.filter-group .collapse,
+.filter-group .collapse.show,
+.filter-group .collapse:not(.show) {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    height: auto !important;
+    overflow: visible !important;
+    position: static !important;
+    transform: none !important;
+    transition: none !important;
+    animation: none !important;
+}
+
+/* Only hide when manually collapsed */
+.filter-group .collapse:not(.show) {
+    max-height: 0 !important;
+    overflow: hidden !important;
+    padding: 0 20px !important;
+}
+
+.filter-group .collapse.show {
+    max-height: 1000px !important;
+    padding: 0 20px 16px 20px !important;
+}
+
+/* Prevent any external CSS from hiding filters */
+.filter-section .filter-group,
+.filter-section .filter-group * {
+    animation: none !important;
+    transition: none !important;
+}
+
+.filter-section .filter-group .collapse.show {
+    animation: none !important;
+    transition: max-height 0.3s ease !important;
+}
+
+/* Force filter content to stay visible */
+.filter-group .filter-content.show {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    max-height: 1000px !important;
+    overflow: visible !important;
+}
+
+/* Prevent any external interference */
+.filter-group .filter-content {
+    position: relative !important;
+    z-index: 10 !important;
+}
+
+/* Ensure all filter content elements are visible */
+.filter-group .filter-content.show * {
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+/* Additional safety measures for filter content */
+.filter-group .filter-content {
+    will-change: max-height;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+}
+
+/* Prevent any external CSS from affecting filter content */
+.filter-section .filter-group .filter-content,
+.filter-section .filter-group .filter-content * {
+    animation: none !important;
+    transition: max-height 0.3s ease, padding 0.3s ease !important;
+}
+
+/* Force filter content to maintain visibility */
+.filter-group .filter-content.show {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    max-height: 1000px !important;
+    overflow: visible !important;
+    position: relative !important;
+    z-index: 100 !important;
 }

@@ -51,13 +51,13 @@ class OrderReturnController extends Controller
         // Tính tổng tiền hoàn lại
         $refundAmount = 0;
         $restockArr = $request->input('restock', []);
-        
+
         foreach ($return->items as $item) {
             $refundAmount += $item->orderItem->price * $item->quantity;
             $restock = isset($restockArr[$item->id]) && $restockArr[$item->id] == '1';
             $item->restock = $restock;
             $item->save();
-            
+
             if ($restock) {
                 // Cộng lại stock cho variant tương ứng
                 if ($item->orderItem->variant) {
@@ -81,7 +81,6 @@ class OrderReturnController extends Controller
         ]);
 
         // Giảm total_sold cho các sản phẩm bị hoàn
-        // Chỉ giảm khi chuyển từ trạng thái khác sang approved
         if ($oldStatus !== 'approved') {
             foreach ($return->items as $item) {
                 $product = $item->orderItem->product;
@@ -114,7 +113,6 @@ class OrderReturnController extends Controller
         }
         $order->save();
 
-        // Gửi sự kiện sau khi đã cập nhật trạng thái đơn hàng
         event(new OrderStatusUpdated($order));
 
         return redirect()->route('admin.order-returns.index')
@@ -124,7 +122,7 @@ class OrderReturnController extends Controller
     public function reject($id)
     {
         $return = OrderReturn::with(['items.orderItem.product', 'items.orderItem.variant'])->findOrFail($id);
-        
+
         // Nếu đang từ trạng thái approved sang rejected, tăng lại total_sold và trừ lại stock
         $oldStatus = $return->status;
         if ($oldStatus === 'approved') {
@@ -133,7 +131,7 @@ class OrderReturnController extends Controller
                 if ($product) {
                     $product->safeIncrementTotalSold($item->quantity);
                 }
-                
+
                 // Trừ lại stock nếu trước đó đã cộng lại (restock = true)
                 if ($item->restock) {
                     if ($item->orderItem->variant) {
@@ -146,7 +144,7 @@ class OrderReturnController extends Controller
                 }
             }
         }
-        
+
         $return->update([
             'status' => 'rejected',
             'admin_id' => Auth::id(),

@@ -91,16 +91,34 @@ input[type="checkbox"] {
 </style>
 <div class="return-container">
     <div class="return-title">Yêu cầu hoàn hàng cho đơn #{{ $order->id }}</div>
-    @if ($errors->any())
-        <div class="alert alert-danger">
-            <ul class="mb-0">
-                @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
-    @endif
-    <form action="{{ route('order.returns.store', $order->id) }}" method="POST" enctype="multipart/form-data">
+    @php
+        if (!function_exists('viMessage')) {
+            function viMessage($message) {
+                $map = [
+                    'The reason field is required.' => 'Vui lòng nhập lý do hoàn hàng.',
+                    'The image field is required.' => 'Vui lòng chọn hình ảnh minh chứng.',
+                    'The proof video field is required.' => 'Vui lòng chọn video minh chứng.',
+                    'The bank info field is required.' => 'Vui lòng nhập thông tin tài khoản ngân hàng.',
+                ];
+                if (!isset($map[$message]) && preg_match('/^The (.+) field is required\.$/i', $message, $m)) {
+                    $attr = strtolower($m[1]);
+                    $attrMap = [
+                        'reason' => 'lý do hoàn hàng',
+                        'image' => 'hình ảnh minh chứng',
+                        'proof video' => 'video minh chứng',
+                        'bank info' => 'thông tin tài khoản ngân hàng',
+                        'items' => 'sản phẩm',
+                        'quantity' => 'số lượng',
+                    ];
+                    $label = $attrMap[$attr] ?? $attr;
+                    return 'Vui lòng nhập ' . $label . '.';
+                }
+                return $map[$message] ?? $message;
+            }
+        }
+    @endphp
+    {{-- Hiển thị lỗi ngay dưới từng trường, không dùng alert tổng --}}
+    <form id="returnForm" action="{{ route('order.returns.store', $order->id) }}" method="POST" enctype="multipart/form-data">
         @csrf
         <div class="mb-4">
             <label class="form-label">Chọn sản phẩm muốn hoàn:</label>
@@ -132,29 +150,47 @@ input[type="checkbox"] {
                             <span>{{ $item->product->name }} <span class="text-muted">(SL: {{ $item->quantity }})</span></span>
                         </label>
                     </div>
-                    <input type="number" name="items[{{ $item->id }}][quantity]" min="1" max="{{ $item->quantity }}" value="1" class="form-control" style="width:80px;" placeholder="Số lượng hoàn">
+                    <input type="number" name="items[{{ $item->id }}][quantity]" min="1" max="{{ $item->quantity }}" value="1" class="form-control @error('items.'.$item->id.'.quantity') is-invalid @enderror" style="width:80px;" placeholder="Số lượng hoàn">
                 </div>
+                @error('items.'.$item->id.'.quantity')
+                    <div class="invalid-feedback d-block"><div style="display:flex;align-items:center;gap:8px;color:#dc3545;font-size:0.875rem;"><i class="fas fa-exclamation-circle" style="font-size:14px;"></i><span>{{ viMessage($message) }}</span></div></div>
+                @enderror
             @endforeach
+            @if ($errors->has('items'))
+                <div class="invalid-feedback d-block"><div style="display:flex;align-items:center;gap:8px;color:#dc3545;font-size:0.875rem;"><i class="fas fa-exclamation-circle" style="font-size:14px;"></i><span>{{ viMessage($errors->first('items')) }}</span></div></div>
+            @endif
         </div>
         <div class="mb-4">
             <label for="reason" class="form-label">Lý do hoàn hàng <span class="text-danger">*</span></label>
-            <textarea name="reason" id="reason" class="form-control" rows="3" required>{{ old('reason') }}</textarea>
+            <textarea name="reason" id="reason" class="form-control @error('reason') is-invalid @enderror" rows="3">{{ old('reason') }}</textarea>
             <div class="upload-info">Vui lòng mô tả chi tiết lý do hoàn hàng</div>
+            @error('reason')
+                <div class="invalid-feedback d-block"><div style="display:flex;align-items:center;gap:8px;color:#dc3545;font-size:0.875rem;"><i class="fas fa-exclamation-circle" style="font-size:14px;"></i><span>{{ viMessage($message) }}</span></div></div>
+            @enderror
         </div>
         <div class="mb-4">
             <label for="image" class="form-label">Hình ảnh minh chứng <span class="text-danger">*</span></label>
-            <input type="file" name="image" id="image" class="form-control" accept="image/*" required>
+            <input type="file" name="image" id="image" class="form-control @error('image') is-invalid @enderror" accept="image/*">
             <div class="upload-info">Chấp nhận các định dạng: JPG, PNG, JPEG. Kích thước tối đa: 2MB</div>
+            @error('image')
+                <div class="invalid-feedback d-block"><div style="display:flex;align-items:center;gap:8px;color:#dc3545;font-size:0.875rem;"><i class="fas fa-exclamation-circle" style="font-size:14px;"></i><span>{{ viMessage($message) }}</span></div></div>
+            @enderror
         </div>
         <div class="mb-4">
             <label for="proof_video" class="form-label">Video minh chứng <span class="text-danger">*</span></label>
-            <input type="file" name="proof_video" id="proof_video" class="form-control" accept="video/mp4,video/mov,video/avi" required>
+            <input type="file" name="proof_video" id="proof_video" class="form-control @error('proof_video') is-invalid @enderror" accept="video/mp4,video/mov,video/avi">
             <div class="upload-info">Chấp nhận các định dạng: MP4, MOV, AVI. Kích thước tối đa: 20MB</div>
+            @error('proof_video')
+                <div class="invalid-feedback d-block"><div style="display:flex;align-items:center;gap:8px;color:#dc3545;font-size:0.875rem;"><i class="fas fa-exclamation-circle" style="font-size:14px;"></i><span>{{ viMessage($message) }}</span></div></div>
+            @enderror
         </div>
         <div class="mb-4">
             <label for="bank_info" class="form-label">Thông tin tài khoản ngân hàng <span class="text-danger">*</span></label>
-            <textarea name="bank_info" id="bank_info" class="form-control" rows="2" required placeholder="VD: Ngân hàng Vietcombank - STK: 1234567890 - Chủ TK: Nguyễn Văn A">{{ old('bank_info') }}</textarea>
+            <textarea name="bank_info" id="bank_info" class="form-control @error('bank_info') is-invalid @enderror" rows="2" placeholder="VD: Ngân hàng Vietcombank - STK: 1234567890 - Chủ TK: Nguyễn Văn A">{{ old('bank_info') }}</textarea>
             <div class="upload-info">Vui lòng nhập đầy đủ thông tin: Tên ngân hàng - Số tài khoản - Tên chủ tài khoản</div>
+            @error('bank_info')
+                <div class="invalid-feedback d-block"><div style="display:flex;align-items:center;gap:8px;color:#dc3545;font-size:0.875rem;"><i class="fas fa-exclamation-circle" style="font-size:14px;"></i><span>{{ viMessage($message) }}</span></div></div>
+            @enderror
         </div>
         <div class="d-flex justify-content-center gap-3 mt-5">
             <button type="submit" class="btn btn-danger">
@@ -165,3 +201,114 @@ input[type="checkbox"] {
     </form>
 </div>
 @endsection 
+
+@push('scripts')
+<style>
+.invalid-feedback { display:block !important; margin-top:0.25rem; }
+</style>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('returnForm');
+    const reason = document.getElementById('reason');
+    const bankInfo = document.getElementById('bank_info');
+    const imageInput = document.getElementById('image');
+    const videoInput = document.getElementById('proof_video');
+
+    function showFieldError(element, message) {
+        element.classList.add('is-invalid');
+        let err = element.parentNode.querySelector('.invalid-feedback');
+        if (!err) {
+            err = document.createElement('div');
+            err.className = 'invalid-feedback d-block';
+            element.parentNode.appendChild(err);
+        }
+        err.innerHTML = '<div style="display:flex;align-items:center;gap:8px;color:#dc3545;font-size:0.875rem;"><i class="fas fa-exclamation-circle" style="font-size:14px;"></i><span>'+message+'</span></div>';
+    }
+
+    function clearFieldError(element) {
+        element.classList.remove('is-invalid');
+        const err = element.parentNode.querySelector('.invalid-feedback');
+        if (err) err.remove();
+    }
+
+    function validateText(element, label) {
+        const value = element.value.trim();
+        clearFieldError(element);
+        if (!value) { showFieldError(element, label + ' là bắt buộc'); return false; }
+        if (value.includes('  ')) { showFieldError(element, label + ' không được chứa khoảng trắng liên tiếp'); return false; }
+        return true;
+    }
+
+    function validateFile(element, label) {
+        clearFieldError(element);
+        if (!element.files || element.files.length === 0) {
+            showFieldError(element, 'Vui lòng chọn ' + label.toLowerCase());
+            return false;
+        }
+        return true;
+    }
+
+    function validateItems() {
+        let valid = true;
+        const checkboxes = document.querySelectorAll('input[type="checkbox"][name^="items[" ]');
+        let any = false;
+        checkboxes.forEach(cb => { if (cb.checked) any = true; });
+        const listContainer = checkboxes.length ? checkboxes[0].closest('.mb-4') : null;
+        let topErr = document.querySelector('.items-error');
+        if (!any) {
+            if (!topErr && listContainer) {
+                topErr = document.createElement('div');
+                topErr.className = 'text-danger items-error';
+                topErr.style.cssText = 'font-size:0.875rem;margin-top:6px;';
+                topErr.textContent = 'Vui lòng chọn ít nhất 1 sản phẩm cần hoàn.';
+                listContainer.appendChild(topErr);
+            }
+            valid = false;
+        } else if (topErr) { topErr.remove(); }
+
+        document.querySelectorAll('input[name^="items["][name$="[quantity]"]')
+            .forEach(qty => {
+                const row = qty.closest('.form-check');
+                const cb = row.querySelector('input[type="checkbox"]');
+                const min = parseInt(qty.min || '1', 10);
+                const max = parseInt(qty.max || '9999', 10);
+                if (cb && cb.checked) {
+                    const val = parseInt(qty.value || '0', 10);
+                    clearFieldError(qty);
+                    if (isNaN(val) || val < min || val > max) {
+                        showFieldError(qty, `Số lượng phải từ ${min} đến ${max}`);
+                        valid = false;
+                    }
+                } else {
+                    clearFieldError(qty);
+                }
+            });
+        return valid;
+    }
+
+    [reason, bankInfo].forEach(el => {
+        if (!el) return;
+        el.addEventListener('blur', () => validateText(el, el === reason ? 'Lý do hoàn hàng' : 'Thông tin tài khoản ngân hàng'));
+        el.addEventListener('input', () => clearFieldError(el));
+    });
+    [imageInput, videoInput].forEach(el => {
+        if (!el) return;
+        el.addEventListener('change', () => clearFieldError(el));
+    });
+    document.querySelectorAll('input[name^="items["][name$="[quantity]"]')
+        .forEach(q => q.addEventListener('input', () => clearFieldError(q)));
+    document.querySelectorAll('input[type="checkbox"][name^="items[" ]')
+        .forEach(cb => cb.addEventListener('change', () => validateItems()));
+
+    form.addEventListener('submit', function(e) {
+        let ok = true;
+        if (!validateItems()) ok = false;
+        if (!validateText(reason, 'Lý do hoàn hàng')) ok = false;
+        if (!validateFile(imageInput, 'Hình ảnh minh chứng')) ok = false;
+        if (!validateFile(videoInput, 'Video minh chứng')) ok = false;
+        if (!validateText(bankInfo, 'Thông tin tài khoản ngân hàng')) ok = false;
+        if (!ok) e.preventDefault();
+    });
+});
+</script>
+@endpush

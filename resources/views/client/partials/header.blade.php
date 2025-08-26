@@ -130,6 +130,74 @@
             font-weight: 600;
         }
 
+        /* Notification icon styles */
+        .notification-icon {
+            position: relative;
+            animation: bellRing 1.5s infinite;
+            transform-origin: top;
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #ff4757;
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            font-size: 0.7rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes bellRing {
+            0%, 100% {
+                transform: rotate(0deg);
+            }
+            10% {
+                transform: rotate(10deg);
+            }
+            20% {
+                transform: rotate(-10deg);
+            }
+            30% {
+                transform: rotate(8deg);
+            }
+            40% {
+                transform: rotate(-8deg);
+            }
+            50% {
+                transform: rotate(5deg);
+            }
+            60% {
+                transform: rotate(-5deg);
+            }
+            70% {
+                transform: rotate(3deg);
+            }
+            80% {
+                transform: rotate(-3deg);
+            }
+            90% {
+                transform: rotate(1deg);
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.2);
+                opacity: 0.8;
+            }
+        }
+
         .dropdown-menu-bg {
             background: #232b3b;
             border: none;
@@ -278,13 +346,29 @@
                 </ul>
             </div>
         </form>
-        <!-- User, Wishlist & Cart -->
+        <!-- User, Wishlist, Notification & Cart -->
         <div class="d-flex align-items-center icon-group">
             <!-- Wishlist (Heart icon) -->
             <a href="{{ route('wishlist.index') }}"
                 class="rounded-circle d-flex align-items-center justify-content-center icon-circle-btn">
                 <i class="fas fa-heart text-white"></i>
             </a>
+
+            <!-- Notification icon -->
+            <div class="dropdown">
+                <a class="rounded-circle d-flex align-items-center justify-content-center dropdown-toggle icon-circle-btn notification-icon"
+                    href="#" id="notificationDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <i class="fas fa-bell text-white"></i>
+                    @if (isset($notificationCount) && $notificationCount > 0)
+                        <span class="notification-badge">{{ $notificationCount > 99 ? '99+' : $notificationCount }}</span>
+                    @endif
+                </a>
+                <ul class="dropdown-menu dropdown-menu-bg" aria-labelledby="notificationDropdown">
+                    <li><a class="dropdown-item text-white" href="#">Xem tất cả thông báo</a></li>
+                    <li><hr class="dropdown-divider" style="border-color: #3a445c;"></li>
+                    <li><a class="dropdown-item text-white" href="#" onclick="markAllAsRead()">Đánh dấu đã đọc</a></li>
+                </ul>
+            </div>
 
             <!-- Giỏ hàng -->
             <a class="rounded-circle d-flex align-items-center justify-content-center icon-circle-btn position-relative"
@@ -450,5 +534,50 @@
                 suggestionBox.style.display = 'none';
             }
         });
+
+        // Notification functionality
+        function markAllAsRead() {
+            fetch('/notifications/mark-all-read', {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    'Content-Type': 'application/json',
+                },
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Remove notification badge
+                    const badge = document.querySelector('.notification-badge');
+                    if (badge) {
+                        badge.remove();
+                    }
+                    // Stop bell ring animation
+                    const notificationIcon = document.querySelector('.notification-icon');
+                    if (notificationIcon) {
+                        notificationIcon.style.animation = 'none';
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+
+        // Enhanced bell ring animation - only ring when there are notifications
+        function updateNotificationAnimation() {
+            const notificationIcon = document.querySelector('.notification-icon');
+            const badge = document.querySelector('.notification-badge');
+            
+            if (badge && notificationIcon) {
+                notificationIcon.style.animation = 'bellRing 1.5s infinite';
+                notificationIcon.style.transformOrigin = 'top';
+            } else if (notificationIcon) {
+                notificationIcon.style.animation = 'none';
+            }
+        }
+
+        // Call on page load
+        updateNotificationAnimation();
     });
 </script>

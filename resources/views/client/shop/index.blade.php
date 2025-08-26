@@ -62,8 +62,13 @@
                                     <div class="product-item product-carousel">
                                         <div class="flash-card">
                                             <div class="flash-media position-relative">
-                                                <span
-                                                    class="flash-discount">{{ $item->discount_type == 'percent' ? $item->discount . '%' : '-' }}</span>
+                                                <span class="flash-discount">
+                                                    @if ($item->discount_type == 'percent')
+                                                        -{{ $item->discount }}%
+                                                    @else
+                                                        -{{ number_format(($item->discount / $item->selling_price) * 100, 1) }}%
+                                                    @endif
+                                                </span>
                                                 <a href="{{ route('product.detail', ['slug' => $item->product_slug]) }}"
                                                     class="d-block w-100 h-100">
                                                     <img src="{{ asset($item->first_image) }}" class="img-fluid"
@@ -757,7 +762,7 @@
                         <div class="product-price-row">
                             ${product.discount_price ? 
                                 `<strong class="product-price">${product.discount_price}đ</strong>
-                                         <span class="old-price"><del>${product.price}đ</del></span>` :
+                                                     <span class="old-price"><del>${product.price}đ</del></span>` :
                                 `<strong class="product-price">${product.price}đ</strong>`
                             }
                         </div>

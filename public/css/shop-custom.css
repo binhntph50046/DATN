@@ -87,6 +87,13 @@
 .color-checkbox {
     position: absolute;
     opacity: 0;
+    visibility: hidden;
+    width: 0;
+    height: 0;
+    margin: 0;
+    padding: 0;
+    border: none;
+    clip: rect(0, 0, 0, 0);
 }
 
 .color-label {
@@ -98,6 +105,7 @@
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
     cursor: pointer;
     transition: all 0.3s ease;
+    position: relative;
 }
 
 .color-checkbox:checked+.color-label {
@@ -106,8 +114,38 @@
     box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
 }
 
+.color-checkbox:checked+.color-label::after {
+    content: '✓';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-size: 12px;
+    font-weight: bold;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
 .color-label:hover {
     transform: scale(1.05);
+}
+
+.color-label.selected {
+    border-color: #007bff;
+    transform: scale(1.1);
+    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
+}
+
+.color-label.selected::after {
+    content: '✓';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-size: 12px;
+    font-weight: bold;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
 }
 
 /* Price Range */
@@ -204,7 +242,6 @@
     line-clamp: 2;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
-    text-align: center; 
 }
 
 .product-category {
@@ -343,6 +380,41 @@
 .filter-actions .btn:hover {
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Filter button states */
+.filter-actions .btn-primary {
+    background: #007bff;
+    border-color: #007bff;
+}
+
+.filter-actions .btn-primary:hover {
+    background: #0056b3;
+    border-color: #0056b3;
+}
+
+.filter-actions .btn-primary:active {
+    background: #004085;
+    border-color: #004085;
+}
+
+/* Show when filters are changed */
+.filter-actions .btn-primary.has-changes {
+    background: #28a745;
+    border-color: #28a745;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(40, 167, 69, 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(40, 167, 69, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(40, 167, 69, 0);
+    }
 }
 
 /* Clear Filter Button */
@@ -516,6 +588,10 @@
     flex-direction: column;
 }
 
+.product-title {
+    text-align: center;
+}
+
 .product-category-chip {
     display: flex;
     justify-content: center;
@@ -547,6 +623,34 @@
 
 .product-rating-row .stars i {
     color: #f5a524;
+}
+
+.product-rating-row .stars .fas.fa-star {
+    color: #f5a524 !important; /* Màu vàng cam cho sao đầy */
+}
+
+/* Đảm bảo tất cả sao đều có màu vàng cam */
+.product-card .stars i {
+    font-size: 14px;
+    margin-right: 2px;
+    color: #f5a524 !important;
+}
+
+.product-card .stars i:last-child {
+    margin-right: 0;
+}
+
+/* Đảm bảo tất cả sao trong toàn bộ trang đều là sao đầy màu vàng cam */
+.stars i {
+    color: #f5a524 !important;
+}
+
+.stars .far.fa-star {
+    display: none !important; /* Ẩn sao rỗng */
+}
+
+.stars .fas.fa-star-half-alt {
+    display: none !important; /* Ẩn sao nửa */
 }
 
 .product-rating-row .views {
@@ -821,4 +925,181 @@
     .filter-group .collapse {
         padding: 0 12px 12px 12px;
     }
+}
+
+/* Ensure filters stay visible */
+.filter-section {
+    position: relative;
+    z-index: 10;
+}
+
+.filter-group {
+    position: relative;
+    z-index: 5;
+}
+
+/* Prevent any auto-hide animations */
+.filter-group .collapse,
+.filter-group .collapse.show {
+    animation: none !important;
+    transition: max-height 0.3s ease !important;
+}
+
+/* Ensure filter content is always visible when expanded */
+.filter-group .collapse.show {
+    visibility: visible !important;
+    opacity: 1 !important;
+    display: block !important;
+    max-height: 1000px !important;
+}
+
+/* Additional safety measures */
+.filter-group .collapse.show * {
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+/* Bootstrap collapse styles for filters */
+.filter-group .collapse {
+    padding: 0 20px 16px 20px;
+    background: #fff;
+    transition: all 0.3s ease;
+}
+
+.filter-group .collapse:not(.show) {
+    display: none;
+}
+
+.filter-group .collapse.show {
+    display: block;
+}
+
+/* Override ALL external collapse styles */
+.filter-group .collapse,
+.filter-group .collapse.show,
+.filter-group .collapse:not(.show) {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    height: auto !important;
+    overflow: visible !important;
+    position: static !important;
+    transform: none !important;
+    transition: none !important;
+    animation: none !important;
+}
+
+/* Only hide when manually collapsed */
+.filter-group .collapse:not(.show) {
+    max-height: 0 !important;
+    overflow: hidden !important;
+    padding: 0 20px !important;
+}
+
+.filter-group .collapse.show {
+    max-height: 1000px !important;
+    padding: 0 20px 16px 20px !important;
+}
+
+/* Prevent any external CSS from hiding filters */
+.filter-section .filter-group,
+.filter-section .filter-group * {
+    animation: none !important;
+    transition: none !important;
+}
+
+.filter-section .filter-group .collapse.show {
+    animation: none !important;
+    transition: max-height 0.3s ease !important;
+}
+
+/* Force filter content to stay visible */
+.filter-group .filter-content.show {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    max-height: 1000px !important;
+    overflow: visible !important;
+}
+
+/* Animation for new products added via realtime */
+@keyframes slideInFromTop {
+    0% {
+        opacity: 0;
+        transform: translateY(-30px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.slideInFromTop {
+    animation: slideInFromTop 0.5s ease;
+}
+
+/* Highlight new products */
+.product-card.new-product {
+    border: 2px solid #28a745;
+    box-shadow: 0 0 15px rgba(40, 167, 69, 0.3);
+    animation: newProductPulse 2s ease-in-out;
+}
+
+@keyframes newProductPulse {
+    0% {
+        transform: scale(1);
+        box-shadow: 0 0 15px rgba(40, 167, 69, 0.3);
+    }
+    50% {
+        transform: scale(1.02);
+        box-shadow: 0 0 25px rgba(40, 167, 69, 0.5);
+    }
+    100% {
+        transform: scale(1);
+        box-shadow: 0 0 15px rgba(40, 167, 69, 0.3);
+    }
+}
+
+/* Prevent any external interference */
+.filter-group .filter-content {
+    position: relative !important;
+    z-index: 10 !important;
+}
+
+/* Ensure all filter content elements are visible */
+.filter-group .filter-content.show * {
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+/* Additional safety measures for filter content */
+.filter-group .filter-content {
+    will-change: max-height;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+}
+
+/* Prevent any external CSS from affecting filter content */
+.filter-section .filter-group .filter-content,
+.filter-section .filter-group .filter-content * {
+    animation: none !important;
+    transition: max-height 0.3s ease, padding 0.3s ease !important;
+}
+
+/* Ensure filter collapse works properly */
+.filter-group .collapse {
+    position: relative;
+    z-index: 10;
+}
+
+.filter-group .collapse.show {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+/* Ensure all filter content elements are visible */
+.filter-group .collapse.show * {
+    visibility: visible !important;
+    opacity: 1 !important;
 }

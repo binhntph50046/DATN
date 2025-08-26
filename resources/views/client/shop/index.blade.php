@@ -188,7 +188,8 @@
                                                     <label for="filter_{{ $filterId }}_{{ $loop->index }}"
                                                         class="color-label"
                                                         style="background-color: {{ $filter['hexValues'][$value] ?? '#CCCCCC' }}"
-                                                        title="{{ $value }}">
+                                                        title="{{ $value }}"
+                                                        onclick="toggleColorFilter(this, '{{ $value }}', '{{ $filterId }}')">
                                                     </label>
                                                 </div>
                                             @endforeach
@@ -354,21 +355,9 @@
                                                         $halfStar = $rating - $fullStars >= 0.5;
                                                     @endphp
                                                     <div class="stars">
-                                                        @if ($product->reviews->count() == 0)
-                                                            @for ($i = 1; $i <= 5; $i++)
-                                                                <i class="fas fa-star"></i>
-                                                            @endfor
-                                                        @else
-                                                            @for ($i = 1; $i <= 5; $i++)
-                                                                @if ($i <= $fullStars)
-                                                                    <i class="fas fa-star"></i>
-                                                                @elseif($i == $fullStars + 1 && $halfStar)
-                                                                    <i class="fas fa-star-half-alt"></i>
-                                                                @else
-                                                                    <i class="far fa-star"></i>
-                                                                @endif
-                                                            @endfor
-                                                        @endif
+                                                        @for ($i = 1; $i <= 5; $i++)
+                                                            <i class="fas fa-star" style="color: #f5a524;"></i>
+                                                        @endfor
                                                     </div>
                                                     <span
                                                         class="sold-count">({{ number_format($product->sold_count ?? 0) }}
@@ -436,6 +425,9 @@
                 ]
             });
 
+            // Setup filter functionality
+            setupFilters();
+
             // Automatically expand collapse sections with selected filters
             @foreach ($filterData['dynamicFilters'] as $filterId => $filter)
                 @if (!empty($appliedFilters['filters'][$filterId]))
@@ -458,7 +450,105 @@
 
             // Initialize realtime product updates
             initializeRealtimeProducts();
+
+            // Update chevron icons when collapse state changes
+            $('.filter-group .collapse').on('show.bs.collapse', function() {
+                $(this).prev('.filter-title').find('.filter-arrow i')
+                    .removeClass('fa-chevron-down').addClass('fa-chevron-up');
+            });
+
+            $('.filter-group .collapse').on('hide.bs.collapse', function() {
+                $(this).prev('.filter-title').find('.filter-arrow i')
+                    .removeClass('fa-chevron-up').addClass('fa-chevron-down');
+            });
         });
+
+        function setupFilters() {
+            // Handle filter changes (category slug + dynamic filters)
+            $('input[name="category_slug[]"], input[name^="filters["]').on('change', function() {
+                applyFilters();
+            });
+
+            // Handle sort change
+            $('#sortSelect').on('change', function() {
+                applyFilters();
+            });
+
+            // Handle price range inputs
+            $('input[name="min_price"], input[name="max_price"]').on('blur', function() {
+                applyFilters();
+            });
+        }
+
+        function setupFilters() {
+            // Handle sort change - auto apply
+            $('#sortSelect').on('change', function() {
+                applyFilters();
+            });
+
+            // Initialize color filter states
+            $('.color-checkbox:checked').each(function() {
+                const label = $(this).next('.color-label');
+                label.addClass('selected');
+            });
+
+            // Track filter changes
+            trackFilterChanges();
+        }
+
+        function trackFilterChanges() {
+            // Store initial state
+            const initialFilters = getCurrentFilterState();
+            
+            // Monitor changes
+            $('input[name^="filters["], input[name="min_price"], input[name="max_price"]').on('change', function() {
+                const currentFilters = getCurrentFilterState();
+                const hasChanges = JSON.stringify(initialFilters) !== JSON.stringify(currentFilters);
+                
+                const filterBtn = $('.filter-actions .btn-primary');
+                if (hasChanges) {
+                    filterBtn.addClass('has-changes').text('Lọc (' + getChangedFilterCount() + ')');
+                } else {
+                    filterBtn.removeClass('has-changes').text('Lọc');
+                }
+            });
+        }
+
+        function getCurrentFilterState() {
+            const state = {};
+            
+            // Get checkbox filters
+            $('input[name^="filters["]').each(function() {
+                const name = $(this).attr('name');
+                if (!state[name]) state[name] = [];
+                if ($(this).is(':checked')) {
+                    state[name].push($(this).val());
+                }
+            });
+            
+            // Get price filters
+            const minPrice = $('input[name="min_price"]').val();
+            const maxPrice = $('input[name="max_price"]').val();
+            if (minPrice) state.min_price = minPrice;
+            if (maxPrice) state.max_price = maxPrice;
+            
+            return state;
+        }
+
+        function getChangedFilterCount() {
+            let count = 0;
+            
+            // Count checked checkboxes
+            $('input[name^="filters["]:checked').each(function() {
+                count++;
+            });
+            
+            // Count price filters
+            if ($('input[name="min_price"]').val()) count++;
+            if ($('input[name="max_price"]').val()) count++;
+            
+            return count;
+        }
 
         // Apply filters
         function applyFilters() {
@@ -488,7 +578,33 @@
         }
 
         function clearFilters() {
+            // Reset all filters
+            $('input[name^="filters["]').prop('checked', false);
+            $('input[name="min_price"], input[name="max_price"]').val('');
+            $('.color-label').removeClass('selected');
+            
+            // Reset filter button
+            $('.filter-actions .btn-primary').removeClass('has-changes').text('Lọc');
+            
+            // Redirect to clean URL
             window.location.href = '{{ route('shop') }}';
+        }
+
+        // Toggle color filter
+        function toggleColorFilter(labelElement, value, filterId) {
+            const checkbox = labelElement.previousElementSibling;
+            const isChecked = checkbox.checked;
+            
+            if (isChecked) {
+                checkbox.checked = false;
+                labelElement.classList.remove('selected');
+            } else {
+                checkbox.checked = true;
+                labelElement.classList.add('selected');
+            }
+            
+            // Trigger change event to update filter button
+            $(checkbox).trigger('change');
         }
 
         // Compare feature (ported from homepage)
@@ -711,7 +827,7 @@
             });
         }
 
-        function addProductToGrid(product) {
+                function addProductToGrid(product) {
             // Only add to grid if we're on the first page and no filters are applied
             const urlParams = new URLSearchParams(window.location.search);
             const hasFilters = urlParams.has('category_slug') ||
@@ -730,10 +846,19 @@
             productCard.className = 'col-lg-4 col-md-6 mb-4';
             productCard.style.animation = 'slideInFromTop 0.5s ease';
 
-            const ratingStars = generateStars(product.rating);
+            // Generate rating stars - if no rating, show 5 empty stars
+            let ratingStars = '';
+            if (product.rating && product.rating > 0) {
+                ratingStars = generateStars(product.rating);
+            } else {
+                // Use solid gray stars if outline set isn't loaded
+                for (let i = 1; i <= 5; i++) {
+                    ratingStars += '<i class="fas fa-star" style="color: #d1d5db;"></i>';
+                }
+            }
 
             productCard.innerHTML = `
-                <div class="product-card">
+                <div class="product-card new-product">
                     <div class="product-media">
                         <a href="${product.url}" class="d-block w-100 h-100 text-center">
                             <img src="${product.image}" class="product-img" alt="${product.name}">
@@ -765,7 +890,7 @@
                             <div class="stars">
                                 ${ratingStars}
                             </div>
-                            <span class="views">(${product.views} lượt xem)</span>
+                            <span class="sold-count">(${product.sold_count || 0} đã bán)</span>
                         </div>
                     </div>
                 </div>
@@ -780,24 +905,31 @@
                 const currentCount = parseInt(countElement.textContent.match(/\d+/)[0]);
                 countElement.textContent = `Tất cả sản phẩm (${currentCount + 1})`;
             }
+
+            // Remove highlight after 5 seconds
+            setTimeout(() => {
+                const productCardElement = productCard.querySelector('.product-card');
+                if (productCardElement) {
+                    productCardElement.classList.remove('new-product');
+                }
+            }, 5000);
         }
 
         function generateStars(rating) {
-            const fullStars = Math.floor(rating);
-            const hasHalfStar = rating - fullStars >= 0.5;
-            let stars = '';
-
+            const full = Math.floor(rating);
+            const half = (rating - full) >= 0.5;
+            let html = '';
             for (let i = 1; i <= 5; i++) {
-                if (i <= fullStars) {
-                    stars += '<i class="fas fa-star"></i>';
-                } else if (i === fullStars + 1 && hasHalfStar) {
-                    stars += '<i class="fas fa-star-half-alt"></i>';
+                if (i <= full) {
+                    html += '<i class="fas fa-star" style="color: #f5a524;"></i>';
+                } else if (half && i === full + 1) {
+                    html += '<i class="fas fa-star-half-alt" style="color: #f5a524;"></i>';
                 } else {
-                    stars += '<i class="far fa-star"></i>';
+                    // Solid gray star for empty to avoid missing outline set
+                    html += '<i class="fas fa-star" style="color: #d1d5db;"></i>';
                 }
             }
-
-            return stars;
+            return html;
         }
     </script>
 

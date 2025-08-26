@@ -72,7 +72,7 @@ class PaymentController
                 }
             }
 
-            $shipping_fee = 0; // Có thể lấy từ phương thức vận chuyển
+            $shipping_fee = 0; 
             $total_price = $subtotal + $shipping_fee - $discount;
 
             // Tạo đơn hàng mới

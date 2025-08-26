@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import axios from 'axios';
 import Echo from 'laravel-echo';
 import Pusher from 'pusher-js';
@@ -59,7 +58,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // import './echo';
 // import './echo-admin';
-=======
     import axios from 'axios';
     window.axios = axios;
     import toastr from 'toastr'; // Ensure toastr is installed via npm
@@ -81,4 +79,3 @@ document.addEventListener('DOMContentLoaded', () => {
         forceTLS: true,
     });
     import './noti';
->>>>>>> 237930fa90e9683502240b64e1d89c2e6294a5fd

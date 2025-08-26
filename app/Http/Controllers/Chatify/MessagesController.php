@@ -254,7 +254,7 @@ class MessagesController extends Controller
                 $contacts .= Chatify::getContactItem($user);
             }
         } else {
-            $contacts = '<p class="message-hint center-el"><span>Your contact list is empty</span></p>';
+            $contacts = '<p class="message-hint center-el"><span>Trống</span></p>';
         }
 
         return Response::json([

@@ -1,5 +1,5 @@
 @extends('admin.layouts.app')
-@section('title', 'Voucher Management')
+@section('title', 'Chi tiết mã giảm giá')
 
 @section('content')
     <div class="pc-container">

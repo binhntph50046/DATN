@@ -1,5 +1,5 @@
 @extends('admin.layouts.app')
-@section('title', 'Flash Sale Management')
+@section('title', 'Tạo chương trình khuyến mãi')
 
 @section('content')
     <div class="pc-container">
@@ -38,6 +38,15 @@
                         @endif
 
                         <div class="card-body">
+                            @if ($errors->any())
+                                <div class="alert alert-danger">
+                                    <ul class="mb-0">
+                                        @foreach ($errors->all() as $error)
+                                            <li>{{ $error }}</li>
+                                        @endforeach
+                                    </ul>
+                                </div>
+                            @endif
                             <form action="{{ route('admin.flash-sales.store') }}" method="POST">
                                 @csrf
                                 <div class="row">
@@ -99,8 +108,7 @@
                                                 <label class="form-label">Sản phẩm</label>
                                                 <select name="items[{{ $index }}][product_id]"
                                                     class="form-select product-select @error("items.$index.product_id") is-invalid @enderror"
-                                                    {{-- required --}}
-                                                    >
+                                                    {{-- required --}}>
                                                     <option value="">-- Chọn sản phẩm --</option>
                                                     @foreach ($products as $product)
                                                         <option value="{{ $product->id }}"
@@ -151,8 +159,8 @@
                                             <div class="col-md-1">
                                                 <label class="form-label">Số lượng</label>
                                                 <input type="number" name="items[{{ $index }}][count]"
-                                                    class="form-control @error("items.$index.count") is-invalid @enderror" min="1"
-                                                    value="{{ $item['count'] }}" placeholder="Qty">
+                                                    class="form-control @error("items.$index.count") is-invalid @enderror"
+                                                    min="1" value="{{ $item['count'] }}" placeholder="Qty">
                                                 @error("items.$index.count")
                                                     <div class="invalid-feedback">{{ $message }}</div>
                                                 @enderror
@@ -160,8 +168,8 @@
                                             <div class="col-md-1">
                                                 <label class="form-label">Giới hạn</label>
                                                 <input type="number" name="items[{{ $index }}][buy_limit]"
-                                                    class="form-control @error("items.$index.buy_limit") is-invalid @enderror" min="1"
-                                                    value="{{ $item['buy_limit'] }}" placeholder="Limit">
+                                                    class="form-control @error("items.$index.buy_limit") is-invalid @enderror"
+                                                    min="1" value="{{ $item['buy_limit'] }}" placeholder="Limit">
                                                 @error("items.$index.buy_limit")
                                                     <div class="invalid-feedback">{{ $message }}</div>
                                                 @enderror

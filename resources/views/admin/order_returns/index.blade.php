@@ -8,10 +8,10 @@
                     <div class="row align-items-center">
                         <div class="col-md-12">
                             <div class="page-header-title">
-                                <h5 class="m-b-10">Yêu cầu hoàn hàng</h5>
+                                <h5 class="m-b-10">Hoàn hàng</h5>
                             </div>
                             <ul class="breadcrumb">
-                                <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Home</a></li>
+                                <li class="breadcrumb-item"><a href="{{ route('admin.dashboard') }}">Trang chủ</a></li>
                                 <li class="breadcrumb-item" aria-current="page">Yêu cầu hoàn hàng</li>
                             </ul>
                         </div>

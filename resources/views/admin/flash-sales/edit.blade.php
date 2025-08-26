@@ -1,5 +1,5 @@
 @extends('admin.layouts.app')
-@section('title', 'Flash Sale Management')
+@section('title', 'Chỉnh sửa khuyến mãi')
 
 @section('content')
     <div class="pc-container">

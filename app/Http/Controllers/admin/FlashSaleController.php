@@ -55,7 +55,6 @@ class FlashSaleController
 
     public function store(FlashSaleRequest $request)
     {
-        // dd($request->all());
         $items = array_values($request->input('items', []));
         $variantIds = array_column($items, 'product_variant_id');
 
@@ -64,6 +63,30 @@ class FlashSaleController
             return redirect()->back()
                 ->withInput()
                 ->withErrors(['items' => 'Các biến thể sản phẩm trong flash sale không được trùng nhau.']);
+        }
+
+        // Kiểm tra discount không quá 25%
+        foreach ($items as $item) {
+            if (
+                isset($item['discount_type'], $item['discount'])
+            ) {
+                if ($item['discount_type'] === 'percentage' && $item['discount'] > 25) {
+                    return redirect()->back()
+                        ->withInput()
+                        ->withErrors(['items' => 'Giảm giá phần trăm cho mỗi sản phẩm không được vượt quá 25%.']);
+                }
+                if ($item['discount_type'] === 'fixed') {
+                    $variant = ProductVariant::find($item['product_variant_id']);
+                    if ($variant) {
+                        $maxDiscount = $variant->price * 0.25;
+                        if ($item['discount'] > $maxDiscount) {
+                            return redirect()->back()
+                                ->withInput()
+                                ->withErrors(['items' => "Giảm giá tiền cho biến thể {$variant->name} không được vượt quá 25% giá sản phẩm (tối đa " . number_format($maxDiscount) . "đ)."]);
+                        }
+                    }
+                }
+            }
         }
 
         try {

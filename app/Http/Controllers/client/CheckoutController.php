@@ -652,11 +652,8 @@ class CheckoutController
             try {
                 $toAddresses = config('mail.to.addresses');
                 foreach ($toAddresses as $email) {
-                    try {
                         Mail::to($email)->send(new OrderInvoice($order));
-                    } catch (\Exception $e) {
-                       
-                    }
+                    
                 }
             } catch (\Exception $e) {
                

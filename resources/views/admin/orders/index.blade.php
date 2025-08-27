@@ -40,6 +40,8 @@
                                         <option value="shipping" {{ request('status') == 'shipping' ? 'selected' : '' }}>Đang giao hàng</option>
                                         <option value="delivered" {{ request('status') == 'delivered' ? 'selected' : '' }}>Đã giao</option>
                                         <option value="completed" {{ request('status') == 'completed' ? 'selected' : '' }}>Đã hoàn thành</option>
+                                        <option value="refunded" {{ request('status') == 'refunded' ? 'selected' : '' }}>Đã hoàn đơn</option>
+                                        <option value="partially_returned" {{ request('status') == 'partially_returned' ? 'selected' : '' }}>Đã hoàn trả một phần</option>
                                         <option value="cancelled" {{ request('status') == 'cancelled' ? 'selected' : '' }}>Đã hủy</option>
                                     </select>
                                 </div>

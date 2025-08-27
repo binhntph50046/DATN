@@ -153,18 +153,53 @@
                     <div class="card-body">
                         <table class="table table-borderless mb-0">
                             <tr>
-                                <th class="text-muted" style="width: 35%;">Trạng thái:</th>
+                                <th class="text-muted" style="width: 35%;">Trạng thái hiện tại:</th>
+                                <td>
+                                    @php
+                                        $statusText = [
+                                            'pending' => 'Chờ xử lý',
+                                            'confirmed' => 'Đã xác nhận',
+                                            'preparing' => 'Đang chuẩn bị',
+                                            'shipping' => 'Đang giao hàng',
+                                            'delivered' => 'Đã giao',
+                                            'completed' => 'Đã hoàn thành',
+                                    
+                                            'returned' => 'Đã hoàn đơn',
+                                            'partially_returned' => 'Đã hoàn trả một phần',
+                                            'cancelled' => 'Đã hủy',
+                                        ][$order->status] ?? ucfirst($order->status);
+                                        
+                                        $statusClass = [
+                                            'pending' => 'bg-secondary',
+                                            'confirmed' => 'bg-info',
+                                            'preparing' => 'bg-primary',
+                                            'shipping' => 'bg-warning text-dark',
+                                            'delivered' => 'bg-success',
+                                            'completed' => 'bg-success',
+                                            'refunded' => 'bg-secondary',
+                                            'partially_returned' => 'bg-secondary',
+                                            'cancelled' => 'bg-danger',
+                                        ][$order->status] ?? 'bg-light';
+                                    @endphp
+                                    <span class="badge rounded-pill {{ $statusClass }} mb-2">{{ $statusText }}</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th class="text-muted" style="width: 35%;">Cập nhật trạng thái:</th>
                                 <td>
                                     <form method="POST" action="{{ route('admin.orders.updateStatus', $order->id) }}" class="d-flex gap-2 align-items-center">
                                         @csrf
                                         @method('PUT')
                                         <select name="status" id="order-status" class="form-select" style="max-width: 140px; height: 45px;">
+
                                             <option value="pending" {{ $order->status == 'pending' ? 'selected' : '' }}>Chờ xử lý</option>
                                             <option value="confirmed" {{ $order->status == 'confirmed' ? 'selected' : '' }}>Đã xác nhận</option>
                                             <option value="preparing" {{ $order->status == 'preparing' ? 'selected' : '' }}>Đang chuẩn bị</option>
                                             <option value="shipping" {{ $order->status == 'shipping' ? 'selected' : '' }}>Đang giao hàng</option>
                                             <option value="delivered" {{ $order->status == 'delivered' ? 'selected' : '' }}>Đã giao</option>
                                             <option value="completed" {{ $order->status == 'completed' ? 'selected' : '' }} disabled>Đã hoàn thành (Chỉ client xác nhận)</option>
+                                            <option value="refunded" {{ $order->status == 'refunded' ? 'selected' : '' }}>Đã hoàn đơn</option>
+                                            <option value="partially_returned" {{ $order->status == 'partially_returned' ? 'selected' : '' }}>Đã hoàn trả một phần</option>
                                             <option value="cancelled" {{ $order->status == 'cancelled' ? 'selected' : '' }}>Hủy đơn</option>
                                         </select>
                                         <div id="cancel-reason-container" class="d-none">

@@ -6,6 +6,7 @@ use App\Models\Product;
 use App\Models\User;
 use App\Models\Order;
 use App\Models\OrderItem;
+use App\Models\PageView;
 use App\Models\ProductVariant;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -91,7 +92,7 @@ class DashboardController
         $monthlyTotalIncome = array_sum($monthlyIncome);
 
         // Weekly: 7 ngày gần nhất khách truy cập
-        $startOfWeek = Carbon::now()->startOfWeek();
+        $startOfWeek = now()->startOfWeek();
         $weeklyVisitors = [
             'pageViews' => [],
             'sessions' => [],
@@ -101,16 +102,17 @@ class DashboardController
         for ($i = 0; $i < 7; $i++) {
             $date = $startOfWeek->copy()->addDays($i)->toDateString();
 
-            $views = DB::table('page_views')->whereDate('created_at', $date)->count();
+            $views = PageView::whereDate('created_at', $date)
+                ->whereHas('user.roles', fn($q) => $q->where('name', 'user'))
+                ->count();
 
-            $sessions = DB::table('page_views')
-                ->whereDate('created_at', $date)
+            $sessions = PageView::whereDate('created_at', $date)
+                ->whereHas('user.roles', fn($q) => $q->where('name', 'user'))
                 ->distinct('session_id')
                 ->count('session_id');
 
-            $users = DB::table('page_views')
-                ->whereDate('created_at', $date)
-                ->whereNotNull('user_id')
+            $users = PageView::whereDate('created_at', $date)
+                ->whereHas('user.roles', fn($q) => $q->where('name', 'user'))
                 ->distinct('user_id')
                 ->count('user_id');
 
@@ -119,30 +121,28 @@ class DashboardController
             $weeklyVisitors['users'][] = $users;
         }
 
-        // Monthly: 12 tháng khách truy cập
-        $monthlyVisitors = [
+                // Monthly: 12 tháng khách truy cập
+                $monthlyVisitors = [
             'pageViews' => [],
             'sessions' => [],
             'users' => []
         ];
 
         for ($i = 1; $i <= 12; $i++) {
-            $views = DB::table('page_views')
-                ->whereMonth('created_at', $i)
+            $views = PageView::whereMonth('created_at', $i)
                 ->whereYear('created_at', now()->year)
+                ->whereHas('user.roles', fn($q) => $q->where('name', 'user'))
                 ->count();
 
-            $sessions = DB::table('page_views')
-                ->whereMonth('created_at', $i)
+            $sessions = PageView::whereMonth('created_at', $i)
                 ->whereYear('created_at', now()->year)
-                ->whereNotNull('session_id')
+                ->whereHas('user.roles', fn($q) => $q->where('name', 'user'))
                 ->distinct('session_id')
                 ->count('session_id');
 
-            $users = DB::table('page_views')
-                ->whereMonth('created_at', $i)
+            $users = PageView::whereMonth('created_at', $i)
                 ->whereYear('created_at', now()->year)
-                ->whereNotNull('user_id')
+                ->whereHas('user.roles', fn($q) => $q->where('name', 'user'))
                 ->distinct('user_id')
                 ->count('user_id');
 

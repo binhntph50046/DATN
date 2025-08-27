@@ -9,6 +9,8 @@ use App\Models\ProductVariant;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use App\Events\OrderStatusUpdated;
+use App\Models\User;
+use App\Notifications\AdminDatabaseNotification;
 
 class OrderReturnController extends Controller
 {
@@ -51,13 +53,13 @@ class OrderReturnController extends Controller
         // Tính tổng tiền hoàn lại
         $refundAmount = 0;
         $restockArr = $request->input('restock', []);
-        
+
         foreach ($return->items as $item) {
             $refundAmount += $item->orderItem->price * $item->quantity;
             $restock = isset($restockArr[$item->id]) && $restockArr[$item->id] == '1';
             $item->restock = $restock;
             $item->save();
-            
+
             if ($restock) {
                 // Cộng lại stock cho variant tương ứng
                 if ($item->orderItem->variant) {
@@ -81,7 +83,6 @@ class OrderReturnController extends Controller
         ]);
 
         // Giảm total_sold cho các sản phẩm bị hoàn
-        // Chỉ giảm khi chuyển từ trạng thái khác sang approved
         if ($oldStatus !== 'approved') {
             foreach ($return->items as $item) {
                 $product = $item->orderItem->product;
@@ -114,8 +115,19 @@ class OrderReturnController extends Controller
         }
         $order->save();
 
-        // Gửi sự kiện sau khi đã cập nhật trạng thái đơn hàng
         event(new OrderStatusUpdated($order));
+
+        // Gửi thông báo cho người dùng
+        if ($user = $order->user) {
+            $data = [
+                'type' => 'order_return_approved',
+                'title' => 'Yêu cầu trả hàng được chấp thuận',
+                'message' => "Yêu cầu trả hàng cho đơn hàng #{$order->order_code} đã được chấp thuận.",
+                'url' => route('order.returns.show', ['order' => $order->id, 'return' => $return->id]),
+                'order_id' => $order->id,
+            ];
+            $user->notify(new AdminDatabaseNotification($data));
+        }
 
         return redirect()->route('admin.order-returns.index')
             ->with('success', 'Đã duyệt yêu cầu hoàn hàng và lưu chứng từ hoàn tiền. Đã hoàn lại ' . number_format($refundAmount) . ' VNĐ cho khách.');
@@ -124,7 +136,7 @@ class OrderReturnController extends Controller
     public function reject($id)
     {
         $return = OrderReturn::with(['items.orderItem.product', 'items.orderItem.variant'])->findOrFail($id);
-        
+
         // Nếu đang từ trạng thái approved sang rejected, tăng lại total_sold và trừ lại stock
         $oldStatus = $return->status;
         if ($oldStatus === 'approved') {
@@ -133,7 +145,7 @@ class OrderReturnController extends Controller
                 if ($product) {
                     $product->safeIncrementTotalSold($item->quantity);
                 }
-                
+
                 // Trừ lại stock nếu trước đó đã cộng lại (restock = true)
                 if ($item->restock) {
                     if ($item->orderItem->variant) {
@@ -146,12 +158,25 @@ class OrderReturnController extends Controller
                 }
             }
         }
-        
+
         $return->update([
             'status' => 'rejected',
             'admin_id' => Auth::id(),
             'processed_at' => now(),
         ]);
+
+        // Gửi thông báo cho người dùng
+        $order = $return->order;
+        if ($user = $order->user) {
+            $data = [
+                'type' => 'order_return_rejected',
+                'title' => 'Yêu cầu trả hàng bị từ chối',
+                'message' => "Yêu cầu trả hàng cho đơn hàng #{$order->order_code} đã bị từ chối.",
+                'url' => route('order.returns.show', ['order' => $order->id, 'return' => $return->id]),
+                'order_id' => $order->id,
+            ];
+            $user->notify(new AdminDatabaseNotification($data));
+        }
         return redirect()->route('admin.order-returns.index')->with('success', 'Đã từ chối yêu cầu hoàn hàng.');
     }
 }

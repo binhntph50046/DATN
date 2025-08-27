@@ -130,6 +130,88 @@
             font-weight: 600;
         }
 
+        /* Notification icon styles */
+        .notification-icon {
+            position: relative;
+            animation: bellRing 1.5s infinite;
+            transform-origin: top;
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #ff4757;
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            font-size: 0.7rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes bellRing {
+
+            0%,
+            100% {
+                transform: rotate(0deg);
+            }
+
+            10% {
+                transform: rotate(10deg);
+            }
+
+            20% {
+                transform: rotate(-10deg);
+            }
+
+            30% {
+                transform: rotate(8deg);
+            }
+
+            40% {
+                transform: rotate(-8deg);
+            }
+
+            50% {
+                transform: rotate(5deg);
+            }
+
+            60% {
+                transform: rotate(-5deg);
+            }
+
+            70% {
+                transform: rotate(3deg);
+            }
+
+            80% {
+                transform: rotate(-3deg);
+            }
+
+            90% {
+                transform: rotate(1deg);
+            }
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+
+            50% {
+                transform: scale(1.2);
+                opacity: 0.8;
+            }
+        }
+
         .dropdown-menu-bg {
             background: #232b3b;
             border: none;
@@ -214,6 +296,24 @@
         .dropdown-toggle::after {
             display: none !important;
         }
+
+        .text-mutedd {
+            color: #aeb0b2ff !important;
+            /* sáng hơn mặc định */
+        }
+
+        /* Custom scrollbar for notification dropdown */
+        .notification-dropdown-scroll {
+            scrollbar-width: none;
+            /* For Firefox */
+            -ms-overflow-style: none;
+            /* For IE and Edge */
+        }
+
+        .notification-dropdown-scroll::-webkit-scrollbar {
+            width: 0;
+            height: 0;
+        }
     </style>
     <div class="container d-flex justify-content-between" style="align-items: flex-start">
         <!-- Logo -->
@@ -278,13 +378,76 @@
                 </ul>
             </div>
         </form>
-        <!-- User, Wishlist & Cart -->
+        <!-- User, Wishlist, Notification & Cart -->
         <div class="d-flex align-items-center icon-group">
             <!-- Wishlist (Heart icon) -->
             <a href="{{ route('wishlist.index') }}"
                 class="rounded-circle d-flex align-items-center justify-content-center icon-circle-btn">
                 <i class="fas fa-heart text-white"></i>
             </a>
+
+            <!-- Notification icon -->
+            <div class="dropdown">
+                <a class="rounded-circle d-flex align-items-center justify-content-center dropdown-toggle icon-circle-btn notification-icon"
+                    href="#" id="notificationDropdown" role="button" data-bs-toggle="dropdown"
+                    aria-expanded="false">
+                    <i class="fas fa-bell text-white"></i>
+                    @if (Auth::check() && Auth::user()->unreadNotifications->count() > 0)
+                        <span
+                            class="notification-badge">{{ Auth::user()->unreadNotifications->count() > 99 ? '99+' : Auth::user()->unreadNotifications->count() }}</span>
+                    @endif
+                </a>
+                <ul class="dropdown-menu dropdown-menu-bg dropdown-menu-end notification-dropdown-scroll"
+                    style="width: 350px; max-height: 400px; overflow-y: auto;" aria-labelledby="notificationDropdown">
+                    <li class="px-3 py-2 d-flex justify-content-between align-items-center">
+                        <h6 class="mb-0 text-white">Thông báo</h6>
+                        <a href="{{ route('notifications.markAllAsRead') }}"
+                            onclick="event.preventDefault(); document.getElementById('mark-all-read-form').submit();"
+                            class="text-white" style="font-size: 0.8rem;">Đánh dấu tất cả đã đọc</a>
+                        <form id="mark-all-read-form" action="{{ route('notifications.markAllAsRead') }}"
+                            method="GET" style="display: none;">
+                        </form>
+                    </li>
+                    <li>
+                        <hr class="dropdown-divider" style="border-color: #3a445c;">
+                    </li>
+                    <div id="notification-list">
+                        @auth
+                            @php
+                                // Lấy 10 thông báo gần đây nhất
+                                $notifications = Auth::user()->notifications()->latest()->take(10)->get();
+                            @endphp
+                            @forelse ($notifications as $notification)
+                                <li>
+                                    <a class="dropdown-item text-white d-flex justify-content-between align-items-center"
+                                        href="{{ route('notifications.show', $notification->id) }}"
+                                        style="white-space: normal;">
+                                        <div>
+                                            <strong>{{ $notification->data['title'] }}</strong><br>
+                                            <small>{{ $notification->data['message'] }}</small>
+                                            <br><small
+                                                class="text-mutedd">{{ $notification->created_at->diffForHumans() }}</small>
+                                        </div>
+                                        @if (is_null($notification->read_at))
+                                            <span class="badge bg-primary rounded-pill ms-2">Mới</span>
+                                        @endif
+                                    </a>
+                                </li>
+                            @empty
+                                <li><a class="dropdown-item text-white text-center" href="#">Không có thông báo
+                                        nào</a></li>
+                            @endforelse
+                        @else
+                            <li><a class="dropdown-item text-white text-center" href="/login">Vui lòng đăng nhập để xem
+                                    thông báo</a></li>
+                        @endauth
+                    </div>
+                    <li>
+                        <hr class="dropdown-divider" style="border-color: #3a445c;">
+                    </li>
+
+                </ul>
+            </div>
 
             <!-- Giỏ hàng -->
             <a class="rounded-circle d-flex align-items-center justify-content-center icon-circle-btn position-relative"
@@ -299,10 +462,13 @@
                 @endif
             </a>
 
+
+
             <!-- User dropdown -->
             <div class="dropdown">
                 <a class="rounded-circle d-flex align-items-center justify-content-center dropdown-toggle icon-circle-btn"
-                    href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    href="#" id="userDropdown" role="button" data-bs-toggle="dropdown"
+                    aria-expanded="false">
                     {{-- Nếu muốn dùng avatar thật --}}
                     @auth
                         <img src="{{ Auth::user()->avatar ? asset(Auth::user()->avatar) : asset('uploads/default/avatar_default.png') }}"
@@ -322,7 +488,8 @@
                     @else
                         @unless (Auth::user()->hasRole(['admin', 'staff']))
                             <li>
-                                <a class="dropdown-item text-white" href="{{ route('order.guest.tracking') }}">Tra cứu đơn hàng</a>
+                                <a class="dropdown-item text-white" href="{{ route('order.guest.tracking') }}">Tra cứu đơn
+                                    hàng</a>
                             </li>
                         @endunless
                     @endguest
@@ -333,22 +500,26 @@
                     @else
                         @if (Auth::user()->hasRole(['admin', 'staff']))
                             <li>
-                                <a class="dropdown-item text-white" href="{{ route('admin.dashboard') }}">Trang quản trị</a>
+                                <a class="dropdown-item text-white" href="{{ route('admin.dashboard') }}">Trang quản
+                                    trị</a>
                             </li>
                         @endif
 
-                        <li><a class="dropdown-item text-white" href="{{ route('profile.index') }}">Trang cá nhân</a></li>
+                        <li><a class="dropdown-item text-white" href="{{ route('profile.index') }}">Trang cá nhân</a>
+                        </li>
 
                         {{-- Hiển thị "Đơn hàng của tôi" nếu không phải admin/staff --}}
                         @unless (Auth::user()->hasRole(['admin', 'staff']))
-                            <li><a class="dropdown-item text-white" href="{{ route('order.index') }}">Đơn hàng của tôi</a></li>
+                            <li><a class="dropdown-item text-white" href="{{ route('order.index') }}">Đơn hàng của tôi</a>
+                            </li>
                         @endunless
 
                         <li>
                             <form action="{{ route('logout') }}" method="POST" class="m-0">
                                 @csrf
                                 <button type="submit"
-                                    class="dropdown-item text-white w-100 text-start border-0 bg-transparent">Đăng xuất</button>
+                                    class="dropdown-item text-white w-100 text-start border-0 bg-transparent">Đăng
+                                    xuất</button>
                             </form>
                         </li>
                     @endguest
@@ -450,5 +621,21 @@
                 suggestionBox.style.display = 'none';
             }
         });
+
+        // Enhanced bell ring animation - only ring when there are notifications
+        function updateNotificationAnimation() {
+            const notificationIcon = document.querySelector('.notification-icon');
+            const badge = document.querySelector('.notification-badge');
+
+            if (badge && notificationIcon) {
+                notificationIcon.style.animation = 'bellRing 1.5s infinite';
+                notificationIcon.style.transformOrigin = 'top';
+            } else if (notificationIcon) {
+                notificationIcon.style.animation = 'none';
+            }
+        }
+
+        // Call on page load
+        updateNotificationAnimation();
     });
 </script>

@@ -1149,6 +1149,11 @@
             flex-wrap: wrap;
         }
 
+        .product-info {
+            padding-left: 0px;
+
+        }
+
         .info-item {
             display: flex;
             align-items: center;

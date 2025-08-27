@@ -10,6 +10,9 @@ use App\Models\ProductVariant;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use App\Models\User;
+use App\Notifications\AdminDatabaseNotification;
+use Illuminate\Support\Facades\Notification;
 
 
 class FlashSaleController
@@ -55,7 +58,6 @@ class FlashSaleController
 
     public function store(FlashSaleRequest $request)
     {
-        // dd($request->all());
         $items = array_values($request->input('items', []));
         $variantIds = array_column($items, 'product_variant_id');
 
@@ -64,6 +66,30 @@ class FlashSaleController
             return redirect()->back()
                 ->withInput()
                 ->withErrors(['items' => 'Các biến thể sản phẩm trong flash sale không được trùng nhau.']);
+        }
+
+        // Kiểm tra discount không quá 25%
+        foreach ($items as $item) {
+            if (
+                isset($item['discount_type'], $item['discount'])
+            ) {
+                if ($item['discount_type'] === 'percentage' && $item['discount'] > 25) {
+                    return redirect()->back()
+                        ->withInput()
+                        ->withErrors(['items' => 'Giảm giá phần trăm cho mỗi sản phẩm không được vượt quá 25%.']);
+                }
+                if ($item['discount_type'] === 'fixed') {
+                    $variant = ProductVariant::find($item['product_variant_id']);
+                    if ($variant) {
+                        $maxDiscount = $variant->selling_price * 0.25;
+                        if ($item['discount'] > $maxDiscount) {
+                            return redirect()->back()
+                                ->withInput()
+                                ->withErrors(['items' => "Giảm giá tiền cho biến thể {$variant->name} không được vượt quá 25% giá sản phẩm (tối đa " . number_format($maxDiscount) . "đ)."]);
+                        }
+                    }
+                }
+            }
         }
 
         try {
@@ -130,6 +156,7 @@ class FlashSaleController
         ]);
 
         $flashSale = FlashSale::with('items.variant')->findOrFail($id);
+        $oldStatus = $flashSale->status;
 
         if ($flashSale->status == 2) {
             return redirect()->back()->with('error', 'Flash Sale đã kết thúc và không thể chỉnh sửa.');
@@ -177,6 +204,22 @@ class FlashSaleController
             }
         });
 
+        // Gửi thông báo nếu trạng thái chuyển thành "Kích hoạt"
+        if ($oldStatus != 1 && (int)$request->status === 1) {
+            $clients = User::whereDoesntHave('roles', function ($query) {
+                $query->whereIn('name', ['admin', 'staff']);
+            })->get();
+
+            if ($clients->isNotEmpty()) {
+                $data = [
+                    'type' => 'new_flash_sale',
+                    'title' => 'Flash Sale đã bắt đầu!',
+                    'message' => "Nhanh tay săn sale: {$flashSale->name}",
+                    'url' => route('shop'), // Chuyển đến trang cửa hàng
+                ];
+                Notification::send($clients, new AdminDatabaseNotification($data));
+            }
+        }
         return redirect()->route('admin.flash-sales.index')->with('success', 'Trạng thái flash sale đã được cập nhật.');
     }
 

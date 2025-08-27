@@ -134,7 +134,7 @@ class CheckoutController
                             break;
                     }
                     
-                    // Thêm discount_amount vào voucher object
+                    // Thêm discount_amount vào voucher 
                     $voucher->discount_amount = $discountAmount;
                     return $voucher;
                 });
@@ -317,10 +317,8 @@ class CheckoutController
                 }
                 $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('admin.invoices.pdf', ['invoice' => $invoice]);
                 $pdfContent = $pdf->output();
-                // Mail::to($order->shipping_email)->send(new \App\Mail\InvoicePdfMail($invoice, $pdfContent));
+                 Mail::to($order->shipping_email)->send(new \App\Mail\InvoicePdfMail($invoice, $pdfContent));
             }
-
-            // Commit transaction nếu mọi thứ OK
             DB::commit();
 
             // Gửi email hóa đơn

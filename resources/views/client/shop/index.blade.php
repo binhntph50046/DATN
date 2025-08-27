@@ -3,6 +3,19 @@
 
 @section('content')
     <link href="{{ asset('css/shop-custom.css') }}" rel="stylesheet">
+    <style>
+        .flash-title {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            /* Số dòng tối đa */
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            min-height: 48px;
+            /* Đảm bảo chiều cao cố định cho 2 dòng (tùy font-size) */
+            line-height: 1.2;
+        }
+    </style>
 
     <div class="shop-banner">
         <div class="container">
@@ -26,21 +39,111 @@
         <div class="container">
             <!-- Flash Sale Section -->
             @if ($flashSaleItems->count() && $flashSaleTimeRange)
+                <style>
+                    .flash-sale-header-custom {
+                        display: flex;
+                        flex-direction: column;
+                        align-items: center;
+                        background: #f5f7fa;
+                        border-radius: 18px;
+                        padding: 32px 16px 24px 16px;
+                        margin-bottom: 24px;
+                        box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+                        position: relative;
+                    }
+
+                    .flash-sale-title {
+                        font-size: 2.2rem;
+                        font-weight: bold;
+                        color: #ff9800;
+                        margin-bottom: 8px;
+                        letter-spacing: 1px;
+                    }
+
+                    .flash-sale-info-row {
+                        display: flex;
+                        justify-content: center;
+                        align-items: flex-end;
+                        gap: 48px;
+                        width: 100%;
+                        margin-top: 8px;
+                        flex-wrap: wrap;
+                    }
+
+                    .flash-sale-info-block {
+                        min-width: 180px;
+                        text-align: center;
+                    }
+
+                    .flash-sale-label {
+                        font-size: 1.1rem;
+                        color: #888;
+                        font-weight: 500;
+                        margin-bottom: 2px;
+                    }
+
+                    .flash-sale-time {
+                        font-size: 1.25rem;
+                        font-weight: bold;
+                        color: #222;
+                    }
+
+                    .flash-sale-img {
+                        max-height: 54px;
+                        margin-bottom: 8px;
+                    }
+
+                    .flash-title {
+                        display: -webkit-box;
+                        -webkit-line-clamp: 2;
+                        /* Số dòng tối đa */
+                        -webkit-box-orient: vertical;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                        min-height: 2.4em;
+                        /* Đảm bảo chiều cao cho 2 dòng, tùy font-size */
+                        line-height: 1.2;
+                        max-height: 2.4em;
+                        /* 2 dòng * line-height */
+                        font-size: 16px;
+                    }
+
+                    @media (max-width: 768px) {
+                        .flash-sale-info-row {
+                            gap: 18px;
+                        }
+
+                        .flash-sale-header-custom {
+                            padding: 18px 4px 12px 4px;
+                        }
+
+                        .flash-sale-title {
+                            font-size: 1.3rem;
+                        }
+                    }
+                </style>
                 <div class="row mb-5 flash-sale-box">
                     <div class="col-12">
-                        <div class="row section-header align-items-center flash-sale-header">
-                            <div class="flash-sale-image col-md-4 col-sm-12 mb-2">
-                                <img src="https://cdnv2.tgdd.vn/webmwg/2024/tz/images/icon-fs.png" alt="Flash Sale"
-                                    class="img-fluid">
+                        <div class="flash-sale-header-custom">
+                            <div class="flash-sale-title">
+                                {{ $flashSaleTimeRange['name'] ?? 'FLASH SALE' }}
                             </div>
-                            <div class="countdown-timer col-md-3 col-sm-6 mb-2">
-                                <h5 class="time">KẾT THÚC TRONG:</h5>
-                                <h4 id="countdown">00:00:00</h4>
-                            </div>
-                            <div class="ongoing-time col-md-3 col-sm-6 mb-2">
-                                <h5 class="time">ĐANG DIỄN RA:</h5>
-                                <h4>{{ $flashSaleTimeRange['start_time']->format('d/m/Y H:i') }} -
-                                    {{ $flashSaleTimeRange['end_time']->format('d/m/Y H:i') }}</h4>
+                            <div class="flash-sale-info-row">
+                                <div class="flash-sale-info-block">
+                                    <img src="https://cdnv2.tgdd.vn/webmwg/2024/tz/images/icon-fs.png" alt="Flash Sale"
+                                        class="flash-sale-img">
+                                </div>
+                                <div class="flash-sale-info-block">
+                                    <div class="flash-sale-label">KẾT THÚC TRONG</div>
+                                    <div class="flash-sale-time" id="countdown">00:00:00</div>
+                                </div>
+                                <div class="flash-sale-info-block">
+                                    <div class="flash-sale-label">Thời gian</div>
+                                    <div class="flash-sale-time" style="font-size:1.1rem;">
+                                        {{ $flashSaleTimeRange['start_time']->format('d/m H:i') }} -
+                                        {{ $flashSaleTimeRange['end_time']->format('d/m H:i') }}
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         <div class="col-12">
@@ -49,8 +152,13 @@
                                     <div class="product-item product-carousel">
                                         <div class="flash-card">
                                             <div class="flash-media position-relative">
-                                                <span
-                                                    class="flash-discount">{{ $item->discount_type == 'percent' ? $item->discount . '%' : '-' }}</span>
+                                                <span class="flash-discount">
+                                                    @if ($item->discount_type == 'percent')
+                                                        -{{ $item->discount }}%
+                                                    @else
+                                                        -{{ number_format(($item->discount / $item->selling_price) * 100, 1) }}%
+                                                    @endif
+                                                </span>
                                                 <a href="{{ route('product.detail', ['slug' => $item->product_slug]) }}"
                                                     class="d-block w-100 h-100">
                                                     <img src="{{ asset($item->first_image) }}" class="img-fluid"
@@ -67,9 +175,9 @@
                                                             : $original - $item->discount;
                                                 @endphp
                                                 <div class="flash-price-row">
-                                                    <strong class="flash-price">{{ number_format($discount, 0) }}$</strong>
+                                                    <strong class="flash-price">{{ number_format($discount, 0) }}đ</strong>
                                                     <span
-                                                        class="flash-old"><del>{{ number_format($original, 0) }}$</del></span>
+                                                        class="flash-old"><del>{{ number_format($original, 0) }}đ</del></span>
                                                 </div>
                                             </div>
                                         </div>
@@ -170,12 +278,14 @@
                                                 <div class="color-option-wrapper">
                                                     <input type="checkbox" class="color-checkbox"
                                                         id="filter_{{ $filterId }}_{{ $loop->index }}"
-                                                        value="{{ $value }}" name="filters[{{ $filterId }}][]"
+                                                        value="{{ $value }}"
+                                                        name="filters[{{ $filterId }}][]"
                                                         {{ in_array($value, $appliedFilters['filters'][$filterId] ?? []) ? 'checked' : '' }}>
                                                     <label for="filter_{{ $filterId }}_{{ $loop->index }}"
                                                         class="color-label"
                                                         style="background-color: {{ $filter['hexValues'][$value] ?? '#CCCCCC' }}"
-                                                        title="{{ $value }}">
+                                                        title="{{ $value }}"
+                                                        onclick="toggleColorFilter(this, '{{ $value }}', '{{ $filterId }}')">
                                                     </label>
                                                 </div>
                                             @endforeach
@@ -341,21 +451,9 @@
                                                         $halfStar = $rating - $fullStars >= 0.5;
                                                     @endphp
                                                     <div class="stars">
-                                                        @if ($product->reviews->count() == 0)
-                                                            @for ($i = 1; $i <= 5; $i++)
-                                                                <i class="fas fa-star"></i>
-                                                            @endfor
-                                                        @else
-                                                            @for ($i = 1; $i <= 5; $i++)
-                                                                @if ($i <= $fullStars)
-                                                                    <i class="fas fa-star"></i>
-                                                                @elseif($i == $fullStars + 1 && $halfStar)
-                                                                    <i class="fas fa-star-half-alt"></i>
-                                                                @else
-                                                                    <i class="far fa-star"></i>
-                                                                @endif
-                                                            @endfor
-                                                        @endif
+                                                        @for ($i = 1; $i <= 5; $i++)
+                                                            <i class="fas fa-star" style="color: #f5a524;"></i>
+                                                        @endfor
                                                     </div>
                                                     <span
                                                         class="sold-count">({{ number_format($product->sold_count ?? 0) }}
@@ -423,6 +521,9 @@
                 ]
             });
 
+            // Setup filter functionality
+            setupFilters();
+
             // Automatically expand collapse sections with selected filters
             @foreach ($filterData['dynamicFilters'] as $filterId => $filter)
                 @if (!empty($appliedFilters['filters'][$filterId]))
@@ -445,7 +546,105 @@
 
             // Initialize realtime product updates
             initializeRealtimeProducts();
+
+            // Update chevron icons when collapse state changes
+            $('.filter-group .collapse').on('show.bs.collapse', function() {
+                $(this).prev('.filter-title').find('.filter-arrow i')
+                    .removeClass('fa-chevron-down').addClass('fa-chevron-up');
+            });
+
+            $('.filter-group .collapse').on('hide.bs.collapse', function() {
+                $(this).prev('.filter-title').find('.filter-arrow i')
+                    .removeClass('fa-chevron-up').addClass('fa-chevron-down');
+            });
         });
+
+        function setupFilters() {
+            // Handle filter changes (category slug + dynamic filters)
+            $('input[name="category_slug[]"], input[name^="filters["]').on('change', function() {
+                applyFilters();
+            });
+
+            // Handle sort change
+            $('#sortSelect').on('change', function() {
+                applyFilters();
+            });
+
+            // Handle price range inputs
+            $('input[name="min_price"], input[name="max_price"]').on('blur', function() {
+                applyFilters();
+            });
+        }
+
+        function setupFilters() {
+            // Handle sort change - auto apply
+            $('#sortSelect').on('change', function() {
+                applyFilters();
+            });
+
+            // Initialize color filter states
+            $('.color-checkbox:checked').each(function() {
+                const label = $(this).next('.color-label');
+                label.addClass('selected');
+            });
+
+            // Track filter changes
+            trackFilterChanges();
+        }
+
+        function trackFilterChanges() {
+            // Store initial state
+            const initialFilters = getCurrentFilterState();
+
+            // Monitor changes
+            $('input[name^="filters["], input[name="min_price"], input[name="max_price"]').on('change', function() {
+                const currentFilters = getCurrentFilterState();
+                const hasChanges = JSON.stringify(initialFilters) !== JSON.stringify(currentFilters);
+
+                const filterBtn = $('.filter-actions .btn-primary');
+                if (hasChanges) {
+                    filterBtn.addClass('has-changes').text('Lọc (' + getChangedFilterCount() + ')');
+                } else {
+                    filterBtn.removeClass('has-changes').text('Lọc');
+                }
+            });
+        }
+
+        function getCurrentFilterState() {
+            const state = {};
+
+            // Get checkbox filters
+            $('input[name^="filters["]').each(function() {
+                const name = $(this).attr('name');
+                if (!state[name]) state[name] = [];
+                if ($(this).is(':checked')) {
+                    state[name].push($(this).val());
+                }
+            });
+
+            // Get price filters
+            const minPrice = $('input[name="min_price"]').val();
+            const maxPrice = $('input[name="max_price"]').val();
+            if (minPrice) state.min_price = minPrice;
+            if (maxPrice) state.max_price = maxPrice;
+
+            return state;
+        }
+
+        function getChangedFilterCount() {
+            let count = 0;
+
+            // Count checked checkboxes
+            $('input[name^="filters["]:checked').each(function() {
+                count++;
+            });
+
+            // Count price filters
+            if ($('input[name="min_price"]').val()) count++;
+            if ($('input[name="max_price"]').val()) count++;
+
+            return count;
+        }
 
         // Apply filters
         function applyFilters() {
@@ -475,7 +674,33 @@
         }
 
         function clearFilters() {
+            // Reset all filters
+            $('input[name^="filters["]').prop('checked', false);
+            $('input[name="min_price"], input[name="max_price"]').val('');
+            $('.color-label').removeClass('selected');
+
+            // Reset filter button
+            $('.filter-actions .btn-primary').removeClass('has-changes').text('Lọc');
+
+            // Redirect to clean URL
             window.location.href = '{{ route('shop') }}';
+        }
+
+        // Toggle color filter
+        function toggleColorFilter(labelElement, value, filterId) {
+            const checkbox = labelElement.previousElementSibling;
+            const isChecked = checkbox.checked;
+
+            if (isChecked) {
+                checkbox.checked = false;
+                labelElement.classList.remove('selected');
+            } else {
+                checkbox.checked = true;
+                labelElement.classList.add('selected');
+            }
+
+            // Trigger change event to update filter button
+            $(checkbox).trigger('change');
         }
 
         // Compare feature (ported from homepage)
@@ -717,10 +942,19 @@
             productCard.className = 'col-lg-4 col-md-6 mb-4';
             productCard.style.animation = 'slideInFromTop 0.5s ease';
 
-            const ratingStars = generateStars(product.rating);
+            // Generate rating stars - if no rating, show 5 empty stars
+            let ratingStars = '';
+            if (product.rating && product.rating > 0) {
+                ratingStars = generateStars(product.rating);
+            } else {
+                // Use solid gray stars if outline set isn't loaded
+                for (let i = 1; i <= 5; i++) {
+                    ratingStars += '<i class="fas fa-star" style="color: #d1d5db;"></i>';
+                }
+            }
 
             productCard.innerHTML = `
-                <div class="product-card">
+                <div class="product-card new-product">
                     <div class="product-media">
                         <a href="${product.url}" class="d-block w-100 h-100 text-center">
                             <img src="${product.image}" class="product-img" alt="${product.name}">
@@ -744,7 +978,7 @@
                         <div class="product-price-row">
                             ${product.discount_price ? 
                                 `<strong class="product-price">${product.discount_price}đ</strong>
-                                     <span class="old-price"><del>${product.price}đ</del></span>` :
+                                                             <span class="old-price"><del>${product.price}đ</del></span>` :
                                 `<strong class="product-price">${product.price}đ</strong>`
                             }
                         </div>
@@ -752,7 +986,7 @@
                             <div class="stars">
                                 ${ratingStars}
                             </div>
-                            <span class="views">(${product.views} lượt xem)</span>
+                            <span class="sold-count">(${product.sold_count || 0} đã bán)</span>
                         </div>
                     </div>
                 </div>
@@ -767,24 +1001,31 @@
                 const currentCount = parseInt(countElement.textContent.match(/\d+/)[0]);
                 countElement.textContent = `Tất cả sản phẩm (${currentCount + 1})`;
             }
+
+            // Remove highlight after 5 seconds
+            setTimeout(() => {
+                const productCardElement = productCard.querySelector('.product-card');
+                if (productCardElement) {
+                    productCardElement.classList.remove('new-product');
+                }
+            }, 5000);
         }
 
         function generateStars(rating) {
-            const fullStars = Math.floor(rating);
-            const hasHalfStar = rating - fullStars >= 0.5;
-            let stars = '';
-
+            const full = Math.floor(rating);
+            const half = (rating - full) >= 0.5;
+            let html = '';
             for (let i = 1; i <= 5; i++) {
-                if (i <= fullStars) {
-                    stars += '<i class="fas fa-star"></i>';
-                } else if (i === fullStars + 1 && hasHalfStar) {
-                    stars += '<i class="fas fa-star-half-alt"></i>';
+                if (i <= full) {
+                    html += '<i class="fas fa-star" style="color: #f5a524;"></i>';
+                } else if (half && i === full + 1) {
+                    html += '<i class="fas fa-star-half-alt" style="color: #f5a524;"></i>';
                 } else {
-                    stars += '<i class="far fa-star"></i>';
+                    // Solid gray star for empty to avoid missing outline set
+                    html += '<i class="fas fa-star" style="color: #d1d5db;"></i>';
                 }
             }
-
-            return stars;
+            return html;
         }
     </script>
 

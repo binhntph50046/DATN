@@ -104,16 +104,16 @@
                                         <td>{{ $faq->created_at->format('d/m/Y H:i') }}</td>
                                         <td class="text-center">
                                             <a href="{{ route('admin.faqs.show', $faq->id) }}" class="btn btn-info btn-sm rounded-3 me-2">
-                                                <i class="ti ti-eye"></i> Xem
+                                                <i class="ti ti-eye"></i> 
                                             </a>
                                             <a href="{{ route('admin.faqs.edit', $faq->id) }}" class="btn btn-warning btn-sm rounded-3 me-2">
-                                                <i class="ti ti-pencil"></i> Sửa
+                                                <i class="ti ti-pencil"></i> 
                                             </a>
                                             <form action="{{ route('admin.faqs.destroy', $faq->id) }}" method="POST" class="d-inline">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit" class="btn btn-danger btn-sm rounded-3" onclick="return confirm('Bạn có chắc muốn xóa FAQ này không?')">
-                                                    <i class="ti ti-trash"></i> Xóa
+                                                    <i class="ti ti-trash"></i> 
                                                 </button>
                                             </form>
                                         </td>

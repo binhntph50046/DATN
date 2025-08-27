@@ -10,6 +10,9 @@ use App\Models\ProductVariant;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use App\Models\User;
+use App\Notifications\AdminDatabaseNotification;
+use Illuminate\Support\Facades\Notification;
 
 
 class FlashSaleController
@@ -153,6 +156,7 @@ class FlashSaleController
         ]);
 
         $flashSale = FlashSale::with('items.variant')->findOrFail($id);
+        $oldStatus = $flashSale->status;
 
         if ($flashSale->status == 2) {
             return redirect()->back()->with('error', 'Flash Sale đã kết thúc và không thể chỉnh sửa.');
@@ -200,6 +204,22 @@ class FlashSaleController
             }
         });
 
+        // Gửi thông báo nếu trạng thái chuyển thành "Kích hoạt"
+        if ($oldStatus != 1 && (int)$request->status === 1) {
+            $clients = User::whereDoesntHave('roles', function ($query) {
+                $query->whereIn('name', ['admin', 'staff']);
+            })->get();
+
+            if ($clients->isNotEmpty()) {
+                $data = [
+                    'type' => 'new_flash_sale',
+                    'title' => 'Flash Sale đã bắt đầu!',
+                    'message' => "Nhanh tay săn sale: {$flashSale->name}",
+                    'url' => route('shop'), // Chuyển đến trang cửa hàng
+                ];
+                Notification::send($clients, new AdminDatabaseNotification($data));
+            }
+        }
         return redirect()->route('admin.flash-sales.index')->with('success', 'Trạng thái flash sale đã được cập nhật.');
     }
 

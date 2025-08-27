@@ -9,6 +9,8 @@ use App\Models\ProductVariant;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use App\Events\OrderStatusUpdated;
+use App\Models\User;
+use App\Notifications\AdminDatabaseNotification;
 
 class OrderReturnController extends Controller
 {
@@ -115,6 +117,18 @@ class OrderReturnController extends Controller
 
         event(new OrderStatusUpdated($order));
 
+        // Gửi thông báo cho người dùng
+        if ($user = $order->user) {
+            $data = [
+                'type' => 'order_return_approved',
+                'title' => 'Yêu cầu trả hàng được chấp thuận',
+                'message' => "Yêu cầu trả hàng cho đơn hàng #{$order->order_code} đã được chấp thuận.",
+                'url' => route('order.returns.show', ['order' => $order->id, 'return' => $return->id]),
+                'order_id' => $order->id,
+            ];
+            $user->notify(new AdminDatabaseNotification($data));
+        }
+
         return redirect()->route('admin.order-returns.index')
             ->with('success', 'Đã duyệt yêu cầu hoàn hàng và lưu chứng từ hoàn tiền. Đã hoàn lại ' . number_format($refundAmount) . ' VNĐ cho khách.');
     }
@@ -150,6 +164,19 @@ class OrderReturnController extends Controller
             'admin_id' => Auth::id(),
             'processed_at' => now(),
         ]);
+
+        // Gửi thông báo cho người dùng
+        $order = $return->order;
+        if ($user = $order->user) {
+            $data = [
+                'type' => 'order_return_rejected',
+                'title' => 'Yêu cầu trả hàng bị từ chối',
+                'message' => "Yêu cầu trả hàng cho đơn hàng #{$order->order_code} đã bị từ chối.",
+                'url' => route('order.returns.show', ['order' => $order->id, 'return' => $return->id]),
+                'order_id' => $order->id,
+            ];
+            $user->notify(new AdminDatabaseNotification($data));
+        }
         return redirect()->route('admin.order-returns.index')->with('success', 'Đã từ chối yêu cầu hoàn hàng.');
     }
 }

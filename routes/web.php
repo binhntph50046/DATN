@@ -1,74 +1,75 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use App\Http\Middleware\VerifyCsrfToken;
-use Illuminate\Foundation\Auth\EmailVerificationRequest;
+use App\Models\User;
+use App\Models\Invoice;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Broadcast;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Route;
 
 // Models
-use App\Models\Invoice;
+use App\Http\Middleware\VerifyCsrfToken;
 
 // Admin Controllers
-use App\Http\Controllers\admin\ActivityController;
+use Illuminate\Support\Facades\Broadcast;
+use App\Http\Controllers\admin\FaqController;
+use App\Http\Controllers\auth\AuthController;
 use App\Http\Controllers\admin\BlogController;
+use App\Http\Controllers\admin\RoleController;
 use App\Http\Controllers\admin\UserController;
 use App\Http\Controllers\admin\OrderController;
-use App\Http\Controllers\admin\BannerController;
-use App\Http\Controllers\admin\ProductController;
-use App\Http\Controllers\admin\CategoryController;
-use App\Http\Controllers\admin\DashboardController;
-use App\Http\Controllers\admin\VariantAttributeTypeController;
-use App\Http\Controllers\admin\RoleController;
-use App\Http\Controllers\admin\SpecificationController;
-use App\Http\Controllers\admin\VoucherController;
-use App\Http\Controllers\admin\FlashSaleController;
-use App\Http\Controllers\admin\SubcriberController;
-use App\Http\Controllers\admin\AdminContactController;
-use App\Http\Controllers\admin\FlashSaleItemController;
-use App\Http\Controllers\admin\FaqController;
-use App\Http\Controllers\admin\ProductVariantController;
-use App\Http\Controllers\Admin\InvoiceController;
-use App\Http\Controllers\Admin\OrderReturnController as AdminOrderReturnController;
-use App\Http\Controllers\Admin\MessengerController;
-use App\Http\Controllers\Admin\AdminProfileController;
-use App\Http\Controllers\Admin\SitemapController;
 use App\Http\Controllers\Admin\RobotController;
-use App\Http\Controllers\Admin\NotifyController;
-use App\Http\Controllers\admin\ProductReviewController as AdminProductReviewController;
-// Client Controllers
+use App\Http\Controllers\auth\GoogleController;
+use App\Http\Controllers\client\CartController;
+use App\Http\Controllers\client\ChatController;
+use App\Http\Controllers\client\FaqsController;
 use App\Http\Controllers\client\HomeController;
 use App\Http\Controllers\client\ShopController;
+use App\Http\Controllers\admin\BannerController;
+use App\Http\Controllers\Admin\NotifyController;
 use App\Http\Controllers\client\AboutController;
-use App\Http\Controllers\client\BlogController as ClientBlogController;
-use App\Http\Controllers\client\CartController;
+use App\Notifications\AdminDatabaseNotification;
+use App\Http\Controllers\Admin\InvoiceController;
+use App\Http\Controllers\admin\ProductController;
+use App\Http\Controllers\Admin\SitemapController;
+use App\Http\Controllers\admin\VoucherController;
+use App\Http\Controllers\auth\FacebookController;
+use App\Http\Controllers\client\SearchController;
+use App\Http\Controllers\admin\ActivityController;
+use App\Http\Controllers\admin\CategoryController;
+// Client Controllers
+use App\Http\Controllers\client\ChatBotController;
+use App\Http\Controllers\client\CompareController;
 use App\Http\Controllers\client\ContactController;
 use App\Http\Controllers\client\PaymentController;
-use App\Http\Controllers\client\OrderController as ClientOrderController;
-use App\Http\Controllers\client\ChatBotController;
-use App\Http\Controllers\client\ProductController as ClientProductController;
-use App\Http\Controllers\client\OrderReturnController as ClientOrderReturnController;
-use App\Http\Controllers\client\FaqsController;
 use App\Http\Controllers\client\ProfileController;
-use App\Http\Controllers\client\UserActivityController;
-use App\Http\Controllers\client\WishlistController;
+use App\Http\Controllers\admin\DashboardController;
+use App\Http\Controllers\admin\FlashSaleController;
+use App\Http\Controllers\Admin\MessengerController;
+use App\Http\Controllers\admin\SubcriberController;
 use App\Http\Controllers\client\CheckoutController;
+use App\Http\Controllers\client\WishlistController;
 use App\Http\Controllers\client\SubscribeController;
-use App\Http\Controllers\client\ChatController;
-use App\Http\Controllers\client\VoucherController as ClientVoucherController;
-use App\Http\Controllers\client\CompareController;
-use App\Http\Controllers\client\SearchController;
+use App\Http\Controllers\admin\AdminContactController;
+use App\Http\Controllers\Admin\AdminProfileController;
+use App\Http\Controllers\auth\ResetPasswordController;
+use App\Http\Controllers\admin\FlashSaleItemController;
+use App\Http\Controllers\admin\SpecificationController;
+use App\Http\Controllers\auth\ForgotPasswordController;
+use App\Http\Controllers\client\NotificationController;
+use App\Http\Controllers\client\UserActivityController;
+use App\Http\Controllers\admin\ProductVariantController;
 
 // Auth Controllers
-use App\Http\Controllers\auth\AuthController;
-use App\Http\Controllers\auth\FacebookController;
-use App\Http\Controllers\auth\GoogleController;
-use App\Http\Controllers\auth\ForgotPasswordController;
-use App\Http\Controllers\auth\ResetPasswordController;
 use App\Http\Controllers\client\ProductReviewController;
-use App\Models\User;
-use App\Notifications\AdminDatabaseNotification;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Foundation\Auth\EmailVerificationRequest;
+use App\Http\Controllers\admin\VariantAttributeTypeController;
+use App\Http\Controllers\client\BlogController as ClientBlogController;
+use App\Http\Controllers\client\OrderController as ClientOrderController;
+use App\Http\Controllers\client\ProductController as ClientProductController;
+use App\Http\Controllers\client\VoucherController as ClientVoucherController;
+use App\Http\Controllers\Admin\OrderReturnController as AdminOrderReturnController;
+use App\Http\Controllers\client\OrderReturnController as ClientOrderReturnController;
+use App\Http\Controllers\admin\ProductReviewController as AdminProductReviewController;
 
 /*
 |--------------------------------------------------------------------------
@@ -273,6 +274,13 @@ Route::post('/notifications/read/{id}', function ($id) {
 Route::post('/notifications/read-all', function () {
     auth()->user()->unreadNotifications->markAsRead();
     return response()->json(['success' => true]);
+});
+
+Route::middleware(['auth'])->group(function () {
+    // ... other auth routes
+    Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
+    Route::get('/notifications/mark-all-as-read', [NotificationController::class, 'markAllAsRead'])->name('notifications.markAllAsRead');
+    Route::get('/notifications/show/{id}', [NotificationController::class, 'show'])->name('notifications.show');
 });
 
 

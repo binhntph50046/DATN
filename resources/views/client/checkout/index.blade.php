@@ -1342,9 +1342,9 @@ textarea.form-control {
                 // Kiểm tra xem đã có voucher nào được áp dụng chưa
                 if (voucherCodeInput.value && voucherCodeInput.value !== code) {
                     voucherMsg.style.display = 'block';
-                    voucherMsg.className = 'alert alert-warning mt-2';
-                    voucherMsg.innerText = 'Chỉ có thể áp dụng 1 mã giảm giá cho mỗi đơn hàng!';
-                                            voucherDiscountRow.style.display = 'none';
+                                            voucherMsg.className = 'alert alert-warning mt-2';
+                        voucherMsg.innerText = 'Chỉ có thể áp dụng 1 mã giảm giá cho mỗi đơn hàng!';
+                        voucherDiscountRow.style.display = 'none';
                         finalTotal.innerText = (subtotal + shippingFee).toLocaleString('vi-VN') + ' VNĐ';
                     voucherCodeInput.value = '';
                     voucherIdInput.value = '';
@@ -1363,7 +1363,7 @@ textarea.form-control {
                     credentials: 'same-origin',
                     body: JSON.stringify({
                         voucher_code: code,
-                        subtotal: subtotal,
+                        subtotal: subtotal + shippingFee, // Bao gồm phí vận chuyển
                         email: document.getElementById('c_email_address').value
                     })
                 })
@@ -1375,7 +1375,10 @@ textarea.form-control {
                         voucherMsg.innerText = data.message;
                         voucherDiscountRow.style.display = 'table-row';
                         voucherDiscountAmount.innerText = data.voucher.discount_amount.toLocaleString('vi-VN');
-                        finalTotal.innerText = data.voucher.final_total.toLocaleString('vi-VN') + ' VNĐ';
+                        
+                        // Tính tổng cuối cùng bao gồm phí vận chuyển
+                        const finalAmount = (subtotal + shippingFee) - data.voucher.discount_amount;
+                        finalTotal.innerText = finalAmount.toLocaleString('vi-VN') + ' VNĐ';
                         
                         // Cập nhật các input hidden
                         voucherCodeInput.value = data.voucher.code;
@@ -1446,71 +1449,124 @@ document.addEventListener('DOMContentLoaded', function() {
 @endsection
 
 <script>
+// Script mới đơn giản
 document.addEventListener('DOMContentLoaded', function() {
-    const shipToDifferentCheckbox = document.getElementById('ship_to_different');
-    const recipientInfo = document.querySelector('.recipient-info');
-    const recipientInputs = document.querySelectorAll('input[name^="shipping_"]');
-    const requiredMarks = document.querySelectorAll('.recipient-required');
-    
-    // Lấy các trường thông tin người đặt (từ tài khoản)
+    const checkbox = document.getElementById('ship_to_different');
     const senderFields = document.querySelectorAll('input[name^="c_"]');
+    const recipientInfo = document.querySelector('.recipient-info');
     
-            function toggleRecipientFields(isChecked) {
-            recipientInfo.style.display = isChecked ? 'block' : 'none';
-            
-            // Xử lý các trường thông tin người nhận
-            recipientInputs.forEach(input => {
-                if (input.id !== 'shipping_email') { // Email không bắt buộc
-                    input.required = isChecked;
-                    
-                    // Validate ngay khi hiển thị/ẩn
-                    if (isChecked && input.value.trim()) {
-                        validateField(input);
-                    } else if (!isChecked) {
-                        clearFieldError(input);
-                    }
+    function handleCheckboxChange() {
+        const isChecked = checkbox.checked;
+        console.log('Checkbox changed to:', isChecked);
+        
+        // Hiển thị/ẩn thông tin người nhận
+        recipientInfo.style.display = isChecked ? 'block' : 'none';
+        
+        // Xử lý các trường thông tin người nhận
+        const recipientInputs = document.querySelectorAll('input[name^="shipping_"]');
+        const requiredMarks = document.querySelectorAll('.recipient-required');
+        
+        recipientInputs.forEach(input => {
+            if (input.id !== 'shipping_email') { // Email không bắt buộc
+                input.required = isChecked;
+                
+                // Xóa lỗi validation cũ nếu có
+                if (!isChecked) {
+                    input.classList.remove('is-invalid');
+                    input.style.borderColor = '';
+                    const errorDiv = input.parentNode.querySelector('.invalid-feedback');
+                    if (errorDiv) errorDiv.remove();
                 }
-            });
-            requiredMarks.forEach(mark => {
-                mark.style.display = isChecked ? 'inline' : 'none';
-            });
+            }
+        });
+        
+        // Thêm validation cho số điện thoại người nhận
+        const shippingPhoneField = document.getElementById('shipping_phone');
+        if (shippingPhoneField) {
+            shippingPhoneField.required = isChecked;
             
-            // Xử lý các trường thông tin người đặt (từ tài khoản)
-            senderFields.forEach(field => {
-                if (isChecked) {
-                    // Khi chọn địa chỉ khác - làm cho các trường thông tin người đặt chỉ đọc
-                    field.readOnly = true;
-                    field.style.backgroundColor = '#f8f9fa';
-                    field.style.cursor = 'not-allowed';
-                    field.classList.add('readonly-field');
-                    
-                    // Thêm ghi chú nhỏ
-                    const note = document.createElement('small');
-                    note.className = 'text-muted d-block mt-1';
-                    note.textContent = 'Thông tin từ tài khoản - không thể chỉnh sửa khi đặt hàng hộ';
-                    note.id = 'sender-note-' + field.id;
-                    field.parentNode.appendChild(note);
-                } else {
-                    // Khi không chọn địa chỉ khác - cho phép chỉnh sửa
-                    field.readOnly = false;
-                    field.style.backgroundColor = '';
-                    field.style.cursor = '';
-                    field.classList.remove('readonly-field');
-                    
-                    // Xóa ghi chú
-                    const note = document.getElementById('sender-note-' + field.id);
-                    if (note) {
-                        note.remove();
+            // Xóa lỗi validation cũ nếu có
+            if (!isChecked) {
+                shippingPhoneField.classList.remove('is-invalid');
+                shippingPhoneField.style.borderColor = '';
+                const errorDiv = shippingPhoneField.parentNode.querySelector('.invalid-feedback');
+                if (errorDiv) errorDiv.remove();
+            }
+            
+            // Thêm validation real-time cho số điện thoại người nhận
+            if (isChecked) {
+                shippingPhoneField.addEventListener('blur', function() {
+                    if (this.required && !this.value.trim()) {
+                        this.classList.add('is-invalid');
+                        this.style.borderColor = '#dc3545';
+                        
+                        let errorDiv = this.parentNode.querySelector('.invalid-feedback');
+                        if (!errorDiv) {
+                            errorDiv = document.createElement('div');
+                            errorDiv.className = 'invalid-feedback d-block';
+                            this.parentNode.appendChild(errorDiv);
+                        }
+                        
+                        errorDiv.innerHTML = `
+                            <div style="display: flex; align-items: center; gap: 8px; color: #dc3545; font-size: 0.875rem; margin-top: 4px;">
+                                <i class="fas fa-exclamation-circle" style="font-size: 14px;"></i>
+                                <span>Số điện thoại người nhận là bắt buộc</span>
+                            </div>
+                        `;
+                    } else {
+                        this.classList.remove('is-invalid');
+                        this.style.borderColor = '';
+                        const errorDiv = this.parentNode.querySelector('.invalid-feedback');
+                        if (errorDiv) errorDiv.remove();
                     }
-                }
-            });
+                });
+            }
         }
+        
+        requiredMarks.forEach(mark => {
+            mark.style.display = isChecked ? 'inline' : 'none';
+        });
+        
+        // Xử lý các trường thông tin người đặt
+        senderFields.forEach(field => {
+            if (isChecked) {
+                // Tick: thêm readonly và ghi chú
+                field.readOnly = true;
+                field.style.backgroundColor = '#f8f9fa';
+                field.style.cursor = 'not-allowed';
+                field.classList.add('readonly-field');
+                
+                // Thêm ghi chú nếu chưa có
+                if (!field.parentNode.querySelector('.sender-note')) {
+                    const note = document.createElement('small');
+                    note.className = 'text-muted d-block mt-1 sender-note';
+                    note.textContent = 'Thông tin từ tài khoản - không thể chỉnh sửa khi đặt hàng hộ';
+                    field.parentNode.appendChild(note);
+                }
+                console.log('Đã thêm readonly cho:', field.id);
+            } else {
+                // Bỏ tick: xóa readonly và ghi chú
+                field.readOnly = false;
+                field.style.backgroundColor = '';
+                field.style.cursor = '';
+                field.classList.remove('readonly-field');
+                
+                // Xóa ghi chú
+                const note = field.parentNode.querySelector('.sender-note');
+                if (note) note.remove();
+                
+                console.log('Đã xóa readonly cho:', field.id);
+            }
+        });
+    }
     
-    shipToDifferentCheckbox.addEventListener('change', function() {
-        toggleRecipientFields(this.checked);
-    });
+    // Gắn sự kiện
+    checkbox.addEventListener('change', handleCheckboxChange);
     
-    // Initialize on page load
-    toggleRecipientFields(shipToDifferentCheckbox.checked);
+    // Khởi tạo ban đầu
+    console.log('Script loaded, checkbox checked:', checkbox.checked);
+    if (checkbox.checked) {
+        handleCheckboxChange();
+    }
 });
 </script>

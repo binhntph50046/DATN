@@ -81,7 +81,7 @@
                             <a href="{{ route('admin.order-returns.index') }}" class="btn btn-outline-secondary">
                                 <i class="fas fa-arrow-left me-1"></i>Quay lại
                             </a>
-                            @if ($return->status == 'Chờ xử lý')
+                            @if ($return->status == 'pending')
                                 <form action="{{ route('admin.order-returns.reject', $return->id) }}" method="POST"
                                     class="d-inline">
                                     @csrf

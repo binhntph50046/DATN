@@ -75,8 +75,7 @@
 
                 <!-- Team Member 6 -->
                 <div class="team-member">
-                    <img src="{{ asset('uploads/avatar_member/khai.jpg') }}"
-                        class="img-fluid mb-3">
+                    <img src="{{ asset('uploads/avatar_member/khai.jpg') }}" class="img-fluid mb-3">
                     <h3><a href="#"><span>Nguyễn Văn</span> Khải</a></h3>
                     <span class="d-block position mb-3">Lập trình web</span>
                     <p>Cao đẳng FPT Polytechnic Hà Nội</p>
@@ -133,6 +132,11 @@
             height: 300px;
             object-fit: cover;
             overflow: hidden;
+        }
+
+        .team-member h3 a {
+            color: #333 !important;
+            text-decoration: none;
         }
     </style>
 

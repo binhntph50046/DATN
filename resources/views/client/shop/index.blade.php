@@ -39,21 +39,111 @@
         <div class="container">
             <!-- Flash Sale Section -->
             @if ($flashSaleItems->count() && $flashSaleTimeRange)
+                <style>
+                    .flash-sale-header-custom {
+                        display: flex;
+                        flex-direction: column;
+                        align-items: center;
+                        background: #f5f7fa;
+                        border-radius: 18px;
+                        padding: 32px 16px 24px 16px;
+                        margin-bottom: 24px;
+                        box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+                        position: relative;
+                    }
+
+                    .flash-sale-title {
+                        font-size: 2.2rem;
+                        font-weight: bold;
+                        color: #ff9800;
+                        margin-bottom: 8px;
+                        letter-spacing: 1px;
+                    }
+
+                    .flash-sale-info-row {
+                        display: flex;
+                        justify-content: center;
+                        align-items: flex-end;
+                        gap: 48px;
+                        width: 100%;
+                        margin-top: 8px;
+                        flex-wrap: wrap;
+                    }
+
+                    .flash-sale-info-block {
+                        min-width: 180px;
+                        text-align: center;
+                    }
+
+                    .flash-sale-label {
+                        font-size: 1.1rem;
+                        color: #888;
+                        font-weight: 500;
+                        margin-bottom: 2px;
+                    }
+
+                    .flash-sale-time {
+                        font-size: 1.25rem;
+                        font-weight: bold;
+                        color: #222;
+                    }
+
+                    .flash-sale-img {
+                        max-height: 54px;
+                        margin-bottom: 8px;
+                    }
+
+                    .flash-title {
+                        display: -webkit-box;
+                        -webkit-line-clamp: 2;
+                        /* Số dòng tối đa */
+                        -webkit-box-orient: vertical;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                        min-height: 2.4em;
+                        /* Đảm bảo chiều cao cho 2 dòng, tùy font-size */
+                        line-height: 1.2;
+                        max-height: 2.4em;
+                        /* 2 dòng * line-height */
+                        font-size: 16px;
+                    }
+
+                    @media (max-width: 768px) {
+                        .flash-sale-info-row {
+                            gap: 18px;
+                        }
+
+                        .flash-sale-header-custom {
+                            padding: 18px 4px 12px 4px;
+                        }
+
+                        .flash-sale-title {
+                            font-size: 1.3rem;
+                        }
+                    }
+                </style>
                 <div class="row mb-5 flash-sale-box">
                     <div class="col-12">
-                        <div class="row section-header align-items-center flash-sale-header">
-                            <div class="flash-sale-image col-md-4 col-sm-12 mb-2">
-                                <img src="https://cdnv2.tgdd.vn/webmwg/2024/tz/images/icon-fs.png" alt="Flash Sale"
-                                    class="img-fluid">
+                        <div class="flash-sale-header-custom">
+                            <div class="flash-sale-title">
+                                {{ $flashSaleTimeRange['name'] ?? 'FLASH SALE' }}
                             </div>
-                            <div class="countdown-timer col-md-3 col-sm-6 mb-2">
-                                <h5 class="time">KẾT THÚC TRONG:</h5>
-                                <h4 id="countdown">00:00:00</h4>
-                            </div>
-                            <div class="ongoing-time col-md-3 col-sm-6 mb-2">
-                                <h5 class="time">ĐANG DIỄN RA:</h5>
-                                <h4>{{ $flashSaleTimeRange['start_time']->format('d/m/Y H:i') }} -
-                                    {{ $flashSaleTimeRange['end_time']->format('d/m/Y H:i') }}</h4>
+                            <div class="flash-sale-info-row">
+                                <div class="flash-sale-info-block">
+                                    <img src="https://cdnv2.tgdd.vn/webmwg/2024/tz/images/icon-fs.png" alt="Flash Sale"
+                                        class="flash-sale-img">
+                                </div>
+                                <div class="flash-sale-info-block">
+                                    <div class="flash-sale-label">KẾT THÚC TRONG</div>
+                                    <div class="flash-sale-time" id="countdown">00:00:00</div>
+                                </div>
+                                <div class="flash-sale-info-block">
+                                    <div class="flash-sale-label">Thời gian</div>
+                                    <div class="flash-sale-time" style="font-size:1.1rem;">
+                                        {{ $flashSaleTimeRange['start_time']->format('d/m H:i') }} -
+                                        {{ $flashSaleTimeRange['end_time']->format('d/m H:i') }}
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         <div class="col-12">
@@ -62,8 +152,13 @@
                                     <div class="product-item product-carousel">
                                         <div class="flash-card">
                                             <div class="flash-media position-relative">
-                                                <span
-                                                    class="flash-discount">{{ $item->discount_type == 'percent' ? $item->discount . '%' : '-' }}</span>
+                                                <span class="flash-discount">
+                                                    @if ($item->discount_type == 'percent')
+                                                        -{{ $item->discount }}%
+                                                    @else
+                                                        -{{ number_format(($item->discount / $item->selling_price) * 100, 1) }}%
+                                                    @endif
+                                                </span>
                                                 <a href="{{ route('product.detail', ['slug' => $item->product_slug]) }}"
                                                     class="d-block w-100 h-100">
                                                     <img src="{{ asset($item->first_image) }}" class="img-fluid"
@@ -183,7 +278,8 @@
                                                 <div class="color-option-wrapper">
                                                     <input type="checkbox" class="color-checkbox"
                                                         id="filter_{{ $filterId }}_{{ $loop->index }}"
-                                                        value="{{ $value }}" name="filters[{{ $filterId }}][]"
+                                                        value="{{ $value }}"
+                                                        name="filters[{{ $filterId }}][]"
                                                         {{ in_array($value, $appliedFilters['filters'][$filterId] ?? []) ? 'checked' : '' }}>
                                                     <label for="filter_{{ $filterId }}_{{ $loop->index }}"
                                                         class="color-label"
@@ -499,12 +595,12 @@
         function trackFilterChanges() {
             // Store initial state
             const initialFilters = getCurrentFilterState();
-            
+
             // Monitor changes
             $('input[name^="filters["], input[name="min_price"], input[name="max_price"]').on('change', function() {
                 const currentFilters = getCurrentFilterState();
                 const hasChanges = JSON.stringify(initialFilters) !== JSON.stringify(currentFilters);
-                
+
                 const filterBtn = $('.filter-actions .btn-primary');
                 if (hasChanges) {
                     filterBtn.addClass('has-changes').text('Lọc (' + getChangedFilterCount() + ')');
@@ -516,7 +612,7 @@
 
         function getCurrentFilterState() {
             const state = {};
-            
+
             // Get checkbox filters
             $('input[name^="filters["]').each(function() {
                 const name = $(this).attr('name');
@@ -525,28 +621,28 @@
                     state[name].push($(this).val());
                 }
             });
-            
+
             // Get price filters
             const minPrice = $('input[name="min_price"]').val();
             const maxPrice = $('input[name="max_price"]').val();
             if (minPrice) state.min_price = minPrice;
             if (maxPrice) state.max_price = maxPrice;
-            
+
             return state;
         }
 
         function getChangedFilterCount() {
             let count = 0;
-            
+
             // Count checked checkboxes
             $('input[name^="filters["]:checked').each(function() {
                 count++;
             });
-            
+
             // Count price filters
             if ($('input[name="min_price"]').val()) count++;
             if ($('input[name="max_price"]').val()) count++;
-            
+
             return count;
         }
 
@@ -582,10 +678,10 @@
             $('input[name^="filters["]').prop('checked', false);
             $('input[name="min_price"], input[name="max_price"]').val('');
             $('.color-label').removeClass('selected');
-            
+
             // Reset filter button
             $('.filter-actions .btn-primary').removeClass('has-changes').text('Lọc');
-            
+
             // Redirect to clean URL
             window.location.href = '{{ route('shop') }}';
         }
@@ -594,7 +690,7 @@
         function toggleColorFilter(labelElement, value, filterId) {
             const checkbox = labelElement.previousElementSibling;
             const isChecked = checkbox.checked;
-            
+
             if (isChecked) {
                 checkbox.checked = false;
                 labelElement.classList.remove('selected');
@@ -602,7 +698,7 @@
                 checkbox.checked = true;
                 labelElement.classList.add('selected');
             }
-            
+
             // Trigger change event to update filter button
             $(checkbox).trigger('change');
         }
@@ -827,7 +923,7 @@
             });
         }
 
-                function addProductToGrid(product) {
+        function addProductToGrid(product) {
             // Only add to grid if we're on the first page and no filters are applied
             const urlParams = new URLSearchParams(window.location.search);
             const hasFilters = urlParams.has('category_slug') ||
@@ -882,7 +978,7 @@
                         <div class="product-price-row">
                             ${product.discount_price ? 
                                 `<strong class="product-price">${product.discount_price}đ</strong>
-                                         <span class="old-price"><del>${product.price}đ</del></span>` :
+                                                             <span class="old-price"><del>${product.price}đ</del></span>` :
                                 `<strong class="product-price">${product.price}đ</strong>`
                             }
                         </div>

@@ -68,7 +68,7 @@ class ShopController
                 $q->where('selling_price', '>=', $min);
             });
         }
-        
+
         if ($request->filled('max_price')) {
             $max = (float) $request->max_price;
             $query->whereHas('variants', function ($q) use ($max) {
@@ -86,11 +86,11 @@ class ShopController
                     $query->whereHas('variants.combinations', function ($comboQ) use ($attributeTypeId, $vals) {
                         $comboQ->whereHas('attributeValue', function ($attrQ) use ($attributeTypeId, $vals) {
                             $attrQ->where('attribute_type_id', $attributeTypeId)
-                                  ->where(function ($sub) use ($vals) {
-                                      foreach ($vals as $val) {
-                                          $sub->orWhereJsonContains('value', $val);
-                                      }
-                                  });
+                                ->where(function ($sub) use ($vals) {
+                                    foreach ($vals as $val) {
+                                        $sub->orWhereJsonContains('value', $val);
+                                    }
+                                });
                         });
                     });
                 }
@@ -205,11 +205,11 @@ class ShopController
                     $query->whereHas('variants.combinations', function ($comboQ) use ($attributeTypeId, $vals) {
                         $comboQ->whereHas('attributeValue', function ($attrQ) use ($attributeTypeId, $vals) {
                             $attrQ->where('attribute_type_id', $attributeTypeId)
-                                  ->where(function ($sub) use ($vals) {
-                                      foreach ($vals as $val) {
-                                          $sub->orWhereJsonContains('value', $val);
-                                      }
-                                  });
+                                ->where(function ($sub) use ($vals) {
+                                    foreach ($vals as $val) {
+                                        $sub->orWhereJsonContains('value', $val);
+                                    }
+                                });
                         });
                     });
                 }
@@ -416,11 +416,12 @@ class ShopController
             ->where('status', 1)
             ->where('start_time', '<=', $now)
             ->where('end_time', '>=', $now)
-            ->select('start_time', 'end_time')
+            ->select('name', 'start_time', 'end_time') // Thêm 'name'
             ->first();
 
         if ($flashSale) {
             return [
+                'name' => $flashSale->name, // Thêm dòng này
                 'start_time' => Carbon::parse($flashSale->start_time),
                 'end_time' => Carbon::parse($flashSale->end_time)
             ];

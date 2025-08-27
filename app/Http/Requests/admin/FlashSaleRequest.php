@@ -20,7 +20,7 @@ class FlashSaleRequest extends FormRequest
             'items.*.product_id' => 'required|exists:products,id',
             'items.*.product_variant_id' => 'required|exists:product_variants,id',
             'items.*.discount' => 'required|numeric|min:1',
-            'items.*.discount_type' => 'required|in:percentage,fixed',
+            'items.*.discount_type' => 'required|in:percent,fixed',
             'items.*.count' => 'required|integer|min:1',
             'items.*.buy_limit' => 'required|integer|min:1',
         ];

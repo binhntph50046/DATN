@@ -6,6 +6,9 @@ use App\Models\Voucher;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
+use App\Models\User;
+use App\Notifications\AdminDatabaseNotification;
+use Illuminate\Support\Facades\Notification;
 
 class VoucherController
 {
@@ -68,7 +71,7 @@ class VoucherController
      */
     public function store(Request $request)
     {
-        $validator  = Validator::make($request->all(),[
+        $validator  = Validator::make($request->all(), [
             'code' => 'required|string|unique:vouchers,code',
             'type' => 'required|in:fixed,percentage',
             'value' => 'required|numeric|min:0',
@@ -124,7 +127,23 @@ class VoucherController
             }
         });
 
-        Voucher::create($validator->validated());
+        // Voucher::create($validator->validated());
+
+        $voucher = Voucher::create($validator->validated());
+        // Gửi thông báo cho tất cả client
+        $clients = User::whereDoesntHave('roles', function ($query) {
+            $query->whereIn('name', ['admin', 'staff']);
+        })->get();
+
+        if ($clients->isNotEmpty()) {
+            $data = [
+                'type' => 'new_voucher',
+                'title' => 'Voucher mới dành cho bạn!',
+                'message' => "Có voucher mới: {$voucher->code}. Giảm giá: {$voucher->value}%. Ngày hết hạn: {$voucher->expires_at}",
+                'url' => route('shop'), // Chuyển đến trang cửa hàng
+            ];
+            Notification::send($clients, new AdminDatabaseNotification($data));
+        }
         return redirect()->route('admin.vouchers.index')->with('success', 'Voucher đã được tạo thành công.');
     }
 

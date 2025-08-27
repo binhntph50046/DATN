@@ -17,6 +17,9 @@ use App\Models\Specification;
 use App\Http\Requests\admin\UpdateProductRequest;
 use Illuminate\Support\Facades\Auth;
 use App\Events\ProductCreated;
+use App\Models\User;
+use App\Notifications\AdminDatabaseNotification;
+use Illuminate\Support\Facades\Notification;
 
 class ProductController
 {
@@ -110,6 +113,20 @@ class ProductController
             event(new ProductCreated($product));
 
             DB::commit();
+            // Gửi thông báo cho tất cả client
+            $clients = User::whereDoesntHave('roles', function ($query) {
+                $query->whereIn('name', ['admin', 'staff']);
+            })->get();
+
+            if ($clients->isNotEmpty()) {
+                $data = [
+                    'type' => 'new_product',
+                    'title' => 'Sản phẩm mới đã ra mắt!',
+                    'message' => "Khám phá ngay sản phẩm mới: {$product->name}",
+                    'url' => route('product.detail', $product->slug),
+                ];
+                Notification::send($clients, new AdminDatabaseNotification($data));
+            }
             return redirect()->route('admin.products.index')->with('success', 'Sản phẩm đã được tạo thành công!');
         } catch (\Exception $e) {
             DB::rollBack();

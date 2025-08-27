@@ -33,6 +33,7 @@ class AdminDatabaseNotification extends Notification
             'user_id' => $this->data['user_id'] ?? null,
             'user_name' => $this->data['user_name'] ?? null,
             'url' => $this->data['url'] ?? null,
+            'order_id' => $this->data['order_id'] ?? null,
         ];
     }
 }

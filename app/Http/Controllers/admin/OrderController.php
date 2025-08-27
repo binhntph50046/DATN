@@ -16,6 +16,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
 use App\Models\OrderAddress;
+use App\Models\User;
+use App\Notifications\AdminDatabaseNotification;
 
 class OrderController extends Controller
 {
@@ -30,7 +32,7 @@ class OrderController extends Controller
                     ->orWhere('order_code', 'like', "%$search%");
             });
         }
-        
+
         // Lọc theo trạng thái đơn hàng
         if ($request->filled('status')) {
             $query->where('status', $request->status);
@@ -41,9 +43,9 @@ class OrderController extends Controller
             $query->where('payment_status', $request->payment_status);
         }
 
-        $orders = $query->with(['items.product' => function($query) {
-                $query->withTrashed();
-            }, 'items.variant'])
+        $orders = $query->with(['items.product' => function ($query) {
+            $query->withTrashed();
+        }, 'items.variant'])
             ->latest()
             ->paginate(10)
             ->appends($request->all());
@@ -58,14 +60,14 @@ class OrderController extends Controller
     public function updateStatus(Request $request, $id)
     {
         $order = Order::with('items.product')->findOrFail($id);
-        
+
         // Validate lý do hủy nếu chuyển sang trạng thái cancelled
         if ($request->status === 'cancelled') {
             $request->validate([
                 'cancel_reason' => 'required|string|max:255'
             ]);
         }
-        
+
         // Nếu đơn đã bị huỷ hoặc đã hoàn thành thì không cho cập nhật nữa
         if (in_array($order->status, ['cancelled', 'completed'])) {
             if ($request->ajax() || $request->wantsJson()) {
@@ -88,7 +90,7 @@ class OrderController extends Controller
             "cancelled" => []
         ];
         $new_status = $request->status;
-        
+
         // Ngăn admin chuyển sang trạng thái completed
         if ($new_status === 'completed') {
             if ($request->ajax() || $request->wantsJson()) {
@@ -100,41 +102,41 @@ class OrderController extends Controller
             return redirect()->route('admin.orders.show', $order->id)
                 ->with('error', 'Admin không thể chuyển trạng thái sang "Đã hoàn thành". Chỉ client mới có thể xác nhận nhận hàng.');
         }
-        
+
         if (isset($status[$order->status]) && in_array($new_status, $status[$order->status])) {
             $old_status = $order->status;
-            
-                    // Nếu chuyển sang trạng thái cancelled
-        if ($new_status === 'cancelled') {
-            // Kiểm tra xem đơn hàng có số lượng lớn không
-            if (!$this->hasLargeQuantity($order)) {
-                if ($request->ajax() || $request->wantsJson()) {
-                    return response()->json([
-                        'success' => false,
-                        'message' => 'Không thể hủy đơn hàng có số lượng bình thường. Chỉ có thể hủy đơn hàng có số lượng lớn.'
-                    ]);
+
+            // Nếu chuyển sang trạng thái cancelled
+            if ($new_status === 'cancelled') {
+                // Kiểm tra xem đơn hàng có số lượng lớn không
+                if (!$this->hasLargeQuantity($order)) {
+                    if ($request->ajax() || $request->wantsJson()) {
+                        return response()->json([
+                            'success' => false,
+                            'message' => 'Không thể hủy đơn hàng có số lượng bình thường. Chỉ có thể hủy đơn hàng có số lượng lớn.'
+                        ]);
+                    }
+                    return redirect()->route('admin.orders.show', $order->id)
+                        ->with('error', 'Không thể hủy đơn hàng có số lượng bình thường. Chỉ có thể hủy đơn hàng có số lượng lớn.');
                 }
-                return redirect()->route('admin.orders.show', $order->id)
-                    ->with('error', 'Không thể hủy đơn hàng có số lượng bình thường. Chỉ có thể hủy đơn hàng có số lượng lớn.');
-            }
-            
-            // Chỉ xử lý hủy đơn hàng có số lượng lớn
-            foreach ($order->items as $item) {
-                $product = $item->product;
-                if ($product) {
-                    $product->safeDecrementTotalSold($item->quantity);
-                }
-                
-                // Hoàn trả stock cho đơn hàng có số lượng lớn
-                if ($item->product_variant_id) {
-                    $variant = ProductVariant::find($item->product_variant_id);
-                    if ($variant) {
-                        $variant->increment('stock', $item->quantity);
+
+                // Chỉ xử lý hủy đơn hàng có số lượng lớn
+                foreach ($order->items as $item) {
+                    $product = $item->product;
+                    if ($product) {
+                        $product->safeDecrementTotalSold($item->quantity);
+                    }
+
+                    // Hoàn trả stock cho đơn hàng có số lượng lớn
+                    if ($item->product_variant_id) {
+                        $variant = ProductVariant::find($item->product_variant_id);
+                        if ($variant) {
+                            $variant->increment('stock', $item->quantity);
+                        }
                     }
                 }
             }
-        }
-            
+
             // Nếu chuyển từ pending sang confirmed, kiểm tra và trừ stock cho đơn hàng có số lượng lớn
             if ($old_status === 'pending' && $new_status === 'confirmed') {
                 // Kiểm tra xem đơn hàng có số lượng lớn không
@@ -153,14 +155,13 @@ class OrderController extends Controller
                     }
                 }
             }
-            
+
             // Nếu chuyển sang trạng thái delivered, cập nhật payment_status thành paid
             if ($new_status === 'delivered') {
                 $order->update([
                     'status' => $new_status,
                     'payment_status' => 'paid'
                 ]);
-                
             } else {
                 // Cập nhật trạng thái và lý do hủy nếu có
                 $updateData = ['status' => $new_status];
@@ -209,6 +210,26 @@ class OrderController extends Controller
                 // Refresh order model để đảm bảo có dữ liệu mới nhất
                 $order->refresh();
                 event(new OrderStatusUpdated($order));
+                // Gửi thông báo cho người dùng
+                if ($user = $order->user) {
+                    $statusTranslations = [
+                        'confirmed' => 'đã được xác nhận',
+                        'preparing' => 'đang được chuẩn bị',
+                        'shipping' => 'đang được giao',
+                        'delivered' => 'đã giao hàng',
+                        'cancelled' => 'đã bị hủy',
+                    ];
+                    $statusText = $statusTranslations[$new_status] ?? $new_status;
+
+                    $data = [
+                        'type' => 'order_status_updated',
+                        'title' => 'Cập nhật trạng thái đơn hàng',
+                        'message' => "Đơn hàng #{$order->order_code} của bạn {$statusText}.",
+                        'url' => route('order.tracking', $order->id),
+                        'order_id' => $order->id,
+                    ];
+                    $user->notify(new AdminDatabaseNotification($data));
+                }
             } catch (\Exception $e) {
                 Log::error('Lỗi khi gửi sự kiện', [
                     'order_id' => $order->id,
@@ -235,13 +256,13 @@ class OrderController extends Controller
     {
         try {
             DB::beginTransaction();
-            
+
             // Lấy các sản phẩm trong giỏ hàng
             $cartItems = [];
             if (!isset($variant)) {
                 $cartItems = session()->get('cart', []);
             }
-            
+
             // Validate dữ liệu
             $request->validate([
                 'c_fname' => 'required|string|max:255',
@@ -289,7 +310,7 @@ class OrderController extends Controller
                     'total' => $variant->selling_price * $request->quantity
                 ]);
             } else {
-                foreach($cartItems as $item) {
+                foreach ($cartItems as $item) {
                     OrderItem::create([
                         'order_id' => $order->id,
                         'product_id' => $item->product_id,
@@ -310,40 +331,39 @@ class OrderController extends Controller
 
             return redirect()->route('order.success', $order->id)
                 ->with('success', 'Đặt hàng thành công!');
-
         } catch (\Exception $e) {
             DB::rollBack();
             return back()->with('error', 'Có lỗi xảy ra: ' . $e->getMessage());
         }
     }
 
-   // Kiểm tra đơn hàng có số lượng lớn không
+    // Kiểm tra đơn hàng có số lượng lớn không
     private function hasLargeQuantity($order)
     {
-        $maxQuantityPerItem = 10; 
+        $maxQuantityPerItem = 10;
         $maxTotalQuantity = 20;
         $maxTotalItems = 5; // Số lượng sản phẩm tối đa trong đơn hàng
-        
+
         $totalQuantity = $order->items->sum('quantity');
         $totalItems = $order->items->count();
-        
+
         // Kiểm tra từng sản phẩm có vượt quá giới hạn không
         foreach ($order->items as $item) {
             if ($item->quantity > $maxQuantityPerItem) {
                 return true;
             }
         }
-        
+
         // Kiểm tra tổng số lượng có vượt quá giới hạn không
         if ($totalQuantity > $maxTotalQuantity) {
             return true;
         }
-        
+
         // Kiểm tra tổng số sản phẩm có vượt quá giới hạn không
         if ($totalItems > $maxTotalItems) {
             return true;
         }
-        
+
         return false;
     }
 }

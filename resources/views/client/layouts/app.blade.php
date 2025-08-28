@@ -25,8 +25,6 @@
     <!-- Slick Slider CSS -->
     <link href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick-theme.css" rel="stylesheet">
-    <!-- Shop Card Styles (dùng chung hiệu ứng hover product-card) -->
-    <link href="{{ asset('css/shop-custom.css') }}" rel="stylesheet">
 
     <!-- CSS riêng từ view -->
     @yield('styles')
@@ -34,8 +32,7 @@
 
 <body>
     @include('client.partials.header')
-    <!-- @include('client.partials.notification') -->
-    <!-- @stack('scripts') -->
+    @include('client.partials.notification')
     @yield('content')
     @include('client.partials.chatbot')
     @include('client.partials.footer')
@@ -161,54 +158,7 @@
                 })
             })
             .then(res => res.json())
-            .then data => {
-                // Lưu id bản ghi lại để dùng khi thoát
-                localStorage.setItem("page_view_id", data.id);
-            });
-
-        // Gửi khi rời trang
-        window.addEventListener("pagehide", function() {
-            const id = localStorage.getItem("page_view_id");
-            if (!id) return;
-
-            fetch("/track/stop", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').content
-                },
-                body: JSON.stringify({
-                    id: id
-                })
-            });
-
-            localStorage.removeItem("page_view_id");
-        });
-    </script>
-</body>
-
-</html>
-        });
-    </script>
-    
-    @yield('scripts')
-
-    <script>
-        const pageUrl = window.location.href;
-
-        // Gửi khi vào trang
-        fetch("/track/start", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').content
-                },
-                body: JSON.stringify({
-                    url: pageUrl
-                })
-            })
-            .then(res => res.json())
-            .then data => {
+            .then(data => {
                 // Lưu id bản ghi lại để dùng khi thoát
                 localStorage.setItem("page_view_id", data.id);
             });

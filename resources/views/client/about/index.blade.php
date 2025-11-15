@@ -43,7 +43,7 @@
 
                 <!-- Team Member 2 -->
                 <div class="team-member">
-                    <img src="https://sbcf.fr/wp-content/uploads/2018/03/sbcf-default-avatar.png" class="img-fluid mb-3">
+                    <img src="{{ asset('uploads/avatar_member/Đại-removebg-preview.png') }}" class="img-fluid mb-3">
                     <h3><a href="#"><span>Chu Văn</span> Đại</a></h3>
                     <span class="d-block position mb-3">Lập trình web</span>
                     <p>Cao đẳng FPT Polytechnic Hà Nội</p>
@@ -51,7 +51,7 @@
 
                 <!-- Team Member 3 -->
                 <div class="team-member">
-                    <img src="https://sbcf.fr/wp-content/uploads/2018/03/sbcf-default-avatar.png" class="img-fluid mb-3">
+                    <img src="{{ asset('uploads/avatar_member/Cường-removebg-preview.png') }}" class="img-fluid mb-3">
                     <h3><a href="#"><span>Nguyễn Mạnh</span> Cường</a></h3>
                     <span class="d-block position mb-3">Lập trình web</span>
                     <p>Cao đẳng FPT Polytechnic Hà Nội</p>
@@ -67,7 +67,7 @@
 
                 <!-- Team Member 5 -->
                 <div class="team-member">
-                    <img src="https://sbcf.fr/wp-content/uploads/2018/03/sbcf-default-avatar.png" class="img-fluid mb-3">
+                    <img src="{{ asset('uploads/avatar_member/Quảng-removebg-preview.png') }}" class="img-fluid mb-3">
                     <h3><a href="#"><span>Nguyễn Văn</span> Quảng</a></h3>
                     <span class="d-block position mb-3">Lập trình web</span>
                     <p>Cao đẳng FPT Polytechnic Hà Nội</p>

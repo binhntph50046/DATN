@@ -3,6 +3,24 @@
 
 @section('content')
 
+    <style>
+        .service-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 56px;
+            height: 56px;
+            background: #46675a;
+            border-radius: 14px;
+        }
+
+        .service-icon svg {
+            width: 28px;
+            height: 28px;
+            color: #fff;
+            display: block;
+        }
+    </style>
     <!-- Shop Banner -->
     <div class="shop-banner">
         <div class="container">
@@ -47,7 +65,7 @@
                                 </div>
                             </div>
 
-                            <div class="col-lg-5">
+                            <div class="col-lg-6">
                                 <div class="service no-shadow align-items-center link horizontal d-flex active"
                                     data-aos="fade-left" data-aos-delay="0">
                                     <div class="service-icon color-1 mb-4">
@@ -58,7 +76,7 @@
                                         </svg>
                                     </div>
                                     <div class="service-contents">
-                                        <p>info@yourdomain.com</p>
+                                        <p>applestore05082005@gmail.com</p>
                                     </div>
                                 </div>
                             </div>
@@ -74,7 +92,7 @@
                                         </svg>
                                     </div>
                                     <div class="service-contents">
-                                        <p>+1 294 3925 3939</p>
+                                        <p>0666888666</p>
                                     </div>
                                 </div>
                             </div>

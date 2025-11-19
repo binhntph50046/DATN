@@ -206,7 +206,7 @@
                                             <input type="text" name="cancel_reason" class="form-control" placeholder="Nhập lý do hủy đơn hàng" style="width: 250px;" required>
                                         </div>
                                         <button type="submit" class="btn btn-primary" style="height: 38px; padding: 0.375rem 0.75rem;">
-                                            <i class="fas fa-sync-alt me-1"></i> Cập nhật
+                                            <i class="fas fa-sync-alt me-1"></i>
                                         </button>
                                     </form>
                                 </td>

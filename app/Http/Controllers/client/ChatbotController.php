@@ -34,10 +34,10 @@ class ChatbotController
 
         // 2. Nếu không có, chỉ lấy dữ liệu từ các bảng bạn muốn gửi cho AI
         $tables = [
+            'products' => ['name', 'slug', 'description'],
             'faqs' => '*',
             'categories' => '*',
             'product_variants' => '*',
-            'products' => ['name', 'slug', 'description'],
             'vouchers' => ['description'],
             'flash_sale_items' => ['product_variant_id', 'count', 'discount'],
             'flash_sales' => ['name']
